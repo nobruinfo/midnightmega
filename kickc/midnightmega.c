@@ -66,12 +66,13 @@ unsigned char kbhit3(void)
 }
 unsigned char waitforkeyandletgo(void)
 {
-    cgetc();
-	return 1;
+//    cgetc();
+//	return 1;
 	
-	unsigned char c;
-	while(! (c=kbhit3())) {}
-	while(kbhit3()) {}
+	unsigned char c;         // mega65-book.pdf#20d
+	while(kbhit2()) {}       // wait until buffer empty
+	while(! (c=kbhit2())) {} // wait and read key
+	while(kbhit2()) {}       // wait until buffer empty
 	return c;
 }
 void waitfornokey(void)
@@ -101,58 +102,15 @@ void main() {
     *PROCPORT_DDR = PROCPORT_DDR_MEMORY_MASK;
     *PROCPORT = PROCPORT_BASIC_KERNEL_IO; // PROCPORT_RAM_IO;
 */
+  // Disable 48MHz fast mode
+  VICIV->CONTROLB &= ~0x40;
+  VICIV->CONTROLC &= ~0x40;
 
   unsigned char keycode;
-//  waitfornokey();
-#ifdef sdgjfhdsgjfgfuzw
-  /*
-  asm {
-       lda    #$00
-       ldx    #$0F
-       ldy    #$00
-       ldz    #$0F
-       map
-       eom
+  waitfornokey();
 
-       lda    #0
-       tax
-       tay
-       taz
-       map
-       eom
-  }  */
   clrscr();
   gotoxy(0, 0);
-
-/*
-  unsigned char fp;
-  unsigned char fn = "hellolibc";
-//  fp = open(fn);
-
-  /// Set logical file number, device number and secondary address
-  /// lfn: logical file number
-  /// dev: device number
-  /// sa: secondary address
-  cbm_k_setlfs(1, 8, 0);
-
-  /// Set filename or command string
-  /// name: file name
-  cbm_k_setnam (fn);
-
-  /// Open logical file
-  unsigned char cbm_k_open (void);
-
-  /// Load or Verify data
-  /// flag: load=0, verify=1
-  /// addr: pointer to start address
-  /// returns pointer to last byte loaded
-char* cbm_k_load(unsigned char flag, char* addr);
-
-/// Close logical file
-/// lfn: Logical file number
-void cbm_k_close (unsigned char lfn);
-  */
-#endif
 
 #ifdef kihdsikdshg
   unsigned int b = (unsigned int) PEEK(0xD012);
@@ -235,16 +193,16 @@ void cbm_k_close (unsigned char lfn);
   cputln();
 #endif
   // cputu("hyppo_setname is: ", hyppo_setname("EXTERNAL.D81"), HEXADECIMAL);
-//  printf("hyppo_setname is: %d ", (int)hyppo_setname("NOBRU.D81"));
+  printf("hyppo_setname is: %d ", (int)hyppo_setname("NOBRU.D81"));
   // cputu("hyppo_d81attach1 is: ", hyppo_d81attach1(), HEXADECIMAL);
   // cputln();
-//  printf("hyppo_d81attach1 is: %d\n", (int)hyppo_d81attach1());
-//  while(! (keycode=waitforkeyandletgo())) {}
-#ifdef dshkjdsgjfhgds
+  printf("hyppo_d81attach1 is: %d\n", (int)hyppo_d81attach1());
+  while(! (keycode=waitforkeyandletgo())) {}
+
+  clrscr ();
 //  for (char i=0; i <= 12; i++) {
   for (char i=0; i <= 32; i++) {
 // char i=9;
-    clrscr ();
     cursor (0);
 	char j = hyppo_selectdrive(i);
 	if (j > i)  continue;
@@ -263,7 +221,7 @@ void cbm_k_close (unsigned char lfn);
         printf("hyppo_readdir, err is: %04x ", (unsigned int)readerr);
 	    if (readerr != $85 && readerr != $ff) {
           printf("filename is: %s\n", getsfn());
-  	  }
+        }
 	    // while(! (keycode=waitforkeyandletgo())) {}
 	    // if (keycode == 128) break;
       } while (readerr != $85 && readerr != $ff);
@@ -271,7 +229,6 @@ void cbm_k_close (unsigned char lfn);
 	  while(! (keycode=waitforkeyandletgo())) {}
     }
   }
-#endif
 
 //  printf("dir2 %d", dir2());
 

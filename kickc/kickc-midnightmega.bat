@@ -14,7 +14,7 @@ CD /D %~dp0
 
 REM JAVA HOME
 REM KICKC HOME
-set KICKC_HOME=%~dp0..\..\..\..\..\Mega65\KickC\kickc
+set KICKC_HOME=%~dp0..\..\..\Mega65\KickC\kickc
 echo KICKC_HOME=%KICKC_HOME% 
 REM KCLIB HOME
 set KICKC_STDLIB="%KICKC_HOME%\lib"

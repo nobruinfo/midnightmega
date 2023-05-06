@@ -1,4 +1,4 @@
-Output dir: F:\Entwicklungsprojekte\github-nobru\mega65-libc\kickc\examples\midnightmega
+Output dir: F:\Entwicklungsprojekte\github-nobru\midnightmega\kickc
 parsing
 flex pass 1
 flex pass 2
@@ -14,9 +14,9 @@ Basic-segment:
   $2001-$2016 Basic
 
 Code-segment:
-  $2017-$2cf7 Code
+  $2017-$31bc Code
 
 Data-segment:
-  $2cf8-$2dfc Data
+  $31bd-$362e Data
 
 Writing Vice symbol file: midnightmega.vs
