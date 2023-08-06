@@ -2,6 +2,42 @@
 // ***  libc.h abstraction to hyppo mount handling       ***
 // *********************************************************
 
+// char __align(0x100) Hyppo_Filename[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxFSHOT.D81";
+struct HYPPOFILENAME {
+	char name[65];
+	char sfn[65];
+	unsigned char dummy[256-65-65];  // blown up to fill a whole page
+};
+
+struct DIRENT {
+	char lfn[$40];    // The long file name
+	char length;      // The length of long file name
+	char sfn[8];      // The short file name without the extension
+	char ext[3];      // The extension
+	char res[2];      // unused
+	unsigned long clusternumber; // The cluster number where the file
+	                             // begins. For sub-directories, this
+								 // is where the FAT dir entries start
+								 // for that sub-directory
+	unsigned long size; // The length of file in bytes
+	char attr;        // The type and attribute bits:
+					  // Bit Meaning if bit is set
+					  // 0   Read only
+					  // 1   Hidden
+					  // 2   System
+					  // 3   Volume label
+					  // 4   Sub-directory
+					  // 5   Archive
+	unsigned char dummy[256-87];  // blown up to fill a whole page
+};
+
+struct DIRENT* const readdir_dirent = (struct DIRENT*) 0x6000; // needs be at page frame
+// char __align(0x100) readdir_dirent[256]; // sizeof(DIRENT)]; occupies the whole page!
+// DIRENT* entry = (DIRENT*) &readdir_dirent;
+
+struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) 0x6100; // needs be at a
+                                                                  // page frame border
+
 char tolower(char ch) {
     if(ch>='A' && ch<='Z') {
         return ch + ('a'-'A');
@@ -28,6 +64,25 @@ char * strsan(char *str) {
 	s++;
   }
   return s;
+}
+
+unsigned char hyppo_setup_transfer_area(void)  {
+  kickasm (uses hyppofn) {{
+	ldx #$00         // shouldn't be necessary
+	ldy #>(hyppofn)  // works only because "name" is first in struct
+    lda #$3a
+	sta HTRAP00
+	clv
+	bcc error
+    sta retval
+	jmp done
+error:
+    lda #$FF
+	sta retval
+done:
+    nop
+  }}
+  return retval;
 }
 
 unsigned char hyppo_getcurrentdrive(void)
@@ -70,11 +125,11 @@ done:
 
 unsigned char hyppo_setname(char *filename)
 {
-  strcpy(Hyppo_Filename, filename);
+  strcpy(hyppofn->name, filename);
 
-  kickasm (uses Hyppo_Filename) {{
-	ldx #$00    // shouldn't be necessary
-	ldy #>(Hyppo_Filename)
+  kickasm (uses hyppofn) {{
+	ldx #$00         // shouldn't be necessary
+	ldy #>(hyppofn)  // works only because "name" is first in struct
     lda #$2e
 	sta HTRAP00
 	clv
@@ -190,44 +245,17 @@ done:
   return retval;
 }
 
-char __align(0x100) Hyppo_Filename[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxFSHOT.D81";
-
-typedef struct  {
-	char lfn[$40];    // The long file name
-	char length;      // The length of long file name
-	char sfn[8];      // The short file name without the extension
-	char ext[3];      // The extension
-	char res[2];      // unused
-	unsigned long clusternumber; // The cluster number where the file
-	                             // begins. For sub-directories, this
-								 // is where the FAT dir entries start
-								 // for that sub-directory
-	unsigned long size; // The length of file in bytes
-	char attr;        // The type and attribute bits:
-					  // Bit Meaning if bit is set
-					  // 0   Read only
-					  // 1   Hidden
-					  // 2   System
-					  // 3   Volume label
-					  // 4   Sub-directory
-					  // 5   Archive
-} DIRENT;
-// DIRENT __align(0x100) readdir_dirent;
-char __align(0x100) _readdir_dirent[sizeof(DIRENT)+200]; // [256 + 12];
-DIRENT* entry = (DIRENT*) &_readdir_dirent;
-// char *DIRENT _readdir_dirent;
-
 unsigned char hyppo_readdir(unsigned char filedescriptor)
 {
-//  volatile char register(Y) _rd = _readdir_dirent / 256;
+//  volatile char register(Y) _rd = readdir_dirent / 256;
 
-  kickasm (uses _readdir_dirent, uses filedescriptor, uses _readdir_dirent) {{
+  kickasm (uses readdir_dirent, uses filedescriptor) {{
 	// pha
 	phx
 	// First, clear out the dirent
 	ldx #0
 	txa
-@l1: sta _readdir_dirent,x	
+@l1: sta readdir_dirent,x	
 	dex
 	bne @l1
 	plx
@@ -236,10 +264,22 @@ unsigned char hyppo_readdir(unsigned char filedescriptor)
 	// Third, call the hypervisor trap
 	// File descriptor gets passed in in X.
 	// Result gets written to transfer area we setup at $0400
-	ldy #>(_readdir_dirent)
+	ldy #>(readdir_dirent)
 	lda #$14
 	sta HTRAP00
-	nop
+	clv
+	bcc error
+    stx retval
+	jmp done
+error:
+	sta retval
+done:
+    nop
+  }}
+  readdir_dirent->lfn[readdir_dirent->length] = 0; // put str terminate null
+  
+  return retval;
+/*	nop
 
 	bcs @readDirSuccess
 
@@ -257,31 +297,31 @@ unsigned char hyppo_readdir(unsigned char filedescriptor)
 done:
     nop
   }}
-  if (1) entry->lfn[entry->length] = 0; // str terminate
+  readdir_dirent->lfn[readdir_dirent->length] = 0; // put str terminate null
   
-  return retval;
+  return retval;   */
 }
 
 char * getsfn() {
-  char s[20]; //    [13];
+//  char sfn[20]; //    [13];
   char c = 0;
 
-  for (int i = 0; i < 8 && entry->sfn[i] != 32; i++) {
-	if (entry->sfn[i] > $20) {
-	  s[c] = entry->sfn[i];
+  for (int i = 0; i < 8 && readdir_dirent->sfn[i] != 32; i++) {
+	if (readdir_dirent->sfn[i] > $20) {
+	  hyppofn->sfn[c] = readdir_dirent->sfn[i];
 	  c++;
 	}
   }
-  s[c] = '.';
+  hyppofn->sfn[c] = '.';
   c++;
-  for (int i = 8; i < 11 && entry->sfn[i] != 32; i++) {
-	if (entry->sfn[i] > $20) {
-	  s[c] = entry->sfn[i];
+  for (int i = 8; i < 11 && readdir_dirent->sfn[i] != 32; i++) {
+	if (readdir_dirent->sfn[i] > $20) {
+	  hyppofn->sfn[c] = readdir_dirent->sfn[i];
 	  c++;
 	}
   }
-  s[c] = 0;
-  return strlowr(s);
+  hyppofn->sfn[c] = 0;
+  return /*strlowr(*/hyppofn->sfn;  // );
 }
 
 // ******************************************

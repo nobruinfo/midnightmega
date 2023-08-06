@@ -1,6 +1,9 @@
 // Midnightmega is an approach to a file manager
 
 // #pragma target(mega65)  target is set in makefile
+// #pragma zp_reserve(0, 1, 0x91..0xff) // Gurçe's BASIC zeropage
+// #pragma zp_reserve(0x00..0x3f, 0x7f..0xff)
+// #pragma var_model(ma_mem)
 #include <mega65.h>
 #include <mega65-dma.h>
 #include <6502.h>
@@ -13,22 +16,6 @@
 #include "minime.h"
 #include "libc.h"
 
-/* From an old BIt Shifter comment:
-The storage of ML programs depends on their size and your needs.
-If you don't use graphics, the area $1800 - $1FFF is a good
-choice. There you can run them in the standard memory mapping
-and have access to BASIC ROM routines, KERNAL, EDITOR and I/O.
-If you want to use graphics, which uses the range $1800 - $1FFF,
-you have to place your ML programs elsewhere, for example in
-BANK 4 or 5. */
-
-#define ATTIC_START 0x8000000
-#define FILEDESCRIPTOR_MSB 0x18 // (ATTIC_START + 0)
-
-// char transferarea[1000] = 0;
-char *transferarea = (char *)0x0400; // general purpose buffer
-char filearea[200] = "abcdef";
-
 static unsigned char XSize, YSize;
 
 void MakeTeeLine (unsigned char Y)
@@ -38,6 +25,23 @@ void MakeTeeLine (unsigned char Y)
     chline (XSize - 2);
     cputc (CH_RTEE);
 }
+
+/* deathy/BAS 29.07.2023 um 17:28 Uhr
+// __register(A) bool keyscan(__register(X) char col, __register(A) char row)
+keyscan: {
+    stx KEYMATRIXPEEK
+    
+    and CRTACSCNT
+    
+    bne not_pressed
+    lda #$01
+    rts
+    
+not_pressed:
+    lda #$00
+    rts
+}
+*/
 
 byte *kbscan = (char *) 0xd610;
 char cgetc()
@@ -192,6 +196,8 @@ void main() {
   cputln();
   cputln();
 #endif
+//  printf("hyppo_setup_transfer_area is: %d ", (int)hyppo_setup_transfer_area());
+
   // cputu("hyppo_setname is: ", hyppo_setname("EXTERNAL.D81"), HEXADECIMAL);
   printf("hyppo_setname is: %d ", (int)hyppo_setname("NOBRU.D81"));
   // cputu("hyppo_d81attach1 is: ", hyppo_d81attach1(), HEXADECIMAL);
@@ -218,11 +224,14 @@ void main() {
 //  printf("hyppo_readdir, val is: %04x\n", (unsigned int)hyppo_readdir(fd, FILEDESCRIPTOR_MSB));
 //  printf("test, val is: %04x\n", (unsigned int)test(transferarea));
         readerr = hyppo_readdir(fd);
-        printf("hyppo_readdir, err is: %04x ", (unsigned int)readerr);
+        printf("hyppo_readdir, err is: %02x ", (unsigned int)readerr);
 	    if (readerr != $85 && readerr != $ff) {
-          printf("filename is: %s\n", getsfn());
+		  getsfn();
+          printf("filename is: %s ", hyppofn->sfn);
+          printf("filename is: %d\n", (int) strlen(hyppofn->sfn));
+//		  asm{brk}
         }
-	    // while(! (keycode=waitforkeyandletgo())) {}
+	    while(! (keycode=waitforkeyandletgo())) {}
 	    // if (keycode == 128) break;
       } while (readerr != $85 && readerr != $ff);
       printf("hyppo_closedir is: %02x\n", (unsigned int) hyppo_closedir(fd));
