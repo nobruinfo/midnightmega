@@ -16,11 +16,16 @@ CD /D %~dp0
 SET PRJ=midnightmega
 
 set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
-SET opts=--include-directory=..\..\mega65-libc\clang\include
+SET cfiles=..\..\mega65-libc\src
+REM https://clang.llvm.org/docs/ClangCommandLineReference.html
+SET opts=--include-directory=.\include
+SET opts=%opts% --include-directory=..\..\mega65-libc\include
 SET opts=%opts% -ferror-limit=1 -Wno-error=implicit-function-declaration
 
 CALL %LLVM_HOME%\bin\mos-mega65-clang.bat -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %PRJ%.c
-REM CALL %LLVM_HOME%\bin\mos-mega65-clang.bat -Wall -Os -o %PRJ%.prg %opts% %PRJ%.c
+ECHO ------------------------------------------------------
+REM  -Wall
+CALL %LLVM_HOME%\bin\mos-mega65-clang.bat -Os -o %PRJ%.prg %opts% %PRJ%.c %cfiles%\conio.c
 
 :NOBUILD
 IF ERRORLEVEL == 1 (

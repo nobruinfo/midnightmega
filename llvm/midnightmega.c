@@ -7,26 +7,38 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>  // llvm
-#include <conio.h>  // llvm instead of <printf.h>
+#include <mega65/conio.h>  // llvm instead of <printf.h>
 #include <peekpoke.h>
 // #include <conio_.h>
 // #include <conio-lines.h>
 
 // #include <cbmiec.h>
+#include <mega65.h>  // taken from KickC
+
+void _miniSwapSector();
+unsigned char _miniReadNextSector(unsigned char drive);
+void _miniChainSector();
+unsigned char _miniReadByte();
+unsigned char _miniFindFile();
+unsigned char waitforkeyandletgo(void);
+
 #include "minime.h"
 #include "libc.h"
 
 static unsigned char XSize, YSize;
 
+/*
 void MakeTeeLine (unsigned char Y)
-/* Make a divider line */
+/ * Make a divider line * /
 {
     cputcxy (0, Y, CH_LTEE);
     chline (XSize - 2);
     cputc (CH_RTEE);
 }
+*/
 
-byte *kbscan = (char *) 0xd610;
+unsigned char *kbscan = (char *) 0xd610;
+/*
 char cgetc()
 {
   char res;
@@ -35,6 +47,7 @@ char cgetc()
   *kbscan = 0;
   return res;
 }
+*/
 
 #define initkeyboard()  POKE(0xD610U, 0)
 unsigned char kbhit2(void)
@@ -67,6 +80,7 @@ void waitfornokey(void)
   while(kbhit3()) {}
 }
 
+/*
 void cputu(char* pref, unsigned int uint, enum RADIX radix) {
   unsigned int b = (unsigned int) PEEK(0xD012);
   char ss[100];
@@ -75,9 +89,10 @@ void cputu(char* pref, unsigned int uint, enum RADIX radix) {
   cputs(pref);
   cputs(ss);
 }
+*/
 
 // KickC calls conio_mega65_init() before doing main():
-void main() {
+int main() {
 /*
 	// Enable MEGA65 features
     VICIII->KEY = 0x47;   
@@ -140,12 +155,12 @@ void main() {
 //	POKE $D018,PEEK($D018) AND $F0 OR $06  // lowercase
 //	PRINT CHR$(9)  // enable toggle case
 //	PRINT CHR$(8)  // disable toggle case
-	asm{
+	asm volatile(
 	// lower case
 		"lda	$D018\n"
 		"ora	#$06\n"
 		"sta	$D018\n"
-	}
+	);
 
 #ifdef kihdsikdshg
     clrscr ();
@@ -199,14 +214,14 @@ void main() {
     unsigned char fd = hyppo_opendir();
     printf("hyppo_opendir, file descriptor is: %02x\n", (unsigned int) fd);
 
-    if (fd != $84 && fd != $87) {
+    if (fd != 0x84 && fd != 0x87) {
       unsigned char readerr = 0;
       do {
 //  printf("hyppo_readdir, val is: %04x\n", (unsigned int)hyppo_readdir(fd, FILEDESCRIPTOR_MSB));
 //  printf("test, val is: %04x\n", (unsigned int)test(transferarea));
         readerr = hyppo_readdir(fd);
         printf("hyppo_readdir, err is: %02x ", (unsigned int)readerr);
-	    if (readerr != $85 && readerr != $ff) {
+	    if (readerr != 0x85 && readerr != 0xff) {
 		  getsfn();
           printf("filename is: %s ", hyppofn->sfn);
           printf("filename is: %d\n", (int) strlen(hyppofn->sfn));
@@ -214,7 +229,7 @@ void main() {
         }
 	    while(! (keycode=waitforkeyandletgo())) {}
 	    // if (keycode == 128) break;
-      } while (readerr != $85 && readerr != $ff);
+      } while (readerr != 0x85 && readerr != 0xff);
       printf("hyppo_closedir is: %02x\n", (unsigned int) hyppo_closedir(fd));
 	  while(! (keycode=waitforkeyandletgo())) {}
     }
@@ -252,7 +267,9 @@ void main() {
 //  while(! (keycode=waitforkeyandletgo())) {}
 //  initkeyboard();
 #endif
-  asm {
+  asm volatile(
 	  "cli\n"
-  }
+  );
+  
+  return 0;
 }

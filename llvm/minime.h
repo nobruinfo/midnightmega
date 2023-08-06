@@ -110,12 +110,6 @@ struct DATABLOCK* const worksector[2] = {
 struct BAM* const worksectorasBAM[2] = { (struct BAM*) $4200, (struct BAM*) $4300 };
 */
 
-void _miniSwapSector();
-unsigned char _miniReadNextSector(unsigned char drive);
-void _miniChainSector();
-unsigned char _miniReadByte();
-unsigned char _miniFindFile();
-
 void _miniInit()  {
   offsCurrIdx = 0;
   flagCurrSec = 0;
@@ -256,23 +250,23 @@ unsigned char _miniReadNextSector(unsigned char drive) {
 		"sta	$D081\n"
 
 		// Wait while busy:
-"wait0:\n"
+"wait01:\n"
 		"lda	$D082\n"
-		"bmi	wait0\n"
+		"bmi	wait01%=\n"
 
 		// Check for error
 		"lda	$D082\n"
 		"and	#$18\n"
-		"beq	succeed\n"
+		"beq	succeed01%=\n"
 
 		// Turn on just the LED, this causes to blink
 		"lda	#$40\n"
 		"sta	$D080\n"
 
 		"sec\n"
-		"jmp endsub\n"
+		"jmp endsub01%=\n"
 
-"succeed:\n"
+"succeed01:\n"
 		// Make sure we can see the data
 		"lda	#$80\n"    // bit 7 as mask
 		"trb	$D689\n"   // clear bit 7
@@ -283,24 +277,24 @@ unsigned char _miniReadNextSector(unsigned char drive) {
 		"sta	offsCurrIdx\n"
 
 		"lda	flagCurrSec\n"
-		"beq	upper\n"
+		"beq	upper01%=\n"
 
 		"lda	#$6D\n"
 		"sta	ptrMiniOffs + 1\n"
 
-		"jmp endsub\n"
+		"jmp endsub01%=\n"
 
-"upper:\n"
+"upper01:\n"
 		"lda	#$6C\n"
 		"sta	ptrMiniOffs + 1\n"
-		"jmp endsub\n"
+		"jmp endsub01%=\n"
 
-"endsub:\n"
-		"bcs err1\n"
+"endsub01:\n"
+		"bcs err01%=\n"
 		"lda #$00\n"
-		"jmp end1\n"
-"err1:   lda #$ff\n"
-"end1:   sta retval\n"
+		"jmp end01%=\n"
+"err01:   lda #$ff\n"
+"end01:   sta retval\n"
 	: "=r"(retval) ::);
 	return retval;
 }
@@ -345,23 +339,23 @@ unsigned char ReadSector(unsigned char drive, char track, char sector) {
 		"sta	$D081\n"
 
 		// Wait while busy:
-"wait0:\n"
+"wait02%=:\n"
 		"lda	$D082\n"
-		"bmi	wait0\n"
+		"bmi	wait02%=\n"
 
 		// Check for error
 		"lda	$D082\n"
 		"and	#$18\n"
-		"beq	succeed\n"
+		"beq	succeed02%=\n"
 
 		// Turn on just the LED, this causes to blink
 		"lda	#$40\n"
 		"sta	$D080\n"
 
 		"sec\n"
-		"jmp endsub\n"
+		"jmp endsub02%=\n"
 
-"succeed:\n"
+"succeed02%=:\n"
 		// Make sure we can see the data
 		"lda	#$80\n"    // bit 7 as mask
 		"trb	$D689\n"   // clear bit 7
@@ -372,24 +366,24 @@ unsigned char ReadSector(unsigned char drive, char track, char sector) {
 		"sta	offsCurrIdx\n"
 
 		"lda	flagCurrSec\n"
-		"beq	upper\n"
+		"beq	upper02%=\n"
 
 		"lda	#$6D\n"
 		"sta	ptrMiniOffs + 1\n"
 
-		"jmp endsub\n"
+		"jmp endsub02%=\n"
 
-"upper:\n"
+"upper02%=:\n"
 		"lda	#$6C\n"
 		"sta	ptrMiniOffs + 1\n"
-		"jmp endsub\n"
+		"jmp endsub02%=\n"
 
-"endsub:\n"
-		"bcs err1\n"
+"endsub02%=:\n"
+		"bcs err02%=\n"
 		"lda flagCurrSec\n"
-		"jmp end1\n"
-"err1:   lda #$ff\n"
-"end1:   sta retval\n"
+		"jmp end02%=\n"
+"err02%=:   lda #$ff\n"
+"end02%=:   sta retval\n"
 	: "=r"(retval) ::);
 	return retval;
 }
@@ -438,35 +432,35 @@ unsigned char WriteSector(unsigned char drive, char track, char sector) {
 		"sta	$D081\n"
 
 		// Wait while busy:
-"wait0:\n"
+"wait03%=:\n"
 		"lda	$D082\n"
-		"bmi	wait0\n"
+		"bmi	wait03%=\n"
 
 		// Check for error
 		"lda	$D082\n"
 		"and	#$18\n"
-		"beq	succeed\n"
+		"beq	succeed03%=\n"
 
 		// Turn on just the LED, this causes to blink
 		"lda	#$40\n"
 		"sta	$D080\n"
 
 		"sec\n"
-		"jmp endsub\n"
+		"jmp endsub03%=\n"
 
-"succeed:\n"
+"succeed03%=:\n"
 		// Make sure we can see the data
 		"lda	#$80\n"    // bit 7 as mask
 		"trb	$D689\n"   // clear bit 7
 
 		"clc\n"
 
-"endsub:\n"
-		"bcs err1\n"
+"endsub03%=:\n"
+		"bcs err03%=\n"
 		"lda #$00\n"
-		"jmp end1\n"
-"err1:   lda #$ff\n"
-"end1:   sta retval\n"
+		"jmp end03%=\n"
+"err03%=:   lda #$ff\n"
+"end03%=:   sta retval\n"
 	: "=r"(retval) ::"a","x");
 	return retval;
 }

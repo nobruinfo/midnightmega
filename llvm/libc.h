@@ -77,13 +77,13 @@ unsigned char hyppo_setup_transfer_area(void)  {
     "lda #$3a\n"
 	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error\n"
+	"bcc error01\n"
     "sta retval\n"
-	"jmp done\n"
-"error:\n"
+	"jmp done01\n"
+"error01:\n"
     "lda #$FF\n"
 	"sta retval\n"
-"done:\n"
+"done01:\n"
     "nop\n"
 	: "=r"(retval) : "d"(fnamehi) : "a");
   return retval;
@@ -97,13 +97,13 @@ unsigned char hyppo_getcurrentdrive(void)
     "lda #$04\n"
 	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error\n"
+	"bcc error02\n"
     "sta %0\n"
-	"jmp done\n"
-"error:\n"
+	"jmp done02\n"
+"error02:\n"
     "lda #$FF\n"
 	"sta %0\n"
-"done:\n"
+"done02:\n"
     "nop"
 	: "=r"(retval) ::);
 
@@ -123,12 +123,12 @@ unsigned char hyppo_selectdrive(unsigned char nb)
 	"lda #$06\n"
 	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error\n"
+	"bcc error03\n"
     "stx %0\n"
-	"jmp done\n"
-"error:\n"
+	"jmp done03\n"
+"error03:\n"
 	"sta %0\n"
-"done:\n"
+"done03:\n"
     "nop\n"
 : "=r"(retval)
 : "r"(nb) :);   // input
@@ -150,13 +150,13 @@ unsigned char hyppo_setname(char *filename)
     "lda #$2e\n"
 	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error\n"
+	"bcc error04\n"
     "sta retval\n"
-	"jmp done\n"
-"error:\n"
+	"jmp done04\n"
+"error04:\n"
 	"lda #$ff\n"
     "sta retval\n"
-"done:\n"
+"done04:\n"
     "nop\n"
 	: "=r"(retval) : "d"(fnamehi) : "a");
   return retval;
@@ -170,13 +170,13 @@ unsigned char hyppo_d81attach0(void)
     "lda #$40\n"
 	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error\n"
+	"bcc error05\n"
     "sta retval\n"
-	"jmp done\n"
-"error:\n"
+	"jmp done05\n"
+"error05:\n"
     "lda #$FF\n"
 	"sta retval\n"
-"done:\n"
+"done05:\n"
     "nop\n"
 	: "=r"(retval) : : "a");
   return retval;
@@ -190,13 +190,13 @@ unsigned char hyppo_d81attach1(void)
     "lda #$46\n"
 	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error\n"
+	"bcc error06\n"
     "sta retval\n"
-	"jmp done\n"
-"error:\n"
+	"jmp done06\n"
+"error06:\n"
     "lda #$FF\n"
 	"sta retval\n"
-"done:\n"
+"done06:\n"
     "nop\n"
   : "=r"(retval) : : "a");
   return retval;
@@ -232,13 +232,13 @@ unsigned char hyppo_opendir(void)
     "lda #$12\n"
 	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error\n"
+	"bcc error07\n"
     "sta retval\n"
-	"jmp done\n"
-"error:\n"
+	"jmp done07\n"
+"error07:\n"
     "lda #$FF\n"
 	"sta retval\n"
-"done:\n"
+"done07:\n"
     "nop\n"
   : "=r"(retval) : : "a");
   return retval;
@@ -251,12 +251,12 @@ unsigned char hyppo_closedir(unsigned char filedescriptor)
     "lda #$16\n"
 	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error\n"
+	"bcc error08\n"
     "stx retval\n"
-	"jmp done\n"
-"error:\n"
+	"jmp done08\n"
+"error08:\n"
 	"sta retval\n"
-"done:\n"
+"done08:\n"
     "nop\n"
   : "=r"(retval) : "d"(filedescriptor) : "a");
   return retval;
@@ -265,6 +265,8 @@ unsigned char hyppo_closedir(unsigned char filedescriptor)
 unsigned char hyppo_readdir(unsigned char filedescriptor)
 {
 //  volatile char register(Y) _rd = _readdir_dirent / 256;
+  unsigned char direntlo = (unsigned int)readdir_dirent & 0xFFFF;
+  unsigned char direnthi = (unsigned int)hyppofn >> 8;
 
   asm volatile(
 	// pha
@@ -272,27 +274,28 @@ unsigned char hyppo_readdir(unsigned char filedescriptor)
 	// First, clear out the dirent
 	"ldx #0\n"
 	"txa\n"
-"@l1: sta readdir_dirent,x\n"
+"loop1: sta direnthi,x\n"
 	"dex\n"
-	"bne @l1\n"
+	"bne loop1\n"
 	"plx\n"
 	"ldx filedescriptor\n"
 
 	// Third, call the hypervisor trap
 	// File descriptor gets passed in in X.
 	// Result gets written to transfer area we setup at $0400
-	"ldy #>(readdir_dirent)\n"
+	"ldy #>(direnthi)\n"
 	"lda #$14\n"
 	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error\n"
+	"bcc error09\n"
     "stx retval\n"
-	"jmp done\n"
-"error:\n"
+	"jmp done09\n"
+"error09:\n"
 	"sta retval\n"
-"done:\n"
+"done09:\n"
     "nop\n"
-  : "=r"(retval) : "d"(readdir_dirent),"d"(filedescriptor) : "a");
+  : "=r"(retval) : "d"(direnthi),"d"(filedescriptor) : "a");
+
   readdir_dirent->lfn[readdir_dirent->length] = 0; // put str terminate null
 
   return retval;
@@ -324,7 +327,7 @@ char * getsfn() {
   char c = 0;
 
   for (int i = 0; i < 8 && readdir_dirent->sfn[i] != 32; i++) {
-	if (readdir_dirent->sfn[i] > $20) {
+	if (readdir_dirent->sfn[i] > 0x20) {
 	  hyppofn->sfn[c] = readdir_dirent->sfn[i];
 	  c++;
 	}
@@ -332,7 +335,7 @@ char * getsfn() {
   hyppofn->sfn[c] = '.';
   c++;
   for (int i = 8; i < 11 && readdir_dirent->sfn[i] != 32; i++) {
-	if (readdir_dirent->sfn[i] > $20) {
+	if (readdir_dirent->sfn[i] > 0x20) {
 	  hyppofn->sfn[c] = readdir_dirent->sfn[i];
 	  c++;
 	}
@@ -398,8 +401,8 @@ int minimedir(void)
     }
 
     printf (" size  :%6u free.\n", E.size);
-*/
 done:
+*/
     /* Close the directory. */
     miniCloseFile();
     return 0;
