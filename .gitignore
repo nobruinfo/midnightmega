@@ -40,3 +40,6 @@
 *.x86_64
 *.hex
 *.lnk
+
+# Folders
+CMakeFiles/
