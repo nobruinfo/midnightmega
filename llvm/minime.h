@@ -3,7 +3,7 @@
 // interne oder ein .d81 Image ist ?
 // gardners: Du könntest $D6A9 peeken und die Bits daraus lesen
 
-static unsigned char retval;
+// static unsigned char __attribute__((used)) retval;
 
 // unsigned char ptrMiniOffs = $DE;
 #pragma bss-name (push, "ZEROPAGE")
@@ -28,9 +28,10 @@ char *sectbuf = (char *)SECTBUF;
 unsigned char lenFileName = 0;
 unsigned char datFileType = 0;
 
-unsigned char arrFileName[0x10]; // = "";
-unsigned char offsCurrIdx = 0;
-unsigned char flagCurrSec = 0;
+#define DOSFILENAMELEN 16
+unsigned char arrFileName[DOSFILENAMELEN]; // = "";
+unsigned char __attribute__((used)) offsCurrIdx = 0;
+unsigned char __attribute__((used)) flagCurrSec = 0;
 unsigned char datCurrDrv = 0;
 unsigned char datCurrSide = LEFTSIDE;
 unsigned char datNextTrk = 0;
@@ -56,7 +57,7 @@ typedef struct structsectdirent {
     unsigned char type;
 	unsigned char track;
 	unsigned char sector;
-             char name[16];     /* File name in PetSCII, limited to 16 chars */
+             char name[DOSFILENAMELEN]; /* File name in PetSCII, limited to 16 chars */
 	unsigned char dummy[8];
     unsigned int  size;
     unsigned char access;
@@ -127,7 +128,7 @@ void _miniInit()  {
     "lda #$00\n"    // clear F011 Floppy Controller Registers
     "sta $D080\n"
   );
-  printf("_miniInit 32addr is: %08x\n", ptrMiniOffs);
+  printf("_miniInit 32addr is: %lx\n", ptrMiniOffs);
 }
 
 void miniSetFileName(const char* filename) {
@@ -210,11 +211,13 @@ unsigned char miniReadByte()  {
 }
 
 unsigned char _miniReadNextSector(unsigned char drive) {
+	unsigned char retval;
+
 	if (datNextTrk == 0)  return 0xFC;
 	drive += 0x60;   // #$60 drive 0
     asm volatile(
 		// Turn on motor + led (which causes led to light solid):
-		"lda	drive\n"
+//		"lda	drive\n"
 		"sta	$D080\n"
 
 		// Wait for ready:
@@ -295,17 +298,20 @@ unsigned char _miniReadNextSector(unsigned char drive) {
 		"jmp end01%=\n"
 "err01:   lda #$ff\n"
 "end01:   sta retval\n"
-	: "=r"(retval) ::);
+	: "=r"(retval) :"a"(drive):);
 	return retval;
 }
 
 // returns 1 for odd numbered sectors, 0 for even:
-unsigned char ReadSector(unsigned char drive, char track, char sector) {
+unsigned char ReadSector(unsigned char drive, char track,
+                                              char sector) {
+	unsigned char retval;
+
 	if (track == 0)  return 0xFC;
 	drive += 0x60;   // #$60 drive 0
     asm volatile(
 		// Turn on motor + led (which causes led to light solid):
-		"lda	drive\n"
+//		"lda	drive\n"
 		"sta	$D080\n"
 
 		// Wait for ready:
@@ -313,12 +319,13 @@ unsigned char ReadSector(unsigned char drive, char track, char sector) {
 		"sta	$D081\n"
 
 		// Track (start at 0)
-		"ldx	track\n"
+//		"ldx	track\n"
 		"dex\n"
 		"stx	$D084\n"
 
 		// Sector (only side 0 ones)
-		"lda	sector\n"
+//		"lda	sector\n"
+		"tya\n"
 		"lsr\n"
 
 		// Sectors start at 1
@@ -384,12 +391,15 @@ unsigned char ReadSector(unsigned char drive, char track, char sector) {
 		"jmp end02%=\n"
 "err02%=:   lda #$ff\n"
 "end02%=:   sta retval\n"
-	: "=r"(retval) ::);
+	: "=r"(retval) :"a"(drive),"x"(track),"y"(sector):);
 	return retval;
 }
 
 // both physical sectors are written:
-unsigned char WriteSector(unsigned char drive, char track, char sector) {
+unsigned char WriteSector(unsigned char drive, char track,
+                                               char sector) {
+	unsigned char retval;
+
 	drive += 0x60;   // #$60 drive 0
 	char side = 0;
 	if (sector >= 20)  {
@@ -398,7 +408,7 @@ unsigned char WriteSector(unsigned char drive, char track, char sector) {
 	}
     asm volatile(
 		// Turn on motor + led (which causes led to light solid):
-		"lda	drive\n"
+//		"lda	drive\n"
 		"sta	$D080\n"
 
 		// Wait for ready:
@@ -406,12 +416,13 @@ unsigned char WriteSector(unsigned char drive, char track, char sector) {
 		"sta	$D081\n"
 
 		// Track (start at 0)
-		"ldx	track\n"
+//		"ldx	track\n"
 		"dex\n"
 		"stx	$D084\n"
 
 		// Sector (only side 0 ones)
-		"lda	sector\n"
+//		"lda	sector\n"
+		"tya\n"
 		"lsr\n"
 
 		// Sectors start at 1   mega65-book.pdf#3f0
@@ -461,7 +472,7 @@ unsigned char WriteSector(unsigned char drive, char track, char sector) {
 		"jmp end03%=\n"
 "err03%=:   lda #$ff\n"
 "end03%=:   sta retval\n"
-	: "=r"(retval) ::"a","x");
+	: "=r"(retval) :"a"(drive),"x"(track),"y"(sector):"a","x");
 	return retval;
 }
 
@@ -484,6 +495,8 @@ void _miniChainSector()  {
 }
 
 unsigned char _miniReadByte()  {
+	unsigned char retval;
+
 //	unsigned char const * p = (unsigned char *) &(ptrMiniOffs + offsCurrIdx);
 //	offsCurrIdx++;
 //	return *p;
@@ -500,6 +513,8 @@ unsigned char _miniReadByte()  {
 }
 
 void FillBuffer()  {
+	unsigned char retval;
+
 //  volatile char register(Z) i;
   volatile char i;
 
@@ -542,8 +557,9 @@ void GetWholeSector(BAM * entry)  {
 // bytes buffer:
 unsigned char GetWholeSector(/*struct*/ BAM* entry, unsigned char drive,
                              char track, char sector)  {
+	unsigned char retval;
+
   unsigned char * p = (unsigned char *) entry;
-  unsigned char ret;
   unsigned int i;
 
   unsigned char side = ReadSector(drive, track, sector);
@@ -557,9 +573,9 @@ unsigned char GetWholeSector(/*struct*/ BAM* entry, unsigned char drive,
 		"nop\n"     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
 				// mega65-book.pdf#259
 		"lda	(ptrMiniOffs), z\n"
-		"sta ret\n"
+		"sta retval\n"
 	: "=r"(retval) ::"a");
-	p[i] = ret;
+	p[i] = retval;
   }
 
   ptrMiniOffs = SECTBUFUPPER;
@@ -570,15 +586,17 @@ unsigned char GetWholeSector(/*struct*/ BAM* entry, unsigned char drive,
 		"nop\n"     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
 				// mega65-book.pdf#259
 		"lda	(ptrMiniOffs), z\n"
-		"sta ret\n"
+		"sta retval\n"
 	: "=r"(retval) ::"a");
-	p[i + BLOCKSIZE] = ret;
-//	DEFAULT_SCREEN[i] = ret;
+	p[i + BLOCKSIZE] = retval;
+//	DEFAULT_SCREEN[i] = retval;
   }
   return side;
 }
 unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
                     unsigned char drive, char track, char sector)  {
+	unsigned char retval;
+
   unsigned char * p = (unsigned char *) entry;
   unsigned int i;
   unsigned char val;
@@ -589,11 +607,11 @@ unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
 	val = p[i];
     asm volatile(
 		"ldz	i\n"
-		"lda val\n"
+//		"lda val\n"
 		"nop\n"     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
 				// mega65-book.pdf#259
 		"sta	(ptrMiniOffs), z\n"
-	: "=r"(retval) ::"a");
+	: "=r"(retval) :"r"(i),"a"(val));
   }
 
   ptrMiniOffs = SECTBUFUPPER;
@@ -601,11 +619,11 @@ unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
 	val = p[i + BLOCKSIZE];
     asm volatile(
 		"ldz	i\n"
-		"lda val\n"
+//		"lda val\n"
 		"nop\n"     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
 				// mega65-book.pdf#259
 		"sta	(ptrMiniOffs), z\n"
-	: "=r"(retval) ::"a");
+	: "=r"(retval) :"r"(i),"a"(val));
   }
 
   return WriteSector(drive, track, sector - side);
@@ -615,8 +633,7 @@ unsigned char driveled(unsigned char errorcode)  {
 	// Turn on just the LED, this causes it to blink:
     asm volatile(
 		"lda	#$40\n"
-		"sta	$D080\n"
-	: "=r"(retval) ::);
+		"sta	$D080\n");
 	return errorcode;
 }
 
@@ -680,7 +697,8 @@ unsigned char _miniFindFile()  {
 			datEntryTrk = direntry->track;
 			datEntrySec = direntry->sector;
 
-			if (strcmp(direntry->name, arrFileName) == 0)  {
+			// if (strcmp(direntry->name, arrFileName) == 0)  {
+			if (memcmp(direntry->name, arrFileName, DOSFILENAMELEN) == 0)  {
 				printf(" found!\n");
 			}
 /*
@@ -723,7 +741,7 @@ void BAMSectorUpdate(/*struct*/ BAM* BAMsector, char track, char sector, char se
   unsigned char bitshifter = 1;
 
 //  BAMsector += $100;  // @@@@@ dirty test
-//  printf("BAMSectorUpdate BAMsector is: %08x\n", (unsigned long) BAMsector);
+//  printf("BAMSectorUpdate BAMsector is: %lx\n", (unsigned long) BAMsector);
 
   track--;  // access array zero based
   if (set)  {  // if set clear alloc bit below to allocate:

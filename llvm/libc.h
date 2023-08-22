@@ -31,14 +31,16 @@ struct DIRENT {
 	unsigned char dummy[256-87];  // blown up to fill a whole page
 };
 
-struct DIRENT* const readdir_dirent = (struct DIRENT*) 0x6000; // needs be at page frame
+struct DIRENT* const __attribute__((used)) readdir_dirent = (struct DIRENT*) 0x6000; // needs be at page frame
 // char __align(0x100) readdir_dirent[256]; // sizeof(DIRENT)]; occupies the whole page!
 // DIRENT* entry = (DIRENT*) &readdir_dirent;
 
 struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) 0x6100; // needs be at a
                                                                   // page frame border
 
-char tolower(char ch) {
+static char * __attribute__((used)) HTRAP00asm = HTRAP00;
+
+char tolowerchar(char ch) {
     if(ch>='A' && ch<='Z') {
         return ch + ('a'-'A');
     } else {
@@ -49,7 +51,7 @@ char tolower(char ch) {
 char * strlowr(char *str) {
     char * src = str;
     while(*src) {
-        *src = tolower(*src);
+        *src = tolowerchar(*src);
         src++;
     }
     return str;
@@ -66,36 +68,64 @@ char * strsan(char *str) {
   return s;
 }
 
+void msprintf(char* str)
+{
+  cputs((const unsigned char*) petsciitoscreencode_s(str));
+}
+void mprintf(char* str, long n)
+{
+  cputs((const unsigned char*) petsciitoscreencode_s(str));
+  cputdec(n, 0, 0);
+}
+void mhprintf(char* str, long n)
+{
+  cputs((const unsigned char*) petsciitoscreencode_s(str));
+  cputhex(n, 4);
+}
+void mcprintf(char* str, char c)
+{
+  cputs((const unsigned char*) petsciitoscreencode_s(str));
+  cputc(c);
+}
+
+// https://stackoverflow.com/questions/8810390/how-to-use-a-global-variable-in-gcc-inline-assembly
+// define fnamehi (unsigned char)((unsigned int)hyppofn->name >> 8)
+static unsigned char __attribute__((used)) fnamehi;
 unsigned char hyppo_setup_transfer_area(void)  {
-  unsigned char fnamelo = (unsigned int)hyppofn & 0xFFFF;
-  unsigned char fnamehi = (unsigned int)hyppofn >> 8;
-  unsigned char fnamelen = strlen(hyppofn);
+	unsigned char retval;
+
+//  unsigned char fnamelo = (unsigned int)hyppofn & 0xFFFF;
+//  unsigned char fnamehi = (unsigned int)hyppofn->name >> 8;
+  fnamehi = (unsigned int)hyppofn->name >> 8;
+//  unsigned char fnamelen = strlen(hyppofn);
 
   asm volatile(
 	"ldx #$00\n"         // shouldn't be necessary
-	"ldy #>(fnamehi)\n"  // works only because "name" is first in struct
+//	"ldy #>(fnamehi)\n"  // works only because "name" is first in struct
     "lda #$3a\n"
-	"sta HTRAP00\n"
+	"sta HTRAP00asm\n"
 	"clv\n"
 	"bcc error01\n"
-    "sta retval\n"
+    "sta %0\n"
 	"jmp done01\n"
 "error01:\n"
     "lda #$FF\n"
-	"sta retval\n"
+	"sta %0\n"
 "done01:\n"
     "nop\n"
-	: "=r"(retval) : "d"(fnamehi) : "a");
+	: "=r"(retval) : "y"(fnamehi) : "a", "x");
   return retval;
 }
 
 unsigned char hyppo_getcurrentdrive(void)
 {
+	unsigned char retval;
+
   // ; Get the current drive
   asm volatile(
 	"ldx #$00\n"    // shouldn't be necessary
     "lda #$04\n"
-	"sta HTRAP00\n"
+	"sta HTRAP00asm\n"
 	"clv\n"
 	"bcc error02\n"
     "sta %0\n"
@@ -118,64 +148,75 @@ unsigned char hyppo_getcurrentdrive(void)
 
 unsigned char hyppo_selectdrive(unsigned char nb)
 {
+	unsigned char retval;
+
   asm volatile(
-    "ldx %1\n"
+//    "ldx %1\n"
 	"lda #$06\n"
-	"sta HTRAP00\n"
+	"sta HTRAP00asm\n"
 	"clv\n"
 	"bcc error03\n"
     "stx %0\n"
 	"jmp done03\n"
 "error03:\n"
+    "lda #$FF\n"
 	"sta %0\n"
 "done03:\n"
     "nop\n"
-: "=r"(retval)
-: "r"(nb) :);   // input
+    : "=r"(retval)  // output
+    : "x"(nb)       // input
+	: "a","x"       // clobber
+	);
 
   return retval;
 }
 
 unsigned char hyppo_setname(char *filename)
 {
-  unsigned char fnamelo = (unsigned int)hyppofn & 0xFFFF;
-  unsigned char fnamehi = (unsigned int)hyppofn >> 8;
-  unsigned char fnamelen = strlen(hyppofn);
+	unsigned char retval;
+
+//  unsigned char fnamelo = (unsigned int)hyppofn & 0xFFFF;
+//  unsigned char fnamehi = (unsigned int)hyppofn->name >> 8;
+fnamehi = (unsigned int)hyppofn->name >> 8;
+//  unsigned char fnamelen = strlen(hyppofn);
 
   strcpy(hyppofn->name, filename);
 
   asm volatile(
 	"ldx #$00\n"         // shouldn't be necessary
-	"ldy #>(fnamehi)\n"  // works only because "name" is first in struct
+//	"ldy #>(fnamehi)\n"  // works only because "name" is first in struct
     "lda #$2e\n"
-	"sta HTRAP00\n"
+	"sta HTRAP00asm\n"
 	"clv\n"
 	"bcc error04\n"
-    "sta retval\n"
+	"lda #0\n"           // upon success return 0
+    "sta %0\n"
 	"jmp done04\n"
 "error04:\n"
 	"lda #$ff\n"
-    "sta retval\n"
+    "sta %0\n"
 "done04:\n"
     "nop\n"
-	: "=r"(retval) : "d"(fnamehi) : "a");
+	: "=r"(retval) : "y"(fnamehi) : "a");
   return retval;
 }
 
 unsigned char hyppo_d81attach0(void)
 {
+	unsigned char retval;
+
   // ; Get the current drive
   asm volatile(
 	"ldx #$00\n"    // shouldn't be necessary
     "lda #$40\n"
-	"sta HTRAP00\n"
+	"sta HTRAP00asm\n"
 	"clv\n"
 	"bcc error05\n"
-    "sta retval\n"
+    "sta %0\n"
 	"jmp done05\n"
 "error05:\n"
     "lda #$FF\n"
-	"sta retval\n"
+	"sta %0\n"
 "done05:\n"
     "nop\n"
 	: "=r"(retval) : : "a");
@@ -184,18 +225,20 @@ unsigned char hyppo_d81attach0(void)
 
 unsigned char hyppo_d81attach1(void)
 {
+	unsigned char retval;
+
   // ; Get the current drive
   asm volatile(
 	"ldx #$00\n"    // shouldn't be necessary
     "lda #$46\n"
-	"sta HTRAP00\n"
+	"sta HTRAP00asm\n"
 	"clv\n"
 	"bcc error06\n"
-    "sta retval\n"
+    "sta %0\n"
 	"jmp done06\n"
 "error06:\n"
     "lda #$FF\n"
-	"sta retval\n"
+	"sta %0\n"
 "done06:\n"
     "nop\n"
   : "=r"(retval) : : "a");
@@ -226,18 +269,20 @@ void hyppo_loadfile(__zp unsigned long addr) {
 
 unsigned char hyppo_opendir(void)
 {
+	unsigned char retval;
+
   // ; Get the current drive
   asm volatile(
 	"ldx #$00\n"    // shouldn't be necessary
     "lda #$12\n"
-	"sta HTRAP00\n"
+	"sta HTRAP00asm\n"
 	"clv\n"
 	"bcc error07\n"
-    "sta retval\n"
+    "sta %0\n"
 	"jmp done07\n"
 "error07:\n"
     "lda #$FF\n"
-	"sta retval\n"
+	"sta %0\n"
 "done07:\n"
     "nop\n"
   : "=r"(retval) : : "a");
@@ -246,27 +291,31 @@ unsigned char hyppo_opendir(void)
 
 unsigned char hyppo_closedir(unsigned char filedescriptor)
 {
+	unsigned char retval;
+
   asm volatile(
-	"ldx filedescriptor\n"
+//	"ldx filedescriptor\n"
     "lda #$16\n"
-	"sta HTRAP00\n"
+	"sta HTRAP00asm\n"
 	"clv\n"
 	"bcc error08\n"
-    "stx retval\n"
+    "stx %0\n"
 	"jmp done08\n"
 "error08:\n"
-	"sta retval\n"
+	"sta %0\n"
 "done08:\n"
     "nop\n"
-  : "=r"(retval) : "d"(filedescriptor) : "a");
+  : "=r"(retval) : "x"(filedescriptor) : "a");
   return retval;
 }
 
 unsigned char hyppo_readdir(unsigned char filedescriptor)
 {
+	unsigned char retval;
+
 //  volatile char register(Y) _rd = _readdir_dirent / 256;
-  unsigned char direntlo = (unsigned int)readdir_dirent & 0xFFFF;
-  unsigned char direnthi = (unsigned int)hyppofn >> 8;
+//  unsigned char direntlo = (unsigned int)readdir_dirent & 0xFFFF;
+//  unsigned char direnthi = (unsigned int)hyppofn->name >> 8;
 
   asm volatile(
 	// pha
@@ -274,27 +323,29 @@ unsigned char hyppo_readdir(unsigned char filedescriptor)
 	// First, clear out the dirent
 	"ldx #0\n"
 	"txa\n"
-"loop1: sta direnthi,x\n"
+"loop1: sta readdir_dirent,x\n"
 	"dex\n"
 	"bne loop1\n"
 	"plx\n"
-	"ldx filedescriptor\n"
+//	"ldx filedescriptor\n"
+	"tya\n"
+	"tax\n"
 
 	// Third, call the hypervisor trap
 	// File descriptor gets passed in in X.
 	// Result gets written to transfer area we setup at $0400
-	"ldy #>(direnthi)\n"
+	"ldy #>(readdir_dirent)\n"
 	"lda #$14\n"
-	"sta HTRAP00\n"
+	"sta HTRAP00asm\n"
 	"clv\n"
 	"bcc error09\n"
-    "stx retval\n"
+    "stx %0\n"
 	"jmp done09\n"
 "error09:\n"
-	"sta retval\n"
+	"sta %0\n"
 "done09:\n"
     "nop\n"
-  : "=r"(retval) : "d"(direnthi),"d"(filedescriptor) : "a");
+  : "=r"(retval) : "y"(filedescriptor) : "a");
 
   readdir_dirent->lfn[readdir_dirent->length] = 0; // put str terminate null
 
@@ -360,7 +411,7 @@ int minimedir(void)
     for (unsigned char i = 0; i <= 1; i++)  {
 	  /* Open the directory. */
 	  miniSetDriveNbr(i);
-	  unsigned char filename[] = "midnightmega.0";
+	  const char *filename = "midnightmega.0";
 	  miniSetFileName(filename);
 	  miniSetFileType(VAL_DOSFTYPE_PRG);
       if ((rc = miniOpenFile()) != 0) {

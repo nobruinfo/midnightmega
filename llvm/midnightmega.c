@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdio.h>  // llvm
 #include <mega65/conio.h>  // llvm instead of <printf.h>
+#include <mega65/memory.h>  // mega65-libc
 #include <peekpoke.h>
 // #include <conio_.h>
 // #include <conio-lines.h>
@@ -37,7 +38,7 @@ void MakeTeeLine (unsigned char Y)
 }
 */
 
-unsigned char *kbscan = (char *) 0xd610;
+unsigned char *kbscan = (unsigned char *) 0xd610;
 /*
 char cgetc()
 {
@@ -110,6 +111,8 @@ int main() {
 
   unsigned char keycode;
   waitfornokey();
+//  mega65_io_enable();
+  conioinit();
   clrscr();
   gotoxy(0, 0);
 
@@ -149,7 +152,9 @@ int main() {
     textcolor (COLOR_GRAY3);
     bordercolor (COLOR_BLACK);
     bgcolor (COLOR_BLACK);
-#endif
+
+// LLVM lowercase is in conioinit():
+
 //    printf("\0e");  // upper/lower case mode
 //	POKE $D018,PEEK($D018) AND $F0 OR $04  // uppercase
 //	POKE $D018,PEEK($D018) AND $F0 OR $06  // lowercase
@@ -162,7 +167,6 @@ int main() {
 		"sta	$D018\n"
 	);
 
-#ifdef kihdsikdshg
     clrscr ();
     cursor (0);
 
@@ -194,25 +198,36 @@ int main() {
   cputln();
 #endif
   // cputu("hyppo_setname is: ", hyppo_setname("EXTERNAL.D81"), HEXADECIMAL);
-  printf("hyppo_setname is: %d ", (int)hyppo_setname("NOBRU.D81"));
+  mhprintf("hyppo_setname is: ", hyppo_setname("EXTERNAL.D81"));
   // cputu("hyppo_d81attach1 is: ", hyppo_d81attach1(), HEXADECIMAL);
   // cputln();
-  printf("hyppo_d81attach1 is: %d\n", (int)hyppo_d81attach1());
-  while(! (keycode=waitforkeyandletgo())) {}
+  /*
+  mcprintf(" in ", PEEK(24841)); // $6100
+  mcprintf(" ",    PEEK(24842));
+  mcprintf(" ",    PEEK(24843));
+  mcprintf(" ",    PEEK(24844));
+  */
+  mhprintf(" hyppo_d81attach1 is: ", hyppo_d81attach1());
+  gotoxy(0, wherey() + 1);
+//  while(! (keycode=waitforkeyandletgo())) {}
 
   clrscr ();
 //  for (char i=0; i <= 12; i++) {
-  for (char i=0; i <= 32; i++) {
+  for (unsigned char i=0; i <= 32; i++) {
 // char i=9;
-    clrscr ();
-    cursor (0);
+//    cursor (0);
 	char j = hyppo_selectdrive(i);
-	if (j > i)  continue;
-    printf("hyppo_selectdrive %d is: %d ", (int)i, (int) j);
-    printf("hyppo_getcurrentdrive is: %d\n", (int)hyppo_getcurrentdrive());
+//	if (j > i)  continue;
+//    printf("hyppo_selectdrive %d is: %d ", (int)i, (int) j);
+    mprintf("hyppo_selectdrive ", i);
+    mprintf(" is: ", j);
+    gotoxy(0, wherey() + 1);
+    mhprintf("hyppo_getcurrentdrive is: ", hyppo_getcurrentdrive());
+    gotoxy(0, wherey() + 1);
 
     unsigned char fd = hyppo_opendir();
-    printf("hyppo_opendir, file descriptor is: %02x\n", (unsigned int) fd);
+    mhprintf("hyppo_opendir, file descriptor is: ", fd);
+    gotoxy(0, wherey() + 1);
 
     if (fd != 0x84 && fd != 0x87) {
       unsigned char readerr = 0;
@@ -220,20 +235,27 @@ int main() {
 //  printf("hyppo_readdir, val is: %04x\n", (unsigned int)hyppo_readdir(fd, FILEDESCRIPTOR_MSB));
 //  printf("test, val is: %04x\n", (unsigned int)test(transferarea));
         readerr = hyppo_readdir(fd);
-        printf("hyppo_readdir, err is: %02x ", (unsigned int)readerr);
+        mhprintf("hyppo_readdir, err is: ", readerr);
+		cputc(' ');
 	    if (readerr != 0x85 && readerr != 0xff) {
 		  getsfn();
-          printf("filename is: %s ", hyppofn->sfn);
-          printf("filename is: %d\n", (int) strlen(hyppofn->sfn));
+          msprintf("filename is: ");
+		  msprintf(hyppofn->sfn);
+		  cputc(' ');
+          mprintf("filename is: ", strlen(hyppofn->sfn));
+          gotoxy(0, wherey() + 1);
 //		  asm{brk}
         }
 	    while(! (keycode=waitforkeyandletgo())) {}
 	    // if (keycode == 128) break;
       } while (readerr != 0x85 && readerr != 0xff);
-      printf("hyppo_closedir is: %02x\n", (unsigned int) hyppo_closedir(fd));
+      mhprintf("hyppo_closedir is: ", hyppo_closedir(fd));
+	  gotoxy(0, wherey() + 1);
 	  while(! (keycode=waitforkeyandletgo())) {}
     }
   }
+
+return 40;
 
 //  printf("dir2 %d", dir2());
 

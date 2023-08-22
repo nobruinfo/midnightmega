@@ -52,6 +52,22 @@
   // char __align(0x100) readdir_dirent[256]; // sizeof(DIRENT)]; occupies the whole page!
   // DIRENT* entry = (DIRENT*) &readdir_dirent;
   .label hyppofn = $6100
+  /* deathy/BAS 29.07.2023 um 17:28 Uhr
+// __register(A) bool keyscan(__register(X) char col, __register(A) char row)
+keyscan: {
+    stx KEYMATRIXPEEK
+    
+    and CRTACSCNT
+    
+    bne not_pressed
+    lda #$01
+    rts
+    
+not_pressed:
+    lda #$00
+    rts
+}
+*/
   .label kbscan = $d610
   // The number of bytes on the screen
   // The current cursor x-position
@@ -1225,6 +1241,7 @@ hyppo_selectdrive: {
     stx retval
 	jmp done
 error:
+    lda #$FF
 	sta retval
 done:
     nop

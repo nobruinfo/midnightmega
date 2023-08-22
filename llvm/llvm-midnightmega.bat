@@ -7,7 +7,7 @@ SET VICE=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\2021
 SET VICE=%VICE%\GTK3VICE-3.6.1-win64\bin\
 SET c1541="%VICE%\c1541"
 
-SET XMEGA65=D:\Game Collections\C64\Mega65\xemu-binaries-win64\
+SET XMEGA65=D:\Game Collections\C64\Mega65\Xemu\xemu-binaries-win64\
 SET PATH=%PATH%;%VICE%;%XMEGA65%
 
 CD /D %~dp0
@@ -16,16 +16,21 @@ CD /D %~dp0
 SET PRJ=midnightmega
 
 set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
-SET cfiles=..\..\mega65-libc\src
+set LLVM_BAT=%LLVM_HOME%\bin\mos-mega65-clang.bat
+SET cfilesdir=..\..\mega65-libc\src
+SET cfiles=%cfilesdir%\conio.c %cfilesdir%\memory.c %cfilesdir%\llvm\memory_asm.s
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
 SET opts=--include-directory=.\include
 SET opts=%opts% --include-directory=..\..\mega65-libc\include
 SET opts=%opts% -ferror-limit=1 -Wno-error=implicit-function-declaration
+REM https://courses.washington.edu/cp105/GCC/Removing%20unused%20functions%20and%20dead%20code.html
+REM SET opts=%opts% -Wl,-static -fdata-sections -ffunction-sections
+REM SET opts=%opts% -Wl,--gc-sections -Wl,-s
 
-CALL %LLVM_HOME%\bin\mos-mega65-clang.bat -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %PRJ%.c
+CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %PRJ%.c %cfiles%
 ECHO ------------------------------------------------------
 REM  -Wall
-CALL %LLVM_HOME%\bin\mos-mega65-clang.bat -Os -o %PRJ%.prg %opts% %PRJ%.c %cfiles%\conio.c
+CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %PRJ%.c %cfiles%
 
 :NOBUILD
 IF ERRORLEVEL == 1 (

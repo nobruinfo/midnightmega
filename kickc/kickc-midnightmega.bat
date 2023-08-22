@@ -7,7 +7,7 @@ SET VICE=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\2021
 SET VICE=%VICE%\GTK3VICE-3.6.1-win64\bin\
 SET c1541="%VICE%\c1541"
 
-SET XMEGA65=D:\Game Collections\C64\Mega65\xemu-binaries-win64\
+SET XMEGA65=D:\Game Collections\C64\Mega65\Xemu\xemu-binaries-win64\
 SET PATH=%PATH%;%VICE%;%XMEGA65%
 
 CD /D %~dp0

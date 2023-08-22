@@ -116,6 +116,7 @@ unsigned char hyppo_selectdrive(unsigned char nb)
     stx retval
 	jmp done
 error:
+    lda #$FF
 	sta retval
 done:
     nop
