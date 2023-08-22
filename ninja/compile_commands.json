@@ -1,0 +1,110 @@
+[
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\conio.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\conio.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\conio.c",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\conio.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\debug.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\debug.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\debug.c",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\debug.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\fat32.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\fat32.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\fat32.c",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\fat32.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\hal.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\hal.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\hal.c",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\hal.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\memory.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\memory.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\memory.c",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\memory.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\mouse.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\mouse.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\mouse.c",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\mouse.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\random.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\random.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\random.c",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\random.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\sdcard.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\sdcard.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\sdcard.c",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\sdcard.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\targets.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\targets.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\targets.c",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\targets.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\tests.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\tests.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\tests.c",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\tests.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\time.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\time.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\time.c",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\time.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\llvm\\fileio.s.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\llvm\\fileio.s",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\llvm\\fileio.s",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\llvm\\fileio.s.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\llvm\\dirent.s.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\llvm\\dirent.s",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\llvm\\dirent.s",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\llvm\\dirent.s.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/src -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\llvm\\memory_asm.s.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\llvm\\memory_asm.s",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\src\\llvm\\memory_asm.s",
+  "output": "mega65-libc\\CMakeFiles\\mega65libc.dir\\src\\llvm\\memory_asm.s.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\tests\\CMakeFiles\\test-fileio.dir\\test-fileio.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\tests\\test-fileio.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\tests\\test-fileio.c",
+  "output": "mega65-libc\\tests\\CMakeFiles\\test-fileio.dir\\test-fileio.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\tests\\CMakeFiles\\test-integer-size.dir\\test-integer-size.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\tests\\test-integer-size.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\tests\\test-integer-size.c",
+  "output": "mega65-libc\\tests\\CMakeFiles\\test-integer-size.dir\\test-integer-size.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\tests\\CMakeFiles\\test-memory.dir\\test-memory.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\tests\\test-memory.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\tests\\test-memory.c",
+  "output": "mega65-libc\\tests\\CMakeFiles\\test-memory.dir\\test-memory.c.obj"
+},
+{
+  "directory": "F:/Entwicklungsprojekte/github-nobru/midnightmega/ninja",
+  "command": "F:\\Entwicklungsprojekte\\Mega65\\llvm-mos\\llvm-mos\\bin\\mos-mega65-clang.bat -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include -Os -DNDEBUG -Os -Wall -Wextra -Wshadow -Wcast-align -Wunused -Wconversion -Wsign-conversion -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wpedantic -Wno-language-extension-token -o mega65-libc\\tests\\CMakeFiles\\test-time.dir\\test-time.c.obj -c F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\tests\\test-time.c",
+  "file": "F:\\Entwicklungsprojekte\\github-nobru\\midnightmega\\ninja\\mega65-libc\\tests\\test-time.c",
+  "output": "mega65-libc\\tests\\CMakeFiles\\test-time.dir\\test-time.c.obj"
+}
+]
