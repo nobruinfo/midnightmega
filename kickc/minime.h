@@ -408,6 +408,7 @@ unsigned char WriteSector(unsigned char drive, char track, char sector) {
 
 		// Sector (only side 0 ones)
 		lda	sector
+        tya
 		lsr
 
 		// Sectors start at 1   mega65-book.pdf#3f0
@@ -537,7 +538,6 @@ void GetWholeSector(BAM * entry)  {
 unsigned char GetWholeSector(/*struct*/ BAM* entry, unsigned char drive,
                              char track, char sector)  {
   unsigned char * p = (unsigned char *) entry;
-  unsigned char ret;
   unsigned int i;
 
   unsigned char side = ReadSector(drive, track, sector);
@@ -551,9 +551,9 @@ unsigned char GetWholeSector(/*struct*/ BAM* entry, unsigned char drive,
 		nop     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
 				// mega65-book.pdf#259
 		lda	(ptrMiniOffs), z
-		sta ret
+		sta retval
 	}
-	p[i] = ret;
+	p[i] = retval;
   }
 
   ptrMiniOffs = SECTBUFUPPER;
@@ -564,10 +564,10 @@ unsigned char GetWholeSector(/*struct*/ BAM* entry, unsigned char drive,
 		nop     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
 				// mega65-book.pdf#259
 		lda	(ptrMiniOffs), z
-		sta ret
+		sta retval
 	}
-	p[i + BLOCKSIZE] = ret;
-//	DEFAULT_SCREEN[i] = ret;
+	p[i + BLOCKSIZE] = retval;
+//	DEFAULT_SCREEN[i] = retval;
   }
   return side;
 }
@@ -575,15 +575,14 @@ unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
                     unsigned char drive, char track, char sector)  {
   unsigned char * p = (unsigned char *) entry;
   unsigned int i;
-  unsigned char val;
 
   if (side > 1)  return side;
   ptrMiniOffs = SECTBUF;
   for (i=0; i < BLOCKSIZE; i++)  {
-	val = p[i];
+	retval = p[i];   // is no return value here
 	asm(clobbers "A") {
 		ldz	i
-		lda val
+		lda retval
 		nop     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
 				// mega65-book.pdf#259
 		sta	(ptrMiniOffs), z
@@ -592,10 +591,10 @@ unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
 
   ptrMiniOffs = SECTBUFUPPER;
   for (i=0; i < BLOCKSIZE; i++)  {
-	val = p[i + BLOCKSIZE];
+	retval = p[i + BLOCKSIZE];
 	asm(clobbers "A") {
 		ldz	i
-		lda val
+		lda retval
 		nop     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
 				// mega65-book.pdf#259
 		sta	(ptrMiniOffs), z

@@ -37,10 +37,6 @@
 mprintf:                                ; @mprintf
 ; %bb.0:
 	sta	mos8(.Lmprintf_zp_stk+1)
-	stx	__rc8
-	ldy	__rc4
-	ldx	__rc5
-	stx	mos8(.Lmprintf_zp_stk+3)
 	ldx	__rc2
 	stx	__rc4
 	ldx	__rc3
@@ -93,38 +89,32 @@ mprintf:                                ; @mprintf
 	stx	mos8(.Lmprintf_zp_stk+20)       ; 1-byte Folded Spill
 	lda	mos8(g_curX)
 	ldx	mos8(g_curY)
-	phy
-	ldy	__rc8
-	sty	mos8(.Lmprintf_zp_stk)
-	ply
-	sty	mos8(.Lmprintf_zp_stk+2)
 	jsr	cputsxy
-	ldx	mos8(.Lmprintf_zp_stk+2)
-	stx	__rc2
-	ldx	mos8(.Lmprintf_zp_stk)
-	stz	mos8(.Lmprintf_zp_stk+15)
 	stz	mos8(.Lmprintf_zp_stk)
-	ldy	mos8(.Lmprintf_zp_stk+3)
-	sty	__rc3
+	stz	mos8(.Lmprintf_zp_stk+15)
+	stz	__rc10
+	stz	__rc2
+	stz	__rc3
 .LBB0_13:                               ; =>This Inner Loop Header: Depth=1
-	ldy	#mos8(.Lmprintf_zp_stk+16)
-	sty	__rc8
-	ldy	#mos8(0)
-	sty	__rc9
-	ldy	#10
-	sty	__rc4
+	ldx	#mos8(.Lmprintf_zp_stk+16)
+	stx	__rc8
+	ldx	#mos8(0)
+	stx	__rc9
+	ldx	__rc2
+	stx	mos8(.Lmprintf_zp_stk+3)
+	ldx	#10
+	stx	__rc4
 	stz	__rc5
 	stz	__rc6
 	stz	__rc7
+	ldx	__rc10
 	lda	mos8(.Lmprintf_zp_stk+1)
-	stx	mos8(.Lmprintf_zp_stk+2)
-	ldy	__rc2
-	sty	mos8(.Lmprintf_zp_stk+4)
+	ldy	__rc10
+	sty	mos8(.Lmprintf_zp_stk+2)
 	ldy	__rc3
-	sty	mos8(.Lmprintf_zp_stk+3)
+	sty	mos8(.Lmprintf_zp_stk+4)
 	jsr	__udivmodsi4
-	sta	__rc7
-	stx	__rc5
+	sta	__rc6
 	lda	#15
 	and	mos8(.Lmprintf_zp_stk+16)
 	tay
@@ -133,38 +123,35 @@ mprintf:                                ; @mprintf
 	sty	__rc4
 	dec	__rc4
 	sta	mos8(.Lmprintf_zp_stk+5),y
-	lda	mos8(.Lmprintf_zp_stk+3)
+	lda	mos8(.Lmprintf_zp_stk+4)
 	bne	.LBB0_17
 ; %bb.14:                               ;   in Loop: Header=BB0_13 Depth=1
-	lda	mos8(.Lmprintf_zp_stk+4)
+	lda	mos8(.Lmprintf_zp_stk+3)
 	bne	.LBB0_18
 ; %bb.15:                               ;   in Loop: Header=BB0_13 Depth=1
 	ldy	mos8(.Lmprintf_zp_stk+2)
-	bne	.LBB0_21
+	bne	.LBB0_19
 ; %bb.16:                               ;   in Loop: Header=BB0_13 Depth=1
 	ldy	mos8(.Lmprintf_zp_stk+1)
 	cpy	#10
 	bra	.LBB0_20
 .LBB0_17:                               ;   in Loop: Header=BB0_13 Depth=1
-	ldx	mos8(.Lmprintf_zp_stk+3)
+	ldy	mos8(.Lmprintf_zp_stk+4)
 	bra	.LBB0_19
 .LBB0_18:                               ;   in Loop: Header=BB0_13 Depth=1
-	ldx	mos8(.Lmprintf_zp_stk+4)
+	ldy	mos8(.Lmprintf_zp_stk+3)
 .LBB0_19:                               ;   in Loop: Header=BB0_13 Depth=1
-	cpx	#0
-.LBB0_20:                               ;   in Loop: Header=BB0_13 Depth=1
-	ldx	__rc7
-	stx	mos8(.Lmprintf_zp_stk+1)
-	ldx	__rc5
-	ldy	__rc4
-	sty	mos8(.Lmprintf_zp_stk+20)       ; 1-byte Folded Spill
-	bcc	.LBB0_22
-; %bb.25:                               ;   in Loop: Header=BB0_13 Depth=1
-	jmp	.LBB0_13
-.LBB0_21:                               ;   in Loop: Header=BB0_13 Depth=1
 	cpy	#0
-	bra	.LBB0_20
-.LBB0_22:
+.LBB0_20:                               ;   in Loop: Header=BB0_13 Depth=1
+	ldy	__rc6
+	sty	mos8(.Lmprintf_zp_stk+1)
+	stx	__rc10
+	ldx	__rc4
+	stx	mos8(.Lmprintf_zp_stk+20)       ; 1-byte Folded Spill
+	bcc	.LBB0_21
+; %bb.24:                               ;   in Loop: Header=BB0_13 Depth=1
+	jmp	.LBB0_13
+.LBB0_21:
 	lda	#mos8(.Lmprintf_zp_stk+5)
 	clc
 	adc	__rc4
@@ -173,10 +160,10 @@ mprintf:                                ; @mprintf
 	adc	#0
 	sta	__rc3
 	inc	__rc2
-	bne	.LBB0_24
-; %bb.23:
+	bne	.LBB0_23
+; %bb.22:
 	inc	__rc3
-.LBB0_24:
+.LBB0_23:
 	lda	mos8(g_curX)
 	ldx	mos8(g_curY)
 	jmp	cputsxy
@@ -822,12 +809,10 @@ done07:
 	ldx	#97
 	stx	__rc3
 	jsr	strlen
-	ldy	#mos16lo(.L.str.35)
-	sty	__rc2
-	ldy	#mos16hi(.L.str.35)
-	sty	__rc3
-	stz	__rc4
-	stz	__rc5
+	ldx	#mos16lo(.L.str.35)
+	stx	__rc2
+	ldx	#mos16hi(.L.str.35)
+	stx	__rc3
 	jsr	mprintf
 	stz	mos8(g_curX)
 	inc	mos8(g_curY)
@@ -1039,9 +1024,6 @@ done03:
 	stx	__rc2
 	ldx	#mos16hi(.L.str.30)
 	stx	__rc3
-	stz	__rc4
-	stz	__rc5
-	ldx	#0
 	sty	__rc28
 	tya
 	jsr	mprintf
@@ -1049,9 +1031,6 @@ done03:
 	stx	__rc2
 	ldx	#mos16hi(.L.str.31)
 	stx	__rc3
-	stz	__rc4
-	stz	__rc5
-	ldx	#0
 	lda	__rc25
 	jsr	mprintf
 	stz	mos8(g_curX)

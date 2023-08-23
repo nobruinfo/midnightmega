@@ -14,9 +14,9 @@ Basic-segment:
   $2001-$2016 Basic
 
 Code-segment:
-  $2017-$31bf Code
+  $2017-$31b7 Code
 
 Data-segment:
-  $31c0-$3389 Data
+  $31b8-$3384 Data
 
 Writing Vice symbol file: midnightmega.vs

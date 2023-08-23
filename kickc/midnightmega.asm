@@ -71,27 +71,27 @@ not_pressed:
   .label kbscan = $d610
   // The number of bytes on the screen
   // The current cursor x-position
-  .label conio_cursor_x = $58
+  .label conio_cursor_x = $56
   // The current cursor y-position
-  .label conio_cursor_y = $5d
+  .label conio_cursor_y = $5b
   // The current text cursor line start
-  .label conio_line_text = $5e
+  .label conio_line_text = $5c
   // The current color cursor line start
-  .label conio_line_color = $60
+  .label conio_line_color = $5e
   // Gibt es im Basic eine Möglichkeit festzustellen um was für
   // ein Laufwerk es sich bei U8 oder U9 handelt, also ob es das
   // interne oder ein .d81 Image ist ?
   // gardners: Du könntest $D6A9 peeken und die Bits daraus lesen
-  .label retval = $46
+  .label retval = $3b
   // unsigned char ptrMiniOffs = $DE;
-  .label ptrMiniOffs = $47
+  .label ptrMiniOffs = $45
   // = "";
-  .label offsCurrIdx = $63
-  .label flagCurrSec = $64
-  .label datNextTrk = $54
-  .label datNextSec = $55
-  .label workside = $57
-  .label i = $3f
+  .label offsCurrIdx = $61
+  .label flagCurrSec = $62
+  .label datNextTrk = $52
+  .label datNextSec = $53
+  .label workside = $55
+  .label i = $3e
 .segment Code
 __start: {
     ldz #0
@@ -172,14 +172,14 @@ cputc: {
 }
 // KickC calls conio_mega65_init() before doing main():
 main: {
-    .label __3 = 9
-    .label __5 = $16
-    .label __17 = $2a
-    .label __40 = $3d
-    .label j = $5b
-    .label fd = $5a
-    .label i = $4b
-    .label readerr = $50
+    .label __3 = $17
+    .label __5 = 9
+    .label __17 = $16
+    .label __40 = $3c
+    .label j = $59
+    .label fd = $58
+    .label i = $49
+    .label readerr = $4e
     /*
 	// Enable MEGA65 features
     VICIII->KEY = 0x47;   
@@ -517,7 +517,7 @@ main: {
     jsr printf_str
     jmp __b8
   .segment Data
-    filename: .text "NOBRU.D81"
+    filename: .text "EXTERNAL.D81"
     .byte 0
     s: .text "hyppo_setname is: "
     .byte 0
@@ -565,10 +565,10 @@ main: {
 // - If block 7 ($e000-$ffff) is remapped it will point to upperPageOffset*$100 + $e000.
 // void memoryRemap(char remapBlocks, unsigned int lowerPageOffset, unsigned int upperPageOffset)
 memoryRemap: {
-    .label aVal = $5c
-    .label xVal = $59
-    .label yVal = $56
-    .label zVal = $53
+    .label aVal = $5a
+    .label xVal = $57
+    .label yVal = $54
+    .label zVal = $51
     // lower blocks offset page low
     ldz #0
     stz.z aVal
@@ -588,12 +588,12 @@ memoryRemap: {
 // Set the cursor to the specified position
 // void gotoxy(char x, __register(A) char y)
 gotoxy: {
-    .label __5 = $4e
-    .label __6 = $44
-    .label __7 = $44
-    .label line_offset = $44
-    .label __8 = $4c
-    .label __9 = $44
+    .label __5 = $4c
+    .label __6 = $43
+    .label __7 = $43
+    .label line_offset = $43
+    .label __8 = $4a
+    .label __9 = $43
     cmp #$19+1
     bcc __b2
     lda #0
@@ -851,7 +851,7 @@ testsectors: {
     .label __28 = $a
     .label __29 = $10
     .label __30 = 2
-    .label BAMside = $62
+    .label BAMside = $60
     .label ws = 2
     lda #<$4000
     sta BAMsector
@@ -907,7 +907,6 @@ testsectors: {
     sta.z PutWholeSector.side
     ldx #$28
     ldz #1
-    stz.z PutWholeSector.sector
     jsr PutWholeSector
     lda #<cputc
     sta.z printf_str.putc
@@ -1204,8 +1203,7 @@ testsectors: {
     lda.z workside
     sta.z PutWholeSector.side
     ldx.z datNextTrk
-    lda.z datNextSec
-    sta.z PutWholeSector.sector
+    ldz datNextSec
   //	printf("entry: %04x %04x %04x %04x\n", (unsigned int) PEEK($4016),
   //		 PEEK($4017), PEEK($4018), PEEK($4019));
     jsr PutWholeSector
@@ -1230,9 +1228,9 @@ testsectors: {
     .byte 0
 }
 .segment Code
-// __register(A) char hyppo_selectdrive(__zp($51) volatile char nb)
+// __register(A) char hyppo_selectdrive(__zp($4f) volatile char nb)
 hyppo_selectdrive: {
-    .label nb = $51
+    .label nb = $4f
     ldx nb
 	lda #$06
 	sta HTRAP00
@@ -1332,9 +1330,9 @@ printf_uint: {
     jsr printf_number_buffer
     rts
 }
-// __register(A) char hyppo_readdir(__zp($43) volatile char filedescriptor)
+// __register(A) char hyppo_readdir(__zp($42) volatile char filedescriptor)
 hyppo_readdir: {
-    .label filedescriptor = $43
+    .label filedescriptor = $42
     //  volatile char register(Y) _rd = readdir_dirent / 256;
     // pha
 	phx
@@ -1369,9 +1367,9 @@ done:
     lda.z retval
     rts
 }
-// __register(A) char hyppo_closedir(__zp($52) volatile char filedescriptor)
+// __register(A) char hyppo_closedir(__zp($50) volatile char filedescriptor)
 hyppo_closedir: {
-    .label filedescriptor = $52
+    .label filedescriptor = $50
     ldx filedescriptor
     lda #$16
 	sta HTRAP00
@@ -1392,9 +1390,9 @@ getsfn: {
     .label i1 = 7
     .label __10 = $a
     .label __11 = $18
-    .label __12 = $1d
+    .label __12 = $1e
     .label __13 = $10
-    .label __14 = $1b
+    .label __14 = $1c
     .label __15 = 4
     ldx #0
     txa
@@ -1750,15 +1748,15 @@ utoa: {
 }
 // Print the contents of the number buffer using a specific format.
 // This handles minimum length, zero-filling, and left/right justification from the format
-// void printf_number_buffer(__zp($10) void (*putc)(char), __zp($2a) char buffer_sign, char *buffer_digits, __register(X) char format_min_length, __zp(6) char format_justify_left, char format_sign_always, __zp($1a) char format_zero_padding, __zp($3d) char format_upper_case, char format_radix)
+// void printf_number_buffer(__zp($10) void (*putc)(char), __zp($20) char buffer_sign, char *buffer_digits, __register(X) char format_min_length, __zp(6) char format_justify_left, char format_sign_always, __zp($1a) char format_zero_padding, __zp($3c) char format_upper_case, char format_radix)
 printf_number_buffer: {
     .label __19 = 2
-    .label buffer_sign = $2a
-    .label padding = $1f
+    .label buffer_sign = $20
+    .label padding = $1b
     .label format_zero_padding = $1a
     .label putc = $10
     .label format_justify_left = 6
-    .label format_upper_case = $3d
+    .label format_upper_case = $3c
     cpx #0
     beq __b6
     lda #<printf_buffer+OFFSET_STRUCT_PRINTF_BUFFER_NUMBER_DIGITS
@@ -1926,17 +1924,15 @@ _miniInit: {
 // bytes buffer:
 // __register(X) char GetWholeSector(__zp($10) struct structBAM *entry, char drive, __register(X) char track, __register(Y) char sector)
 GetWholeSector: {
-    .label ret = $29
     .label i = $25
-    .label __5 = $1d
+    .label __5 = $1e
     .label entry = $10
-    .label __6 = $1b
-    .label __7 = $1d
-    ldz #0
-    stz.z ret
-    tza
+    .label __6 = $1c
+    .label __7 = $1e
+    lda #<0
     sta.z i
     sta.z i+1
+    taz
     stz.z ReadSector.drive
     stx.z ReadSector.track
     sty.z ReadSector.sector
@@ -1990,7 +1986,7 @@ GetWholeSector: {
     ldz i
     nop
     lda (ptrMiniOffs),z
-    sta ret
+    sta retval
     tza
     clc
     adc #<$100
@@ -2005,7 +2001,7 @@ GetWholeSector: {
     lda.z __7+1
     adc.z entry+1
     sta.z __7+1
-    lda.z ret
+    lda.z retval
     ldy #0
     sta (__7),y
     inw.z i
@@ -2014,7 +2010,7 @@ GetWholeSector: {
     ldz i
     nop
     lda (ptrMiniOffs),z
-    sta ret
+    sta retval
     lda.z entry
     clc
     adc.z i
@@ -2022,27 +2018,23 @@ GetWholeSector: {
     lda.z entry+1
     adc.z i+1
     sta.z __6+1
-    lda.z ret
+    lda.z retval
     ldy #0
     sta (__6),y
     inw.z i
     jmp __b2
 }
-// char PutWholeSector(__zp(7) struct structBAM *entry, __zp($16) char side, char drive, __register(X) char track, __zp($2a) char sector)
+// char PutWholeSector(__zp(7) struct structBAM *entry, __zp($16) char side, char drive, __register(X) char track, __register(Z) char sector)
 PutWholeSector: {
     .label i = $27
-    .label val = $24
-    .label __6 = $1b
+    .label __6 = $1c
     .label entry = 7
     .label side = $16
-    .label sector = $2a
     .label __7 = 4
-    .label __8 = $1b
+    .label __8 = $1c
     lda #<0
     sta.z i
     sta.z i+1
-    taz
-    stz.z val
     lda.z side
     cmp #1+1
     bcc __b1
@@ -2088,7 +2080,7 @@ PutWholeSector: {
     cmp #<$100
     bcc __b6
   !:
-    lda.z sector
+    tza
     sec
     sbc.z side
     ldz #0
@@ -2114,7 +2106,7 @@ PutWholeSector: {
     sta.z __8+1
     ldy #0
     lda (__8),y
-    sta.z val
+    sta.z retval
     ldz i
     nop
     sta (ptrMiniOffs),z
@@ -2130,7 +2122,8 @@ PutWholeSector: {
     sta.z __7+1
     ldy #0
     lda (__7),y
-    sta.z val
+    sta.z retval
+    // is no return value here
     ldz i
     nop
     sta (ptrMiniOffs),z
@@ -2138,33 +2131,33 @@ PutWholeSector: {
     jmp __b2
 }
 // this expects data in sector buffer:
-// void BAMSectorUpdate(__zp($1b) struct structBAM *BAMsector, __zp(6) char track, __register(A) char sector, char set)
+// void BAMSectorUpdate(__zp($1c) struct structBAM *BAMsector, __zp(6) char track, __register(A) char sector, char set)
 BAMSectorUpdate: {
     .const bitshifter = 1
-    .label __60 = $3b
-    .label __61 = $33
-    .label __62 = $39
-    .label __63 = $31
+    .label __60 = $39
+    .label __61 = $31
+    .label __62 = $37
+    .label __63 = $2f
     .label __64 = 7
-    .label __65 = $2f
+    .label __65 = $2d
     .label __66 = $18
-    .label __67 = $1d
+    .label __67 = $1e
     .label __68 = 4
-    .label __69 = $20
-    .label __71 = $22
-    .label __72 = $1b
-    .label __126 = $3b
-    .label __128 = $33
-    .label __130 = $39
-    .label __132 = $31
+    .label __69 = $21
+    .label __71 = $23
+    .label __72 = $1c
+    .label __126 = $39
+    .label __128 = $31
+    .label __130 = $37
+    .label __132 = $2f
     .label __134 = 7
-    .label __136 = $2f
+    .label __136 = $2d
     .label __138 = $18
-    .label __140 = $1d
+    .label __140 = $1e
     .label __142 = 4
-    .label __144 = $20
+    .label __144 = $21
     .label track = 6
-    .label BAMsector = $1b
+    .label BAMsector = $1c
     dex
     stx.z track
     // if set clear alloc bit below to allocate:
@@ -2466,9 +2459,9 @@ BAMSectorUpdate: {
     jmp __b10
 }
 // Print an unsigned char using a specific format
-// void printf_uchar(void (*putc)(char), __register(A) char uvalue, __zp($3d) char format_min_length, char format_justify_left, char format_sign_always, char format_zero_padding, char format_upper_case, char format_radix)
+// void printf_uchar(void (*putc)(char), __register(A) char uvalue, __zp($3c) char format_min_length, char format_justify_left, char format_sign_always, char format_zero_padding, char format_upper_case, char format_radix)
 printf_uchar: {
-    .label format_min_length = $3d
+    .label format_min_length = $3c
     // Handle any sign
     ldz #0
     stz printf_buffer
@@ -2494,13 +2487,13 @@ printf_uchar: {
 }
 // Copy block of memory (forwards)
 // Copies the values of num bytes from the location pointed to by source directly to the memory block pointed to by destination.
-// void * memcpy(__zp($37) void *destination, __zp($2c) void *source, unsigned int num)
+// void * memcpy(__zp($35) void *destination, __zp($2a) void *source, unsigned int num)
 memcpy: {
-    .label src_end = $41
-    .label dst = $37
-    .label src = $2c
-    .label source = $2c
-    .label destination = $37
+    .label src_end = $40
+    .label dst = $35
+    .label src = $2a
+    .label source = $2a
+    .label destination = $35
     lda.z source
     clc
     adc #<$19*$50-$50
@@ -2525,11 +2518,11 @@ memcpy: {
     jmp __b1
 }
 // Copies the character c (an unsigned char) to the first num characters of the object pointed to by the argument str.
-// void * memset(__zp($2c) void *str, __register(Z) char c, unsigned int num)
+// void * memset(__zp($2a) void *str, __register(Z) char c, unsigned int num)
 memset: {
-    .label end = $37
-    .label dst = $2c
-    .label str = $2c
+    .label end = $35
+    .label dst = $2a
+    .label str = $2a
     lda #$50
     clc
     adc.z str
@@ -2673,11 +2666,11 @@ printf_ulong: {
     rts
 }
 // returns 1 for odd numbered sectors, 0 for even:
-// __register(X) char ReadSector(__zp($2e) volatile char drive, __zp($35) volatile char track, __zp($3e) volatile char sector)
+// __register(X) char ReadSector(__zp($2c) volatile char drive, __zp($33) volatile char track, __zp($3d) volatile char sector)
 ReadSector: {
-    .label drive = $2e
-    .label track = $35
-    .label sector = $3e
+    .label drive = $2c
+    .label track = $33
+    .label sector = $3d
     lda.z track
     bne __b1
     ldx #$fc
@@ -2740,11 +2733,11 @@ ReadSector: {
     rts
 }
 // both physical sectors are written:
-// char WriteSector(__zp($2b) volatile char drive, __zp($40) volatile char track, __zp($36) volatile char sector)
+// char WriteSector(__zp($29) volatile char drive, __zp($3f) volatile char track, __zp($34) volatile char sector)
 WriteSector: {
-    .label drive = $2b
-    .label track = $40
-    .label sector = $36
+    .label drive = $29
+    .label track = $3f
+    .label sector = $34
     lda #$60
     clc
     adc.z drive
@@ -2765,6 +2758,7 @@ WriteSector: {
     dex
     stx $d084
     lda sector
+    tya
     lsr
     tax
     inx
@@ -2803,12 +2797,12 @@ WriteSector: {
 // - value : The number to be converted to RADIX
 // - buffer : receives the string representing the number and zero-termination.
 // - radix : The radix to convert the number to (from the enum RADIX)
-// void uctoa(__zp($16) char value, __zp(7) char *buffer, char radix)
+// void uctoa(__zp($1b) char value, __zp(7) char *buffer, char radix)
 uctoa: {
     .label digit_value = 6
     .label buffer = 7
-    .label digit = $1f
-    .label value = $16
+    .label digit = $20
+    .label value = $1b
     lda #<printf_buffer+OFFSET_STRUCT_PRINTF_BUFFER_NUMBER_DIGITS
     sta.z buffer
     lda #>printf_buffer+OFFSET_STRUCT_PRINTF_BUFFER_NUMBER_DIGITS
@@ -2879,7 +2873,7 @@ ultoa: {
     .const max_digits = 8
     .label digit_value = $12
     .label buffer = 2
-    .label digit = $17
+    .label digit = $16
     .label value = $c
     lda #<printf_buffer+OFFSET_STRUCT_PRINTF_BUFFER_NUMBER_DIGITS
     sta.z buffer
@@ -2953,9 +2947,9 @@ ultoa: {
 // - sub : the value of a '1' in the digit. Subtracted continually while the digit is increased.
 //        (For decimal the subs used are 10000, 1000, 100, 10, 1)
 // returns : the value reduced by sub * digit so that it is less than sub.
-// __register(A) char uctoa_append(__zp($20) char *buffer, __register(Z) char value, __zp(6) char sub)
+// __register(A) char uctoa_append(__zp($21) char *buffer, __register(Z) char value, __zp(6) char sub)
 uctoa_append: {
-    .label buffer = $20
+    .label buffer = $21
     .label sub = 6
     ldx #0
   __b1:
@@ -2981,9 +2975,9 @@ uctoa_append: {
 // - sub : the value of a '1' in the digit. Subtracted continually while the digit is increased.
 //        (For decimal the subs used are 10000, 1000, 100, 10, 1)
 // returns : the value reduced by sub * digit so that it is less than sub.
-// __zp($c) unsigned long ultoa_append(__zp($22) char *buffer, __zp($c) unsigned long value, __zp($12) unsigned long sub)
+// __zp($c) unsigned long ultoa_append(__zp($23) char *buffer, __zp($c) unsigned long value, __zp($12) unsigned long sub)
 ultoa_append: {
-    .label buffer = $22
+    .label buffer = $23
     .label value = $c
     .label sub = $12
     .label return = $c

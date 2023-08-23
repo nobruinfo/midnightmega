@@ -17,6 +17,7 @@ SET PRJ=midnightmega
 
 set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
 set LLVM_BAT=%LLVM_HOME%\bin\mos-mega65-clang.bat
+set LLVMDUMP=%LLVM_HOME%\bin\llvm-objdump.exe
 SET cfilesdir=..\..\mega65-libc\src
 SET cfiles=%cfilesdir%\conio.c %cfilesdir%\memory.c %cfilesdir%\llvm\memory_asm.s
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
@@ -26,11 +27,14 @@ SET opts=%opts% -ferror-limit=1 -Wno-error=implicit-function-declaration
 REM https://courses.washington.edu/cp105/GCC/Removing%20unused%20functions%20and%20dead%20code.html
 REM SET opts=%opts% -Wl,-static -fdata-sections -ffunction-sections
 REM SET opts=%opts% -Wl,--gc-sections -Wl,-s
+SET opts=%opts% -Wl,-Map=%PRJ%.map
+SET opts=%opts% -Wl,-trace
 
 CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %PRJ%.c %cfiles%
 ECHO ------------------------------------------------------
 REM  -Wall
 CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %PRJ%.c %cfiles%
+%LLVMDUMP% -d %PRJ%.map
 
 :NOBUILD
 IF ERRORLEVEL == 1 (

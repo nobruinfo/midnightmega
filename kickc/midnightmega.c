@@ -199,7 +199,7 @@ void main() {
 //  printf("hyppo_setup_transfer_area is: %d ", (int)hyppo_setup_transfer_area());
 
   // cputu("hyppo_setname is: ", hyppo_setname("EXTERNAL.D81"), HEXADECIMAL);
-  printf("hyppo_setname is: %d ", (int)hyppo_setname("NOBRU.D81"));
+  printf("hyppo_setname is: %d ", (int)hyppo_setname("EXTERNAL.D81"));
   // cputu("hyppo_d81attach1 is: ", hyppo_d81attach1(), HEXADECIMAL);
   // cputln();
   printf("hyppo_d81attach1 is: %d\n", (int)hyppo_d81attach1());

@@ -72,12 +72,12 @@ void msprintf(char* str)
 {
   cputs((const unsigned char*) petsciitoscreencode_s(str));
 }
-void mprintf(char* str, long n)
+void mprintf(char* str, char n)
 {
   cputs((const unsigned char*) petsciitoscreencode_s(str));
   cputdec(n, 0, 0);
 }
-void mhprintf(char* str, long n)
+void mhprintf(char* str, char n)
 {
   cputs((const unsigned char*) petsciitoscreencode_s(str));
   cputhex(n, 4);
