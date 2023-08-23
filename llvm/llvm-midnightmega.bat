@@ -34,12 +34,13 @@ CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %PRJ%.c %cfiles%
 ECHO ------------------------------------------------------
 REM  -Wall
 CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %PRJ%.c %cfiles%
-%LLVMDUMP% -d %PRJ%.map
 
 :NOBUILD
 IF ERRORLEVEL == 1 (
   PAUSE
 ) ELSE (
+  %LLVMDUMP% -d %PRJ%.prg.elf > %PRJ%_dump.txt
+
   %c1541% -format disk%PRJ%,id d81 %PRJ%.d81
   %c1541% -attach %PRJ%.d81 -delete %PRJ%
   %c1541% -attach %PRJ%.d81 -write %PRJ%.prg %PRJ%
