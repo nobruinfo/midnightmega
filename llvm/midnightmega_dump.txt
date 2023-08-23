@@ -1,6 +1,99 @@
 
 midnightmega.prg.elf:	file format elf32-mos
 
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 exit-return.c
+00002015 l       .basic_header	00000000 next_line
+00000000 l    df *ABS*	00000000 zero-bss.c
+00000000 l    df *ABS*	00000000 zero-zp-bss.c
+00000000 l    df *ABS*	00000000 ld-temp.o
+00002a7d l     O .bss	00000014 dmalist
+00000022 l     O .zp.bss	00000001 g_curScreenW
+0000277d l     O .bss	00000001 g_curScreenH
+0000277e l     O .bss	000002fd escapeCode
+00002320 l     F .text	00000001 escNOP
+000024fb l     F .text	00000099 lfill
+00002a7b l     O .bss	00000001 g_curX
+00002a7c l     O .bss	00000001 g_curY
+0000277c l     O .bss	00000001 fnamehi
+0000277a l     O .data	00000002 HTRAP00asm
+0000222b l       .text	00000000 error04
+0000222f l       .text	00000000 done04
+00002389 l     F .text	00000172 cputsxy
+00002321 l     F .text	00000068 cputhex
+00002298 l       .text	00000000 error06
+0000229c l       .text	00000000 done06
+0000276a l     O .rodata	00000010 hexDigits
+000025e0 l     F .text	00000034 strlen
+00002074 g     F .text	000002ac main
+00000007 g       *ABS*	00000000 __rc5
+00000008 g       *ABS*	00000000 __rc6
+00000004 g       *ABS*	00000000 __rc2
+00000009 g       *ABS*	00000000 __rc7
+00000005 g       *ABS*	00000000 __rc3
+0000000a g       *ABS*	00000000 __rc8
+00000006 g       *ABS*	00000000 __rc4
+00002036 g       .text	00000000 __after_main
+00002025 g       .text	00000000 __do_init_stack
+0000202d g       .text	00000000 __do_zero_bss
+0000204e g     F .text	00000013 __zero_bss
+00002030 g       .text	00000000 __do_zero_zp_bss
+00002061 g     F .text	00000013 __zero_zp_bss
+00002044 g     F .text	0000000a __exit_return
+00002039 g       .text	00000000 _fini
+0000d000 g       *ABS*	00000000 __stack
+00000002 g       *ABS*	00000000 __rc0
+00000003 g       *ABS*	00000000 __rc1
+00002659 g     F .text	000000da __udivmodhi4
+00002627 g     F .text	00000032 __mulhi3
+00002614 g     F .text	00000013 __ashlhi3
+00002594  w    F .text	0000002d memcpy
+000025c1  w    F .text	0000001f __memset
+00002017 g       .text	00000000 _start
+00000002 g       *ABS*	00000000 __basic_zp_start
+0000000b g       *ABS*	00000000 __rc9
+0000000c g       *ABS*	00000000 __rc10
+0000000d g       *ABS*	00000000 __rc11
+0000000e g       *ABS*	00000000 __rc12
+0000000f g       *ABS*	00000000 __rc13
+00000010 g       *ABS*	00000000 __rc14
+00000011 g       *ABS*	00000000 __rc15
+00000012 g       *ABS*	00000000 __rc16
+00000013 g       *ABS*	00000000 __rc17
+00000014 g       *ABS*	00000000 __rc18
+00000015 g       *ABS*	00000000 __rc19
+00000016 g       *ABS*	00000000 __rc20
+00000017 g       *ABS*	00000000 __rc21
+00000018 g       *ABS*	00000000 __rc22
+00000019 g       *ABS*	00000000 __rc23
+0000001a g       *ABS*	00000000 __rc24
+0000001b g       *ABS*	00000000 __rc25
+0000001c g       *ABS*	00000000 __rc26
+0000001d g       *ABS*	00000000 __rc27
+0000001e g       *ABS*	00000000 __rc28
+0000001f g       *ABS*	00000000 __rc29
+00000020 g       *ABS*	00000000 __rc30
+00000021 g       *ABS*	00000000 __rc31
+00000090 g       *ABS*	00000000 __basic_zp_end
+00000022 g       .zp.data	00000000 __zp_data_start
+00002017 g       *ABS*	00000000 __zp_data_load_start
+00000000 g       *ABS*	00000000 __zp_data_size
+00000022 g       .zp.bss	00000000 __zp_bss_start
+00000001 g       *ABS*	00000000 __zp_bss_size
+00002017 g       .text	00000000 _init
+00002733 g       .text	00000000 __init_array_start
+00002733 g       .text	00000000 __init_array_end
+00002733 g       .text	00000000 __fini_array_start
+00002733 g       .text	00000000 __fini_array_end
+0000277a g       .data	00000000 __data_start
+0000277c g       .data	00000000 __data_end
+0000277a g       *ABS*	00000000 __data_load_start
+00000002 g       *ABS*	00000000 __data_size
+0000277c g       .bss	00000000 __bss_start
+00002a91 g       .bss	00000000 __bss_end
+00000315 g       *ABS*	00000000 __bss_size
+00002a92 g       .noinit	00000000 __heap_start
+
 Disassembly of section .text:
 
 00002017 <_start>:

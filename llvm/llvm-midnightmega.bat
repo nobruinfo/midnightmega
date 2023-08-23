@@ -39,7 +39,7 @@ CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %PRJ%.c %cfiles%
 IF ERRORLEVEL == 1 (
   PAUSE
 ) ELSE (
-  %LLVMDUMP% -d %PRJ%.prg.elf > %PRJ%_dump.txt
+  %LLVMDUMP% --disassemble --syms %PRJ%.prg.elf > %PRJ%_dump.txt
 
   %c1541% -format disk%PRJ%,id d81 %PRJ%.d81
   %c1541% -attach %PRJ%.d81 -delete %PRJ%
