@@ -29,11 +29,20 @@ REM SET opts=%opts% -Wl,-static -fdata-sections -ffunction-sections
 REM SET opts=%opts% -Wl,--gc-sections -Wl,-s
 SET opts=%opts% -Wl,-Map=%PRJ%.map
 SET opts=%opts% -Wl,-trace
+SET opts=%opts% -Wl,--reproduce=reproduce.tar
 
+REM DEL %TEMP%\*.o
 CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %PRJ%.c %cfiles%
 ECHO ------------------------------------------------------
 REM  -Wall
 CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %PRJ%.c %cfiles%
+
+for /f "tokens=1* delims=?" %%i in ('DIR /B /O:DN "%TEMP%\*.o"') do (
+  ECHO File is %%i
+  SET file=%%i
+  SET "f=!file:~-1,1!"
+  ECHO %LLVMDUMP% --disassemble --syms %%i > %PRJ%_!f!_dump.txt
+)
 
 :NOBUILD
 IF ERRORLEVEL == 1 (

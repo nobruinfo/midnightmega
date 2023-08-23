@@ -211,8 +211,6 @@ int main() {
   gotoxy(0, wherey() + 1);
 //  while(! (keycode=waitforkeyandletgo())) {}
 
-return 40;
-
   clrscr ();
 //  for (char i=0; i <= 12; i++) {
   for (unsigned char i=0; i <= 32; i++) {
