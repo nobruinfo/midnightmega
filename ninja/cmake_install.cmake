@@ -34,7 +34,7 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "F:/Entwicklungsprojekte/Mega65/llvm-mos/llvm-mos/bin/llvm-objdump.exe")
+  set(CMAKE_OBJDUMP "F:/Entwicklungsprojekte/github-nobru/llvm-mos-sdk/bin/llvm-objdump.exe")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)

@@ -106,8 +106,8 @@ int main() {
     *PROCPORT = PROCPORT_BASIC_KERNEL_IO; // PROCPORT_RAM_IO;
 */
   // Disable 48MHz fast mode
-  VICIV->CONTROLB &= ~0x40;
-  VICIV->CONTROLC &= ~0x40;
+  VICIV.CONTROLB &= ~0x40;
+  VICIV.CONTROLC &= ~0x40;
 
   unsigned char keycode;
   waitfornokey();

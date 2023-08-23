@@ -52,7 +52,7 @@ build cmake_object_order_depends_target_midnightmega.prg: phony || cmake_object_
 build CMakeFiles/midnightmega.prg.dir/midnightmega.c.obj: C_COMPILER__midnightmega.2eprg_unscanned_MinSizeRel F$:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/midnightmega.c || cmake_object_order_depends_target_midnightmega.prg
   DEP_FILE = CMakeFiles\midnightmega.prg.dir\midnightmega.c.obj.d
   FLAGS = -Os -DNDEBUG
-  INCLUDES = -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/include -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include
+  INCLUDES = -IF:/Entwicklungsprojekte/github-nobru/midnightmega/ninja/mega65-libc/include
   OBJECT_DIR = CMakeFiles\midnightmega.prg.dir
   OBJECT_FILE_DIR = CMakeFiles\midnightmega.prg.dir
 

@@ -38,7 +38,7 @@ struct DIRENT* const __attribute__((used)) readdir_dirent = (struct DIRENT*) 0x6
 struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) 0x6100; // needs be at a
                                                                   // page frame border
 
-static char * __attribute__((used)) HTRAP00asm = HTRAP00;
+volatile char * __attribute__((used)) HTRAP00asm = &HTRAP00;
 
 char tolowerchar(char ch) {
     if(ch>='A' && ch<='Z') {

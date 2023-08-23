@@ -9,11 +9,14 @@ SET c1541="%VICE%\c1541"
 
 SET XMEGA65=D:\Game Collections\C64\Mega65\Xemu\xemu-binaries-win64\
 set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
+set LLVM_HOME=%~dp0..\..\llvm-mos-sdk
 set LLVM_BAT=%LLVM_HOME%\bin\mos-mega65-clang.bat
 SET PATH=%PATH%;%VICE%;%XMEGA65%
 SET PATH=%PATH%;C:\Program Files\CMake\bin
 SET PATH=%PATH%;F:\chocolatey\ProgramData\chocolatey\bin
 SET PATH=%PATH%;%LLVM_HOME%\bin
+REM to build llvm-mos itself add a path to gcc:
+REM F:\Entwicklungsprojekte\Hugin\pantest\strawberry-perl-5.32.1.1-64bit-portable\c\bin\
 
 CD /D %~dp0
 
@@ -30,8 +33,11 @@ ECHO cmake_minimum_required(VERSION 3.18) > CMakeLists.txt
 ECHO set(LLVM_MOS_PLATFORM mega65)        >>CMakeLists.txt
 ECHO find_package(llvm-mos-sdk REQUIRED)  >>CMakeLists.txt
 ECHO project(%PRJ% VERSION 1.0.0 LANGUAGES C) >>CMakeLists.txt
-ECHO add_subdirectory(mega65-libc)  >>CMakeLists.txt
-ECHO include_directories(include)  >>CMakeLists.txt
+ECHO add_subdirectory(mega65-libc)        >>CMakeLists.txt
+REM ECHO if(PLATFORM STREQUAL ^mega65)        CMakeLists.txt
+REM ECHO   add_subdirectory(mega65)           CMakeLists.txt
+REM ECHO endif()                              CMakeLists.txt
+REM ECHO include_directories(include)  CMakeLists.txt
 ECHO add_executable(%PRJ%.prg %PRJ%.c)        >>CMakeLists.txt
 ECHO target_link_libraries(%PRJ%.prg PRIVATE mega65libc) >>CMakeLists.txt
 
