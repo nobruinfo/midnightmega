@@ -19,7 +19,8 @@ set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
 set LLVM_BAT=%LLVM_HOME%\bin\mos-mega65-clang.bat
 set LLVMDUMP=%LLVM_HOME%\bin\llvm-objdump.exe
 SET cfilesdir=..\..\mega65-libc\src
-SET cfiles=%cfilesdir%\conio.c %cfilesdir%\memory.c %cfilesdir%\llvm\memory_asm.s
+SET cfiles=%cfilesdir%\conio.c %cfilesdir%\memory.c include\memory_asm.s
+REM  %cfilesdir%\llvm\memory_asm.s
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
 SET opts=--include-directory=.\include
 SET opts=%opts% --include-directory=..\..\mega65-libc\include
