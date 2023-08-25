@@ -31,6 +31,7 @@ struct DIRENT {
 	unsigned char dummy[256-87];  // blown up to fill a whole page
 };
 
+#define readdir_direntasm $6000
 struct DIRENT* const __attribute__((used)) readdir_dirent = (struct DIRENT*) 0x6000; // needs be at page frame
 // char __align(0x100) readdir_dirent[256]; // sizeof(DIRENT)]; occupies the whole page!
 // DIRENT* entry = (DIRENT*) &readdir_dirent;
@@ -38,7 +39,12 @@ struct DIRENT* const __attribute__((used)) readdir_dirent = (struct DIRENT*) 0x6
 struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) 0x6100; // needs be at a
                                                                   // page frame border
 
-static char * __attribute__((used)) HTRAP00asm = HTRAP00;
+// static char * __attribute__((used)) HTRAP00asm = HTRAP00;
+#define HTRAP00asm $d640
+#define STR(x) #x
+#define XSTR(s) STR(s)
+__asm__(".set HTRAP00, " XSTR(HTRAP00asm) );
+__asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
 
 char tolowerchar(char ch) {
     if(ch>='A' && ch<='Z') {
@@ -68,6 +74,39 @@ char * strsan(char *str) {
   return s;
 }
 
+#define COLOR_RAM_BASE 0xFF80000UL
+// to by replaced by a getter function
+void cputln(void)  {
+  unsigned char width;
+  unsigned char height;
+  unsigned int screenbytes;
+  
+  getscreensize(&width, &height);
+  screenbytes = width * height;
+  if (wherey() + 1 >= height)  {
+	lcopy(getscreenaddr() + width, getscreenaddr(), screenbytes - width);
+    lcopy(COLOR_RAM_BASE + width, COLOR_RAM_BASE, screenbytes - width);
+    lfill(getscreenaddr() + screenbytes - width, ' ', width);
+    lfill(COLOR_RAM_BASE + screenbytes - width, COLOUR_WHITE, width);
+		// COLOUR_WHITE to be replaced by a getter function
+		// COLOR_RAM_BASE calculation supports one-byte colours only
+	gotoxy(0, wherey());
+  } else {
+	gotoxy(0, wherey() + 1);
+  }
+}
+
+// taken from mega65-libc memory.c being inactive by #ifdef:
+uint8_t lpeek__________(uint32_t address)
+{
+  return dma_peek(address);
+}
+void lpoke___________(uint32_t address, uint8_t value)
+{
+  dma_poke(address, value);
+}
+
+// instead of printf() variants:
 void msprintf(char* str)
 {
   cputs((const unsigned char*) petsciitoscreencode_s(str));
@@ -103,15 +142,15 @@ unsigned char hyppo_setup_transfer_area(void)  {
 	"ldx #$00\n"         // shouldn't be necessary
 //	"ldy #>(fnamehi)\n"  // works only because "name" is first in struct
     "lda #$3a\n"
-	"sta HTRAP00asm\n"
+	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error01\n"
+	"bcc errsettrans%=\n"
     "sta %0\n"
-	"jmp done01\n"
-"error01:\n"
+	"jmp donesettrans%=\n"
+"errsettrans%=:\n"
     "lda #$FF\n"
 	"sta %0\n"
-"done01:\n"
+"donesettrans%=:\n"
     "nop\n"
 	: "=r"(retval) : "y"(fnamehi) : "a", "x");
   return retval;
@@ -125,17 +164,17 @@ unsigned char hyppo_getcurrentdrive(void)
   asm volatile(
 	"ldx #$00\n"    // shouldn't be necessary
     "lda #$04\n"
-	"sta HTRAP00asm\n"
+	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error02\n"
+	"bcc errgetcurdrv%=\n"
     "sta %0\n"
-	"jmp done02\n"
-"error02:\n"
+	"jmp donegetcurdrv%=\n"
+"errgetcurdrv%=:\n"
     "lda #$FF\n"
 	"sta %0\n"
-"done02:\n"
+"donegetcurdrv%=:\n"
     "nop"
-	: "=r"(retval) ::);
+	: "=r"(retval) :: "a", "x");
 
   return retval;
 }
@@ -153,15 +192,15 @@ unsigned char hyppo_selectdrive(unsigned char nb)
   asm volatile(
 //    "ldx %1\n"
 	"lda #$06\n"
-	"sta HTRAP00asm\n"
+	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error03\n"
+	"bcc errseldrv%=\n"
     "stx %0\n"
-	"jmp done03\n"
-"error03:\n"
+	"jmp doneseldrv%=\n"
+"errseldrv%=:\n"
     "lda #$FF\n"
 	"sta %0\n"
-"done03:\n"
+"doneseldrv%=:\n"
     "nop\n"
     : "=r"(retval)  // output
     : "x"(nb)       // input
@@ -186,18 +225,18 @@ fnamehi = (unsigned int)hyppofn->name >> 8;
 	"ldx #$00\n"         // shouldn't be necessary
 //	"ldy #>(fnamehi)\n"  // works only because "name" is first in struct
     "lda #$2e\n"
-	"sta HTRAP00asm\n"
+	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error04\n"
+	"bcc errhypsetnam%=\n"
 	"lda #0\n"           // upon success return 0
     "sta %0\n"
-	"jmp done04\n"
-"error04:\n"
+	"jmp donehypsetnam%=\n"
+"errhypsetnam%=:\n"
 	"lda #$ff\n"
     "sta %0\n"
-"done04:\n"
+"donehypsetnam%=:\n"
     "nop\n"
-	: "=r"(retval) : "y"(fnamehi) : "a");
+	: "=r"(retval) : "y"(fnamehi) : "a", "x");
   return retval;
 }
 
@@ -209,17 +248,18 @@ unsigned char hyppo_d81attach0(void)
   asm volatile(
 	"ldx #$00\n"    // shouldn't be necessary
     "lda #$40\n"
-	"sta HTRAP00asm\n"
+	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error05\n"
+	"bcc errhyp0att%=\n"
+    "lda #$00\n"
     "sta %0\n"
-	"jmp done05\n"
-"error05:\n"
+	"jmp donehyp0att%=\n"
+"err0hypatt%=:\n"
     "lda #$FF\n"
 	"sta %0\n"
-"done05:\n"
+"done0hypatt%=:\n"
     "nop\n"
-	: "=r"(retval) : : "a");
+	: "=r"(retval) : : "a", "x");
   return retval;
 }
 
@@ -231,17 +271,18 @@ unsigned char hyppo_d81attach1(void)
   asm volatile(
 	"ldx #$00\n"    // shouldn't be necessary
     "lda #$46\n"
-	"sta HTRAP00asm\n"
+	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error06\n"
+	"bcc errhyp1att%=\n"
+    "lda #$00\n"
     "sta %0\n"
-	"jmp done06\n"
-"error06:\n"
+	"jmp donehyp1att%=\n"
+"errhyp1att%=:\n"
     "lda #$FF\n"
 	"sta %0\n"
-"done06:\n"
+"donehyp1att%=:\n"
     "nop\n"
-  : "=r"(retval) : : "a");
+  : "=r"(retval) : : "a", "x");
   return retval;
 }
 
@@ -275,17 +316,17 @@ unsigned char hyppo_opendir(void)
   asm volatile(
 	"ldx #$00\n"    // shouldn't be necessary
     "lda #$12\n"
-	"sta HTRAP00asm\n"
+	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error07\n"
+	"bcc errhypopendir%=\n"
     "sta %0\n"
-	"jmp done07\n"
-"error07:\n"
+	"jmp donehypopendir%=\n"
+"errhypopendir%=:\n"
     "lda #$FF\n"
 	"sta %0\n"
-"done07:\n"
+"donehypopendir%=:\n"
     "nop\n"
-  : "=r"(retval) : : "a");
+  : "=r"(retval) : : "a", "x");
   return retval;
 }
 
@@ -296,14 +337,14 @@ unsigned char hyppo_closedir(unsigned char filedescriptor)
   asm volatile(
 //	"ldx filedescriptor\n"
     "lda #$16\n"
-	"sta HTRAP00asm\n"
+	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error08\n"
+	"bcc errhypclosedir%=\n"
     "stx %0\n"
-	"jmp done08\n"
-"error08:\n"
+	"jmp donehypclosedir%=\n"
+"errhypclosedir%=:\n"
 	"sta %0\n"
-"done08:\n"
+"donehypclosedir%=:\n"
     "nop\n"
   : "=r"(retval) : "x"(filedescriptor) : "a");
   return retval;
@@ -323,9 +364,9 @@ unsigned char hyppo_readdir(unsigned char filedescriptor)
 	// First, clear out the dirent
 	"ldx #0\n"
 	"txa\n"
-"loop1: sta readdir_dirent,x\n"
+"hypreaddirloop%=: sta readdir_dirent,x\n"
 	"dex\n"
-	"bne loop1\n"
+	"bne hypreaddirloop%=\n"
 	"plx\n"
 //	"ldx filedescriptor\n"
 	"tya\n"
@@ -336,16 +377,16 @@ unsigned char hyppo_readdir(unsigned char filedescriptor)
 	// Result gets written to transfer area we setup at $0400
 	"ldy #>(readdir_dirent)\n"
 	"lda #$14\n"
-	"sta HTRAP00asm\n"
+	"sta HTRAP00\n"
 	"clv\n"
-	"bcc error09\n"
+	"bcc errhypreaddir%=\n"
     "stx %0\n"
-	"jmp done09\n"
-"error09:\n"
+	"jmp donehypreaddir%=\n"
+"errhypreaddir%=:\n"
 	"sta %0\n"
-"done09:\n"
+"donehypreaddir%=:\n"
     "nop\n"
-  : "=r"(retval) : "y"(filedescriptor) : "a");
+  : "=r"(retval) : "y"(filedescriptor) : "a", "x", "y");
 
   readdir_dirent->lfn[readdir_dirent->length] = 0; // put str terminate null
 

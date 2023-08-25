@@ -1,3 +1,4 @@
+.section .text,"ax",@progbits
 .global lpoke, lpeek
 ; --- begin nobruinfo ---
 ; .section code, "a"

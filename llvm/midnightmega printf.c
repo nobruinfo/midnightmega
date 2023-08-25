@@ -5,7 +5,7 @@
 // #include <mega65-dma.h>
 // #include <6502.h>    llvm
 // #include <stdlib.h>  llvm
-#include <string.h>
+// #include <string.h>  llvm
 #include <stdio.h>  // llvm
 #include <mega65/conio.h>  // llvm instead of <printf.h>
 #include <mega65/memory.h>  // mega65-libc
@@ -58,14 +58,14 @@ int main() {
     *PROCPORT = PROCPORT_BASIC_KERNEL_IO; // PROCPORT_RAM_IO;
 */
   // Disable 48MHz fast mode
-  VICIV->CONTROLB &= ~0x40;
-  VICIV->CONTROLC &= ~0x40;
+//  VICIV->CONTROLB &= ~0x40;
+//  VICIV->CONTROLC &= ~0x40;
 
   conioinit();
   flushkeybuf();
 //  mega65_io_enable();
-  clrscr();
-  gotoxy(0, 0);
+//  clrscr();
+//  gotoxy(0, 0);
 
 #ifdef kihdsikdshg
   unsigned int b = (unsigned int) PEEK(0xD012);
@@ -147,72 +147,56 @@ int main() {
   cputln();
 #endif
   // cputu("hyppo_setname is: ", hyppo_setname("EXTERNAL.D81"), HEXADECIMAL);
-  mhprintf("hyppo_setname is: ", hyppo_setname("external.d81"));
+//  printf("hyppo_setname is: %02x", hyppo_setname("external.d81"));
   // cputu("hyppo_d81attach1 is: ", hyppo_d81attach1(), HEXADECIMAL);
   // cputln();
 
-  // mcprintf(" in ", PEEK(24841)); // $6100
-  // mcprintf(" ",    PEEK(24842));
-  // mcprintf(" ",    PEEK(24843));
-  // mcprintf(" ",    PEEK(24844));
+  printf(" in %c %c %c %c", PEEK(24841), PEEK(24842), PEEK(24843), PEEK(24844)); // $6100
 
-  msprintf(" hyppofn: ");
-  msprintf(hyppofn->name);
-
-hyppo_setname("EXTERNAL.D81");
-  mhprintf(" hyppo_d81attach1 is: ", hyppo_d81attach1());
-  cputln();
+  printf(" hyppofn: %s", hyppofn->name);
+hyppo_setname("external.d81");
+  printf(" hyppo_d81attach1 is: %02x\n", hyppo_d81attach1());
   cgetc();
+
 //  clrscr ();
 //  for (i = 0; i <= 12; i++) {
   for (i = 0; i <= 32; i++) {
 // i=9;
 //    cursor (0);
 	j = hyppo_selectdrive(i);
-//	if (j > i)  continue;
-//    printf("hyppo_selectdrive %d is: %d ", (int)i, (int) j);
-    mprintf("hyppo_selectdrive ", i);
-    mprintf(" is: ", j);
-    cputln();
+	if (j > i)  continue;
+    printf("hyppo_selectdrive %d is: %d ", (int)i, (int) j);
 
 	curdrv = hyppo_getcurrentdrive();
-    mhprintf("hyppo_getcurrentdrive is: ", curdrv);
-    cputln();
+    printf("hyppo_getcurrentdrive is: %02x\n", curdrv);
 
-    if (curdrv < 0xff)  {
+    if (1)  {  //           if (curdrv < 0xff)  {
       fd = hyppo_opendir();
-      mhprintf("hyppo_opendir, file descriptor is: ", fd);
-      cputln();
+      printf("hyppo_opendir, file descriptor is: %02x\n", fd);
 
-      if (fd != 0x84 && fd != 0x87 && fd != 0xff) {
+      if (fd != 0x84 && fd != 0x87) {
         readerr = 0;
         do {
 //  printf("hyppo_readdir, val is: %04x\n", (unsigned int)hyppo_readdir(fd, FILEDESCRIPTOR_MSB));
 //  printf("test, val is: %04x\n", (unsigned int)test(transferarea));
           readerr = hyppo_readdir(fd);
-          mhprintf("hyppo_readdir, err is: ", readerr);
-		  cputc(' ');
-          cgetc();
+          printf("hyppo_readdir, err is: %02x ", readerr);
           if (readerr != 0x85 && readerr != 0xff) {
 		    getsfn();
-            msprintf("filename is: ");
-		    msprintf(hyppofn->sfn);
-		    cputc(' ');
-            mprintf("filenamelength is: ", strlen(hyppofn->sfn));
-            cputln();
+            printf("filename is: %s ", hyppofn->sfn);
+            printf("filenamelength is: %d\n", strlen(hyppofn->sfn));
           }
           cgetc();
 	      // if (keycode == 128) break;
         } while (readerr != 0x85 && readerr != 0xff);
-        mhprintf("hyppo_closedir is: ", hyppo_closedir(fd));
-	    cputln();
+        printf("hyppo_closedir is: %02x\n", hyppo_closedir(fd));
         cgetc();
 	  }
     }
-	cgetc();
+return 40;
   }
 
-return 0;
+return 40;
 //		  asm volatile("brk");
 
 //  printf("dir2 %d", dir2());
@@ -247,6 +231,9 @@ return 0;
 //  while(! (keycode=waitforkeyandletgo())) {}
 //  initkeyboard();
 #endif
+  asm volatile(
+	  "cli\n"
+  );
   
   return 0;
 }

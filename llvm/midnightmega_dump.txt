@@ -12,40 +12,42 @@ SYMBOL TABLE:
 00000000 l    df *ABS*	00000000 zero-zp-bss.c
 00000000 l    df *ABS*	00000000 copy-zp-data.c
 00000000 l    df *ABS*	00000000 ld-temp.o
-00003582 l     F .text	000000d7 mprintf
-00000035 l     O .zp.bss	00000001 g_curX
-00000036 l     O .zp.bss	00000001 g_curY
-00003db1 l     F .text	0000015d cputsxy
-00000022 l     O .zp.data	00000010 hexDigits
-00000033 l     O .zp.bss	00000001 g_curScreenW
+0000d640 l       *ABS*	00000000 HTRAP00
+00003582 l     F .text	00000137 cputln
 00000034 l     O .zp.bss	00000001 g_curScreenH
-00004202 l     O .bss	000002fd escapeCode
-00003bca l     F .text	00000001 escNOP
-00003bcb l     F .text	0000009f clrscr
-00000032 l     O .zp.bss	00000001 fnamehi
-00004200 l     O .data	00000002 HTRAP00asm
-00003772 l       .text	00000000 error04
-00003776 l       .text	00000000 done04
-00003d4d l     F .text	00000064 cputhex
-000037dd l       .text	00000000 error06
-000037e1 l       .text	00000000 done06
-00003897 l       .text	00000000 error07
-0000389b l       .text	00000000 done07
-00003c6a l     F .text	000000e3 cputc
-00003fe2 l     F .text	00000034 strlen
-00003a7a l       .text	00000000 loop1
-00003a92 l       .text	00000000 error09
-00003a94 l       .text	00000000 done09
-00003ac3 l       .text	00000000 error08
-00003ac5 l       .text	00000000 done08
-00003b46 l       .text	00000000 error03
-00003b4a l       .text	00000000 done03
-00003b79 l       .text	00000000 error02
-00003b7d l       .text	00000000 done02
+00000036 l     O .zp.bss	00000001 g_curY
+00000033 l     O .zp.bss	00000001 g_curScreenW
+000040a6 l     F .text	000000d2 lcopy
+00004178 l     F .text	00000088 lfill
+00000035 l     O .zp.bss	00000001 g_curX
+000036b9 l     F .text	000000d7 mprintf
+00003fc7 l     F .text	000000df cputsxy
+00000022 l     O .zp.data	00000010 hexDigits
 00000037 l     O .zp.bss	00000014 dmalist
-00003f0e l     F .text	00000088 lfill
-00003659 g     F .text	00000571 main
-00004135 g     O .rodata	00000002 readdir_dirent
+00004495 l     O .bss	000002fd escapeCode
+00003e7f l     F .text	00000001 escNOP
+00000032 l     O .zp.bss	00000001 fnamehi
+0000395c l       .text	00000000 errhypsetnam0
+00003960 l       .text	00000000 donehypsetnam0
+00003f63 l     F .text	00000064 cputhex
+00003a7e l       .text	00000000 errhypsetnam1
+00003a82 l       .text	00000000 donehypsetnam1
+00003a94 l       .text	00000000 errhyp1att2
+00003a98 l       .text	00000000 donehyp1att2
+00003b5a l       .text	00000000 errhypopendir3
+00003b5e l       .text	00000000 donehypopendir3
+00003e80 l     F .text	000000e3 cputc
+0000424c l     F .text	00000034 strlen
+00003d2c l       .text	00000000 hypreaddirloop4
+00003d44 l       .text	00000000 errhypreaddir4
+00003d46 l       .text	00000000 donehypreaddir4
+00003d7f l       .text	00000000 errhypclosedir5
+00003d81 l       .text	00000000 donehypclosedir5
+00003df8 l       .text	00000000 errseldrv6
+00003dfc l       .text	00000000 doneseldrv6
+00003e2a l       .text	00000000 errgetcurdrv7
+00003e2e l       .text	00000000 donegetcurdrv7
+00003790 g     F .text	000006ef main
 00002091 g       .text	00000000 lpoke
 000020b2 g       .text	00000000 lpeek
 00000007 g       *ABS*	00000000 __rc5
@@ -68,15 +70,16 @@ SYMBOL TABLE:
 0000d000 g       *ABS*	00000000 __stack
 00000002 g       *ABS*	00000000 __rc0
 00000003 g       *ABS*	00000000 __rc1
-0000405b g     F .text	000000da __udivmodhi4
+0000439f g       .rodata	00000000 __set_v
+000042c5 g     F .text	000000da __udivmodhi4
 000020da g     F .text	00000252 __udivmodsi4
 0000232c g     F .text	000005af __udivmoddi4
 000028db g     F .text	00000399 __divmodsi4
 00002c74 g     F .text	000008d1 __divmoddi4
-00004029 g     F .text	00000032 __mulhi3
-00004016 g     F .text	00000013 __ashlhi3
-00003f96  w    F .text	0000002d memcpy
-00003fc3  w    F .text	0000001f __memset
+00004293 g     F .text	00000032 __mulhi3
+00004280 g     F .text	00000013 __ashlhi3
+00004200  w    F .text	0000002d memcpy
+0000422d  w    F .text	0000001f __memset
 00002027 g       .text	00000000 _start
 00000002 g       *ABS*	00000000 __basic_zp_start
 0000000b g       *ABS*	00000000 __rc9
@@ -109,18 +112,18 @@ SYMBOL TABLE:
 00000032 g       .zp.bss	00000000 __zp_bss_start
 00000019 g       *ABS*	00000000 __zp_bss_size
 00002027 g       .text	00000000 _init
-00004135 g       .text	00000000 __init_array_start
-00004135 g       .text	00000000 __init_array_end
-00004135 g       .text	00000000 __fini_array_start
-00004135 g       .text	00000000 __fini_array_end
-00004200 g       .data	00000000 __data_start
-00004202 g       .data	00000000 __data_end
-00004200 g       *ABS*	00000000 __data_load_start
-00000002 g       *ABS*	00000000 __data_size
-00004202 g       .bss	00000000 __bss_start
-000044ff g       .bss	00000000 __bss_end
+0000439f g       .text	00000000 __init_array_start
+0000439f g       .text	00000000 __init_array_end
+0000439f g       .text	00000000 __fini_array_start
+0000439f g       .text	00000000 __fini_array_end
+00004495 g       .data	00000000 __data_start
+00004495 g       .data	00000000 __data_end
+00004495 g       *ABS*	00000000 __data_load_start
+00000000 g       *ABS*	00000000 __data_size
+00004495 g       .bss	00000000 __bss_start
+00004792 g       .bss	00000000 __bss_end
 000002fd g       *ABS*	00000000 __bss_size
-00004500 g       .noinit	00000000 __heap_start
+00004793 g       .noinit	00000000 __heap_start
 
 Disassembly of section .text:
 
@@ -147,7 +150,7 @@ Disassembly of section .text:
 
 00002043 <__do_copy_zp_data>:
     2043: 20 6b 35     	jsr	$356b
-    2046: 20 59 36     	jsr	$3659
+    2046: 20 90 37     	jsr	$3790
 
 00002049 <__after_main>:
     2049: 4c d0 20     	jmp	$20d0
@@ -222,9 +225,9 @@ Disassembly of section .text:
     20cf: 60           	rts
 
 000020d0 <__exit_return>:
-    20d0: 8d ff 44     	sta	$44ff
+    20d0: 8d 92 47     	sta	$4792
     20d3: 20 4c 20     	jsr	$204c
-    20d6: ad ff 44     	lda	$44ff
+    20d6: ad 92 47     	lda	$4792
     20d9: 60           	rts
 
 000020da <__udivmodsi4>:
@@ -2969,13 +2972,13 @@ Disassembly of section .text:
 00003545 <__zero_bss>:
     3545: a2 fd        	ldx	#$fd
     3547: a0 02        	ldy	#$2
-    3549: a9 02        	lda	#$2
+    3549: a9 95        	lda	#$95
     354b: 85 04        	sta	$4
-    354d: a9 42        	lda	#$42
+    354d: a9 44        	lda	#$44
     354f: 85 05        	sta	$5
     3551: a9 00        	lda	#$0
     3553: 84 06        	sty	$6
-    3555: 4c c3 3f     	jmp	$3fc3
+    3555: 4c 2d 42     	jmp	$422d
 
 00003558 <__zero_zp_bss>:
     3558: a2 19        	ldx	#$19
@@ -2986,7 +2989,7 @@ Disassembly of section .text:
     3562: 85 05        	sta	$5
     3564: a9 00        	lda	#$0
     3566: 84 06        	sty	$6
-    3568: 4c c3 3f     	jmp	$3fc3
+    3568: 4c 2d 42     	jmp	$422d
 
 0000356b <__copy_zp_data>:
     356b: a9 10        	lda	#$10
@@ -2999,1588 +3002,1905 @@ Disassembly of section .text:
     3579: 84 06        	sty	$6
     357b: a0 20        	ldy	#$20
     357d: 84 07        	sty	$7
-    357f: 4c 96 3f     	jmp	$3f96
+    357f: 4c 00 42     	jmp	$4200
 
-00003582 <mprintf>:
-    3582: 85 4c        	sta	$4c
-    3584: a6 04        	ldx	$4
-    3586: 86 06        	stx	$6
-    3588: a6 05        	ldx	$5
-    358a: 86 07        	stx	$7
-    358c: a2 34        	ldx	#$34
-    358e: 86 04        	stx	$4
-    3590: a2 03        	ldx	#$3
-    3592: 86 05        	stx	$5
-    3594: a2 34        	ldx	#$34
-    3596: 86 08        	stx	$8
-    3598: a2 03        	ldx	#$3
-    359a: 86 09        	stx	$9
-    359c: 80 16        	bra	$35b4
-    359e: c9 c0        	cmp	#$c0
-    35a0: 90 04        	bcc	$35a6
-    35a2: 49 80        	eor	#$80
-    35a4: 80 03        	bra	$35a9
-    35a6: 18           	clc
-    35a7: 69 e0        	adc	#$e0
-    35a9: 92 08        	sta	($8),z
-    35ab: e6 08        	inc	$8
-    35ad: d0 02        	bne	$35b1
-    35af: e6 09        	inc	$9
-    35b1: aa           	tax
-    35b2: f0 15        	beq	$35c9
-    35b4: b2 06        	lda	($6),z
-    35b6: e6 06        	inc	$6
-    35b8: d0 02        	bne	$35bc
-    35ba: e6 07        	inc	$7
-    35bc: c9 40        	cmp	#$40
-    35be: 90 e9        	bcc	$35a9
-    35c0: c9 60        	cmp	#$60
-    35c2: b0 da        	bcs	$359e
-    35c4: 18           	clc
-    35c5: 69 c0        	adc	#$c0
-    35c7: 80 e0        	bra	$35a9
-    35c9: a2 09        	ldx	#$9
-    35cb: 86 5f        	stx	$5f
-    35cd: a5 35        	lda	$35
-    35cf: a6 36        	ldx	$36
-    35d1: 20 b1 3d     	jsr	$3db1
-    35d4: 64 4b        	stz	$4b
-    35d6: 64 5a        	stz	$5a
-    35d8: 64 0c        	stz	$c
-    35da: 64 04        	stz	$4
-    35dc: 64 05        	stz	$5
-    35de: a2 5b        	ldx	#$5b
-    35e0: 86 0a        	stx	$a
-    35e2: a2 00        	ldx	#$0
-    35e4: 86 0b        	stx	$b
-    35e6: a6 04        	ldx	$4
-    35e8: 86 4e        	stx	$4e
-    35ea: a2 0a        	ldx	#$a
-    35ec: 86 06        	stx	$6
-    35ee: 64 07        	stz	$7
-    35f0: 64 08        	stz	$8
-    35f2: 64 09        	stz	$9
-    35f4: a6 0c        	ldx	$c
-    35f6: a5 4c        	lda	$4c
-    35f8: a4 0c        	ldy	$c
-    35fa: 84 4d        	sty	$4d
-    35fc: a4 05        	ldy	$5
-    35fe: 84 4f        	sty	$4f
-    3600: 20 da 20     	jsr	$20da
-    3603: 85 08        	sta	$8
-    3605: a9 0f        	lda	#$f
-    3607: 25 5b        	and	$5b
-    3609: a8           	tay
-    360a: b9 22 00     	lda	$22,y
-    360d: a4 5f        	ldy	$5f
-    360f: 84 06        	sty	$6
-    3611: c6 06        	dec	$6
-    3613: 99 50 00     	sta	$50,y
-    3616: a5 4f        	lda	$4f
-    3618: d0 0e        	bne	$3628
-    361a: a5 4e        	lda	$4e
-    361c: d0 0e        	bne	$362c
-    361e: a4 4d        	ldy	$4d
-    3620: d0 0c        	bne	$362e
-    3622: a4 4c        	ldy	$4c
-    3624: c0 0a        	cpy	#$a
-    3626: 80 08        	bra	$3630
-    3628: a4 4f        	ldy	$4f
-    362a: 80 02        	bra	$362e
-    362c: a4 4e        	ldy	$4e
-    362e: c0 00        	cpy	#$0
-    3630: a4 08        	ldy	$8
-    3632: 84 4c        	sty	$4c
-    3634: 86 0c        	stx	$c
-    3636: a6 06        	ldx	$6
-    3638: 86 5f        	stx	$5f
-    363a: 90 03        	bcc	$363f
-    363c: 4c de 35     	jmp	$35de
-    363f: a9 50        	lda	#$50
-    3641: 18           	clc
-    3642: 65 06        	adc	$6
-    3644: 85 04        	sta	$4
-    3646: a9 00        	lda	#$0
-    3648: 69 00        	adc	#$0
-    364a: 85 05        	sta	$5
-    364c: e6 04        	inc	$4
-    364e: d0 02        	bne	$3652
-    3650: e6 05        	inc	$5
-    3652: a5 35        	lda	$35
-    3654: a6 36        	ldx	$36
-    3656: 4c b1 3d     	jmp	$3db1
+00003582 <cputln>:
+    3582: a6 34        	ldx	$34
+    3584: 86 06        	stx	$6
+    3586: a6 36        	ldx	$36
+    3588: a9 00        	lda	#$0
+    358a: da           	phx
+    358b: 7a           	ply
+    358c: c8           	iny
+    358d: d0 01        	bne	$3590
+    358f: 1a           	inc
+    3590: c9 00        	cmp	#$0
+    3592: d0 08        	bne	$359c
+    3594: c4 06        	cpy	$6
+    3596: b0 08        	bcs	$35a0
+    3598: e8           	inx
+    3599: 4c b4 36     	jmp	$36b4
+    359c: c9 00        	cmp	#$0
+    359e: 90 f8        	bcc	$3598
+    35a0: a6 33        	ldx	$33
+    35a2: 86 04        	stx	$4
+    35a4: 86 4b        	stx	$4b
+    35a6: 64 05        	stz	$5
+    35a8: a2 00        	ldx	#$0
+    35aa: a5 06        	lda	$6
+    35ac: 20 93 42     	jsr	$4293
+    35af: 85 4f        	sta	$4f
+    35b1: 86 4e        	stx	$4e
+    35b3: ad 63 d0     	lda	$d063
+    35b6: 29 07        	and	#$7
+    35b8: a8           	tay
+    35b9: ae 62 d0     	ldx	$d062
+    35bc: 86 04        	stx	$4
+    35be: ae 61 d0     	ldx	$d061
+    35c1: 86 05        	stx	$5
+    35c3: ad 60 d0     	lda	$d060
+    35c6: a6 4b        	ldx	$4b
+    35c8: 86 06        	stx	$6
+    35ca: 86 4b        	stx	$4b
+    35cc: 18           	clc
+    35cd: 65 06        	adc	$6
+    35cf: 85 0c        	sta	$c
+    35d1: a5 05        	lda	$5
+    35d3: 69 00        	adc	#$0
+    35d5: 85 0d        	sta	$d
+    35d7: a5 04        	lda	$4
+    35d9: 69 00        	adc	#$0
+    35db: 85 04        	sta	$4
+    35dd: 98           	tya
+    35de: 69 00        	adc	#$0
+    35e0: 85 05        	sta	$5
+    35e2: ad 63 d0     	lda	$d063
+    35e5: 29 07        	and	#$7
+    35e7: 85 09        	sta	$9
+    35e9: a5 4f        	lda	$4f
+    35eb: 38           	sec
+    35ec: e5 06        	sbc	$6
+    35ee: 85 0a        	sta	$a
+    35f0: 85 4c        	sta	$4c
+    35f2: a5 4e        	lda	$4e
+    35f4: e9 00        	sbc	#$0
+    35f6: a2 01        	ldx	#$1
+    35f8: b0 02        	bcs	$35fc
+    35fa: a2 00        	ldx	#$0
+    35fc: 86 50        	stx	$50
+    35fe: 85 0b        	sta	$b
+    3600: 85 4d        	sta	$4d
+    3602: ad 62 d0     	lda	$d062
+    3605: ac 61 d0     	ldy	$d061
+    3608: ae 60 d0     	ldx	$d060
+    360b: 86 06        	stx	$6
+    360d: 84 07        	sty	$7
+    360f: 85 08        	sta	$8
+    3611: a6 0d        	ldx	$d
+    3613: a5 0c        	lda	$c
+    3615: 20 a6 40     	jsr	$40a6
+    3618: a0 f8        	ldy	#$f8
+    361a: a9 0f        	lda	#$f
+    361c: 84 04        	sty	$4
+    361e: 85 05        	sta	$5
+    3620: a2 00        	ldx	#$0
+    3622: 64 06        	stz	$6
+    3624: 64 07        	stz	$7
+    3626: 84 08        	sty	$8
+    3628: 85 09        	sta	$9
+    362a: a4 4c        	ldy	$4c
+    362c: 84 0a        	sty	$a
+    362e: 84 4c        	sty	$4c
+    3630: a4 4d        	ldy	$4d
+    3632: 84 0b        	sty	$b
+    3634: a5 4b        	lda	$4b
+    3636: 20 a6 40     	jsr	$40a6
+    3639: a6 4f        	ldx	$4f
+    363b: 86 04        	stx	$4
+    363d: a6 4e        	ldx	$4e
+    363f: 86 05        	stx	$5
+    3641: ad 63 d0     	lda	$d063
+    3644: 29 07        	and	#$7
+    3646: 85 07        	sta	$7
+    3648: ae 62 d0     	ldx	$d062
+    364b: 86 08        	stx	$8
+    364d: ae 61 d0     	ldx	$d061
+    3650: ad 60 d0     	lda	$d060
+    3653: 18           	clc
+    3654: 65 04        	adc	$4
+    3656: a8           	tay
+    3657: 8a           	txa
+    3658: 65 05        	adc	$5
+    365a: 85 04        	sta	$4
+    365c: a5 08        	lda	$8
+    365e: 69 00        	adc	#$0
+    3660: 85 06        	sta	$6
+    3662: a5 07        	lda	$7
+    3664: 69 00        	adc	#$0
+    3666: 85 05        	sta	$5
+    3668: a6 4b        	ldx	$4b
+    366a: 86 07        	stx	$7
+    366c: 86 4b        	stx	$4b
+    366e: 38           	sec
+    366f: 98           	tya
+    3670: e5 07        	sbc	$7
+    3672: a8           	tay
+    3673: a5 04        	lda	$4
+    3675: e9 00        	sbc	#$0
+    3677: 85 09        	sta	$9
+    3679: a5 06        	lda	$6
+    367b: e9 00        	sbc	#$0
+    367d: 85 04        	sta	$4
+    367f: a5 05        	lda	$5
+    3681: e9 00        	sbc	#$0
+    3683: a2 20        	ldx	#$20
+    3685: 85 05        	sta	$5
+    3687: 86 06        	stx	$6
+    3689: 64 08        	stz	$8
+    368b: a6 09        	ldx	$9
+    368d: 98           	tya
+    368e: 20 78 41     	jsr	$4178
+    3691: a6 50        	ldx	$50
+    3693: e0 01        	cpx	#$1
+    3695: a9 f8        	lda	#$f8
+    3697: e9 00        	sbc	#$0
+    3699: 85 04        	sta	$4
+    369b: a9 0f        	lda	#$f
+    369d: e9 00        	sbc	#$0
+    369f: a2 01        	ldx	#$1
+    36a1: 85 05        	sta	$5
+    36a3: 86 06        	stx	$6
+    36a5: a6 4b        	ldx	$4b
+    36a7: 86 07        	stx	$7
+    36a9: 64 08        	stz	$8
+    36ab: a6 4d        	ldx	$4d
+    36ad: a5 4c        	lda	$4c
+    36af: 20 78 41     	jsr	$4178
+    36b2: a6 36        	ldx	$36
+    36b4: 64 35        	stz	$35
+    36b6: 86 36        	stx	$36
+    36b8: 60           	rts
 
-00003659 <main>:
-    3659: 18           	clc
-    365a: a5 02        	lda	$2
-    365c: 69 fa        	adc	#$fa
-    365e: 85 02        	sta	$2
-    3660: a5 03        	lda	$3
-    3662: 69 ff        	adc	#$ff
-    3664: 85 03        	sta	$3
-    3666: a6 16        	ldx	$16
-    3668: da           	phx
-    3669: a6 17        	ldx	$17
-    366b: da           	phx
-    366c: a6 18        	ldx	$18
-    366e: da           	phx
-    366f: a6 19        	ldx	$19
-    3671: da           	phx
-    3672: a5 1a        	lda	$1a
-    3674: a0 05        	ldy	#$5
-    3676: 91 02        	sta	($2),y
-    3678: a5 1b        	lda	$1b
-    367a: 88           	dey
-    367b: 91 02        	sta	($2),y
-    367d: a5 1c        	lda	$1c
-    367f: 88           	dey
-    3680: 91 02        	sta	($2),y
-    3682: a5 1d        	lda	$1d
-    3684: 88           	dey
-    3685: 91 02        	sta	($2),y
-    3687: a5 1e        	lda	$1e
-    3689: 88           	dey
-    368a: 91 02        	sta	($2),y
-    368c: a5 1f        	lda	$1f
-    368e: 88           	dey
-    368f: 91 02        	sta	($2),y
-    3691: a9 bf        	lda	#$bf
-    3693: 2d 31 d0     	and	$d031
-    3696: 8d 31 d0     	sta	$d031
-    3699: a9 bf        	lda	#$bf
-    369b: 2d 54 d0     	and	$d054
-    369e: 8d 54 d0     	sta	$d054
-    36a1: 9c 10 d6     	stz	$d610
-    36a4: a2 47        	ldx	#$47
-    36a6: 8e 2f d0     	stx	$d02f
-    36a9: a2 53        	ldx	#$53
-    36ab: 8e 2f d0     	stx	$d02f
-    36ae: ad 5d d0     	lda	$d05d
-    36b1: 29 7f        	and	#$7f
-    36b3: 8d 5d d0     	sta	$d05d
-    36b6: a2 28        	ldx	#$28
-    36b8: 9c 68 d0     	stz	$d068
-    36bb: a0 d8        	ldy	#$d8
-    36bd: 8c 69 d0     	sty	$d069
-    36c0: a0 02        	ldy	#$2
-    36c2: 8c 6a d0     	sty	$d06a
-    36c5: ac 31 d0     	ldy	$d031
-    36c8: 10 02        	bpl	$36cc
-    36ca: a2 50        	ldx	#$50
-    36cc: 86 33        	stx	$33
-    36ce: ad 31 d0     	lda	$d031
-    36d1: 29 08        	and	#$8
-    36d3: f0 04        	beq	$36d9
-    36d5: a2 32        	ldx	#$32
-    36d7: 80 02        	bra	$36db
-    36d9: a2 19        	ldx	#$19
-    36db: 86 34        	stx	$34
-    36dd: 80 03        	bra	$36e2
-    36df: 9c 10 d6     	stz	$d610
-    36e2: ae 10 d6     	ldx	$d610
-    36e5: d0 f8        	bne	$36df
-    36e7: a2 34        	ldx	#$34
-    36e9: 86 16        	stx	$16
-    36eb: a2 03        	ldx	#$3
-    36ed: 86 17        	stx	$17
-    36ef: a2 41        	ldx	#$41
-    36f1: 86 18        	stx	$18
-    36f3: a2 61        	ldx	#$61
-    36f5: 86 19        	stx	$19
-    36f7: a2 ff        	ldx	#$ff
-    36f9: a0 02        	ldy	#$2
-    36fb: 84 04        	sty	$4
-    36fd: a0 42        	ldy	#$42
-    36ff: 84 05        	sty	$5
-    3701: a0 01        	ldy	#$1
-    3703: a5 04        	lda	$4
-    3705: 85 06        	sta	$6
-    3707: a5 05        	lda	$5
-    3709: 85 07        	sta	$7
-    370b: a9 ca        	lda	#$ca
-    370d: 91 04        	sta	($4),y
-    370f: a9 00        	lda	#$0
-    3711: 92 04        	sta	($4),z
-    3713: a5 04        	lda	$4
-    3715: 18           	clc
-    3716: 69 03        	adc	#$3
-    3718: 85 04        	sta	$4
-    371a: a5 05        	lda	$5
-    371c: 69 00        	adc	#$0
-    371e: 85 05        	sta	$5
-    3720: e6 06        	inc	$6
-    3722: d0 02        	bne	$3726
-    3724: e6 07        	inc	$7
-    3726: a9 3b        	lda	#$3b
-    3728: 91 06        	sta	($6),y
-    372a: ca           	dex
-    372b: d0 d6        	bne	$3703
-    372d: a2 ed        	ldx	#$ed
-    372f: 86 1a        	stx	$1a
-    3731: a2 41        	ldx	#$41
-    3733: 86 1b        	stx	$1b
-    3735: 20 cb 3b     	jsr	$3bcb
-    3738: a2 00        	ldx	#$0
-    373a: 64 35        	stz	$35
-    373c: 64 36        	stz	$36
-    373e: a0 61        	ldy	#$61
-    3740: 84 32        	sty	$32
-    3742: a0 00        	ldy	#$0
-    3744: 84 04        	sty	$4
-    3746: a0 61        	ldy	#$61
-    3748: 84 05        	sty	$5
-    374a: a0 37        	ldy	#$37
-    374c: 84 06        	sty	$6
-    374e: a0 41        	ldy	#$41
-    3750: 84 07        	sty	$7
-    3752: a9 0d        	lda	#$d
-    3754: 20 96 3f     	jsr	$3f96
-    3757: a2 34        	ldx	#$34
-    3759: 86 04        	stx	$4
-    375b: a2 03        	ldx	#$3
-    375d: 86 05        	stx	$5
-    375f: a0 61        	ldy	#$61
-    3761: a2 00        	ldx	#$0
-    3763: a9 2e        	lda	#$2e
-    3765: 8d 00 42     	sta	$4200
-    3768: b8           	clv
-    3769: 90 07        	bcc	$3772
-    376b: a9 00        	lda	#$0
-    376d: 85 1c        	sta	$1c
-    376f: 4c 76 37     	jmp	$3776
+000036b9 <mprintf>:
+    36b9: 85 4c        	sta	$4c
+    36bb: a6 04        	ldx	$4
+    36bd: 86 06        	stx	$6
+    36bf: a6 05        	ldx	$5
+    36c1: 86 07        	stx	$7
+    36c3: a2 34        	ldx	#$34
+    36c5: 86 04        	stx	$4
+    36c7: a2 03        	ldx	#$3
+    36c9: 86 05        	stx	$5
+    36cb: a2 34        	ldx	#$34
+    36cd: 86 08        	stx	$8
+    36cf: a2 03        	ldx	#$3
+    36d1: 86 09        	stx	$9
+    36d3: 80 16        	bra	$36eb
+    36d5: c9 c0        	cmp	#$c0
+    36d7: 90 04        	bcc	$36dd
+    36d9: 49 80        	eor	#$80
+    36db: 80 03        	bra	$36e0
+    36dd: 18           	clc
+    36de: 69 e0        	adc	#$e0
+    36e0: 92 08        	sta	($8),z
+    36e2: e6 08        	inc	$8
+    36e4: d0 02        	bne	$36e8
+    36e6: e6 09        	inc	$9
+    36e8: aa           	tax
+    36e9: f0 15        	beq	$3700
+    36eb: b2 06        	lda	($6),z
+    36ed: e6 06        	inc	$6
+    36ef: d0 02        	bne	$36f3
+    36f1: e6 07        	inc	$7
+    36f3: c9 40        	cmp	#$40
+    36f5: 90 e9        	bcc	$36e0
+    36f7: c9 60        	cmp	#$60
+    36f9: b0 da        	bcs	$36d5
+    36fb: 18           	clc
+    36fc: 69 c0        	adc	#$c0
+    36fe: 80 e0        	bra	$36e0
+    3700: a2 09        	ldx	#$9
+    3702: 86 5f        	stx	$5f
+    3704: a5 35        	lda	$35
+    3706: a6 36        	ldx	$36
+    3708: 20 c7 3f     	jsr	$3fc7
+    370b: 64 4b        	stz	$4b
+    370d: 64 5a        	stz	$5a
+    370f: 64 0c        	stz	$c
+    3711: 64 04        	stz	$4
+    3713: 64 05        	stz	$5
+    3715: a2 5b        	ldx	#$5b
+    3717: 86 0a        	stx	$a
+    3719: a2 00        	ldx	#$0
+    371b: 86 0b        	stx	$b
+    371d: a6 04        	ldx	$4
+    371f: 86 4e        	stx	$4e
+    3721: a2 0a        	ldx	#$a
+    3723: 86 06        	stx	$6
+    3725: 64 07        	stz	$7
+    3727: 64 08        	stz	$8
+    3729: 64 09        	stz	$9
+    372b: a6 0c        	ldx	$c
+    372d: a5 4c        	lda	$4c
+    372f: a4 0c        	ldy	$c
+    3731: 84 4d        	sty	$4d
+    3733: a4 05        	ldy	$5
+    3735: 84 4f        	sty	$4f
+    3737: 20 da 20     	jsr	$20da
+    373a: 85 08        	sta	$8
+    373c: a9 0f        	lda	#$f
+    373e: 25 5b        	and	$5b
+    3740: a8           	tay
+    3741: b9 22 00     	lda	$22,y
+    3744: a4 5f        	ldy	$5f
+    3746: 84 06        	sty	$6
+    3748: c6 06        	dec	$6
+    374a: 99 50 00     	sta	$50,y
+    374d: a5 4f        	lda	$4f
+    374f: d0 0e        	bne	$375f
+    3751: a5 4e        	lda	$4e
+    3753: d0 0e        	bne	$3763
+    3755: a4 4d        	ldy	$4d
+    3757: d0 0c        	bne	$3765
+    3759: a4 4c        	ldy	$4c
+    375b: c0 0a        	cpy	#$a
+    375d: 80 08        	bra	$3767
+    375f: a4 4f        	ldy	$4f
+    3761: 80 02        	bra	$3765
+    3763: a4 4e        	ldy	$4e
+    3765: c0 00        	cpy	#$0
+    3767: a4 08        	ldy	$8
+    3769: 84 4c        	sty	$4c
+    376b: 86 0c        	stx	$c
+    376d: a6 06        	ldx	$6
+    376f: 86 5f        	stx	$5f
+    3771: 90 03        	bcc	$3776
+    3773: 4c 15 37     	jmp	$3715
+    3776: a9 50        	lda	#$50
+    3778: 18           	clc
+    3779: 65 06        	adc	$6
+    377b: 85 04        	sta	$4
+    377d: a9 00        	lda	#$0
+    377f: 69 00        	adc	#$0
+    3781: 85 05        	sta	$5
+    3783: e6 04        	inc	$4
+    3785: d0 02        	bne	$3789
+    3787: e6 05        	inc	$5
+    3789: a5 35        	lda	$35
+    378b: a6 36        	ldx	$36
+    378d: 4c c7 3f     	jmp	$3fc7
 
-00003772 <error04>:
-    3772: a9 ff        	lda	#$ff
-    3774: 85 1c        	sta	$1c
+00003790 <main>:
+    3790: 18           	clc
+    3791: a5 02        	lda	$2
+    3793: 69 f9        	adc	#$f9
+    3795: 85 02        	sta	$2
+    3797: a5 03        	lda	$3
+    3799: 69 ff        	adc	#$ff
+    379b: 85 03        	sta	$3
+    379d: a6 16        	ldx	$16
+    379f: da           	phx
+    37a0: a6 17        	ldx	$17
+    37a2: da           	phx
+    37a3: a6 18        	ldx	$18
+    37a5: da           	phx
+    37a6: a6 19        	ldx	$19
+    37a8: da           	phx
+    37a9: a5 1a        	lda	$1a
+    37ab: a0 06        	ldy	#$6
+    37ad: 91 02        	sta	($2),y
+    37af: a5 1b        	lda	$1b
+    37b1: 88           	dey
+    37b2: 91 02        	sta	($2),y
+    37b4: a5 1c        	lda	$1c
+    37b6: 88           	dey
+    37b7: 91 02        	sta	($2),y
+    37b9: a5 1d        	lda	$1d
+    37bb: 88           	dey
+    37bc: 91 02        	sta	($2),y
+    37be: a5 1e        	lda	$1e
+    37c0: 88           	dey
+    37c1: 91 02        	sta	($2),y
+    37c3: a5 1f        	lda	$1f
+    37c5: 88           	dey
+    37c6: 91 02        	sta	($2),y
+    37c8: a5 20        	lda	$20
+    37ca: 88           	dey
+    37cb: 91 02        	sta	($2),y
+    37cd: a9 bf        	lda	#$bf
+    37cf: 2d 31 d0     	and	$d031
+    37d2: 8d 31 d0     	sta	$d031
+    37d5: a9 bf        	lda	#$bf
+    37d7: 2d 54 d0     	and	$d054
+    37da: 8d 54 d0     	sta	$d054
+    37dd: a2 47        	ldx	#$47
+    37df: 8e 2f d0     	stx	$d02f
+    37e2: a2 53        	ldx	#$53
+    37e4: 8e 2f d0     	stx	$d02f
+    37e7: ad 5d d0     	lda	$d05d
+    37ea: 29 7f        	and	#$7f
+    37ec: 8d 5d d0     	sta	$d05d
+    37ef: a2 28        	ldx	#$28
+    37f1: 9c 68 d0     	stz	$d068
+    37f4: a0 d8        	ldy	#$d8
+    37f6: 8c 69 d0     	sty	$d069
+    37f9: a0 02        	ldy	#$2
+    37fb: 8c 6a d0     	sty	$d06a
+    37fe: ac 31 d0     	ldy	$d031
+    3801: 10 02        	bpl	$3805
+    3803: a2 50        	ldx	#$50
+    3805: a0 37        	ldy	#$37
+    3807: 84 04        	sty	$4
+    3809: a0 00        	ldy	#$0
+    380b: 84 05        	sty	$5
+    380d: 86 33        	stx	$33
+    380f: ad 31 d0     	lda	$d031
+    3812: 29 08        	and	#$8
+    3814: f0 04        	beq	$381a
+    3816: a2 32        	ldx	#$32
+    3818: 80 02        	bra	$381c
+    381a: a2 19        	ldx	#$19
+    381c: 86 34        	stx	$34
+    381e: 80 03        	bra	$3823
+    3820: 9c 10 d6     	stz	$d610
+    3823: ae 10 d6     	ldx	$d610
+    3826: d0 f8        	bne	$3820
+    3828: a6 04        	ldx	$4
+    382a: 86 1e        	stx	$1e
+    382c: a2 00        	ldx	#$0
+    382e: 86 1a        	stx	$1a
+    3830: a2 61        	ldx	#$61
+    3832: 86 1b        	stx	$1b
+    3834: a2 34        	ldx	#$34
+    3836: 86 16        	stx	$16
+    3838: a2 03        	ldx	#$3
+    383a: 86 17        	stx	$17
+    383c: a2 41        	ldx	#$41
+    383e: 86 18        	stx	$18
+    3840: a2 61        	ldx	#$61
+    3842: 86 19        	stx	$19
+    3844: a2 ff        	ldx	#$ff
+    3846: a0 95        	ldy	#$95
+    3848: 84 04        	sty	$4
+    384a: a0 44        	ldy	#$44
+    384c: 84 05        	sty	$5
+    384e: a0 01        	ldy	#$1
+    3850: a5 04        	lda	$4
+    3852: 85 06        	sta	$6
+    3854: a5 05        	lda	$5
+    3856: 85 07        	sta	$7
+    3858: a9 7f        	lda	#$7f
+    385a: 91 04        	sta	($4),y
+    385c: a9 00        	lda	#$0
+    385e: 92 04        	sta	($4),z
+    3860: a5 04        	lda	$4
+    3862: 18           	clc
+    3863: 69 03        	adc	#$3
+    3865: 85 04        	sta	$4
+    3867: a5 05        	lda	$5
+    3869: 69 00        	adc	#$0
+    386b: 85 05        	sta	$5
+    386d: e6 06        	inc	$6
+    386f: d0 02        	bne	$3873
+    3871: e6 07        	inc	$7
+    3873: a9 3e        	lda	#$3e
+    3875: 91 06        	sta	($6),y
+    3877: ca           	dex
+    3878: d0 d6        	bne	$3850
+    387a: 80 03        	bra	$387f
+    387c: 9c 10 d6     	stz	$d610
+    387f: ae 10 d6     	ldx	$d610
+    3882: d0 f8        	bne	$387c
+    3884: a2 6e        	ldx	#$6e
+    3886: 86 1c        	stx	$1c
+    3888: a2 44        	ldx	#$44
+    388a: 86 1d        	stx	$1d
+    388c: a6 33        	ldx	$33
+    388e: 64 05        	stz	$5
+    3890: a5 34        	lda	$34
+    3892: 86 04        	stx	$4
+    3894: a2 00        	ldx	#$0
+    3896: 20 93 42     	jsr	$4293
+    3899: a8           	tay
+    389a: ad 54 d0     	lda	$d054
+    389d: 29 01        	and	#$1
+    389f: 85 04        	sta	$4
+    38a1: 98           	tya
+    38a2: 20 80 42     	jsr	$4280
+    38a5: 85 07        	sta	$7
+    38a7: 86 08        	stx	$8
+    38a9: ad 63 d0     	lda	$d063
+    38ac: 29 07        	and	#$7
+    38ae: ae 62 d0     	ldx	$d062
+    38b1: ac 61 d0     	ldy	$d061
+    38b4: 84 09        	sty	$9
+    38b6: ac 60 d0     	ldy	$d060
+    38b9: 86 04        	stx	$4
+    38bb: 85 05        	sta	$5
+    38bd: a2 20        	ldx	#$20
+    38bf: 86 06        	stx	$6
+    38c1: a6 07        	ldx	$7
+    38c3: 86 1f        	stx	$1f
+    38c5: a6 08        	ldx	$8
+    38c7: 86 20        	stx	$20
+    38c9: a6 09        	ldx	$9
+    38cb: 98           	tya
+    38cc: 20 78 41     	jsr	$4178
+    38cf: a2 0b        	ldx	#$b
+    38d1: 86 37        	stx	$37
+    38d3: a2 80        	ldx	#$80
+    38d5: 86 38        	stx	$38
+    38d7: 64 39        	stz	$39
+    38d9: e8           	inx
+    38da: 86 3a        	stx	$3a
+    38dc: a2 ff        	ldx	#$ff
+    38de: 86 3b        	stx	$3b
+    38e0: a2 85        	ldx	#$85
+    38e2: 86 3c        	stx	$3c
+    38e4: a0 01        	ldy	#$1
+    38e6: 84 3d        	sty	$3d
+    38e8: 64 3e        	stz	$3e
+    38ea: a2 03        	ldx	#$3
+    38ec: 86 3f        	stx	$3f
+    38ee: 64 48        	stz	$48
+    38f0: a6 1f        	ldx	$1f
+    38f2: 86 40        	stx	$40
+    38f4: a6 20        	ldx	$20
+    38f6: 86 41        	stx	$41
+    38f8: 84 42        	sty	$42
+    38fa: 64 43        	stz	$43
+    38fc: 64 45        	stz	$45
+    38fe: 64 46        	stz	$46
+    3900: a2 08        	ldx	#$8
+    3902: 86 47        	stx	$47
+    3904: a2 47        	ldx	#$47
+    3906: 8e 2f d0     	stx	$d02f
+    3909: a2 53        	ldx	#$53
+    390b: 8e 2f d0     	stx	$d02f
+    390e: a2 41        	ldx	#$41
+    3910: 86 00        	stx	$0
+    3912: 9c 02 d7     	stz	$d702
+    3915: 9c 04 d7     	stz	$d704
+    3918: a2 00        	ldx	#$0
+    391a: 8e 01 d7     	stx	$d701
+    391d: a2 00        	ldx	#$0
+    391f: a4 1e        	ldy	$1e
+    3921: 8c 05 d7     	sty	$d705
+    3924: 64 35        	stz	$35
+    3926: 64 36        	stz	$36
+    3928: a0 61        	ldy	#$61
+    392a: 84 32        	sty	$32
+    392c: a0 00        	ldy	#$0
+    392e: 84 04        	sty	$4
+    3930: a0 61        	ldy	#$61
+    3932: 84 05        	sty	$5
+    3934: a0 3f        	ldy	#$3f
+    3936: 84 06        	sty	$6
+    3938: a0 44        	ldy	#$44
+    393a: 84 07        	sty	$7
+    393c: a9 0d        	lda	#$d
+    393e: 20 00 42     	jsr	$4200
+    3941: a2 34        	ldx	#$34
+    3943: 86 04        	stx	$4
+    3945: a2 03        	ldx	#$3
+    3947: 86 05        	stx	$5
+    3949: a0 61        	ldy	#$61
+    394b: a2 00        	ldx	#$0
+    394d: a9 2e        	lda	#$2e
+    394f: 8d 40 d6     	sta	$d640
+    3952: b8           	clv
+    3953: 90 07        	bcc	$395c
+    3955: a9 00        	lda	#$0
+    3957: 85 1e        	sta	$1e
+    3959: 4c 60 39     	jmp	$3960
 
-00003776 <done04>:
-    3776: ea           	nop
-    3777: 80 16        	bra	$378f
-    3779: c9 c0        	cmp	#$c0
-    377b: 90 04        	bcc	$3781
-    377d: 49 80        	eor	#$80
-    377f: 80 03        	bra	$3784
-    3781: 18           	clc
-    3782: 69 e0        	adc	#$e0
-    3784: 92 04        	sta	($4),z
-    3786: e6 04        	inc	$4
-    3788: d0 02        	bne	$378c
-    378a: e6 05        	inc	$5
-    378c: aa           	tax
-    378d: f0 15        	beq	$37a4
-    378f: b2 1a        	lda	($1a),z
-    3791: e6 1a        	inc	$1a
-    3793: d0 02        	bne	$3797
-    3795: e6 1b        	inc	$1b
-    3797: c9 40        	cmp	#$40
-    3799: 90 e9        	bcc	$3784
-    379b: c9 60        	cmp	#$60
-    379d: b0 da        	bcs	$3779
-    379f: 18           	clc
-    37a0: 69 c0        	adc	#$c0
-    37a2: 80 e0        	bra	$3784
-    37a4: a2 b4        	ldx	#$b4
-    37a6: 86 1a        	stx	$1a
-    37a8: a2 41        	ldx	#$41
-    37aa: 86 1b        	stx	$1b
-    37ac: a5 35        	lda	$35
-    37ae: a6 36        	ldx	$36
-    37b0: a0 34        	ldy	#$34
-    37b2: 84 04        	sty	$4
-    37b4: a0 03        	ldy	#$3
-    37b6: 84 05        	sty	$5
-    37b8: 20 b1 3d     	jsr	$3db1
-    37bb: a2 00        	ldx	#$0
-    37bd: 64 04        	stz	$4
-    37bf: 64 05        	stz	$5
-    37c1: a5 1c        	lda	$1c
-    37c3: 20 4d 3d     	jsr	$3d4d
-    37c6: a2 34        	ldx	#$34
-    37c8: 86 04        	stx	$4
-    37ca: a2 03        	ldx	#$3
-    37cc: 86 05        	stx	$5
-    37ce: a2 00        	ldx	#$0
-    37d0: a9 46        	lda	#$46
-    37d2: 8d 00 42     	sta	$4200
-    37d5: b8           	clv
-    37d6: 90 05        	bcc	$37dd
-    37d8: 85 1c        	sta	$1c
-    37da: 4c e1 37     	jmp	$37e1
+0000395c <errhypsetnam0>:
+    395c: a9 ff        	lda	#$ff
+    395e: 85 1e        	sta	$1e
 
-000037dd <error06>:
-    37dd: a9 ff        	lda	#$ff
-    37df: 85 1c        	sta	$1c
+00003960 <donehypsetnam0>:
+    3960: ea           	nop
+    3961: 80 16        	bra	$3979
+    3963: c9 c0        	cmp	#$c0
+    3965: 90 04        	bcc	$396b
+    3967: 49 80        	eor	#$80
+    3969: 80 03        	bra	$396e
+    396b: 18           	clc
+    396c: 69 e0        	adc	#$e0
+    396e: 92 04        	sta	($4),z
+    3970: e6 04        	inc	$4
+    3972: d0 02        	bne	$3976
+    3974: e6 05        	inc	$5
+    3976: aa           	tax
+    3977: f0 15        	beq	$398e
+    3979: b2 1c        	lda	($1c),z
+    397b: e6 1c        	inc	$1c
+    397d: d0 02        	bne	$3981
+    397f: e6 1d        	inc	$1d
+    3981: c9 40        	cmp	#$40
+    3983: 90 e9        	bcc	$396e
+    3985: c9 60        	cmp	#$60
+    3987: b0 da        	bcs	$3963
+    3989: 18           	clc
+    398a: 69 c0        	adc	#$c0
+    398c: 80 e0        	bra	$396e
+    398e: a2 d7        	ldx	#$d7
+    3990: 86 1c        	stx	$1c
+    3992: a2 43        	ldx	#$43
+    3994: 86 1d        	stx	$1d
+    3996: a5 35        	lda	$35
+    3998: a6 36        	ldx	$36
+    399a: a0 34        	ldy	#$34
+    399c: 84 04        	sty	$4
+    399e: a0 03        	ldy	#$3
+    39a0: 84 05        	sty	$5
+    39a2: 20 c7 3f     	jsr	$3fc7
+    39a5: a2 00        	ldx	#$0
+    39a7: 64 04        	stz	$4
+    39a9: 64 05        	stz	$5
+    39ab: a5 1e        	lda	$1e
+    39ad: 20 63 3f     	jsr	$3f63
+    39b0: a2 34        	ldx	#$34
+    39b2: 86 04        	stx	$4
+    39b4: a2 03        	ldx	#$3
+    39b6: 86 05        	stx	$5
+    39b8: 80 16        	bra	$39d0
+    39ba: c9 c0        	cmp	#$c0
+    39bc: 90 04        	bcc	$39c2
+    39be: 49 80        	eor	#$80
+    39c0: 80 03        	bra	$39c5
+    39c2: 18           	clc
+    39c3: 69 e0        	adc	#$e0
+    39c5: 92 04        	sta	($4),z
+    39c7: e6 04        	inc	$4
+    39c9: d0 02        	bne	$39cd
+    39cb: e6 05        	inc	$5
+    39cd: aa           	tax
+    39ce: f0 15        	beq	$39e5
+    39d0: b2 1c        	lda	($1c),z
+    39d2: e6 1c        	inc	$1c
+    39d4: d0 02        	bne	$39d8
+    39d6: e6 1d        	inc	$1d
+    39d8: c9 40        	cmp	#$40
+    39da: 90 e9        	bcc	$39c5
+    39dc: c9 60        	cmp	#$60
+    39de: b0 da        	bcs	$39ba
+    39e0: 18           	clc
+    39e1: 69 c0        	adc	#$c0
+    39e3: 80 e0        	bra	$39c5
+    39e5: a5 35        	lda	$35
+    39e7: a6 36        	ldx	$36
+    39e9: a0 34        	ldy	#$34
+    39eb: 84 04        	sty	$4
+    39ed: a0 03        	ldy	#$3
+    39ef: 84 05        	sty	$5
+    39f1: 20 c7 3f     	jsr	$3fc7
+    39f4: a2 00        	ldx	#$0
+    39f6: 86 04        	stx	$4
+    39f8: a2 61        	ldx	#$61
+    39fa: 86 05        	stx	$5
+    39fc: a2 34        	ldx	#$34
+    39fe: 86 06        	stx	$6
+    3a00: a2 03        	ldx	#$3
+    3a02: 86 07        	stx	$7
+    3a04: 80 16        	bra	$3a1c
+    3a06: c9 c0        	cmp	#$c0
+    3a08: 90 04        	bcc	$3a0e
+    3a0a: 49 80        	eor	#$80
+    3a0c: 80 03        	bra	$3a11
+    3a0e: 18           	clc
+    3a0f: 69 e0        	adc	#$e0
+    3a11: 92 06        	sta	($6),z
+    3a13: e6 06        	inc	$6
+    3a15: d0 02        	bne	$3a19
+    3a17: e6 07        	inc	$7
+    3a19: aa           	tax
+    3a1a: f0 15        	beq	$3a31
+    3a1c: b2 04        	lda	($4),z
+    3a1e: e6 04        	inc	$4
+    3a20: d0 02        	bne	$3a24
+    3a22: e6 05        	inc	$5
+    3a24: c9 40        	cmp	#$40
+    3a26: 90 e9        	bcc	$3a11
+    3a28: c9 60        	cmp	#$60
+    3a2a: b0 da        	bcs	$3a06
+    3a2c: 18           	clc
+    3a2d: 69 c0        	adc	#$c0
+    3a2f: 80 e0        	bra	$3a11
+    3a31: a2 28        	ldx	#$28
+    3a33: 86 1c        	stx	$1c
+    3a35: a2 44        	ldx	#$44
+    3a37: 86 1d        	stx	$1d
+    3a39: a5 35        	lda	$35
+    3a3b: a6 36        	ldx	$36
+    3a3d: a0 34        	ldy	#$34
+    3a3f: 84 04        	sty	$4
+    3a41: a0 03        	ldy	#$3
+    3a43: 84 05        	sty	$5
+    3a45: 20 c7 3f     	jsr	$3fc7
+    3a48: a2 61        	ldx	#$61
+    3a4a: 86 32        	stx	$32
+    3a4c: a2 00        	ldx	#$0
+    3a4e: 86 04        	stx	$4
+    3a50: a2 61        	ldx	#$61
+    3a52: 86 05        	stx	$5
+    3a54: a2 a0        	ldx	#$a0
+    3a56: 86 06        	stx	$6
+    3a58: a2 43        	ldx	#$43
+    3a5a: 86 07        	stx	$7
+    3a5c: a9 0d        	lda	#$d
+    3a5e: a2 00        	ldx	#$0
+    3a60: 20 00 42     	jsr	$4200
+    3a63: a2 34        	ldx	#$34
+    3a65: 86 04        	stx	$4
+    3a67: a2 03        	ldx	#$3
+    3a69: 86 05        	stx	$5
+    3a6b: a0 61        	ldy	#$61
+    3a6d: a2 00        	ldx	#$0
+    3a6f: a9 2e        	lda	#$2e
+    3a71: 8d 40 d6     	sta	$d640
+    3a74: b8           	clv
+    3a75: 90 07        	bcc	$3a7e
+    3a77: a9 00        	lda	#$0
+    3a79: 85 06        	sta	$6
+    3a7b: 4c 82 3a     	jmp	$3a82
 
-000037e1 <done06>:
-    37e1: ea           	nop
-    37e2: 80 16        	bra	$37fa
-    37e4: c9 c0        	cmp	#$c0
-    37e6: 90 04        	bcc	$37ec
-    37e8: 49 80        	eor	#$80
-    37ea: 80 03        	bra	$37ef
-    37ec: 18           	clc
-    37ed: 69 e0        	adc	#$e0
-    37ef: 92 04        	sta	($4),z
-    37f1: e6 04        	inc	$4
-    37f3: d0 02        	bne	$37f7
-    37f5: e6 05        	inc	$5
-    37f7: aa           	tax
-    37f8: f0 15        	beq	$380f
-    37fa: b2 1a        	lda	($1a),z
-    37fc: e6 1a        	inc	$1a
-    37fe: d0 02        	bne	$3802
-    3800: e6 1b        	inc	$1b
-    3802: c9 40        	cmp	#$40
-    3804: 90 e9        	bcc	$37ef
-    3806: c9 60        	cmp	#$60
-    3808: b0 da        	bcs	$37e4
-    380a: 18           	clc
-    380b: 69 c0        	adc	#$c0
-    380d: 80 e0        	bra	$37ef
-    380f: a5 35        	lda	$35
-    3811: a6 36        	ldx	$36
-    3813: a0 34        	ldy	#$34
-    3815: 84 04        	sty	$4
-    3817: a0 03        	ldy	#$3
-    3819: 84 05        	sty	$5
-    381b: 20 b1 3d     	jsr	$3db1
-    381e: 64 1a        	stz	$1a
-    3820: 64 04        	stz	$4
-    3822: 64 05        	stz	$5
-    3824: a2 00        	ldx	#$0
-    3826: a5 1c        	lda	$1c
-    3828: 20 4d 3d     	jsr	$3d4d
-    382b: 64 35        	stz	$35
-    382d: e6 36        	inc	$36
-    382f: 20 cb 3b     	jsr	$3bcb
-    3832: a9 00        	lda	#$0
-    3834: 4c 30 3b     	jmp	$3b30
-    3837: c9 c0        	cmp	#$c0
-    3839: 90 04        	bcc	$383f
-    383b: 49 80        	eor	#$80
-    383d: 80 03        	bra	$3842
-    383f: 18           	clc
-    3840: 69 e0        	adc	#$e0
-    3842: 92 04        	sta	($4),z
-    3844: e6 04        	inc	$4
-    3846: d0 02        	bne	$384a
-    3848: e6 05        	inc	$5
-    384a: aa           	tax
-    384b: f0 15        	beq	$3862
-    384d: b2 1c        	lda	($1c),z
-    384f: e6 1c        	inc	$1c
-    3851: d0 02        	bne	$3855
-    3853: e6 1d        	inc	$1d
-    3855: c9 40        	cmp	#$40
-    3857: 90 e9        	bcc	$3842
-    3859: c9 60        	cmp	#$60
-    385b: b0 da        	bcs	$3837
-    385d: 18           	clc
-    385e: 69 c0        	adc	#$c0
-    3860: 80 e0        	bra	$3842
-    3862: a2 44        	ldx	#$44
-    3864: 86 1c        	stx	$1c
-    3866: a2 41        	ldx	#$41
-    3868: 86 1d        	stx	$1d
-    386a: a5 35        	lda	$35
-    386c: a6 36        	ldx	$36
-    386e: a0 34        	ldy	#$34
-    3870: 84 04        	sty	$4
-    3872: a0 03        	ldy	#$3
-    3874: 84 05        	sty	$5
-    3876: 20 b1 3d     	jsr	$3db1
-    3879: 64 04        	stz	$4
-    387b: 64 05        	stz	$5
-    387d: a2 00        	ldx	#$0
-    387f: a5 1b        	lda	$1b
-    3881: 20 4d 3d     	jsr	$3d4d
-    3884: 64 35        	stz	$35
-    3886: e6 36        	inc	$36
-    3888: a2 00        	ldx	#$0
-    388a: a9 12        	lda	#$12
-    388c: 8d 00 42     	sta	$4200
-    388f: b8           	clv
-    3890: 90 05        	bcc	$3897
-    3892: 85 1f        	sta	$1f
-    3894: 4c 9b 38     	jmp	$389b
+00003a7e <errhypsetnam1>:
+    3a7e: a9 ff        	lda	#$ff
+    3a80: 85 06        	sta	$6
 
-00003897 <error07>:
-    3897: a9 ff        	lda	#$ff
-    3899: 85 1f        	sta	$1f
-
-0000389b <done07>:
-    389b: ea           	nop
-    389c: a2 34        	ldx	#$34
-    389e: 86 04        	stx	$4
-    38a0: a2 03        	ldx	#$3
-    38a2: 86 05        	stx	$5
-    38a4: 80 16        	bra	$38bc
-    38a6: c9 c0        	cmp	#$c0
-    38a8: 90 04        	bcc	$38ae
-    38aa: 49 80        	eor	#$80
-    38ac: 80 03        	bra	$38b1
-    38ae: 18           	clc
-    38af: 69 e0        	adc	#$e0
-    38b1: 92 04        	sta	($4),z
-    38b3: e6 04        	inc	$4
-    38b5: d0 02        	bne	$38b9
-    38b7: e6 05        	inc	$5
-    38b9: aa           	tax
-    38ba: f0 15        	beq	$38d1
-    38bc: b2 1c        	lda	($1c),z
-    38be: e6 1c        	inc	$1c
-    38c0: d0 02        	bne	$38c4
-    38c2: e6 1d        	inc	$1d
-    38c4: c9 40        	cmp	#$40
-    38c6: 90 e9        	bcc	$38b1
-    38c8: c9 60        	cmp	#$60
-    38ca: b0 da        	bcs	$38a6
-    38cc: 18           	clc
-    38cd: 69 c0        	adc	#$c0
-    38cf: 80 e0        	bra	$38b1
-    38d1: a5 35        	lda	$35
-    38d3: a6 36        	ldx	$36
-    38d5: a0 34        	ldy	#$34
-    38d7: 84 04        	sty	$4
-    38d9: a0 03        	ldy	#$3
-    38db: 84 05        	sty	$5
-    38dd: 20 b1 3d     	jsr	$3db1
-    38e0: 64 04        	stz	$4
-    38e2: 64 05        	stz	$5
-    38e4: a2 00        	ldx	#$0
-    38e6: a5 1f        	lda	$1f
-    38e8: 20 4d 3d     	jsr	$3d4d
-    38eb: a6 1f        	ldx	$1f
-    38ed: 64 35        	stz	$35
-    38ef: e6 36        	inc	$36
-    38f1: a5 1e        	lda	$1e
-    38f3: e0 84        	cpx	#$84
-    38f5: d0 03        	bne	$38fa
-    38f7: 4c 2b 3b     	jmp	$3b2b
-    38fa: e0 87        	cpx	#$87
-    38fc: d0 03        	bne	$3901
-    38fe: 4c 2b 3b     	jmp	$3b2b
-    3901: 4c 6c 3a     	jmp	$3a6c
-    3904: c9 c0        	cmp	#$c0
-    3906: 90 04        	bcc	$390c
-    3908: 49 80        	eor	#$80
-    390a: 80 03        	bra	$390f
-    390c: 18           	clc
-    390d: 69 e0        	adc	#$e0
-    390f: 92 06        	sta	($6),z
-    3911: e6 06        	inc	$6
-    3913: d0 02        	bne	$3917
-    3915: e6 07        	inc	$7
-    3917: aa           	tax
-    3918: f0 15        	beq	$392f
-    391a: b2 04        	lda	($4),z
-    391c: e6 04        	inc	$4
-    391e: d0 02        	bne	$3922
-    3920: e6 05        	inc	$5
-    3922: c9 40        	cmp	#$40
-    3924: 90 e9        	bcc	$390f
-    3926: c9 60        	cmp	#$60
-    3928: b0 da        	bcs	$3904
-    392a: 18           	clc
-    392b: 69 c0        	adc	#$c0
-    392d: 80 e0        	bra	$390f
-    392f: a5 35        	lda	$35
-    3931: a6 36        	ldx	$36
-    3933: a0 34        	ldy	#$34
-    3935: 84 04        	sty	$4
-    3937: a0 03        	ldy	#$3
-    3939: 84 05        	sty	$5
-    393b: 20 b1 3d     	jsr	$3db1
-    393e: 64 04        	stz	$4
-    3940: 64 05        	stz	$5
-    3942: a2 00        	ldx	#$0
-    3944: a5 1b        	lda	$1b
-    3946: 20 4d 3d     	jsr	$3d4d
-    3949: 20 6a 3c     	jsr	$3c6a
-    394c: a5 1b        	lda	$1b
-    394e: c9 85        	cmp	#$85
-    3950: d0 03        	bne	$3955
-    3952: 4c 4a 3a     	jmp	$3a4a
-    3955: c9 ff        	cmp	#$ff
-    3957: d0 03        	bne	$395c
-    3959: 4c 4a 3a     	jmp	$3a4a
-    395c: a0 00        	ldy	#$0
-    395e: a2 00        	ldx	#$0
-    3960: b9 41 60     	lda	$6041,y
-    3963: c9 20        	cmp	#$20
-    3965: f0 0d        	beq	$3974
-    3967: c9 21        	cmp	#$21
-    3969: 90 04        	bcc	$396f
-    396b: 9d 41 61     	sta	$6141,x
-    396e: e8           	inx
-    396f: c8           	iny
-    3970: c0 08        	cpy	#$8
-    3972: d0 ec        	bne	$3960
-    3974: a0 00        	ldy	#$0
-    3976: a9 2e        	lda	#$2e
-    3978: 9d 41 61     	sta	$6141,x
-    397b: e8           	inx
-    397c: b9 49 60     	lda	$6049,y
-    397f: c9 20        	cmp	#$20
-    3981: f0 0d        	beq	$3990
-    3983: c9 21        	cmp	#$21
-    3985: 90 04        	bcc	$398b
-    3987: 9d 41 61     	sta	$6141,x
-    398a: e8           	inx
-    398b: c8           	iny
-    398c: c0 03        	cpy	#$3
-    398e: d0 ec        	bne	$397c
-    3990: a0 cb        	ldy	#$cb
-    3992: 84 04        	sty	$4
-    3994: a0 41        	ldy	#$41
-    3996: 84 05        	sty	$5
-    3998: 9e 41 61     	stz	$6141,x
-    399b: a2 34        	ldx	#$34
-    399d: 86 06        	stx	$6
-    399f: a2 03        	ldx	#$3
-    39a1: 86 07        	stx	$7
-    39a3: 80 16        	bra	$39bb
-    39a5: c9 c0        	cmp	#$c0
-    39a7: 90 04        	bcc	$39ad
-    39a9: 49 80        	eor	#$80
-    39ab: 80 03        	bra	$39b0
-    39ad: 18           	clc
-    39ae: 69 e0        	adc	#$e0
-    39b0: 92 06        	sta	($6),z
-    39b2: e6 06        	inc	$6
-    39b4: d0 02        	bne	$39b8
-    39b6: e6 07        	inc	$7
-    39b8: aa           	tax
-    39b9: f0 15        	beq	$39d0
-    39bb: b2 04        	lda	($4),z
-    39bd: e6 04        	inc	$4
-    39bf: d0 02        	bne	$39c3
-    39c1: e6 05        	inc	$5
-    39c3: c9 40        	cmp	#$40
-    39c5: 90 e9        	bcc	$39b0
-    39c7: c9 60        	cmp	#$60
-    39c9: b0 da        	bcs	$39a5
-    39cb: 18           	clc
-    39cc: 69 c0        	adc	#$c0
-    39ce: 80 e0        	bra	$39b0
-    39d0: a5 35        	lda	$35
-    39d2: a6 36        	ldx	$36
-    39d4: a0 34        	ldy	#$34
-    39d6: 84 04        	sty	$4
-    39d8: a0 03        	ldy	#$3
-    39da: 84 05        	sty	$5
-    39dc: 20 b1 3d     	jsr	$3db1
-    39df: a2 41        	ldx	#$41
-    39e1: 86 04        	stx	$4
-    39e3: a2 61        	ldx	#$61
-    39e5: 86 05        	stx	$5
-    39e7: a2 34        	ldx	#$34
-    39e9: 86 06        	stx	$6
-    39eb: a2 03        	ldx	#$3
-    39ed: 86 07        	stx	$7
-    39ef: 80 16        	bra	$3a07
-    39f1: c9 c0        	cmp	#$c0
-    39f3: 90 04        	bcc	$39f9
-    39f5: 49 80        	eor	#$80
-    39f7: 80 03        	bra	$39fc
-    39f9: 18           	clc
-    39fa: 69 e0        	adc	#$e0
-    39fc: 92 06        	sta	($6),z
-    39fe: e6 06        	inc	$6
-    3a00: d0 02        	bne	$3a04
-    3a02: e6 07        	inc	$7
-    3a04: aa           	tax
-    3a05: f0 15        	beq	$3a1c
-    3a07: b2 04        	lda	($4),z
-    3a09: e6 04        	inc	$4
-    3a0b: d0 02        	bne	$3a0f
-    3a0d: e6 05        	inc	$5
-    3a0f: c9 40        	cmp	#$40
-    3a11: 90 e9        	bcc	$39fc
-    3a13: c9 60        	cmp	#$60
-    3a15: b0 da        	bcs	$39f1
-    3a17: 18           	clc
-    3a18: 69 c0        	adc	#$c0
-    3a1a: 80 e0        	bra	$39fc
-    3a1c: a5 35        	lda	$35
-    3a1e: a6 36        	ldx	$36
-    3a20: a0 34        	ldy	#$34
-    3a22: 84 04        	sty	$4
-    3a24: a0 03        	ldy	#$3
-    3a26: 84 05        	sty	$5
-    3a28: 20 b1 3d     	jsr	$3db1
-    3a2b: 20 6a 3c     	jsr	$3c6a
-    3a2e: a2 41        	ldx	#$41
-    3a30: 86 04        	stx	$4
-    3a32: a2 61        	ldx	#$61
-    3a34: 86 05        	stx	$5
-    3a36: 20 e2 3f     	jsr	$3fe2
-    3a39: a2 cb        	ldx	#$cb
-    3a3b: 86 04        	stx	$4
-    3a3d: a2 41        	ldx	#$41
-    3a3f: 86 05        	stx	$5
-    3a41: 20 82 35     	jsr	$3582
-    3a44: 64 35        	stz	$35
-    3a46: e6 36        	inc	$36
-    3a48: a5 1b        	lda	$1b
-    3a4a: ae 10 d6     	ldx	$d610
-    3a4d: 9c 10 d6     	stz	$d610
-    3a50: d0 f8        	bne	$3a4a
-    3a52: a6 1f        	ldx	$1f
-    3a54: ac 10 d6     	ldy	$d610
-    3a57: 9c 10 d6     	stz	$d610
-    3a5a: f0 f8        	beq	$3a54
-    3a5c: ac 10 d6     	ldy	$d610
-    3a5f: 9c 10 d6     	stz	$d610
-    3a62: d0 f8        	bne	$3a5c
-    3a64: c9 ff        	cmp	#$ff
-    3a66: f0 3e        	beq	$3aa6
-    3a68: c9 85        	cmp	#$85
-    3a6a: f0 3a        	beq	$3aa6
-    3a6c: a0 89        	ldy	#$89
-    3a6e: 84 04        	sty	$4
-    3a70: a0 41        	ldy	#$41
-    3a72: 84 05        	sty	$5
-    3a74: 8a           	txa
-    3a75: a8           	tay
-    3a76: da           	phx
-    3a77: a2 00        	ldx	#$0
-    3a79: 8a           	txa
-
-00003a7a <loop1>:
-    3a7a: 9d 35 41     	sta	$4135,x
-    3a7d: ca           	dex
-    3a7e: d0 fa        	bne	$3a7a
-    3a80: fa           	plx
-    3a81: 98           	tya
-    3a82: aa           	tax
-    3a83: a0 41        	ldy	#$41
-    3a85: a9 14        	lda	#$14
-    3a87: 8d 00 42     	sta	$4200
+00003a82 <donehypsetnam1>:
+    3a82: ea           	nop
+    3a83: a2 00        	ldx	#$0
+    3a85: a9 46        	lda	#$46
+    3a87: 8d 40 d6     	sta	$d640
     3a8a: b8           	clv
-    3a8b: 90 05        	bcc	$3a92
-    3a8d: 86 1b        	stx	$1b
-    3a8f: 4c 94 3a     	jmp	$3a94
+    3a8b: 90 07        	bcc	$3a94
+    3a8d: a9 00        	lda	#$0
+    3a8f: 85 1a        	sta	$1a
+    3a91: 4c 98 3a     	jmp	$3a98
 
-00003a92 <error09>:
-    3a92: 85 1b        	sta	$1b
+00003a94 <errhyp1att2>:
+    3a94: a9 ff        	lda	#$ff
+    3a96: 85 1a        	sta	$1a
 
-00003a94 <done09>:
-    3a94: ea           	nop
-    3a95: ae 40 60     	ldx	$6040
-    3a98: 9e 00 60     	stz	$6000,x
-    3a9b: a2 34        	ldx	#$34
-    3a9d: 86 06        	stx	$6
-    3a9f: a2 03        	ldx	#$3
-    3aa1: 86 07        	stx	$7
-    3aa3: 4c 1a 39     	jmp	$391a
-    3aa6: a0 d9        	ldy	#$d9
-    3aa8: 84 04        	sty	$4
-    3aaa: a0 41        	ldy	#$41
-    3aac: 84 05        	sty	$5
-    3aae: a0 34        	ldy	#$34
-    3ab0: 84 06        	sty	$6
-    3ab2: a0 03        	ldy	#$3
-    3ab4: 84 07        	sty	$7
-    3ab6: a9 16        	lda	#$16
-    3ab8: 8d 00 42     	sta	$4200
-    3abb: b8           	clv
-    3abc: 90 05        	bcc	$3ac3
-    3abe: 86 1b        	stx	$1b
-    3ac0: 4c c5 3a     	jmp	$3ac5
+00003a98 <donehyp1att2>:
+    3a98: ea           	nop
+    3a99: 80 16        	bra	$3ab1
+    3a9b: c9 c0        	cmp	#$c0
+    3a9d: 90 04        	bcc	$3aa3
+    3a9f: 49 80        	eor	#$80
+    3aa1: 80 03        	bra	$3aa6
+    3aa3: 18           	clc
+    3aa4: 69 e0        	adc	#$e0
+    3aa6: 92 04        	sta	($4),z
+    3aa8: e6 04        	inc	$4
+    3aaa: d0 02        	bne	$3aae
+    3aac: e6 05        	inc	$5
+    3aae: aa           	tax
+    3aaf: f0 15        	beq	$3ac6
+    3ab1: b2 1c        	lda	($1c),z
+    3ab3: e6 1c        	inc	$1c
+    3ab5: d0 02        	bne	$3ab9
+    3ab7: e6 1d        	inc	$1d
+    3ab9: c9 40        	cmp	#$40
+    3abb: 90 e9        	bcc	$3aa6
+    3abd: c9 60        	cmp	#$60
+    3abf: b0 da        	bcs	$3a9b
+    3ac1: 18           	clc
+    3ac2: 69 c0        	adc	#$c0
+    3ac4: 80 e0        	bra	$3aa6
+    3ac6: a5 35        	lda	$35
+    3ac8: a6 36        	ldx	$36
+    3aca: a0 34        	ldy	#$34
+    3acc: 84 04        	sty	$4
+    3ace: a0 03        	ldy	#$3
+    3ad0: 84 05        	sty	$5
+    3ad2: 20 c7 3f     	jsr	$3fc7
+    3ad5: a2 00        	ldx	#$0
+    3ad7: 64 04        	stz	$4
+    3ad9: 64 05        	stz	$5
+    3adb: a5 1a        	lda	$1a
+    3add: 20 63 3f     	jsr	$3f63
+    3ae0: 20 82 35     	jsr	$3582
+    3ae3: ae 10 d6     	ldx	$d610
+    3ae6: f0 fb        	beq	$3ae3
+    3ae8: 64 1a        	stz	$1a
+    3aea: 9c 10 d6     	stz	$d610
+    3aed: a0 00        	ldy	#$0
+    3aef: 4c e3 3d     	jmp	$3de3
+    3af2: c9 c0        	cmp	#$c0
+    3af4: 90 04        	bcc	$3afa
+    3af6: 49 80        	eor	#$80
+    3af8: 80 03        	bra	$3afd
+    3afa: 18           	clc
+    3afb: 69 e0        	adc	#$e0
+    3afd: 92 04        	sta	($4),z
+    3aff: e6 04        	inc	$4
+    3b01: d0 02        	bne	$3b05
+    3b03: e6 05        	inc	$5
+    3b05: aa           	tax
+    3b06: f0 15        	beq	$3b1d
+    3b08: b2 1c        	lda	($1c),z
+    3b0a: e6 1c        	inc	$1c
+    3b0c: d0 02        	bne	$3b10
+    3b0e: e6 1d        	inc	$1d
+    3b10: c9 40        	cmp	#$40
+    3b12: 90 e9        	bcc	$3afd
+    3b14: c9 60        	cmp	#$60
+    3b16: b0 da        	bcs	$3af2
+    3b18: 18           	clc
+    3b19: 69 c0        	adc	#$c0
+    3b1b: 80 e0        	bra	$3afd
+    3b1d: a5 35        	lda	$35
+    3b1f: a6 36        	ldx	$36
+    3b21: a0 34        	ldy	#$34
+    3b23: 84 04        	sty	$4
+    3b25: a0 03        	ldy	#$3
+    3b27: 84 05        	sty	$5
+    3b29: 20 c7 3f     	jsr	$3fc7
+    3b2c: 64 04        	stz	$4
+    3b2e: 64 05        	stz	$5
+    3b30: a2 00        	ldx	#$0
+    3b32: a5 1b        	lda	$1b
+    3b34: 20 63 3f     	jsr	$3f63
+    3b37: 20 82 35     	jsr	$3582
+    3b3a: a6 1b        	ldx	$1b
+    3b3c: e0 ff        	cpx	#$ff
+    3b3e: d0 03        	bne	$3b43
+    3b40: 4c d4 3d     	jmp	$3dd4
+    3b43: a2 ad        	ldx	#$ad
+    3b45: 86 04        	stx	$4
+    3b47: a2 43        	ldx	#$43
+    3b49: 86 05        	stx	$5
+    3b4b: a2 00        	ldx	#$0
+    3b4d: a9 12        	lda	#$12
+    3b4f: 8d 40 d6     	sta	$d640
+    3b52: b8           	clv
+    3b53: 90 05        	bcc	$3b5a
+    3b55: 85 1b        	sta	$1b
+    3b57: 4c 5e 3b     	jmp	$3b5e
 
-00003ac3 <error08>:
-    3ac3: 85 1b        	sta	$1b
+00003b5a <errhypopendir3>:
+    3b5a: a9 ff        	lda	#$ff
+    3b5c: 85 1b        	sta	$1b
 
-00003ac5 <done08>:
-    3ac5: ea           	nop
-    3ac6: 80 16        	bra	$3ade
-    3ac8: c9 c0        	cmp	#$c0
-    3aca: 90 04        	bcc	$3ad0
-    3acc: 49 80        	eor	#$80
-    3ace: 80 03        	bra	$3ad3
-    3ad0: 18           	clc
-    3ad1: 69 e0        	adc	#$e0
-    3ad3: 92 06        	sta	($6),z
-    3ad5: e6 06        	inc	$6
-    3ad7: d0 02        	bne	$3adb
-    3ad9: e6 07        	inc	$7
-    3adb: aa           	tax
-    3adc: f0 15        	beq	$3af3
-    3ade: b2 04        	lda	($4),z
-    3ae0: e6 04        	inc	$4
-    3ae2: d0 02        	bne	$3ae6
-    3ae4: e6 05        	inc	$5
-    3ae6: c9 40        	cmp	#$40
-    3ae8: 90 e9        	bcc	$3ad3
-    3aea: c9 60        	cmp	#$60
-    3aec: b0 da        	bcs	$3ac8
-    3aee: 18           	clc
-    3aef: 69 c0        	adc	#$c0
-    3af1: 80 e0        	bra	$3ad3
-    3af3: a5 35        	lda	$35
-    3af5: a6 36        	ldx	$36
-    3af7: a0 34        	ldy	#$34
-    3af9: 84 04        	sty	$4
-    3afb: a0 03        	ldy	#$3
-    3afd: 84 05        	sty	$5
-    3aff: 20 b1 3d     	jsr	$3db1
-    3b02: 64 04        	stz	$4
-    3b04: 64 05        	stz	$5
-    3b06: a2 00        	ldx	#$0
-    3b08: a5 1b        	lda	$1b
-    3b0a: 20 4d 3d     	jsr	$3d4d
-    3b0d: 64 35        	stz	$35
-    3b0f: e6 36        	inc	$36
-    3b11: ae 10 d6     	ldx	$d610
-    3b14: 9c 10 d6     	stz	$d610
-    3b17: d0 f8        	bne	$3b11
-    3b19: a5 1e        	lda	$1e
-    3b1b: ae 10 d6     	ldx	$d610
-    3b1e: 9c 10 d6     	stz	$d610
-    3b21: f0 f8        	beq	$3b1b
-    3b23: ae 10 d6     	ldx	$d610
-    3b26: 9c 10 d6     	stz	$d610
-    3b29: d0 f8        	bne	$3b23
-    3b2b: 1a           	inc
-    3b2c: c9 21        	cmp	#$21
-    3b2e: f0 59        	beq	$3b89
-    3b30: a2 6e        	ldx	#$6e
-    3b32: 86 1c        	stx	$1c
-    3b34: a2 41        	ldx	#$41
-    3b36: 86 1d        	stx	$1d
-    3b38: a8           	tay
-    3b39: a9 06        	lda	#$6
-    3b3b: 8d 00 42     	sta	$4200
-    3b3e: b8           	clv
-    3b3f: 90 05        	bcc	$3b46
-    3b41: 86 1b        	stx	$1b
-    3b43: 4c 4a 3b     	jmp	$3b4a
+00003b5e <donehypopendir3>:
+    3b5e: ea           	nop
+    3b5f: a2 34        	ldx	#$34
+    3b61: 86 06        	stx	$6
+    3b63: a2 03        	ldx	#$3
+    3b65: 86 07        	stx	$7
+    3b67: 80 16        	bra	$3b7f
+    3b69: c9 c0        	cmp	#$c0
+    3b6b: 90 04        	bcc	$3b71
+    3b6d: 49 80        	eor	#$80
+    3b6f: 80 03        	bra	$3b74
+    3b71: 18           	clc
+    3b72: 69 e0        	adc	#$e0
+    3b74: 92 06        	sta	($6),z
+    3b76: e6 06        	inc	$6
+    3b78: d0 02        	bne	$3b7c
+    3b7a: e6 07        	inc	$7
+    3b7c: aa           	tax
+    3b7d: f0 15        	beq	$3b94
+    3b7f: b2 04        	lda	($4),z
+    3b81: e6 04        	inc	$4
+    3b83: d0 02        	bne	$3b87
+    3b85: e6 05        	inc	$5
+    3b87: c9 40        	cmp	#$40
+    3b89: 90 e9        	bcc	$3b74
+    3b8b: c9 60        	cmp	#$60
+    3b8d: b0 da        	bcs	$3b69
+    3b8f: 18           	clc
+    3b90: 69 c0        	adc	#$c0
+    3b92: 80 e0        	bra	$3b74
+    3b94: a5 35        	lda	$35
+    3b96: a6 36        	ldx	$36
+    3b98: a0 34        	ldy	#$34
+    3b9a: 84 04        	sty	$4
+    3b9c: a0 03        	ldy	#$3
+    3b9e: 84 05        	sty	$5
+    3ba0: 20 c7 3f     	jsr	$3fc7
+    3ba3: 64 04        	stz	$4
+    3ba5: 64 05        	stz	$5
+    3ba7: a2 00        	ldx	#$0
+    3ba9: a5 1b        	lda	$1b
+    3bab: 20 63 3f     	jsr	$3f63
+    3bae: 20 82 35     	jsr	$3582
+    3bb1: a4 1b        	ldy	$1b
+    3bb3: c0 84        	cpy	#$84
+    3bb5: d0 03        	bne	$3bba
+    3bb7: 4c d4 3d     	jmp	$3dd4
+    3bba: c0 87        	cpy	#$87
+    3bbc: d0 03        	bne	$3bc1
+    3bbe: 4c d4 3d     	jmp	$3dd4
+    3bc1: c0 ff        	cpy	#$ff
+    3bc3: d0 03        	bne	$3bc8
+    3bc5: 4c d4 3d     	jmp	$3dd4
+    3bc8: 4c 20 3d     	jmp	$3d20
+    3bcb: c9 c0        	cmp	#$c0
+    3bcd: 90 04        	bcc	$3bd3
+    3bcf: 49 80        	eor	#$80
+    3bd1: 80 03        	bra	$3bd6
+    3bd3: 18           	clc
+    3bd4: 69 e0        	adc	#$e0
+    3bd6: 92 06        	sta	($6),z
+    3bd8: e6 06        	inc	$6
+    3bda: d0 02        	bne	$3bde
+    3bdc: e6 07        	inc	$7
+    3bde: aa           	tax
+    3bdf: f0 15        	beq	$3bf6
+    3be1: b2 04        	lda	($4),z
+    3be3: e6 04        	inc	$4
+    3be5: d0 02        	bne	$3be9
+    3be7: e6 05        	inc	$5
+    3be9: c9 40        	cmp	#$40
+    3beb: 90 e9        	bcc	$3bd6
+    3bed: c9 60        	cmp	#$60
+    3bef: b0 da        	bcs	$3bcb
+    3bf1: 18           	clc
+    3bf2: 69 c0        	adc	#$c0
+    3bf4: 80 e0        	bra	$3bd6
+    3bf6: a5 35        	lda	$35
+    3bf8: a6 36        	ldx	$36
+    3bfa: a0 34        	ldy	#$34
+    3bfc: 84 04        	sty	$4
+    3bfe: a0 03        	ldy	#$3
+    3c00: 84 05        	sty	$5
+    3c02: 20 c7 3f     	jsr	$3fc7
+    3c05: 64 04        	stz	$4
+    3c07: 64 05        	stz	$5
+    3c09: a2 00        	ldx	#$0
+    3c0b: a5 1c        	lda	$1c
+    3c0d: 20 63 3f     	jsr	$3f63
+    3c10: 20 80 3e     	jsr	$3e80
+    3c13: ae 10 d6     	ldx	$d610
+    3c16: f0 fb        	beq	$3c13
+    3c18: 9c 10 d6     	stz	$d610
+    3c1b: a6 1c        	ldx	$1c
+    3c1d: e0 ff        	cpx	#$ff
+    3c1f: d0 03        	bne	$3c24
+    3c21: 4c 58 3d     	jmp	$3d58
+    3c24: e0 85        	cpx	#$85
+    3c26: d0 03        	bne	$3c2b
+    3c28: 4c 58 3d     	jmp	$3d58
+    3c2b: a0 00        	ldy	#$0
+    3c2d: a2 00        	ldx	#$0
+    3c2f: b9 41 60     	lda	$6041,y
+    3c32: c9 20        	cmp	#$20
+    3c34: f0 0d        	beq	$3c43
+    3c36: c9 21        	cmp	#$21
+    3c38: 90 04        	bcc	$3c3e
+    3c3a: 9d 41 61     	sta	$6141,x
+    3c3d: e8           	inx
+    3c3e: c8           	iny
+    3c3f: c0 08        	cpy	#$8
+    3c41: d0 ec        	bne	$3c2f
+    3c43: a0 00        	ldy	#$0
+    3c45: a9 2e        	lda	#$2e
+    3c47: 9d 41 61     	sta	$6141,x
+    3c4a: e8           	inx
+    3c4b: b9 49 60     	lda	$6049,y
+    3c4e: c9 20        	cmp	#$20
+    3c50: f0 0d        	beq	$3c5f
+    3c52: c9 21        	cmp	#$21
+    3c54: 90 04        	bcc	$3c5a
+    3c56: 9d 41 61     	sta	$6141,x
+    3c59: e8           	inx
+    3c5a: c8           	iny
+    3c5b: c0 03        	cpy	#$3
+    3c5d: d0 ec        	bne	$3c4b
+    3c5f: a0 4c        	ldy	#$4c
+    3c61: 84 04        	sty	$4
+    3c63: a0 44        	ldy	#$44
+    3c65: 84 05        	sty	$5
+    3c67: 9e 41 61     	stz	$6141,x
+    3c6a: a2 34        	ldx	#$34
+    3c6c: 86 06        	stx	$6
+    3c6e: a2 03        	ldx	#$3
+    3c70: 86 07        	stx	$7
+    3c72: 80 16        	bra	$3c8a
+    3c74: c9 c0        	cmp	#$c0
+    3c76: 90 04        	bcc	$3c7c
+    3c78: 49 80        	eor	#$80
+    3c7a: 80 03        	bra	$3c7f
+    3c7c: 18           	clc
+    3c7d: 69 e0        	adc	#$e0
+    3c7f: 92 06        	sta	($6),z
+    3c81: e6 06        	inc	$6
+    3c83: d0 02        	bne	$3c87
+    3c85: e6 07        	inc	$7
+    3c87: aa           	tax
+    3c88: f0 15        	beq	$3c9f
+    3c8a: b2 04        	lda	($4),z
+    3c8c: e6 04        	inc	$4
+    3c8e: d0 02        	bne	$3c92
+    3c90: e6 05        	inc	$5
+    3c92: c9 40        	cmp	#$40
+    3c94: 90 e9        	bcc	$3c7f
+    3c96: c9 60        	cmp	#$60
+    3c98: b0 da        	bcs	$3c74
+    3c9a: 18           	clc
+    3c9b: 69 c0        	adc	#$c0
+    3c9d: 80 e0        	bra	$3c7f
+    3c9f: a5 35        	lda	$35
+    3ca1: a6 36        	ldx	$36
+    3ca3: a0 34        	ldy	#$34
+    3ca5: 84 04        	sty	$4
+    3ca7: a0 03        	ldy	#$3
+    3ca9: 84 05        	sty	$5
+    3cab: 20 c7 3f     	jsr	$3fc7
+    3cae: a2 41        	ldx	#$41
+    3cb0: 86 04        	stx	$4
+    3cb2: a2 61        	ldx	#$61
+    3cb4: 86 05        	stx	$5
+    3cb6: a2 34        	ldx	#$34
+    3cb8: 86 06        	stx	$6
+    3cba: a2 03        	ldx	#$3
+    3cbc: 86 07        	stx	$7
+    3cbe: 80 16        	bra	$3cd6
+    3cc0: c9 c0        	cmp	#$c0
+    3cc2: 90 04        	bcc	$3cc8
+    3cc4: 49 80        	eor	#$80
+    3cc6: 80 03        	bra	$3ccb
+    3cc8: 18           	clc
+    3cc9: 69 e0        	adc	#$e0
+    3ccb: 92 06        	sta	($6),z
+    3ccd: e6 06        	inc	$6
+    3ccf: d0 02        	bne	$3cd3
+    3cd1: e6 07        	inc	$7
+    3cd3: aa           	tax
+    3cd4: f0 15        	beq	$3ceb
+    3cd6: b2 04        	lda	($4),z
+    3cd8: e6 04        	inc	$4
+    3cda: d0 02        	bne	$3cde
+    3cdc: e6 05        	inc	$5
+    3cde: c9 40        	cmp	#$40
+    3ce0: 90 e9        	bcc	$3ccb
+    3ce2: c9 60        	cmp	#$60
+    3ce4: b0 da        	bcs	$3cc0
+    3ce6: 18           	clc
+    3ce7: 69 c0        	adc	#$c0
+    3ce9: 80 e0        	bra	$3ccb
+    3ceb: a5 35        	lda	$35
+    3ced: a6 36        	ldx	$36
+    3cef: a0 34        	ldy	#$34
+    3cf1: 84 04        	sty	$4
+    3cf3: a0 03        	ldy	#$3
+    3cf5: 84 05        	sty	$5
+    3cf7: 20 c7 3f     	jsr	$3fc7
+    3cfa: 20 80 3e     	jsr	$3e80
+    3cfd: a2 41        	ldx	#$41
+    3cff: 86 04        	stx	$4
+    3d01: a2 61        	ldx	#$61
+    3d03: 86 05        	stx	$5
+    3d05: 20 4c 42     	jsr	$424c
+    3d08: a2 81        	ldx	#$81
+    3d0a: 86 04        	stx	$4
+    3d0c: a2 44        	ldx	#$44
+    3d0e: 86 05        	stx	$5
+    3d10: 20 b9 36     	jsr	$36b9
+    3d13: 20 82 35     	jsr	$3582
+    3d16: ae 10 d6     	ldx	$d610
+    3d19: f0 fb        	beq	$3d16
+    3d1b: 9c 10 d6     	stz	$d610
+    3d1e: a4 1b        	ldy	$1b
+    3d20: a2 fd        	ldx	#$fd
+    3d22: 86 04        	stx	$4
+    3d24: a2 43        	ldx	#$43
+    3d26: 86 05        	stx	$5
+    3d28: da           	phx
+    3d29: a2 00        	ldx	#$0
+    3d2b: 8a           	txa
 
-00003b46 <error03>:
-    3b46: a9 ff        	lda	#$ff
-    3b48: 85 1b        	sta	$1b
+00003d2c <hypreaddirloop4>:
+    3d2c: 9d 00 60     	sta	$6000,x
+    3d2f: ca           	dex
+    3d30: d0 fa        	bne	$3d2c
+    3d32: fa           	plx
+    3d33: 98           	tya
+    3d34: aa           	tax
+    3d35: a0 60        	ldy	#$60
+    3d37: a9 14        	lda	#$14
+    3d39: 8d 40 d6     	sta	$d640
+    3d3c: b8           	clv
+    3d3d: 90 05        	bcc	$3d44
+    3d3f: 86 1c        	stx	$1c
+    3d41: 4c 46 3d     	jmp	$3d46
 
-00003b4a <done03>:
-    3b4a: ea           	nop
-    3b4b: a2 a1        	ldx	#$a1
-    3b4d: 86 04        	stx	$4
-    3b4f: a2 41        	ldx	#$41
-    3b51: 86 05        	stx	$5
-    3b53: 84 1e        	sty	$1e
-    3b55: 98           	tya
-    3b56: 20 82 35     	jsr	$3582
-    3b59: a2 68        	ldx	#$68
-    3b5b: 86 04        	stx	$4
-    3b5d: a2 41        	ldx	#$41
-    3b5f: 86 05        	stx	$5
-    3b61: a5 1b        	lda	$1b
-    3b63: 20 82 35     	jsr	$3582
-    3b66: 64 35        	stz	$35
-    3b68: e6 36        	inc	$36
-    3b6a: a2 00        	ldx	#$0
-    3b6c: a9 04        	lda	#$4
-    3b6e: 8d 00 42     	sta	$4200
-    3b71: b8           	clv
-    3b72: 90 05        	bcc	$3b79
-    3b74: 85 1b        	sta	$1b
-    3b76: 4c 7d 3b     	jmp	$3b7d
+00003d44 <errhypreaddir4>:
+    3d44: 85 1c        	sta	$1c
 
-00003b79 <error02>:
-    3b79: a9 ff        	lda	#$ff
-    3b7b: 85 1b        	sta	$1b
+00003d46 <donehypreaddir4>:
+    3d46: ea           	nop
+    3d47: ae 40 60     	ldx	$6040
+    3d4a: 9e 00 60     	stz	$6000,x
+    3d4d: a2 34        	ldx	#$34
+    3d4f: 86 06        	stx	$6
+    3d51: a2 03        	ldx	#$3
+    3d53: 86 07        	stx	$7
+    3d55: 4c e1 3b     	jmp	$3be1
+    3d58: ae 10 d6     	ldx	$d610
+    3d5b: f0 fb        	beq	$3d58
+    3d5d: a2 5a        	ldx	#$5a
+    3d5f: 86 04        	stx	$4
+    3d61: a2 44        	ldx	#$44
+    3d63: 86 05        	stx	$5
+    3d65: 9c 10 d6     	stz	$d610
+    3d68: a2 34        	ldx	#$34
+    3d6a: 86 06        	stx	$6
+    3d6c: a2 03        	ldx	#$3
+    3d6e: 86 07        	stx	$7
+    3d70: a6 1b        	ldx	$1b
+    3d72: a9 16        	lda	#$16
+    3d74: 8d 40 d6     	sta	$d640
+    3d77: b8           	clv
+    3d78: 90 05        	bcc	$3d7f
+    3d7a: 86 1b        	stx	$1b
+    3d7c: 4c 81 3d     	jmp	$3d81
 
-00003b7d <done02>:
-    3b7d: ea           	nop
-    3b7e: a2 34        	ldx	#$34
-    3b80: 86 04        	stx	$4
-    3b82: a2 03        	ldx	#$3
-    3b84: 86 05        	stx	$5
-    3b86: 4c 4d 38     	jmp	$384d
-    3b89: a9 28        	lda	#$28
-    3b8b: a2 00        	ldx	#$0
-    3b8d: 85 12        	sta	$12
-    3b8f: a0 00        	ldy	#$0
-    3b91: b1 02        	lda	($2),y
-    3b93: 85 1f        	sta	$1f
-    3b95: c8           	iny
-    3b96: b1 02        	lda	($2),y
-    3b98: 85 1e        	sta	$1e
-    3b9a: c8           	iny
-    3b9b: b1 02        	lda	($2),y
-    3b9d: 85 1d        	sta	$1d
-    3b9f: c8           	iny
-    3ba0: b1 02        	lda	($2),y
-    3ba2: 85 1c        	sta	$1c
-    3ba4: c8           	iny
-    3ba5: b1 02        	lda	($2),y
-    3ba7: 85 1b        	sta	$1b
-    3ba9: c8           	iny
-    3baa: b1 02        	lda	($2),y
-    3bac: 85 1a        	sta	$1a
-    3bae: 7a           	ply
-    3baf: 84 19        	sty	$19
-    3bb1: 7a           	ply
-    3bb2: 84 18        	sty	$18
-    3bb4: 7a           	ply
-    3bb5: 84 17        	sty	$17
-    3bb7: 7a           	ply
-    3bb8: 84 16        	sty	$16
-    3bba: 18           	clc
-    3bbb: a5 02        	lda	$2
-    3bbd: 69 06        	adc	#$6
-    3bbf: 85 02        	sta	$2
-    3bc1: a5 03        	lda	$3
-    3bc3: 69 00        	adc	#$0
-    3bc5: 85 03        	sta	$3
-    3bc7: a5 12        	lda	$12
-    3bc9: 60           	rts
+00003d7f <errhypclosedir5>:
+    3d7f: 85 1b        	sta	$1b
 
-00003bca <escNOP>:
-    3bca: 60           	rts
+00003d81 <donehypclosedir5>:
+    3d81: ea           	nop
+    3d82: 80 16        	bra	$3d9a
+    3d84: c9 c0        	cmp	#$c0
+    3d86: 90 04        	bcc	$3d8c
+    3d88: 49 80        	eor	#$80
+    3d8a: 80 03        	bra	$3d8f
+    3d8c: 18           	clc
+    3d8d: 69 e0        	adc	#$e0
+    3d8f: 92 06        	sta	($6),z
+    3d91: e6 06        	inc	$6
+    3d93: d0 02        	bne	$3d97
+    3d95: e6 07        	inc	$7
+    3d97: aa           	tax
+    3d98: f0 15        	beq	$3daf
+    3d9a: b2 04        	lda	($4),z
+    3d9c: e6 04        	inc	$4
+    3d9e: d0 02        	bne	$3da2
+    3da0: e6 05        	inc	$5
+    3da2: c9 40        	cmp	#$40
+    3da4: 90 e9        	bcc	$3d8f
+    3da6: c9 60        	cmp	#$60
+    3da8: b0 da        	bcs	$3d84
+    3daa: 18           	clc
+    3dab: 69 c0        	adc	#$c0
+    3dad: 80 e0        	bra	$3d8f
+    3daf: a5 35        	lda	$35
+    3db1: a6 36        	ldx	$36
+    3db3: a0 34        	ldy	#$34
+    3db5: 84 04        	sty	$4
+    3db7: a0 03        	ldy	#$3
+    3db9: 84 05        	sty	$5
+    3dbb: 20 c7 3f     	jsr	$3fc7
+    3dbe: 64 04        	stz	$4
+    3dc0: 64 05        	stz	$5
+    3dc2: a2 00        	ldx	#$0
+    3dc4: a5 1b        	lda	$1b
+    3dc6: 20 63 3f     	jsr	$3f63
+    3dc9: 20 82 35     	jsr	$3582
+    3dcc: ae 10 d6     	ldx	$d610
+    3dcf: f0 fb        	beq	$3dcc
+    3dd1: 9c 10 d6     	stz	$d610
+    3dd4: ae 10 d6     	ldx	$d610
+    3dd7: f0 fb        	beq	$3dd4
+    3dd9: 9c 10 d6     	stz	$d610
+    3ddc: a4 1e        	ldy	$1e
+    3dde: c8           	iny
+    3ddf: c0 21        	cpy	#$21
+    3de1: f0 57        	beq	$3e3a
+    3de3: a2 e2        	ldx	#$e2
+    3de5: 86 1c        	stx	$1c
+    3de7: a2 43        	ldx	#$43
+    3de9: 86 1d        	stx	$1d
+    3deb: a9 06        	lda	#$6
+    3ded: 8d 40 d6     	sta	$d640
+    3df0: b8           	clv
+    3df1: 90 05        	bcc	$3df8
+    3df3: 86 1b        	stx	$1b
+    3df5: 4c fc 3d     	jmp	$3dfc
 
-00003bcb <clrscr>:
-    3bcb: a2 37        	ldx	#$37
-    3bcd: 86 04        	stx	$4
-    3bcf: a2 00        	ldx	#$0
-    3bd1: 86 05        	stx	$5
-    3bd3: a6 04        	ldx	$4
-    3bd5: 86 4b        	stx	$4b
-    3bd7: a6 33        	ldx	$33
-    3bd9: a5 34        	lda	$34
-    3bdb: 64 05        	stz	$5
-    3bdd: 86 04        	stx	$4
-    3bdf: a2 00        	ldx	#$0
-    3be1: 20 29 40     	jsr	$4029
-    3be4: a8           	tay
-    3be5: ad 54 d0     	lda	$d054
-    3be8: 29 01        	and	#$1
-    3bea: 85 04        	sta	$4
-    3bec: 98           	tya
-    3bed: 20 16 40     	jsr	$4016
-    3bf0: 85 07        	sta	$7
-    3bf2: 85 4c        	sta	$4c
-    3bf4: 86 08        	stx	$8
-    3bf6: 86 4d        	stx	$4d
-    3bf8: ad 63 d0     	lda	$d063
-    3bfb: 29 07        	and	#$7
-    3bfd: ae 62 d0     	ldx	$d062
-    3c00: ac 61 d0     	ldy	$d061
-    3c03: 84 09        	sty	$9
-    3c05: ac 60 d0     	ldy	$d060
-    3c08: 86 04        	stx	$4
-    3c0a: 85 05        	sta	$5
-    3c0c: a2 20        	ldx	#$20
-    3c0e: 86 06        	stx	$6
-    3c10: a6 09        	ldx	$9
-    3c12: 98           	tya
-    3c13: 20 0e 3f     	jsr	$3f0e
-    3c16: a2 0b        	ldx	#$b
-    3c18: 86 37        	stx	$37
-    3c1a: a2 80        	ldx	#$80
-    3c1c: 86 38        	stx	$38
-    3c1e: 64 39        	stz	$39
-    3c20: e8           	inx
-    3c21: 86 3a        	stx	$3a
-    3c23: a2 ff        	ldx	#$ff
-    3c25: 86 3b        	stx	$3b
-    3c27: a2 85        	ldx	#$85
-    3c29: 86 3c        	stx	$3c
-    3c2b: a0 01        	ldy	#$1
-    3c2d: 84 3d        	sty	$3d
-    3c2f: 64 3e        	stz	$3e
-    3c31: a2 03        	ldx	#$3
-    3c33: 86 3f        	stx	$3f
-    3c35: 64 48        	stz	$48
-    3c37: a6 4c        	ldx	$4c
-    3c39: 86 40        	stx	$40
-    3c3b: a6 4d        	ldx	$4d
-    3c3d: 86 41        	stx	$41
-    3c3f: 84 42        	sty	$42
-    3c41: 64 43        	stz	$43
-    3c43: 64 45        	stz	$45
-    3c45: 64 46        	stz	$46
-    3c47: a2 08        	ldx	#$8
-    3c49: 86 47        	stx	$47
-    3c4b: a2 47        	ldx	#$47
-    3c4d: 8e 2f d0     	stx	$d02f
-    3c50: a2 53        	ldx	#$53
-    3c52: 8e 2f d0     	stx	$d02f
-    3c55: a2 41        	ldx	#$41
-    3c57: 86 00        	stx	$0
-    3c59: 9c 02 d7     	stz	$d702
-    3c5c: 9c 04 d7     	stz	$d704
-    3c5f: a2 00        	ldx	#$0
-    3c61: 8e 01 d7     	stx	$d701
-    3c64: a6 4b        	ldx	$4b
-    3c66: 8e 05 d7     	stx	$d705
-    3c69: 60           	rts
+00003df8 <errseldrv6>:
+    3df8: a9 ff        	lda	#$ff
+    3dfa: 85 1b        	sta	$1b
 
-00003c6a <cputc>:
-    3c6a: 18           	clc
-    3c6b: a5 02        	lda	$2
-    3c6d: 69 ff        	adc	#$ff
-    3c6f: 85 02        	sta	$2
-    3c71: a5 03        	lda	$3
-    3c73: 69 ff        	adc	#$ff
-    3c75: 85 03        	sta	$3
-    3c77: a6 16        	ldx	$16
-    3c79: da           	phx
-    3c7a: a6 17        	ldx	$17
-    3c7c: da           	phx
-    3c7d: a6 18        	ldx	$18
-    3c7f: da           	phx
-    3c80: a6 19        	ldx	$19
-    3c82: da           	phx
-    3c83: a5 1a        	lda	$1a
-    3c85: a0 00        	ldy	#$0
-    3c87: 91 02        	sta	($2),y
-    3c89: a6 35        	ldx	$35
-    3c8b: 86 17        	stx	$17
-    3c8d: a6 36        	ldx	$36
-    3c8f: a5 33        	lda	$33
-    3c91: 64 16        	stz	$16
-    3c93: 86 18        	stx	$18
-    3c95: 86 04        	stx	$4
-    3c97: 64 05        	stz	$5
-    3c99: a2 00        	ldx	#$0
-    3c9b: 20 29 40     	jsr	$4029
-    3c9e: 18           	clc
-    3c9f: 65 17        	adc	$17
-    3ca1: 85 19        	sta	$19
-    3ca3: 8a           	txa
-    3ca4: 69 00        	adc	#$0
-    3ca6: 85 1a        	sta	$1a
-    3ca8: ad 63 d0     	lda	$d063
-    3cab: 29 07        	and	#$7
-    3cad: a8           	tay
-    3cae: ae 62 d0     	ldx	$d062
-    3cb1: 86 05        	stx	$5
-    3cb3: ae 61 d0     	ldx	$d061
-    3cb6: 86 04        	stx	$4
-    3cb8: a5 19        	lda	$19
-    3cba: 18           	clc
-    3cbb: 69 00        	adc	#$0
-    3cbd: 85 06        	sta	$6
-    3cbf: a5 1a        	lda	$1a
-    3cc1: 65 04        	adc	$4
-    3cc3: 85 08        	sta	$8
-    3cc5: a5 05        	lda	$5
-    3cc7: 69 00        	adc	#$0
-    3cc9: 85 05        	sta	$5
-    3ccb: 98           	tya
-    3ccc: 69 00        	adc	#$0
-    3cce: a8           	tay
-    3ccf: ae 60 d0     	ldx	$d060
-    3cd2: 86 04        	stx	$4
-    3cd4: 18           	clc
-    3cd5: a5 06        	lda	$6
-    3cd7: 65 04        	adc	$4
-    3cd9: 85 07        	sta	$7
-    3cdb: a5 08        	lda	$8
-    3cdd: 69 00        	adc	#$0
-    3cdf: 85 08        	sta	$8
-    3ce1: a5 05        	lda	$5
-    3ce3: 69 00        	adc	#$0
-    3ce5: 85 04        	sta	$4
-    3ce7: 98           	tya
-    3ce8: 69 00        	adc	#$0
-    3cea: a2 20        	ldx	#$20
-    3cec: 85 05        	sta	$5
-    3cee: 86 06        	stx	$6
-    3cf0: a6 08        	ldx	$8
-    3cf2: a5 07        	lda	$7
-    3cf4: 20 91 20     	jsr	$2091
-    3cf7: a2 f8        	ldx	#$f8
-    3cf9: a0 0f        	ldy	#$f
-    3cfb: a9 01        	lda	#$1
-    3cfd: 86 04        	stx	$4
-    3cff: 84 05        	sty	$5
-    3d01: 85 06        	sta	$6
-    3d03: a6 1a        	ldx	$1a
-    3d05: a5 19        	lda	$19
-    3d07: 20 91 20     	jsr	$2091
-    3d0a: a6 33        	ldx	$33
-    3d0c: da           	phx
-    3d0d: 7a           	ply
-    3d0e: ca           	dex
-    3d0f: c0 00        	cpy	#$0
-    3d11: d0 02        	bne	$3d15
-    3d13: c6 16        	dec	$16
-    3d15: a5 16        	lda	$16
-    3d17: d0 0b        	bne	$3d24
-    3d19: a4 18        	ldy	$18
-    3d1b: e4 17        	cpx	$17
-    3d1d: d0 07        	bne	$3d26
-    3d1f: a2 00        	ldx	#$0
-    3d21: c8           	iny
-    3d22: 80 05        	bra	$3d29
-    3d24: a4 18        	ldy	$18
-    3d26: a6 17        	ldx	$17
-    3d28: e8           	inx
-    3d29: 86 35        	stx	$35
-    3d2b: 84 36        	sty	$36
-    3d2d: a0 00        	ldy	#$0
-    3d2f: b1 02        	lda	($2),y
-    3d31: 85 1a        	sta	$1a
-    3d33: fa           	plx
-    3d34: 86 19        	stx	$19
-    3d36: fa           	plx
-    3d37: 86 18        	stx	$18
-    3d39: fa           	plx
-    3d3a: 86 17        	stx	$17
-    3d3c: fa           	plx
-    3d3d: 86 16        	stx	$16
-    3d3f: 18           	clc
-    3d40: a5 02        	lda	$2
-    3d42: 69 01        	adc	#$1
-    3d44: 85 02        	sta	$2
-    3d46: a5 03        	lda	$3
-    3d48: 69 00        	adc	#$0
-    3d4a: 85 03        	sta	$3
-    3d4c: 60           	rts
+00003dfc <doneseldrv6>:
+    3dfc: ea           	nop
+    3dfd: a2 15        	ldx	#$15
+    3dff: 86 04        	stx	$4
+    3e01: a2 44        	ldx	#$44
+    3e03: 86 05        	stx	$5
+    3e05: 84 1e        	sty	$1e
+    3e07: 98           	tya
+    3e08: 20 b9 36     	jsr	$36b9
+    3e0b: a2 d1        	ldx	#$d1
+    3e0d: 86 04        	stx	$4
+    3e0f: a2 43        	ldx	#$43
+    3e11: 86 05        	stx	$5
+    3e13: a5 1b        	lda	$1b
+    3e15: 20 b9 36     	jsr	$36b9
+    3e18: 20 82 35     	jsr	$3582
+    3e1b: a2 00        	ldx	#$0
+    3e1d: a9 04        	lda	#$4
+    3e1f: 8d 40 d6     	sta	$d640
+    3e22: b8           	clv
+    3e23: 90 05        	bcc	$3e2a
+    3e25: 85 1b        	sta	$1b
+    3e27: 4c 2e 3e     	jmp	$3e2e
 
-00003d4d <cputhex>:
-    3d4d: a8           	tay
-    3d4e: 85 57        	sta	$57
-    3d50: 86 06        	stx	$6
-    3d52: a9 4b        	lda	#$4b
-    3d54: 85 04        	sta	$4
-    3d56: 18           	clc
-    3d57: 69 04        	adc	#$4
-    3d59: 85 08        	sta	$8
-    3d5b: a9 00        	lda	#$0
-    3d5d: 85 05        	sta	$5
-    3d5f: 69 00        	adc	#$0
-    3d61: a6 08        	ldx	$8
-    3d63: 86 55        	stx	$55
-    3d65: 85 56        	sta	$56
-    3d67: 46 06        	lsr	$6
-    3d69: 98           	tya
-    3d6a: 6a           	ror
-    3d6b: 46 06        	lsr	$6
-    3d6d: 6a           	ror
-    3d6e: 46 06        	lsr	$6
-    3d70: 6a           	ror
-    3d71: 46 06        	lsr	$6
-    3d73: 6a           	ror
-    3d74: 29 0f        	and	#$f
-    3d76: 85 58        	sta	$58
-    3d78: a2 24        	ldx	#$24
-    3d7a: 86 4b        	stx	$4b
-    3d7c: e6 04        	inc	$4
-    3d7e: d0 02        	bne	$3d82
-    3d80: e6 05        	inc	$5
-    3d82: 64 06        	stz	$6
-    3d84: a9 30        	lda	#$30
-    3d86: a2 06        	ldx	#$6
-    3d88: 20 c3 3f     	jsr	$3fc3
-    3d8b: a6 58        	ldx	$58
-    3d8d: b5 22        	lda	$22,x
-    3d8f: aa           	tax
-    3d90: 86 52        	stx	$52
-    3d92: a5 57        	lda	$57
-    3d94: 29 0f        	and	#$f
-    3d96: aa           	tax
-    3d97: b5 22        	lda	$22,x
-    3d99: aa           	tax
-    3d9a: 86 53        	stx	$53
-    3d9c: 64 54        	stz	$54
-    3d9e: a2 24        	ldx	#$24
-    3da0: 86 4f        	stx	$4f
-    3da2: a5 35        	lda	$35
-    3da4: a6 36        	ldx	$36
-    3da6: a4 55        	ldy	$55
-    3da8: 84 04        	sty	$4
-    3daa: a4 56        	ldy	$56
-    3dac: 84 05        	sty	$5
-    3dae: 4c b1 3d     	jmp	$3db1
+00003e2a <errgetcurdrv7>:
+    3e2a: a9 ff        	lda	#$ff
+    3e2c: 85 1b        	sta	$1b
 
-00003db1 <cputsxy>:
-    3db1: 85 66        	sta	$66
-    3db3: 86 65        	stx	$65
-    3db5: a6 04        	ldx	$4
-    3db7: 86 06        	stx	$6
-    3db9: a6 05        	ldx	$5
-    3dbb: 86 07        	stx	$7
-    3dbd: a6 04        	ldx	$4
-    3dbf: 86 63        	stx	$63
-    3dc1: a6 05        	ldx	$5
-    3dc3: 86 64        	stx	$64
-    3dc5: a2 37        	ldx	#$37
-    3dc7: 86 04        	stx	$4
-    3dc9: a2 00        	ldx	#$0
-    3dcb: 86 05        	stx	$5
-    3dcd: a6 04        	ldx	$4
-    3dcf: 86 67        	stx	$67
-    3dd1: a6 06        	ldx	$6
-    3dd3: 86 04        	stx	$4
-    3dd5: a6 07        	ldx	$7
-    3dd7: 86 05        	stx	$5
-    3dd9: 20 e2 3f     	jsr	$3fe2
-    3ddc: 85 62        	sta	$62
-    3dde: a5 33        	lda	$33
-    3de0: 64 05        	stz	$5
-    3de2: a6 65        	ldx	$65
-    3de4: 86 04        	stx	$4
-    3de6: a2 00        	ldx	#$0
-    3de8: 20 29 40     	jsr	$4029
-    3deb: 86 05        	stx	$5
-    3ded: a6 66        	ldx	$66
-    3def: 86 04        	stx	$4
-    3df1: 18           	clc
-    3df2: 65 04        	adc	$4
-    3df4: 85 09        	sta	$9
-    3df6: a5 05        	lda	$5
-    3df8: 69 00        	adc	#$0
-    3dfa: 85 0a        	sta	$a
-    3dfc: ad 63 d0     	lda	$d063
-    3dff: ae 62 d0     	ldx	$d062
-    3e02: 86 07        	stx	$7
-    3e04: ae 61 d0     	ldx	$d061
-    3e07: 86 04        	stx	$4
-    3e09: 29 07        	and	#$7
-    3e0b: 85 06        	sta	$6
-    3e0d: a5 09        	lda	$9
-    3e0f: 18           	clc
-    3e10: 69 00        	adc	#$0
-    3e12: 85 05        	sta	$5
-    3e14: a5 0a        	lda	$a
-    3e16: 65 04        	adc	$4
-    3e18: a8           	tay
-    3e19: a5 07        	lda	$7
-    3e1b: 69 00        	adc	#$0
-    3e1d: 85 0c        	sta	$c
-    3e1f: a5 06        	lda	$6
-    3e21: 69 00        	adc	#$0
-    3e23: 85 0b        	sta	$b
-    3e25: ae 60 d0     	ldx	$d060
-    3e28: 86 04        	stx	$4
-    3e2a: 18           	clc
-    3e2b: a5 05        	lda	$5
-    3e2d: 65 04        	adc	$4
-    3e2f: 85 07        	sta	$7
-    3e31: 98           	tya
-    3e32: 69 00        	adc	#$0
-    3e34: 85 08        	sta	$8
-    3e36: a5 0c        	lda	$c
-    3e38: 69 00        	adc	#$0
-    3e3a: 85 06        	sta	$6
-    3e3c: a5 0b        	lda	$b
-    3e3e: 69 00        	adc	#$0
-    3e40: 64 04        	stz	$4
-    3e42: 64 05        	stz	$5
-    3e44: 46 04        	lsr	$4
-    3e46: 66 05        	ror	$5
-    3e48: 6a           	ror
-    3e49: 85 0b        	sta	$b
-    3e4b: a5 06        	lda	$6
-    3e4d: 6a           	ror
-    3e4e: 46 04        	lsr	$4
-    3e50: 66 05        	ror	$5
-    3e52: 66 0b        	ror	$b
-    3e54: 6a           	ror
-    3e55: 46 04        	lsr	$4
-    3e57: 66 05        	ror	$5
-    3e59: 66 0b        	ror	$b
-    3e5b: 6a           	ror
-    3e5c: 46 04        	lsr	$4
-    3e5e: 66 05        	ror	$5
-    3e60: 66 0b        	ror	$b
-    3e62: 6a           	ror
-    3e63: a2 0b        	ldx	#$b
-    3e65: 86 37        	stx	$37
-    3e67: a2 80        	ldx	#$80
-    3e69: 86 38        	stx	$38
-    3e6b: 64 39        	stz	$39
-    3e6d: e8           	inx
-    3e6e: 86 3a        	stx	$3a
-    3e70: 85 3b        	sta	$3b
-    3e72: a2 85        	ldx	#$85
-    3e74: 86 3c        	stx	$3c
-    3e76: a2 01        	ldx	#$1
-    3e78: 86 3d        	stx	$3d
-    3e7a: 64 3e        	stz	$3e
-    3e7c: 64 48        	stz	$48
-    3e7e: 64 3f        	stz	$3f
-    3e80: a4 62        	ldy	$62
-    3e82: 84 40        	sty	$40
-    3e84: 64 41        	stz	$41
-    3e86: 64 48        	stz	$48
-    3e88: a4 63        	ldy	$63
-    3e8a: 84 04        	sty	$4
-    3e8c: a4 64        	ldy	$64
-    3e8e: 84 05        	sty	$5
-    3e90: a4 04        	ldy	$4
-    3e92: 84 42        	sty	$42
-    3e94: a4 05        	ldy	$5
-    3e96: 84 43        	sty	$43
-    3e98: 64 44        	stz	$44
-    3e9a: a4 07        	ldy	$7
-    3e9c: 84 45        	sty	$45
-    3e9e: a4 08        	ldy	$8
-    3ea0: 84 46        	sty	$46
-    3ea2: a5 06        	lda	$6
-    3ea4: 29 0f        	and	#$f
-    3ea6: 85 47        	sta	$47
-    3ea8: a0 47        	ldy	#$47
-    3eaa: 8c 2f d0     	sty	$d02f
-    3ead: a0 53        	ldy	#$53
-    3eaf: 8c 2f d0     	sty	$d02f
-    3eb2: a0 41        	ldy	#$41
-    3eb4: 84 00        	sty	$0
-    3eb6: 9c 02 d7     	stz	$d702
-    3eb9: 9c 04 d7     	stz	$d704
-    3ebc: a0 00        	ldy	#$0
-    3ebe: 8c 01 d7     	sty	$d701
-    3ec1: a4 67        	ldy	$67
-    3ec3: 8c 05 d7     	sty	$d705
-    3ec6: a0 0f        	ldy	#$f
-    3ec8: a9 f8        	lda	#$f8
-    3eca: 85 04        	sta	$4
-    3ecc: 84 05        	sty	$5
-    3ece: 86 06        	stx	$6
-    3ed0: a6 62        	ldx	$62
-    3ed2: 86 07        	stx	$7
-    3ed4: 64 08        	stz	$8
-    3ed6: a6 0a        	ldx	$a
-    3ed8: a5 09        	lda	$9
-    3eda: 20 0e 3f     	jsr	$3f0e
-    3edd: a5 62        	lda	$62
-    3edf: a6 66        	ldx	$66
-    3ee1: 86 04        	stx	$4
-    3ee3: 18           	clc
-    3ee4: 65 04        	adc	$4
-    3ee6: 85 08        	sta	$8
-    3ee8: a9 00        	lda	#$0
-    3eea: 69 00        	adc	#$0
-    3eec: a6 33        	ldx	$33
-    3eee: a0 60        	ldy	#$60
-    3ef0: 84 06        	sty	$6
-    3ef2: a0 00        	ldy	#$0
-    3ef4: 84 07        	sty	$7
-    3ef6: 86 04        	stx	$4
-    3ef8: 64 05        	stz	$5
-    3efa: aa           	tax
-    3efb: a5 08        	lda	$8
-    3efd: 20 5b 40     	jsr	$405b
-    3f00: a6 60        	ldx	$60
-    3f02: 18           	clc
-    3f03: a4 65        	ldy	$65
-    3f05: 84 04        	sty	$4
-    3f07: 65 04        	adc	$4
-    3f09: 85 36        	sta	$36
-    3f0b: 86 35        	stx	$35
-    3f0d: 60           	rts
+00003e2e <donegetcurdrv7>:
+    3e2e: ea           	nop
+    3e2f: a2 34        	ldx	#$34
+    3e31: 86 04        	stx	$4
+    3e33: a2 03        	ldx	#$3
+    3e35: 86 05        	stx	$5
+    3e37: 4c 08 3b     	jmp	$3b08
+    3e3a: a2 00        	ldx	#$0
+    3e3c: 8a           	txa
+    3e3d: 85 12        	sta	$12
+    3e3f: a0 00        	ldy	#$0
+    3e41: b1 02        	lda	($2),y
+    3e43: 85 20        	sta	$20
+    3e45: c8           	iny
+    3e46: b1 02        	lda	($2),y
+    3e48: 85 1f        	sta	$1f
+    3e4a: c8           	iny
+    3e4b: b1 02        	lda	($2),y
+    3e4d: 85 1e        	sta	$1e
+    3e4f: c8           	iny
+    3e50: b1 02        	lda	($2),y
+    3e52: 85 1d        	sta	$1d
+    3e54: c8           	iny
+    3e55: b1 02        	lda	($2),y
+    3e57: 85 1c        	sta	$1c
+    3e59: c8           	iny
+    3e5a: b1 02        	lda	($2),y
+    3e5c: 85 1b        	sta	$1b
+    3e5e: c8           	iny
+    3e5f: b1 02        	lda	($2),y
+    3e61: 85 1a        	sta	$1a
+    3e63: 7a           	ply
+    3e64: 84 19        	sty	$19
+    3e66: 7a           	ply
+    3e67: 84 18        	sty	$18
+    3e69: 7a           	ply
+    3e6a: 84 17        	sty	$17
+    3e6c: 7a           	ply
+    3e6d: 84 16        	sty	$16
+    3e6f: 18           	clc
+    3e70: a5 02        	lda	$2
+    3e72: 69 07        	adc	#$7
+    3e74: 85 02        	sta	$2
+    3e76: a5 03        	lda	$3
+    3e78: 69 00        	adc	#$0
+    3e7a: 85 03        	sta	$3
+    3e7c: a5 12        	lda	$12
+    3e7e: 60           	rts
 
-00003f0e <lfill>:
-    3f0e: 85 09        	sta	$9
-    3f10: 86 0a        	stx	$a
-    3f12: a6 07        	ldx	$7
-    3f14: a4 08        	ldy	$8
-    3f16: a9 0b        	lda	#$b
-    3f18: 85 37        	sta	$37
-    3f1a: a9 80        	lda	#$80
-    3f1c: 85 38        	sta	$38
-    3f1e: 64 39        	stz	$39
-    3f20: 1a           	inc
-    3f21: 85 3a        	sta	$3a
-    3f23: 64 07        	stz	$7
-    3f25: 64 08        	stz	$8
-    3f27: 46 08        	lsr	$8
-    3f29: 66 07        	ror	$7
-    3f2b: 66 05        	ror	$5
-    3f2d: a5 04        	lda	$4
-    3f2f: 6a           	ror
-    3f30: 46 08        	lsr	$8
-    3f32: 66 07        	ror	$7
-    3f34: 66 05        	ror	$5
-    3f36: 6a           	ror
-    3f37: 46 08        	lsr	$8
-    3f39: 66 07        	ror	$7
-    3f3b: 66 05        	ror	$5
-    3f3d: 6a           	ror
-    3f3e: 46 08        	lsr	$8
-    3f40: 66 07        	ror	$7
-    3f42: 66 05        	ror	$5
-    3f44: 6a           	ror
-    3f45: 85 3b        	sta	$3b
-    3f47: a9 85        	lda	#$85
-    3f49: 85 3c        	sta	$3c
-    3f4b: a9 01        	lda	#$1
-    3f4d: 85 3d        	sta	$3d
-    3f4f: 64 3e        	stz	$3e
-    3f51: a9 03        	lda	#$3
-    3f53: 85 3f        	sta	$3f
-    3f55: 64 48        	stz	$48
-    3f57: 86 40        	stx	$40
-    3f59: 84 41        	sty	$41
-    3f5b: a6 06        	ldx	$6
-    3f5d: 86 42        	stx	$42
-    3f5f: 64 43        	stz	$43
-    3f61: a6 09        	ldx	$9
-    3f63: 86 45        	stx	$45
-    3f65: a2 00        	ldx	#$0
-    3f67: a0 37        	ldy	#$37
-    3f69: 84 06        	sty	$6
-    3f6b: a0 00        	ldy	#$0
-    3f6d: 84 07        	sty	$7
-    3f6f: a4 0a        	ldy	$a
-    3f71: 84 46        	sty	$46
-    3f73: a4 06        	ldy	$6
-    3f75: a5 04        	lda	$4
-    3f77: 29 0f        	and	#$f
-    3f79: 85 47        	sta	$47
-    3f7b: a9 47        	lda	#$47
-    3f7d: 8d 2f d0     	sta	$d02f
-    3f80: a9 53        	lda	#$53
-    3f82: 8d 2f d0     	sta	$d02f
-    3f85: a9 41        	lda	#$41
-    3f87: 85 00        	sta	$0
-    3f89: 9c 02 d7     	stz	$d702
-    3f8c: 9c 04 d7     	stz	$d704
-    3f8f: 8e 01 d7     	stx	$d701
-    3f92: 8c 05 d7     	sty	$d705
-    3f95: 60           	rts
+00003e7f <escNOP>:
+    3e7f: 60           	rts
 
-00003f96 <memcpy>:
-    3f96: a8           	tay
-    3f97: 8a           	txa
-    3f98: d0 03        	bne	$3f9d
-    3f9a: 98           	tya
-    3f9b: f0 25        	beq	$3fc2
-    3f9d: a5 04        	lda	$4
-    3f9f: 85 08        	sta	$8
-    3fa1: a5 05        	lda	$5
-    3fa3: 85 09        	sta	$9
-    3fa5: b2 06        	lda	($6),z
-    3fa7: 92 08        	sta	($8),z
-    3fa9: e6 08        	inc	$8
-    3fab: d0 02        	bne	$3faf
-    3fad: e6 09        	inc	$9
-    3faf: e6 06        	inc	$6
-    3fb1: d0 02        	bne	$3fb5
-    3fb3: e6 07        	inc	$7
-    3fb5: 98           	tya
-    3fb6: 88           	dey
-    3fb7: c9 00        	cmp	#$0
-    3fb9: d0 01        	bne	$3fbc
-    3fbb: ca           	dex
-    3fbc: 8a           	txa
-    3fbd: d0 e6        	bne	$3fa5
-    3fbf: 98           	tya
-    3fc0: d0 e3        	bne	$3fa5
-    3fc2: 60           	rts
+00003e80 <cputc>:
+    3e80: 18           	clc
+    3e81: a5 02        	lda	$2
+    3e83: 69 ff        	adc	#$ff
+    3e85: 85 02        	sta	$2
+    3e87: a5 03        	lda	$3
+    3e89: 69 ff        	adc	#$ff
+    3e8b: 85 03        	sta	$3
+    3e8d: a6 16        	ldx	$16
+    3e8f: da           	phx
+    3e90: a6 17        	ldx	$17
+    3e92: da           	phx
+    3e93: a6 18        	ldx	$18
+    3e95: da           	phx
+    3e96: a6 19        	ldx	$19
+    3e98: da           	phx
+    3e99: a5 1a        	lda	$1a
+    3e9b: a0 00        	ldy	#$0
+    3e9d: 91 02        	sta	($2),y
+    3e9f: a6 35        	ldx	$35
+    3ea1: 86 17        	stx	$17
+    3ea3: a6 36        	ldx	$36
+    3ea5: a5 33        	lda	$33
+    3ea7: 64 16        	stz	$16
+    3ea9: 86 18        	stx	$18
+    3eab: 86 04        	stx	$4
+    3ead: 64 05        	stz	$5
+    3eaf: a2 00        	ldx	#$0
+    3eb1: 20 93 42     	jsr	$4293
+    3eb4: 18           	clc
+    3eb5: 65 17        	adc	$17
+    3eb7: 85 19        	sta	$19
+    3eb9: 8a           	txa
+    3eba: 69 00        	adc	#$0
+    3ebc: 85 1a        	sta	$1a
+    3ebe: ad 63 d0     	lda	$d063
+    3ec1: 29 07        	and	#$7
+    3ec3: a8           	tay
+    3ec4: ae 62 d0     	ldx	$d062
+    3ec7: 86 05        	stx	$5
+    3ec9: ae 61 d0     	ldx	$d061
+    3ecc: 86 04        	stx	$4
+    3ece: a5 19        	lda	$19
+    3ed0: 18           	clc
+    3ed1: 69 00        	adc	#$0
+    3ed3: 85 06        	sta	$6
+    3ed5: a5 1a        	lda	$1a
+    3ed7: 65 04        	adc	$4
+    3ed9: 85 08        	sta	$8
+    3edb: a5 05        	lda	$5
+    3edd: 69 00        	adc	#$0
+    3edf: 85 05        	sta	$5
+    3ee1: 98           	tya
+    3ee2: 69 00        	adc	#$0
+    3ee4: a8           	tay
+    3ee5: ae 60 d0     	ldx	$d060
+    3ee8: 86 04        	stx	$4
+    3eea: 18           	clc
+    3eeb: a5 06        	lda	$6
+    3eed: 65 04        	adc	$4
+    3eef: 85 07        	sta	$7
+    3ef1: a5 08        	lda	$8
+    3ef3: 69 00        	adc	#$0
+    3ef5: 85 08        	sta	$8
+    3ef7: a5 05        	lda	$5
+    3ef9: 69 00        	adc	#$0
+    3efb: 85 04        	sta	$4
+    3efd: 98           	tya
+    3efe: 69 00        	adc	#$0
+    3f00: a2 20        	ldx	#$20
+    3f02: 85 05        	sta	$5
+    3f04: 86 06        	stx	$6
+    3f06: a6 08        	ldx	$8
+    3f08: a5 07        	lda	$7
+    3f0a: 20 91 20     	jsr	$2091
+    3f0d: a2 f8        	ldx	#$f8
+    3f0f: a0 0f        	ldy	#$f
+    3f11: a9 01        	lda	#$1
+    3f13: 86 04        	stx	$4
+    3f15: 84 05        	sty	$5
+    3f17: 85 06        	sta	$6
+    3f19: a6 1a        	ldx	$1a
+    3f1b: a5 19        	lda	$19
+    3f1d: 20 91 20     	jsr	$2091
+    3f20: a6 33        	ldx	$33
+    3f22: da           	phx
+    3f23: 7a           	ply
+    3f24: ca           	dex
+    3f25: c0 00        	cpy	#$0
+    3f27: d0 02        	bne	$3f2b
+    3f29: c6 16        	dec	$16
+    3f2b: a5 16        	lda	$16
+    3f2d: d0 0b        	bne	$3f3a
+    3f2f: a4 18        	ldy	$18
+    3f31: e4 17        	cpx	$17
+    3f33: d0 07        	bne	$3f3c
+    3f35: a2 00        	ldx	#$0
+    3f37: c8           	iny
+    3f38: 80 05        	bra	$3f3f
+    3f3a: a4 18        	ldy	$18
+    3f3c: a6 17        	ldx	$17
+    3f3e: e8           	inx
+    3f3f: 86 35        	stx	$35
+    3f41: 84 36        	sty	$36
+    3f43: a0 00        	ldy	#$0
+    3f45: b1 02        	lda	($2),y
+    3f47: 85 1a        	sta	$1a
+    3f49: fa           	plx
+    3f4a: 86 19        	stx	$19
+    3f4c: fa           	plx
+    3f4d: 86 18        	stx	$18
+    3f4f: fa           	plx
+    3f50: 86 17        	stx	$17
+    3f52: fa           	plx
+    3f53: 86 16        	stx	$16
+    3f55: 18           	clc
+    3f56: a5 02        	lda	$2
+    3f58: 69 01        	adc	#$1
+    3f5a: 85 02        	sta	$2
+    3f5c: a5 03        	lda	$3
+    3f5e: 69 00        	adc	#$0
+    3f60: 85 03        	sta	$3
+    3f62: 60           	rts
 
-00003fc3 <__memset>:
-    3fc3: 80 0f        	bra	$3fd4
-    3fc5: 92 04        	sta	($4),z
-    3fc7: e6 04        	inc	$4
-    3fc9: d0 02        	bne	$3fcd
-    3fcb: e6 05        	inc	$5
-    3fcd: da           	phx
-    3fce: 7a           	ply
-    3fcf: ca           	dex
-    3fd0: c0 00        	cpy	#$0
-    3fd2: f0 09        	beq	$3fdd
-    3fd4: a4 06        	ldy	$6
-    3fd6: d0 ed        	bne	$3fc5
-    3fd8: e0 00        	cpx	#$0
-    3fda: d0 e9        	bne	$3fc5
-    3fdc: 60           	rts
-    3fdd: c6 06        	dec	$6
-    3fdf: 4c d4 3f     	jmp	$3fd4
+00003f63 <cputhex>:
+    3f63: a8           	tay
+    3f64: 85 57        	sta	$57
+    3f66: 86 06        	stx	$6
+    3f68: a9 4b        	lda	#$4b
+    3f6a: 85 04        	sta	$4
+    3f6c: 18           	clc
+    3f6d: 69 04        	adc	#$4
+    3f6f: 85 08        	sta	$8
+    3f71: a9 00        	lda	#$0
+    3f73: 85 05        	sta	$5
+    3f75: 69 00        	adc	#$0
+    3f77: a6 08        	ldx	$8
+    3f79: 86 55        	stx	$55
+    3f7b: 85 56        	sta	$56
+    3f7d: 46 06        	lsr	$6
+    3f7f: 98           	tya
+    3f80: 6a           	ror
+    3f81: 46 06        	lsr	$6
+    3f83: 6a           	ror
+    3f84: 46 06        	lsr	$6
+    3f86: 6a           	ror
+    3f87: 46 06        	lsr	$6
+    3f89: 6a           	ror
+    3f8a: 29 0f        	and	#$f
+    3f8c: 85 58        	sta	$58
+    3f8e: a2 24        	ldx	#$24
+    3f90: 86 4b        	stx	$4b
+    3f92: e6 04        	inc	$4
+    3f94: d0 02        	bne	$3f98
+    3f96: e6 05        	inc	$5
+    3f98: 64 06        	stz	$6
+    3f9a: a9 30        	lda	#$30
+    3f9c: a2 06        	ldx	#$6
+    3f9e: 20 2d 42     	jsr	$422d
+    3fa1: a6 58        	ldx	$58
+    3fa3: b5 22        	lda	$22,x
+    3fa5: aa           	tax
+    3fa6: 86 52        	stx	$52
+    3fa8: a5 57        	lda	$57
+    3faa: 29 0f        	and	#$f
+    3fac: aa           	tax
+    3fad: b5 22        	lda	$22,x
+    3faf: aa           	tax
+    3fb0: 86 53        	stx	$53
+    3fb2: 64 54        	stz	$54
+    3fb4: a2 24        	ldx	#$24
+    3fb6: 86 4f        	stx	$4f
+    3fb8: a5 35        	lda	$35
+    3fba: a6 36        	ldx	$36
+    3fbc: a4 55        	ldy	$55
+    3fbe: 84 04        	sty	$4
+    3fc0: a4 56        	ldy	$56
+    3fc2: 84 05        	sty	$5
+    3fc4: 4c c7 3f     	jmp	$3fc7
 
-00003fe2 <strlen>:
-    3fe2: b2 04        	lda	($4),z
-    3fe4: f0 29        	beq	$400f
-    3fe6: a9 00        	lda	#$0
-    3fe8: a0 01        	ldy	#$1
-    3fea: 64 06        	stz	$6
-    3fec: aa           	tax
-    3fed: 64 07        	stz	$7
-    3fef: 18           	clc
-    3ff0: 65 04        	adc	$4
-    3ff2: 85 08        	sta	$8
-    3ff4: a5 07        	lda	$7
-    3ff6: 65 05        	adc	$5
-    3ff8: e6 06        	inc	$6
-    3ffa: d0 01        	bne	$3ffd
-    3ffc: e8           	inx
-    3ffd: 85 09        	sta	$9
-    3fff: b1 08        	lda	($8),y
-    4001: 85 08        	sta	$8
-    4003: a5 06        	lda	$6
-    4005: 86 07        	stx	$7
-    4007: e6 08        	inc	$8
-    4009: c6 08        	dec	$8
-    400b: d0 e2        	bne	$3fef
-    400d: 80 04        	bra	$4013
-    400f: 64 06        	stz	$6
-    4011: a2 00        	ldx	#$0
-    4013: a5 06        	lda	$6
-    4015: 60           	rts
+00003fc7 <cputsxy>:
+    3fc7: 85 66        	sta	$66
+    3fc9: 86 65        	stx	$65
+    3fcb: a6 04        	ldx	$4
+    3fcd: 86 06        	stx	$6
+    3fcf: a6 05        	ldx	$5
+    3fd1: 86 07        	stx	$7
+    3fd3: a6 06        	ldx	$6
+    3fd5: 86 63        	stx	$63
+    3fd7: a6 07        	ldx	$7
+    3fd9: 86 64        	stx	$64
+    3fdb: 20 4c 42     	jsr	$424c
+    3fde: 85 62        	sta	$62
+    3fe0: a5 33        	lda	$33
+    3fe2: 64 05        	stz	$5
+    3fe4: a6 65        	ldx	$65
+    3fe6: 86 04        	stx	$4
+    3fe8: a2 00        	ldx	#$0
+    3fea: 20 93 42     	jsr	$4293
+    3fed: 86 05        	stx	$5
+    3fef: a6 66        	ldx	$66
+    3ff1: 86 04        	stx	$4
+    3ff3: 18           	clc
+    3ff4: 65 04        	adc	$4
+    3ff6: a8           	tay
+    3ff7: 85 68        	sta	$68
+    3ff9: a5 05        	lda	$5
+    3ffb: 69 00        	adc	#$0
+    3ffd: 85 67        	sta	$67
+    3fff: ad 63 d0     	lda	$d063
+    4002: 29 07        	and	#$7
+    4004: 85 07        	sta	$7
+    4006: ae 62 d0     	ldx	$d062
+    4009: 86 06        	stx	$6
+    400b: ae 61 d0     	ldx	$d061
+    400e: 86 04        	stx	$4
+    4010: 98           	tya
+    4011: 18           	clc
+    4012: 69 00        	adc	#$0
+    4014: 85 08        	sta	$8
+    4016: a6 67        	ldx	$67
+    4018: 8a           	txa
+    4019: 65 04        	adc	$4
+    401b: 85 09        	sta	$9
+    401d: a5 06        	lda	$6
+    401f: 69 00        	adc	#$0
+    4021: 85 05        	sta	$5
+    4023: a5 07        	lda	$7
+    4025: 69 00        	adc	#$0
+    4027: a8           	tay
+    4028: ae 60 d0     	ldx	$d060
+    402b: 86 04        	stx	$4
+    402d: 18           	clc
+    402e: a5 08        	lda	$8
+    4030: 65 04        	adc	$4
+    4032: 85 06        	sta	$6
+    4034: a5 09        	lda	$9
+    4036: 69 00        	adc	#$0
+    4038: 85 07        	sta	$7
+    403a: a5 05        	lda	$5
+    403c: 69 00        	adc	#$0
+    403e: 85 08        	sta	$8
+    4040: 98           	tya
+    4041: 69 00        	adc	#$0
+    4043: a0 00        	ldy	#$0
+    4045: 64 04        	stz	$4
+    4047: 64 05        	stz	$5
+    4049: 85 09        	sta	$9
+    404b: a6 62        	ldx	$62
+    404d: 86 0a        	stx	$a
+    404f: 64 0b        	stz	$b
+    4051: a6 63        	ldx	$63
+    4053: 86 0c        	stx	$c
+    4055: a6 64        	ldx	$64
+    4057: a5 0c        	lda	$c
+    4059: 20 a6 40     	jsr	$40a6
+    405c: a2 f8        	ldx	#$f8
+    405e: a0 0f        	ldy	#$f
+    4060: a9 01        	lda	#$1
+    4062: 86 04        	stx	$4
+    4064: 84 05        	sty	$5
+    4066: 85 06        	sta	$6
+    4068: a6 62        	ldx	$62
+    406a: 86 07        	stx	$7
+    406c: 64 08        	stz	$8
+    406e: a6 67        	ldx	$67
+    4070: a5 68        	lda	$68
+    4072: 20 78 41     	jsr	$4178
+    4075: a5 62        	lda	$62
+    4077: a6 66        	ldx	$66
+    4079: 86 04        	stx	$4
+    407b: 18           	clc
+    407c: 65 04        	adc	$4
+    407e: 85 08        	sta	$8
+    4080: a9 00        	lda	#$0
+    4082: 69 00        	adc	#$0
+    4084: a6 33        	ldx	$33
+    4086: a0 60        	ldy	#$60
+    4088: 84 06        	sty	$6
+    408a: a0 00        	ldy	#$0
+    408c: 84 07        	sty	$7
+    408e: 64 05        	stz	$5
+    4090: 86 04        	stx	$4
+    4092: aa           	tax
+    4093: a5 08        	lda	$8
+    4095: 20 c5 42     	jsr	$42c5
+    4098: a6 60        	ldx	$60
+    409a: 18           	clc
+    409b: a4 65        	ldy	$65
+    409d: 84 04        	sty	$4
+    409f: 65 04        	adc	$4
+    40a1: 85 36        	sta	$36
+    40a3: 86 35        	stx	$35
+    40a5: 60           	rts
 
-00004016 <__ashlhi3>:
-    4016: 86 05        	stx	$5
-    4018: a6 04        	ldx	$4
-    401a: f0 0a        	beq	$4026
-    401c: a6 04        	ldx	$4
-    401e: ca           	dex
-    401f: 0a           	asl
-    4020: 26 05        	rol	$5
-    4022: e0 00        	cpx	#$0
-    4024: d0 f8        	bne	$401e
-    4026: a6 05        	ldx	$5
-    4028: 60           	rts
-
-00004029 <__mulhi3>:
-    4029: a4 05        	ldy	$5
-    402b: d0 04        	bne	$4031
-    402d: a4 04        	ldy	$4
-    402f: f0 24        	beq	$4055
-    4031: 85 06        	sta	$6
-    4033: 86 07        	stx	$7
-    4035: a0 00        	ldy	#$0
-    4037: 98           	tya
-    4038: 46 05        	lsr	$5
-    403a: 66 04        	ror	$4
-    403c: 90 09        	bcc	$4047
-    403e: aa           	tax
-    403f: 98           	tya
-    4040: 18           	clc
-    4041: 65 06        	adc	$6
-    4043: a8           	tay
-    4044: 8a           	txa
-    4045: 65 07        	adc	$7
-    4047: 06 06        	asl	$6
-    4049: 26 07        	rol	$7
-    404b: a6 05        	ldx	$5
-    404d: d0 e9        	bne	$4038
-    404f: a6 04        	ldx	$4
-    4051: d0 e5        	bne	$4038
-    4053: 80 03        	bra	$4058
-    4055: a0 00        	ldy	#$0
-    4057: 98           	tya
-    4058: aa           	tax
-    4059: 98           	tya
-    405a: 60           	rts
-
-0000405b <__udivmodhi4>:
-    405b: 85 0b        	sta	$b
-    405d: 8a           	txa
-    405e: 64 08        	stz	$8
-    4060: a6 05        	ldx	$5
-    4062: d0 04        	bne	$4068
-    4064: a6 04        	ldx	$4
-    4066: f0 0a        	beq	$4072
-    4068: c5 05        	cmp	$5
-    406a: d0 0b        	bne	$4077
-    406c: a6 0b        	ldx	$b
-    406e: e4 04        	cpx	$4
-    4070: b0 09        	bcs	$407b
-    4072: a2 00        	ldx	#$0
-    4074: 4c 24 41     	jmp	$4124
-    4077: c5 05        	cmp	$5
-    4079: 90 f7        	bcc	$4072
-    407b: a8           	tay
-    407c: a6 05        	ldx	$5
-    407e: 10 03        	bpl	$4083
-    4080: 4c 18 41     	jmp	$4118
-    4083: a2 00        	ldx	#$0
-    4085: 5a           	phy
-    4086: a4 04        	ldy	$4
-    4088: 84 09        	sty	$9
-    408a: a4 05        	ldy	$5
-    408c: 84 0a        	sty	$a
-    408e: 7a           	ply
-    408f: 06 09        	asl	$9
-    4091: 26 0a        	rol	$a
-    4093: c5 0a        	cmp	$a
-    4095: d0 09        	bne	$40a0
-    4097: a5 0b        	lda	$b
-    4099: c5 09        	cmp	$9
-    409b: 98           	tya
-    409c: b0 06        	bcs	$40a4
-    409e: 80 17        	bra	$40b7
-    40a0: c5 0a        	cmp	$a
-    40a2: 90 13        	bcc	$40b7
-    40a4: e8           	inx
-    40a5: 5a           	phy
-    40a6: a4 09        	ldy	$9
-    40a8: 84 04        	sty	$4
-    40aa: a4 0a        	ldy	$a
-    40ac: 84 05        	sty	$5
-    40ae: 7a           	ply
-    40af: e6 0a        	inc	$a
-    40b1: c6 0a        	dec	$a
-    40b3: 10 da        	bpl	$408f
-    40b5: 80 08        	bra	$40bf
-    40b7: a5 04        	lda	$4
-    40b9: 85 09        	sta	$9
-    40bb: a5 05        	lda	$5
-    40bd: 85 0a        	sta	$a
-    40bf: 38           	sec
-    40c0: a5 0b        	lda	$b
-    40c2: e5 09        	sbc	$9
-    40c4: 85 0b        	sta	$b
-    40c6: 98           	tya
-    40c7: e5 0a        	sbc	$a
-    40c9: e0 00        	cpx	#$0
-    40cb: d0 03        	bne	$40d0
-    40cd: 4c 22 41     	jmp	$4122
-    40d0: 64 08        	stz	$8
+000040a6 <lcopy>:
+    40a6: 85 0c        	sta	$c
+    40a8: 86 0d        	stx	$d
+    40aa: a6 0a        	ldx	$a
+    40ac: a9 00        	lda	#$0
+    40ae: 64 0a        	stz	$a
+    40b0: 46 0a        	lsr	$a
+    40b2: 6a           	ror
+    40b3: 2c 9f 43     	bit	$439f
+    40b6: b0 01        	bcs	$40b9
+    40b8: b8           	clv
+    40b9: 66 05        	ror	$5
+    40bb: a4 04        	ldy	$4
+    40bd: 84 0e        	sty	$e
+    40bf: 66 0e        	ror	$e
+    40c1: 46 0a        	lsr	$a
+    40c3: 6a           	ror
+    40c4: a0 01        	ldy	#$1
+    40c6: b0 02        	bcs	$40ca
+    40c8: a0 00        	ldy	#$0
+    40ca: 66 05        	ror	$5
+    40cc: 66 0e        	ror	$e
+    40ce: 46 0a        	lsr	$a
+    40d0: 6a           	ror
+    40d1: 5a           	phy
     40d2: a0 01        	ldy	#$1
-    40d4: 84 68        	sty	$68
-    40d6: 46 0a        	lsr	$a
-    40d8: 66 09        	ror	$9
-    40da: a4 68        	ldy	$68
-    40dc: 84 04        	sty	$4
-    40de: 06 04        	asl	$4
-    40e0: a0 01        	ldy	#$1
-    40e2: b0 02        	bcs	$40e6
-    40e4: a0 00        	ldy	#$0
-    40e6: 84 05        	sty	$5
-    40e8: a4 04        	ldy	$4
-    40ea: 84 68        	sty	$68
-    40ec: c5 0a        	cmp	$a
-    40ee: d0 22        	bne	$4112
-    40f0: a4 0b        	ldy	$b
-    40f2: c4 09        	cpy	$9
-    40f4: 90 11        	bcc	$4107
-    40f6: a8           	tay
-    40f7: a5 68        	lda	$68
-    40f9: 09 01        	ora	#$1
-    40fb: 85 68        	sta	$68
-    40fd: 38           	sec
-    40fe: a5 0b        	lda	$b
-    4100: e5 09        	sbc	$9
-    4102: 85 0b        	sta	$b
-    4104: 98           	tya
-    4105: e5 0a        	sbc	$a
-    4107: a4 05        	ldy	$5
-    4109: c0 01        	cpy	#$1
-    410b: 26 08        	rol	$8
-    410d: ca           	dex
-    410e: d0 c6        	bne	$40d6
-    4110: 80 14        	bra	$4126
-    4112: c5 0a        	cmp	$a
-    4114: b0 e0        	bcs	$40f6
-    4116: 80 ef        	bra	$4107
-    4118: 38           	sec
-    4119: a5 0b        	lda	$b
-    411b: e5 04        	sbc	$4
-    411d: 85 0b        	sta	$b
-    411f: 98           	tya
-    4120: e5 05        	sbc	$5
-    4122: a2 01        	ldx	#$1
-    4124: 86 68        	stx	$68
-    4126: aa           	tax
-    4127: a5 0b        	lda	$b
-    4129: 92 06        	sta	($6),z
-    412b: a0 01        	ldy	#$1
-    412d: 8a           	txa
-    412e: 91 06        	sta	($6),y
-    4130: a6 08        	ldx	$8
-    4132: a5 68        	lda	$68
-    4134: 60           	rts
+    40d4: b0 02        	bcs	$40d8
+    40d6: a0 00        	ldy	#$0
+    40d8: 84 0f        	sty	$f
+    40da: 7a           	ply
+    40db: 66 05        	ror	$5
+    40dd: 66 0e        	ror	$e
+    40df: 46 0a        	lsr	$a
+    40e1: 6a           	ror
+    40e2: a9 01        	lda	#$1
+    40e4: b0 02        	bcs	$40e8
+    40e6: a9 00        	lda	#$0
+    40e8: 85 0a        	sta	$a
+    40ea: 66 05        	ror	$5
+    40ec: a5 0e        	lda	$e
+    40ee: 6a           	ror
+    40ef: 85 05        	sta	$5
+    40f1: 38           	sec
+    40f2: 70 01        	bvs	$40f5
+    40f4: 18           	clc
+    40f5: 66 09        	ror	$9
+    40f7: a5 08        	lda	$8
+    40f9: 6a           	ror
+    40fa: c0 01        	cpy	#$1
+    40fc: 66 09        	ror	$9
+    40fe: 6a           	ror
+    40ff: a4 0f        	ldy	$f
+    4101: c0 01        	cpy	#$1
+    4103: 66 09        	ror	$9
+    4105: 6a           	ror
+    4106: a0 0b        	ldy	#$b
+    4108: 84 37        	sty	$37
+    410a: a0 80        	ldy	#$80
+    410c: 84 38        	sty	$38
+    410e: a4 05        	ldy	$5
+    4110: 84 39        	sty	$39
+    4112: a0 81        	ldy	#$81
+    4114: 84 3a        	sty	$3a
+    4116: a4 0a        	ldy	$a
+    4118: c0 01        	cpy	#$1
+    411a: 66 09        	ror	$9
+    411c: 6a           	ror
+    411d: 85 3b        	sta	$3b
+    411f: a0 85        	ldy	#$85
+    4121: 84 3c        	sty	$3c
+    4123: a0 01        	ldy	#$1
+    4125: 84 3d        	sty	$3d
+    4127: 64 3e        	stz	$3e
+    4129: 64 48        	stz	$48
+    412b: 64 3f        	stz	$3f
+    412d: 86 40        	stx	$40
+    412f: a6 0b        	ldx	$b
+    4131: 86 41        	stx	$41
+    4133: 64 48        	stz	$48
+    4135: a6 0c        	ldx	$c
+    4137: 86 42        	stx	$42
+    4139: a6 0d        	ldx	$d
+    413b: 86 43        	stx	$43
+    413d: a5 04        	lda	$4
+    413f: 29 0f        	and	#$f
+    4141: 85 44        	sta	$44
+    4143: a6 06        	ldx	$6
+    4145: 86 45        	stx	$45
+    4147: a2 00        	ldx	#$0
+    4149: a0 37        	ldy	#$37
+    414b: 84 04        	sty	$4
+    414d: a0 00        	ldy	#$0
+    414f: 84 05        	sty	$5
+    4151: a4 07        	ldy	$7
+    4153: 84 46        	sty	$46
+    4155: a4 04        	ldy	$4
+    4157: a5 08        	lda	$8
+    4159: 29 0f        	and	#$f
+    415b: 85 47        	sta	$47
+    415d: a9 47        	lda	#$47
+    415f: 8d 2f d0     	sta	$d02f
+    4162: a9 53        	lda	#$53
+    4164: 8d 2f d0     	sta	$d02f
+    4167: a9 41        	lda	#$41
+    4169: 85 00        	sta	$0
+    416b: 9c 02 d7     	stz	$d702
+    416e: 9c 04 d7     	stz	$d704
+    4171: 8e 01 d7     	stx	$d701
+    4174: 8c 05 d7     	sty	$d705
+    4177: 60           	rts
+
+00004178 <lfill>:
+    4178: 85 09        	sta	$9
+    417a: 86 0a        	stx	$a
+    417c: a6 07        	ldx	$7
+    417e: a4 08        	ldy	$8
+    4180: a9 0b        	lda	#$b
+    4182: 85 37        	sta	$37
+    4184: a9 80        	lda	#$80
+    4186: 85 38        	sta	$38
+    4188: 64 39        	stz	$39
+    418a: 1a           	inc
+    418b: 85 3a        	sta	$3a
+    418d: 64 07        	stz	$7
+    418f: 64 08        	stz	$8
+    4191: 46 08        	lsr	$8
+    4193: 66 07        	ror	$7
+    4195: 66 05        	ror	$5
+    4197: a5 04        	lda	$4
+    4199: 6a           	ror
+    419a: 46 08        	lsr	$8
+    419c: 66 07        	ror	$7
+    419e: 66 05        	ror	$5
+    41a0: 6a           	ror
+    41a1: 46 08        	lsr	$8
+    41a3: 66 07        	ror	$7
+    41a5: 66 05        	ror	$5
+    41a7: 6a           	ror
+    41a8: 46 08        	lsr	$8
+    41aa: 66 07        	ror	$7
+    41ac: 66 05        	ror	$5
+    41ae: 6a           	ror
+    41af: 85 3b        	sta	$3b
+    41b1: a9 85        	lda	#$85
+    41b3: 85 3c        	sta	$3c
+    41b5: a9 01        	lda	#$1
+    41b7: 85 3d        	sta	$3d
+    41b9: 64 3e        	stz	$3e
+    41bb: a9 03        	lda	#$3
+    41bd: 85 3f        	sta	$3f
+    41bf: 64 48        	stz	$48
+    41c1: 86 40        	stx	$40
+    41c3: 84 41        	sty	$41
+    41c5: a6 06        	ldx	$6
+    41c7: 86 42        	stx	$42
+    41c9: 64 43        	stz	$43
+    41cb: a6 09        	ldx	$9
+    41cd: 86 45        	stx	$45
+    41cf: a2 00        	ldx	#$0
+    41d1: a0 37        	ldy	#$37
+    41d3: 84 06        	sty	$6
+    41d5: a0 00        	ldy	#$0
+    41d7: 84 07        	sty	$7
+    41d9: a4 0a        	ldy	$a
+    41db: 84 46        	sty	$46
+    41dd: a4 06        	ldy	$6
+    41df: a5 04        	lda	$4
+    41e1: 29 0f        	and	#$f
+    41e3: 85 47        	sta	$47
+    41e5: a9 47        	lda	#$47
+    41e7: 8d 2f d0     	sta	$d02f
+    41ea: a9 53        	lda	#$53
+    41ec: 8d 2f d0     	sta	$d02f
+    41ef: a9 41        	lda	#$41
+    41f1: 85 00        	sta	$0
+    41f3: 9c 02 d7     	stz	$d702
+    41f6: 9c 04 d7     	stz	$d704
+    41f9: 8e 01 d7     	stx	$d701
+    41fc: 8c 05 d7     	sty	$d705
+    41ff: 60           	rts
+
+00004200 <memcpy>:
+    4200: a8           	tay
+    4201: 8a           	txa
+    4202: d0 03        	bne	$4207
+    4204: 98           	tya
+    4205: f0 25        	beq	$422c
+    4207: a5 04        	lda	$4
+    4209: 85 08        	sta	$8
+    420b: a5 05        	lda	$5
+    420d: 85 09        	sta	$9
+    420f: b2 06        	lda	($6),z
+    4211: 92 08        	sta	($8),z
+    4213: e6 08        	inc	$8
+    4215: d0 02        	bne	$4219
+    4217: e6 09        	inc	$9
+    4219: e6 06        	inc	$6
+    421b: d0 02        	bne	$421f
+    421d: e6 07        	inc	$7
+    421f: 98           	tya
+    4220: 88           	dey
+    4221: c9 00        	cmp	#$0
+    4223: d0 01        	bne	$4226
+    4225: ca           	dex
+    4226: 8a           	txa
+    4227: d0 e6        	bne	$420f
+    4229: 98           	tya
+    422a: d0 e3        	bne	$420f
+    422c: 60           	rts
+
+0000422d <__memset>:
+    422d: 80 0f        	bra	$423e
+    422f: 92 04        	sta	($4),z
+    4231: e6 04        	inc	$4
+    4233: d0 02        	bne	$4237
+    4235: e6 05        	inc	$5
+    4237: da           	phx
+    4238: 7a           	ply
+    4239: ca           	dex
+    423a: c0 00        	cpy	#$0
+    423c: f0 09        	beq	$4247
+    423e: a4 06        	ldy	$6
+    4240: d0 ed        	bne	$422f
+    4242: e0 00        	cpx	#$0
+    4244: d0 e9        	bne	$422f
+    4246: 60           	rts
+    4247: c6 06        	dec	$6
+    4249: 4c 3e 42     	jmp	$423e
+
+0000424c <strlen>:
+    424c: b2 04        	lda	($4),z
+    424e: f0 29        	beq	$4279
+    4250: a9 00        	lda	#$0
+    4252: a0 01        	ldy	#$1
+    4254: 64 06        	stz	$6
+    4256: aa           	tax
+    4257: 64 07        	stz	$7
+    4259: 18           	clc
+    425a: 65 04        	adc	$4
+    425c: 85 08        	sta	$8
+    425e: a5 07        	lda	$7
+    4260: 65 05        	adc	$5
+    4262: e6 06        	inc	$6
+    4264: d0 01        	bne	$4267
+    4266: e8           	inx
+    4267: 85 09        	sta	$9
+    4269: b1 08        	lda	($8),y
+    426b: 85 08        	sta	$8
+    426d: a5 06        	lda	$6
+    426f: 86 07        	stx	$7
+    4271: e6 08        	inc	$8
+    4273: c6 08        	dec	$8
+    4275: d0 e2        	bne	$4259
+    4277: 80 04        	bra	$427d
+    4279: 64 06        	stz	$6
+    427b: a2 00        	ldx	#$0
+    427d: a5 06        	lda	$6
+    427f: 60           	rts
+
+00004280 <__ashlhi3>:
+    4280: 86 05        	stx	$5
+    4282: a6 04        	ldx	$4
+    4284: f0 0a        	beq	$4290
+    4286: a6 04        	ldx	$4
+    4288: ca           	dex
+    4289: 0a           	asl
+    428a: 26 05        	rol	$5
+    428c: e0 00        	cpx	#$0
+    428e: d0 f8        	bne	$4288
+    4290: a6 05        	ldx	$5
+    4292: 60           	rts
+
+00004293 <__mulhi3>:
+    4293: a4 05        	ldy	$5
+    4295: d0 04        	bne	$429b
+    4297: a4 04        	ldy	$4
+    4299: f0 24        	beq	$42bf
+    429b: 85 06        	sta	$6
+    429d: 86 07        	stx	$7
+    429f: a0 00        	ldy	#$0
+    42a1: 98           	tya
+    42a2: 46 05        	lsr	$5
+    42a4: 66 04        	ror	$4
+    42a6: 90 09        	bcc	$42b1
+    42a8: aa           	tax
+    42a9: 98           	tya
+    42aa: 18           	clc
+    42ab: 65 06        	adc	$6
+    42ad: a8           	tay
+    42ae: 8a           	txa
+    42af: 65 07        	adc	$7
+    42b1: 06 06        	asl	$6
+    42b3: 26 07        	rol	$7
+    42b5: a6 05        	ldx	$5
+    42b7: d0 e9        	bne	$42a2
+    42b9: a6 04        	ldx	$4
+    42bb: d0 e5        	bne	$42a2
+    42bd: 80 03        	bra	$42c2
+    42bf: a0 00        	ldy	#$0
+    42c1: 98           	tya
+    42c2: aa           	tax
+    42c3: 98           	tya
+    42c4: 60           	rts
+
+000042c5 <__udivmodhi4>:
+    42c5: 85 0b        	sta	$b
+    42c7: 8a           	txa
+    42c8: 64 08        	stz	$8
+    42ca: a6 05        	ldx	$5
+    42cc: d0 04        	bne	$42d2
+    42ce: a6 04        	ldx	$4
+    42d0: f0 0a        	beq	$42dc
+    42d2: c5 05        	cmp	$5
+    42d4: d0 0b        	bne	$42e1
+    42d6: a6 0b        	ldx	$b
+    42d8: e4 04        	cpx	$4
+    42da: b0 09        	bcs	$42e5
+    42dc: a2 00        	ldx	#$0
+    42de: 4c 8e 43     	jmp	$438e
+    42e1: c5 05        	cmp	$5
+    42e3: 90 f7        	bcc	$42dc
+    42e5: a8           	tay
+    42e6: a6 05        	ldx	$5
+    42e8: 10 03        	bpl	$42ed
+    42ea: 4c 82 43     	jmp	$4382
+    42ed: a2 00        	ldx	#$0
+    42ef: 5a           	phy
+    42f0: a4 04        	ldy	$4
+    42f2: 84 09        	sty	$9
+    42f4: a4 05        	ldy	$5
+    42f6: 84 0a        	sty	$a
+    42f8: 7a           	ply
+    42f9: 06 09        	asl	$9
+    42fb: 26 0a        	rol	$a
+    42fd: c5 0a        	cmp	$a
+    42ff: d0 09        	bne	$430a
+    4301: a5 0b        	lda	$b
+    4303: c5 09        	cmp	$9
+    4305: 98           	tya
+    4306: b0 06        	bcs	$430e
+    4308: 80 17        	bra	$4321
+    430a: c5 0a        	cmp	$a
+    430c: 90 13        	bcc	$4321
+    430e: e8           	inx
+    430f: 5a           	phy
+    4310: a4 09        	ldy	$9
+    4312: 84 04        	sty	$4
+    4314: a4 0a        	ldy	$a
+    4316: 84 05        	sty	$5
+    4318: 7a           	ply
+    4319: e6 0a        	inc	$a
+    431b: c6 0a        	dec	$a
+    431d: 10 da        	bpl	$42f9
+    431f: 80 08        	bra	$4329
+    4321: a5 04        	lda	$4
+    4323: 85 09        	sta	$9
+    4325: a5 05        	lda	$5
+    4327: 85 0a        	sta	$a
+    4329: 38           	sec
+    432a: a5 0b        	lda	$b
+    432c: e5 09        	sbc	$9
+    432e: 85 0b        	sta	$b
+    4330: 98           	tya
+    4331: e5 0a        	sbc	$a
+    4333: e0 00        	cpx	#$0
+    4335: d0 03        	bne	$433a
+    4337: 4c 8c 43     	jmp	$438c
+    433a: 64 08        	stz	$8
+    433c: a0 01        	ldy	#$1
+    433e: 84 69        	sty	$69
+    4340: 46 0a        	lsr	$a
+    4342: 66 09        	ror	$9
+    4344: a4 69        	ldy	$69
+    4346: 84 04        	sty	$4
+    4348: 06 04        	asl	$4
+    434a: a0 01        	ldy	#$1
+    434c: b0 02        	bcs	$4350
+    434e: a0 00        	ldy	#$0
+    4350: 84 05        	sty	$5
+    4352: a4 04        	ldy	$4
+    4354: 84 69        	sty	$69
+    4356: c5 0a        	cmp	$a
+    4358: d0 22        	bne	$437c
+    435a: a4 0b        	ldy	$b
+    435c: c4 09        	cpy	$9
+    435e: 90 11        	bcc	$4371
+    4360: a8           	tay
+    4361: a5 69        	lda	$69
+    4363: 09 01        	ora	#$1
+    4365: 85 69        	sta	$69
+    4367: 38           	sec
+    4368: a5 0b        	lda	$b
+    436a: e5 09        	sbc	$9
+    436c: 85 0b        	sta	$b
+    436e: 98           	tya
+    436f: e5 0a        	sbc	$a
+    4371: a4 05        	ldy	$5
+    4373: c0 01        	cpy	#$1
+    4375: 26 08        	rol	$8
+    4377: ca           	dex
+    4378: d0 c6        	bne	$4340
+    437a: 80 14        	bra	$4390
+    437c: c5 0a        	cmp	$a
+    437e: b0 e0        	bcs	$4360
+    4380: 80 ef        	bra	$4371
+    4382: 38           	sec
+    4383: a5 0b        	lda	$b
+    4385: e5 04        	sbc	$4
+    4387: 85 0b        	sta	$b
+    4389: 98           	tya
+    438a: e5 05        	sbc	$5
+    438c: a2 01        	ldx	#$1
+    438e: 86 69        	stx	$69
+    4390: aa           	tax
+    4391: a5 0b        	lda	$b
+    4393: 92 06        	sta	($6),z
+    4395: a0 01        	ldy	#$1
+    4397: 8a           	txa
+    4398: 91 06        	sta	($6),y
+    439a: a6 08        	ldx	$8
+    439c: a5 69        	lda	$69
+    439e: 60           	rts
