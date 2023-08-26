@@ -15,6 +15,11 @@
 // unsigned char ptrFileName	=	0xE2;
 char *sectbuf = (char *)SECTBUF;
 
+#define BLOCKBAMLOW   0x1600  // double sector buffers for BAM and data.
+#define BLOCKBAMHIGH  0x1700  // mega65-book.pdf#7a "free for programme use"
+#define BLOCKDATALOW  0x1800
+#define BLOCKDATAHIGH 0x1900
+
 #define VAL_DOSFTYPE_DEL 0
 #define VAL_DOSFTYPE_SEQ 1
 #define VAL_DOSFTYPE_PRG 2
@@ -128,7 +133,9 @@ void _miniInit()  {
     "lda #$00\n"    // clear F011 Floppy Controller Registers
     "sta $D080\n"
   );
-  printf("_miniInit 32addr is: %lx\n", ptrMiniOffs);
+  mh4printf("_miniinit 32addr is: ", ptrMiniOffs >> 16);
+  mh4printf(" ", ptrMiniOffs & 0xffff);
+  cputln();
 }
 
 void miniSetFileName(const char* filename) {
@@ -297,7 +304,7 @@ unsigned char _miniReadNextSector(unsigned char drive) {
 		"lda #$00\n"
 		"jmp end01%=\n"
 "err01:   lda #$ff\n"
-"end01:   sta retval\n"
+"end01:   sta %0\n"
 	: "=r"(retval) :"a"(drive):);
 	return retval;
 }
@@ -309,7 +316,8 @@ unsigned char ReadSector(unsigned char drive, char track,
 
 	if (track == 0)  return 0xFC;
 	drive += 0x60;   // #$60 drive 0
-    asm volatile(
+    msprintf("Begin ReadSector.");
+	asm volatile(
 		// Turn on motor + led (which causes led to light solid):
 //		"lda	drive\n"
 		"sta	$D080\n"
@@ -390,7 +398,7 @@ unsigned char ReadSector(unsigned char drive, char track,
 		"lda flagCurrSec\n"
 		"jmp end02%=\n"
 "err02%=:   lda #$ff\n"
-"end02%=:   sta retval\n"
+"end02%=:   sta %0\n"
 	: "=r"(retval) :"a"(drive),"x"(track),"y"(sector):);
 	return retval;
 }
@@ -471,7 +479,7 @@ unsigned char WriteSector(unsigned char drive, char track,
 		"lda #$00\n"
 		"jmp end03%=\n"
 "err03%=:   lda #$ff\n"
-"end03%=:   sta retval\n"
+"end03%=:   sta %0\n"
 	: "=r"(retval) :"a"(drive),"x"(track),"y"(sector):"a","x");
 	return retval;
 }
@@ -506,7 +514,7 @@ unsigned char _miniReadByte()  {
 		"nop\n"     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
 				// mega65-book.pdf#259
 		"lda	(ptrMiniOffs), z\n"
-		"sta retval\n"
+		"sta %0\n"
 	: "=r"(retval) ::);
 	offsCurrIdx++;
 	return retval;
@@ -560,72 +568,82 @@ unsigned char GetWholeSector(/*struct*/ BAM* entry, unsigned char drive,
 	unsigned char retval;
 
   unsigned char * p = (unsigned char *) entry;
+  mhprintf(" p=", (long)p);
+  unsigned char side;
   unsigned int i;
 
-  unsigned char side = ReadSector(drive, track, sector);
+  msprintf("GetWholeSector before ReadSector.");
+  cgetc();
+
+  side = ReadSector(drive, track, sector);
 
   if (side > 1)  return side;
   ptrMiniOffs = SECTBUF;
+//  clrhome();
+  mprintf("GetWholeSector before lower buffer. Track=", track);
+  mprintf(" Sector=", sector);
+  cputln();
   for (i=0; i < BLOCKSIZE; i++)  {
-    asm volatile(
-		"ldz	i\n"
-
-		"nop\n"     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
-				// mega65-book.pdf#259
-		"lda	(ptrMiniOffs), z\n"
-		"sta retval\n"
-	: "=r"(retval) ::"a");
-	p[i] = retval;
+	p[i] = lpeek(ptrMiniOffs + i);
+//    mhprintf(" i=", i);
+    mhprintf(" ", p[i]);
+//    mhprintf(" &p=", (long)(&p));
+//    cgetc();
   }
+  cputln();
+  cgetc();
 
   ptrMiniOffs = SECTBUFUPPER;
+  clrhome();
+  mprintf("GetWholeSector before upper buffer. Track=", track);
+  mprintf(" Sector=", sector);
+  cputln();
   for (i=0; i < BLOCKSIZE; i++)  {
-    asm volatile(
-		"ldz	i\n"
-
-		"nop\n"     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
-				// mega65-book.pdf#259
-		"lda	(ptrMiniOffs), z\n"
-		"sta retval\n"
-	: "=r"(retval) ::"a");
-	p[i + BLOCKSIZE] = retval;
-//	DEFAULT_SCREEN[i] = retval;
+	p[i] = lpeek(ptrMiniOffs + i);
+//    mhprintf(" i=", i);
+    mhprintf(" ", p[i]);
+//    mhprintf(" &p=", (long)(&p));
+//    cgetc();
   }
+  cputln();
+  cgetc();
+  clrhome();
+  msprintf("GetWholeSector done.");
   return side;
 }
 unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
                     unsigned char drive, char track, char sector)  {
-	unsigned char retval;
-
   unsigned char * p = (unsigned char *) entry;
   unsigned int i;
   unsigned char val;
 
   if (side > 1)  return side;
   ptrMiniOffs = SECTBUF;
+//  clrhome();
+  mprintf("PutWholeSector before lower buffer. Track=", track);
+  mprintf(" Sector=", sector);
+  cputln();
+  cgetc();
   for (i=0; i < BLOCKSIZE; i++)  {
-	val = p[i];
-    asm volatile(
-		"ldz	i\n"
-//		"lda val\n"
-		"nop\n"     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
-				// mega65-book.pdf#259
-		"sta	(ptrMiniOffs), z\n"
-	: "=r"(retval) :"r"(i),"a"(val));
+    mhprintf(" ", p[i]);
+	lpoke(ptrMiniOffs + i, p[i]);
   }
 
   ptrMiniOffs = SECTBUFUPPER;
+  clrhome();
+  mprintf("PutWholeSector before upper buffer. Track=", track);
+  mprintf(" Sector=", sector);
+  cputln();
   for (i=0; i < BLOCKSIZE; i++)  {
-	val = p[i + BLOCKSIZE];
-    asm volatile(
-		"ldz	i\n"
-//		"lda val\n"
-		"nop\n"     // initiates 32-bit Base-Page Indirect Z-Indexed Mode
-				// mega65-book.pdf#259
-		"sta	(ptrMiniOffs), z\n"
-	: "=r"(retval) :"r"(i),"a"(val));
+    mhprintf(" ", p[i]);
+	lpoke(ptrMiniOffs + i, p[i]);
   }
+  cputln();
+  cgetc();
+  clrhome();
 
+  msprintf("PutWholeSector done. Returning while WriteSector.");
+  cgetc();
   return WriteSector(drive, track, sector - side);
 }
 
@@ -802,7 +820,7 @@ void testbam()  {
   }
 */
   // memoryRemap256M(MEMORYBLOCK_4000, 0xFFD6C, 0); // omit last two 00
-  BAMsector = (BAM*) 0x4000;
+  BAMsector = (BAM*) BLOCKBAMLOW;
   _miniInit();
   datNextTrk = 40;
   datNextSec = 1;  // BAM
@@ -815,10 +833,10 @@ void testbam()  {
   BAMsector->entry[2].alloc3= 0xDD;
   BAMsector->entry[2].alloc4= 0xEE;
   BAMsector->entry[2].alloc5= 0x55;
-  printf("testbam: %04x %04x %04x %04x\n", (unsigned int) PEEK(0x4000),
-		 PEEK(0x4001), PEEK(0x4002), PEEK(0x4003));
-  printf("entry: %04x %04x %04x %04x\n", (unsigned int) PEEK(0x4016),
-		 PEEK(0x4017), PEEK(0x4018), PEEK(0x4019));
+  printf("testbam: %04x %04x %04x %04x\n", (unsigned int) PEEK(BLOCKBAMLOW),
+		 PEEK(BLOCKBAMLOW + 1), PEEK(BLOCKBAMLOW + 2), PEEK(BLOCKBAMLOW + 3));
+  printf("entry: %04x %04x %04x %04x\n", (unsigned int) PEEK(BLOCKBAMLOW + 0x16),
+		 PEEK(BLOCKBAMLOW + 0x17), PEEK(BLOCKBAMLOW + 0x18), PEEK(BLOCKBAMLOW + 0x19));
   PutWholeSector(BAMsector);
 //  BAMsector-->entry[22 - 1].alloc[4] = $FF;
   //           drive track sector:
@@ -830,27 +848,37 @@ void testbam()  {
 
 #define BAMTRACK 40
 #define BAMSECT   1
-#define DRIVE     0
+#define DRIVE     1
 unsigned char workside;
 unsigned char i;
+unsigned char BAMside;
 
 void testsectors()  {
-  BAMsector[0] = (BAM*) 0x4000;
-  BAMsector[1] = (BAM*) 0x4100;
-  worksector[0] = (DATABLOCK*) 0x4200;
-  worksector[1] = (DATABLOCK*) 0x4300;
-  worksectorasBAM[0] = (BAM*) 0x4200;
-  worksectorasBAM[1] = (BAM*) 0x4300;
+  BAMsector[0] = (BAM*) BLOCKBAMLOW;
+  BAMsector[1] = (BAM*) BLOCKBAMHIGH;
+  worksector[0] = (DATABLOCK*) BLOCKDATALOW;
+  worksector[1] = (DATABLOCK*) BLOCKDATAHIGH;
+  worksectorasBAM[0] = (BAM*) BLOCKDATALOW;
+  worksectorasBAM[1] = (BAM*) BLOCKDATAHIGH;
+lfill(BLOCKBAMLOW, 0xaa, 4 * 0x100);
   _miniInit();
 //  datNextTrk = BAMTRACK;
 //  datNextSec = BAMSECT;
 //  _miniReadNextSector(DRIVE); // drive
-  unsigned char BAMside = GetWholeSector(BAMsector[0], DRIVE, BAMTRACK, BAMSECT);
+  clrhome();
+  msprintf("Before GetWholeSector.");
+  cgetc();
+  BAMside = GetWholeSector(BAMsector[0], DRIVE, BAMTRACK, BAMSECT);
+  msprintf("GetWholeSector done.");
   datNextTrk = 2;
-  for (i = 0; i < 40         -         2  ; i++)  {
+  for (i = 30; i < 40         -         2  ; i++)  {
 	datNextSec = i;
 //	_miniReadNextSector(DRIVE); // drive
+    clrhome();
+	msprintf("Begin GetWholeSector worksectorasBAM. ");
 	workside = GetWholeSector(worksectorasBAM[0], DRIVE, datNextTrk, datNextSec);
+    msprintf("worksectorasBAM done.");
+	cputln();
 	/*struct*/ DATABLOCK* ws = worksector[workside];
 	ws->chntrack = datNextTrk;
 	ws->chnsector = datNextSec + 1;
@@ -858,27 +886,50 @@ void testsectors()  {
 	ws->data[1] = datNextSec + 1;
 	ws->data[252]=0xEE; // test highest byte
 	ws->data[253]=0xAA; // test highest byte
+    mprintf("datNextTrk: ", datNextTrk);
+    mprintf(" ws->data[1]: ", ws->data[1]);
+	cputln();
+	cgetc();
 	BAMSectorUpdate(BAMsector[BAMside], datNextTrk, i, 1); // 1=allocate
-	printf("testsectors: sector %d  workside %d ",
-           (int) i, (int) workside);
-	printf("bytes %02x %02x %02x %02x\n", PEEK(0x4100),
-		 PEEK(0x4101), PEEK(0x41FE), PEEK(0x41FF));
+	// printf("testsectors: sector %d  workside %d ",
+    //        (int) i, (int) workside);
+    msprintf("BAMSectorUpdate done.");
+	cputln();
+    mprintf("testsectors: sector ", i);
+    mprintf(" workside ", workside);
+	// printf("bytes %02x %02x %02x %02x\n", PEEK(0x4100),
+	//  	 PEEK(0x4101), PEEK(0x41FE), PEEK(0x41FF));
+    mhprintf(" bytes ", PEEK(BLOCKBAMHIGH));
+    mhprintf(" ",    PEEK(BLOCKBAMHIGH + 1));
+    mhprintf(" ",    PEEK(BLOCKBAMHIGH + 0xFE));
+    mhprintf(" ",    PEEK(BLOCKBAMHIGH + 0xFF));
+	cputln();
+	cgetc();
 
-	printf("testsectors: %04x %04x %04x %04x\n", (unsigned int) PEEK(0x4000),
-		 PEEK(0x4001), PEEK(0x4002), PEEK(0x4003));
+	// printf("testsectors: %04x %04x %04x %04x\n", (unsigned int) PEEK(0x4000),
+	//  	 PEEK(0x4001), PEEK(0x4002), PEEK(0x4003));
+    mhprintf(" testsectors: ", PEEK(BLOCKBAMLOW));
+    mhprintf(" ",    PEEK(BLOCKBAMLOW + 1));
+    mhprintf(" ",    PEEK(BLOCKBAMLOW + 2));
+    mhprintf(" ",    PEEK(BLOCKBAMLOW + 3));
+	cputln();
+	cgetc();
 //	printf("entry: %04x %04x %04x %04x\n", (unsigned int) PEEK($4016),
 //		 PEEK($4017), PEEK($4018), PEEK($4019));
 	PutWholeSector(worksectorasBAM[0], workside, DRIVE, datNextTrk, datNextSec);
+    msprintf("PutWholeSector done.");
+	cputln();
+	cgetc();
 	//           drive track sector:
 //	WriteSector(DRIVE, datNextTrk, datNextSec);
   }
   PutWholeSector(BAMsector[0], BAMside, DRIVE, BAMTRACK, BAMSECT);
 //  WriteSector(DRIVE, BAMTRACK, BAMSECT);
-  printf("testsectors done, datNextTrk %d  datNextSec %d, BAMside %d\n\n",
-         (int) datNextTrk, (int) datNextSec, (int) BAMside);
+  // printf("testsectors done, datNextTrk %d  datNextSec %d, BAMside %d\n\n",
+  //       (int) datNextTrk, (int) datNextSec, (int) BAMside);
+  mprintf("testsectors done, datNextTrk ", datNextTrk);
+  mprintf(" datNextSec ", datNextSec);
+  mprintf(" BAMside ", BAMside);
+  cputln();
+  cgetc();
 }
-
-/* todo
-- reading the last sector 39 results in side 1 and an invalid next track
-- two for loops need their loop variable declared beforehand
-*/

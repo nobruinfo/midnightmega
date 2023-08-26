@@ -14,6 +14,7 @@ CD /D %~dp0
 
 
 SET PRJ=midnightmega
+SET DATADISK=datadisk
 
 set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
 set LLVM_BAT=%LLVM_HOME%\bin\mos-mega65-clang.bat
@@ -66,6 +67,20 @@ IF ERRORLEVEL == 1 (
   %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.4,d
   DEL %PRJ%.seq>NUL
 
-  XMEGA65 -besure -8 %PRJ%.d81 -autoload -hdosvirt -syscon
+  %c1541% -format disk%DATADISK%,id d81 %DATADISK%.d81
+  %c1541% -attach %DATADISK%.d81 -delete %DATADISK%
+  ECHO this is a sequential file for testing.>%DATADISK%.seq
+  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.0
+  ECHO this is a relential file for testing.>%DATADISK%.seq
+  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.1,l80,01,01
+  ECHO this is a sequential file for testing.>%DATADISK%.seq
+  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.2,s
+  ECHO this is a sequential file for testing.>%DATADISK%.seq
+  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.3,s
+  ECHO this is a deleted file for testing.>%DATADISK%.seq
+  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.4,d
+  DEL %DATADISK%.seq>NUL
+
+  XMEGA65 -besure -8 %PRJ%.d81 -9 %DATADISK%.d81 -autoload -hdosvirt -syscon
   REM XMEGA65 -besure -prg %PRJ%.prg
 )

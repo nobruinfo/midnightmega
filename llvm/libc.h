@@ -33,9 +33,6 @@ struct DIRENT {
 
 #define readdir_direntasm $6000
 struct DIRENT* const __attribute__((used)) readdir_dirent = (struct DIRENT*) 0x6000; // needs be at page frame
-// char __align(0x100) readdir_dirent[256]; // sizeof(DIRENT)]; occupies the whole page!
-// DIRENT* entry = (DIRENT*) &readdir_dirent;
-
 struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) 0x6100; // needs be at a
                                                                   // page frame border
 
@@ -45,87 +42,6 @@ struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) 0x6100; // needs b
 #define XSTR(s) STR(s)
 __asm__(".set HTRAP00, " XSTR(HTRAP00asm) );
 __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
-
-char tolowerchar(char ch) {
-    if(ch>='A' && ch<='Z') {
-        return ch + ('a'-'A');
-    } else {
-        return ch;
-    }
-}
-
-char * strlowr(char *str) {
-    char * src = str;
-    while(*src) {
-        *src = tolowerchar(*src);
-        src++;
-    }
-    return str;
-}
-
-char * strsan(char *str) {
-  char * s = str;
-  
-  while (*s) {
-//  for (int i=0; i < sizeof(s); s++) {
-	if (*s < 0x20 || *s > 0x7d) *s = '?';
-	s++;
-  }
-  return s;
-}
-
-#define COLOR_RAM_BASE 0xFF80000UL
-// to by replaced by a getter function
-void cputln(void)  {
-  unsigned char width;
-  unsigned char height;
-  unsigned int screenbytes;
-  
-  getscreensize(&width, &height);
-  screenbytes = width * height;
-  if (wherey() + 1 >= height)  {
-	lcopy(getscreenaddr() + width, getscreenaddr(), screenbytes - width);
-    lcopy(COLOR_RAM_BASE + width, COLOR_RAM_BASE, screenbytes - width);
-    lfill(getscreenaddr() + screenbytes - width, ' ', width);
-    lfill(COLOR_RAM_BASE + screenbytes - width, COLOUR_WHITE, width);
-		// COLOUR_WHITE to be replaced by a getter function
-		// COLOR_RAM_BASE calculation supports one-byte colours only
-	gotoxy(0, wherey());
-  } else {
-	gotoxy(0, wherey() + 1);
-  }
-}
-
-// taken from mega65-libc memory.c being inactive by #ifdef:
-uint8_t lpeek__________(uint32_t address)
-{
-  return dma_peek(address);
-}
-void lpoke___________(uint32_t address, uint8_t value)
-{
-  dma_poke(address, value);
-}
-
-// instead of printf() variants:
-void msprintf(char* str)
-{
-  cputs((const unsigned char*) petsciitoscreencode_s(str));
-}
-void mprintf(char* str, char n)
-{
-  cputs((const unsigned char*) petsciitoscreencode_s(str));
-  cputdec(n, 0, 0);
-}
-void mhprintf(char* str, char n)
-{
-  cputs((const unsigned char*) petsciitoscreencode_s(str));
-  cputhex(n, 4);
-}
-void mcprintf(char* str, char c)
-{
-  cputs((const unsigned char*) petsciitoscreencode_s(str));
-  cputc(c);
-}
 
 // https://stackoverflow.com/questions/8810390/how-to-use-a-global-variable-in-gcc-inline-assembly
 // define fnamehi (unsigned char)((unsigned int)hyppofn->name >> 8)

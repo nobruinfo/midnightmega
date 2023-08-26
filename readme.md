@@ -1,7 +1,6 @@
 # Midnight Mega
 
-A simple file commander and disk mounting
-programme.
+A simple file commander and disk mounting programme.
 
 Work in progress.
 
@@ -9,8 +8,8 @@ Work in progress.
 
 ## kickc
 
-When adding/removing lines of code the emulator freezes at various positions
-with no apparent reason.
+When adding/removing lines of code the emulator freezes at various
+positions with no apparent reason.
 
 ## llvm
 
@@ -46,3 +45,9 @@ as describes in subchapter `llvm` above.
 * proof of concept reading files, sectors, tracks
 * proof of concept writing files, sectors, tracks
 * refactoring for code runtime optimisation
+
+# bugs
+
+* reading/writing .d81 always takes two logical sectors at once, writing
+  of a single one should first read its accompaigning one
+* reading the last sector 39 results in side 1 and an invalid next track
