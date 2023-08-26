@@ -599,7 +599,7 @@ unsigned char GetWholeSector(/*struct*/ BAM* entry, unsigned char drive,
   mprintf(" Sector=", sector);
   cputln();
   for (i=0; i < BLOCKSIZE; i++)  {
-	p[i] = lpeek(ptrMiniOffs + i);
+	p[i + BLOCKSIZE] = lpeek(ptrMiniOffs + i);
 //    mhprintf(" i=", i);
     mhprintf(" ", p[i]);
 //    mhprintf(" &p=", (long)(&p));
@@ -618,25 +618,32 @@ unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
   unsigned char val;
 
   if (side > 1)  return side;
-  ptrMiniOffs = SECTBUF;
+  
+  // Now first read the state from the disk, because only one of
+  // the two logical sectors will be overwritten:
+  ReadSector(drive, track, sector);
+  
+  if (side == 0)  {
+    ptrMiniOffs = SECTBUF;
 //  clrhome();
-  mprintf("PutWholeSector before lower buffer. Track=", track);
-  mprintf(" Sector=", sector);
-  cputln();
-  cgetc();
-  for (i=0; i < BLOCKSIZE; i++)  {
-    mhprintf(" ", p[i]);
-	lpoke(ptrMiniOffs + i, p[i]);
-  }
-
-  ptrMiniOffs = SECTBUFUPPER;
-  clrhome();
-  mprintf("PutWholeSector before upper buffer. Track=", track);
-  mprintf(" Sector=", sector);
-  cputln();
-  for (i=0; i < BLOCKSIZE; i++)  {
-    mhprintf(" ", p[i]);
-	lpoke(ptrMiniOffs + i, p[i]);
+    mprintf("PutWholeSector before lower buffer. Track=", track);
+    mprintf(" Sector=", sector);
+    cputln();
+    cgetc();
+    for (i=0; i < BLOCKSIZE; i++)  {
+      mhprintf(" ", p[i]);
+	  lpoke(ptrMiniOffs + i, p[i]);
+    }
+  } else {
+    ptrMiniOffs = SECTBUFUPPER;
+    clrhome();
+    mprintf("PutWholeSector before upper buffer. Track=", track);
+    mprintf(" Sector=", sector);
+    cputln();
+    for (i=0; i < BLOCKSIZE; i++)  {
+      mhprintf(" ", p[i]);
+      lpoke(ptrMiniOffs + i, p[i]);
+    }
   }
   cputln();
   cgetc();
@@ -871,7 +878,7 @@ lfill(BLOCKBAMLOW, 0xaa, 4 * 0x100);
   BAMside = GetWholeSector(BAMsector[0], DRIVE, BAMTRACK, BAMSECT);
   msprintf("GetWholeSector done.");
   datNextTrk = 2;
-  for (i = 30; i < 40         -         2  ; i++)  {
+  for (i = 1; i < 40         -         2  ; i++)  {
 	datNextSec = i;
 //	_miniReadNextSector(DRIVE); // drive
     clrhome();
@@ -916,14 +923,14 @@ lfill(BLOCKBAMLOW, 0xaa, 4 * 0x100);
 	cgetc();
 //	printf("entry: %04x %04x %04x %04x\n", (unsigned int) PEEK($4016),
 //		 PEEK($4017), PEEK($4018), PEEK($4019));
-	PutWholeSector(worksectorasBAM[0], workside, DRIVE, datNextTrk, datNextSec);
+	PutWholeSector(worksectorasBAM[workside], workside, DRIVE, datNextTrk, datNextSec);
     msprintf("PutWholeSector done.");
 	cputln();
 	cgetc();
 	//           drive track sector:
 //	WriteSector(DRIVE, datNextTrk, datNextSec);
   }
-  PutWholeSector(BAMsector[0], BAMside, DRIVE, BAMTRACK, BAMSECT);
+  PutWholeSector(BAMsector[BAMside], BAMside, DRIVE, BAMTRACK, BAMSECT);
 //  WriteSector(DRIVE, BAMTRACK, BAMSECT);
   // printf("testsectors done, datNextTrk %d  datNextSec %d, BAMside %d\n\n",
   //       (int) datNextTrk, (int) datNextSec, (int) BAMside);

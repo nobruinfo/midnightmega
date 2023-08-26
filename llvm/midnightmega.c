@@ -60,9 +60,9 @@ int main() {
   cputln();
   cgetc();
 
-  textcolor (COLOUR_GREY3);
+  textcolor (COLOUR_CYAN);
   bordercolor (COLOUR_BLACK);
-  bgcolor (COLOUR_BLACK);
+  bgcolor (COLOUR_BLUE);
 
   clrhome();
   gotoxy(0, 0);
@@ -80,7 +80,7 @@ int main() {
   unsigned char clear = 0;
   unsigned char shadow = 1;
 
-  box(&rc, COLOUR_WHITE, BOX_STYLE_OUTER, clear, shadow);
+  box(&rc, COLOUR_CYAN, BOX_STYLE_OUTER, clear, shadow);
   
   cgetc();
 
@@ -88,7 +88,7 @@ int main() {
   cputln();
 
   // cputu("hyppo_setname is: ", hyppo_setname("EMPTY.D81"), HEXADECIMAL);
-  mhprintf("hyppo_setname is: ", hyppo_setname("EMPTY.d81"));
+  mhprintf("hyppo_setname is: ", hyppo_setname("DATADISK.d81"));
   // cputu("hyppo_d81attach1 is: ", hyppo_d81attach1(), HEXADECIMAL);
   // cputln();
 
@@ -100,7 +100,7 @@ int main() {
   msprintf(" hyppofn: ");
   msprintf(hyppofn->name);
 
-hyppo_setname("EMPTY.D81");
+hyppo_setname("DATADISK.D81");
   mhprintf(" hyppo_d81attach1 is: ", hyppo_d81attach1());
   cputln();
 //  clrscr ();
