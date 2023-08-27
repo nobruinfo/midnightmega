@@ -25,9 +25,12 @@ unsigned char _miniFindFile();
 unsigned char waitforkeyandletgo(void);
 void cputln(void);
 
+#include "regions.h"
 #include "conioextensions.h"
 #include "minime.h"
 #include "libc.h"
+
+char* inputstr = (char*) INPUTSTRPAGE;
 
 // KickC calls conio_mega65_init() before doing main():
 int main() {
@@ -48,13 +51,17 @@ int main() {
     *PROCPORT_DDR = PROCPORT_DDR_MEMORY_MASK;
     *PROCPORT = PROCPORT_BASIC_KERNEL_IO; // PROCPORT_RAM_IO;
 */
-  // Disable 48MHz fast mode
-  VICIV->CONTROLB &= ~0x40;
-  VICIV->CONTROLC &= ~0x40;
 
   conioinit();
+  // ASCII lowercase is in conioinit()
+  setuppercase();  // to activate PETSCII
+  POKE(0xD018U, PEEK(0xD018U) ^ 0x02); // toggle case as if [Mega][Alt] was pressed
   flushkeybuf();
 //  mega65_io_enable();
+
+  // Disable 48MHz fast mode
+  VICIV->CONTROLB &= ~(VICIV_FAST);
+  VICIV->CONTROLC &= ~(VICIV_VFAST);
 
   msprintf("UPPERCASE lowercase.");
   cputln();
@@ -65,27 +72,6 @@ int main() {
   bgcolor (COLOUR_BLUE);
 
   clrhome();
-  gotoxy(0, 0);
-
-// LLVM lowercase is in conioinit():
-
-	asm volatile(
-	// lower case
-		"lda	$D018\n"
-		"ora	#$06\n"
-		"sta	$D018\n"
-	);
-
-  RECT rc = { 10, 4, 70, 9 };
-  unsigned char clear = 0;
-  unsigned char shadow = 1;
-
-  box(&rc, COLOUR_CYAN, BOX_STYLE_OUTER, clear, shadow);
-  
-  cgetc();
-
-  cputln();
-  cputln();
 
   // cputu("hyppo_setname is: ", hyppo_setname("EMPTY.D81"), HEXADECIMAL);
   mhprintf("hyppo_setname is: ", hyppo_setname("DATADISK.d81"));
@@ -157,7 +143,17 @@ hyppo_setname("DATADISK.D81");
 //  printf("minimedir %d\n", minimedir());
   
 //  testbam();
-  testsectors();
+
+  inputbox(inputstr, "Enter track number 1..80, 0 to quit:");
+  unsigned char track = atoi(inputstr);
+  if (track > 0)  {
+    inputbox(inputstr, "Enter sector number 0..39:");
+    testsectors(track, atoi(inputstr));
+  }
+
+  // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
+  lcopy(SECTBUF, ATTICFILEBUFFER, BLOCKSIZE);
+
 
 #ifdef dshkjdsgjfhgds
   printf("savefiletomemory begin, ");

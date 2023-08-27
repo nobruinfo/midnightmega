@@ -15,11 +15,6 @@
 // unsigned char ptrFileName	=	0xE2;
 char *sectbuf = (char *)SECTBUF;
 
-#define BLOCKBAMLOW   0x1600  // double sector buffers for BAM and data.
-#define BLOCKBAMHIGH  0x1700  // mega65-book.pdf#7a "free for programme use"
-#define BLOCKDATALOW  0x1800
-#define BLOCKDATAHIGH 0x1900
-
 #define VAL_DOSFTYPE_DEL 0
 #define VAL_DOSFTYPE_SEQ 1
 #define VAL_DOSFTYPE_PRG 2
@@ -108,8 +103,7 @@ BAM * BAMsector[2]; // to point into the disk buffer
 DATABLOCK * worksector[2]; // to point into the disk buffer
 BAM * worksectorasBAM[2]; // to point into the disk buffer
 
-/* struct MEGA65_VICIV* const VICIV = (struct MEGA65_VICIV*)0xd000;
-
+/*
 struct BAM* const BAMsector[2] = { (struct BAM*) $4000, (struct BAM*) $4100 };
 struct DATABLOCK* const worksector[2] = {
                                  (struct DATABLOCK*) $4200, (struct DATABLOCK*) $4300 };
@@ -117,6 +111,13 @@ struct BAM* const worksectorasBAM[2] = { (struct BAM*) $4200, (struct BAM*) $430
 */
 
 void _miniInit()  {
+  BAMsector[0] = (BAM*) BLOCKBAMLOW;
+  BAMsector[1] = (BAM*) BLOCKBAMHIGH;
+  worksector[0] = (DATABLOCK*) BLOCKDATALOW;  // to access as data
+  worksector[1] = (DATABLOCK*) BLOCKDATAHIGH;
+  worksectorasBAM[0] = (BAM*) BLOCKDATALOW;   // to transfer as fake BAM struct
+  worksectorasBAM[1] = (BAM*) BLOCKDATAHIGH;
+
   offsCurrIdx = 0;
   flagCurrSec = 0;
   datNextTrk = 0;
@@ -860,14 +861,8 @@ unsigned char workside;
 unsigned char i;
 unsigned char BAMside;
 
-void testsectors()  {
-  BAMsector[0] = (BAM*) BLOCKBAMLOW;
-  BAMsector[1] = (BAM*) BLOCKBAMHIGH;
-  worksector[0] = (DATABLOCK*) BLOCKDATALOW;
-  worksector[1] = (DATABLOCK*) BLOCKDATAHIGH;
-  worksectorasBAM[0] = (BAM*) BLOCKDATALOW;
-  worksectorasBAM[1] = (BAM*) BLOCKDATAHIGH;
-lfill(BLOCKBAMLOW, 0xaa, 4 * 0x100);
+void testsectors(unsigned char track, unsigned char sector)  {
+// lfill(BLOCKBAMLOW, 0xaa, 4 * 0x100);
   _miniInit();
 //  datNextTrk = BAMTRACK;
 //  datNextSec = BAMSECT;
@@ -877,8 +872,9 @@ lfill(BLOCKBAMLOW, 0xaa, 4 * 0x100);
   cgetc();
   BAMside = GetWholeSector(BAMsector[0], DRIVE, BAMTRACK, BAMSECT);
   msprintf("GetWholeSector done.");
-  datNextTrk = 2;
-  for (i = 1; i < 40         -         2  ; i++)  {
+  datNextTrk = track;
+//  for (i = 0; i < 40; i++)  {
+  i = sector;
 	datNextSec = i;
 //	_miniReadNextSector(DRIVE); // drive
     clrhome();
@@ -929,7 +925,7 @@ lfill(BLOCKBAMLOW, 0xaa, 4 * 0x100);
 	cgetc();
 	//           drive track sector:
 //	WriteSector(DRIVE, datNextTrk, datNextSec);
-  }
+//  }
   PutWholeSector(BAMsector[BAMside], BAMside, DRIVE, BAMTRACK, BAMSECT);
 //  WriteSector(DRIVE, BAMTRACK, BAMSECT);
   // printf("testsectors done, datNextTrk %d  datNextSec %d, BAMside %d\n\n",
