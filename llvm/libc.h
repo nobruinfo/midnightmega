@@ -31,9 +31,9 @@ struct DIRENT {
 	unsigned char dummy[256-87];  // blown up to fill a whole page
 };
 
-// need to be at a page frame border:
-#define readdir_direntasm DIRENTPAGE
-struct DIRENT* const __attribute__((used)) readdir_dirent = (struct DIRENT*) DIRENTPAGE;
+// need to be at a page frame border, CAREFUL as this define does not throw warnings:
+#define readdir_direntasm DIRENTPAGELOW
+struct DIRENT* const __attribute__((used)) readdir_dirent = (struct DIRENT*) DIRENTPAGELOW;
 struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) FILENAMEPAGE;
 
 // static char * __attribute__((used)) HTRAP00asm = HTRAP00;

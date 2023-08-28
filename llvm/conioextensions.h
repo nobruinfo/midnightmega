@@ -64,12 +64,6 @@ void lpoke___________(uint32_t address, uint8_t value)
   dma_poke(address, value);
 }
 
-void clrhome(void)
-{
-    clrscr();
-    gohome();
-}
-
 char asciitoscreencode(char c)
 {
 //    if (c >= 64 && c <= 95) {
@@ -97,9 +91,15 @@ char* asciitoscreencode_s(char* s)
 {
     char* src = s;
     char* dest = p2sbuf;
-    while (*dest++ = asciitoscreencode(*src++))
+    while ((*dest++ = asciitoscreencode(*src++)))
         ;
     return p2sbuf;
+}
+
+void clrhome(void)
+{
+    clrscr();
+    gohome();
 }
 
 // instead of printf() variants:
@@ -122,6 +122,55 @@ void mcprintf(char* str, char c)  {
   cputs((const unsigned char*) asciitoscreencode_s(str));
   cputc(c);
 }
+// Debug defined:
+void msprintfd(char* str)  {
+#ifdef DEBUG
+	msprintf(str);
+#endif
+}
+void mprintfd(char* str, long n)  {
+#ifdef DEBUG
+	mprintf(str, n);
+#endif
+}
+void mhprintfd(char* str, long n)  {
+#ifdef DEBUG
+	mhprintf(str, n);
+#endif
+}
+void mh4printfd(char* str, long n)  {
+#ifdef DEBUG
+	mh4printf(str, n);
+#endif
+}
+void mcprintfd(char* str, char c)  {
+#ifdef DEBUG
+	mcprintf(str, c);
+#endif
+}
+void cputcd(unsigned char c)  {
+#ifdef DEBUG
+	cputc(c);
+#endif
+}
+void clrhomed(void)  {
+#ifdef DEBUG
+	clrhome();
+#endif
+}
+void cputlnd(void)  {
+#ifdef DEBUG
+	cputln();
+#endif
+}
+unsigned char cgetcd(void)  {
+  unsigned char c = 0;
+#ifdef DEBUG
+	c = cgetc();
+#endif
+  return c;
+}
+
 
 unsigned char cinput2(
     unsigned char* buffer2, unsigned char buflen, unsigned char flags)

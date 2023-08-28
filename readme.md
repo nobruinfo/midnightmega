@@ -46,8 +46,16 @@ as describes in subchapter `llvm` above.
 * proof of concept writing files, sectors, tracks
 * refactoring for code runtime optimisation
 
+## contributions to `mega65-libc`
+
+* are in file `llvm/conioextensions.h` and are quirky because of most
+  in `conio.c` being `static`
+* the full removal of `KickC` based include files from folder
+  `llvm/include`
+
 # bugs
 
-* reading/writing .d81 always takes two logical sectors at once, writing
-  of a single one should first read its accompaigning one
-* reading the last sector 39 results in side 1 and an invalid next track
+* ~~reading/writing .d81 always takes two logical sectors at once,~~
+  ~~ writing of a single one should first read its accompaigning one~~
+* ~~reading the last sector 39 results in side 1 and an invalid next~~
+  ~~track~~

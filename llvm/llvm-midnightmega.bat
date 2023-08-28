@@ -80,6 +80,9 @@ IF ERRORLEVEL == 1 (
   ECHO this is a deleted file for testing.>%DATADISK%.seq
   %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.4,d
   DEL %DATADISK%.seq>NUL
+  for /l %%i in (1, 1, 10) do (
+    %c1541% -attach %DATADISK%.d81 -write %PRJ%.prg %PRJ%.%%i
+  )
 
   XMEGA65 -besure -8 %PRJ%.d81 -9 %DATADISK%.d81 -autoload -hdosvirt -syscon
   REM XMEGA65 -besure -prg %PRJ%.prg

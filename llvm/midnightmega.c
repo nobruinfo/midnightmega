@@ -4,7 +4,7 @@
 // #include <mega65.h>
 // #include <mega65-dma.h>
 // #include <6502.h>    llvm
-// #include <stdlib.h>  llvm
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>  // llvm
 #include <mega65/conio.h>  // llvm instead of <printf.h>
@@ -15,6 +15,8 @@
 
 // #include <cbmiec.h>
 #include <mega65.h>  // taken from KickC
+
+// #define DEBUG
 
 // to be tidyed into propper .h files:
 void _miniSwapSector();
@@ -144,6 +146,7 @@ hyppo_setname("DATADISK.D81");
   
 //  testbam();
 
+/*
   inputbox(inputstr, "Enter track number 1..80, 0 to quit:");
   unsigned char track = atoi(inputstr);
   if (track > 0)  {
@@ -152,7 +155,13 @@ hyppo_setname("DATADISK.D81");
   }
 
   // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
-  lcopy(SECTBUF, ATTICFILEBUFFER, BLOCKSIZE);
+  lcopy(SECTBUFUPPER, ATTICFILEBUFFER, BLOCKSIZE);
+*/
+
+  readblockchain(ATTICDIRENTBUFFER, DIRENTBLOCKS, 40, 3);
+  readblockchain(ATTICFILEBUFFER, 99, 45, 8);
+  msprintf("dirent in attic done.");
+  cgetc();
 
 
 #ifdef dshkjdsgjfhgds
