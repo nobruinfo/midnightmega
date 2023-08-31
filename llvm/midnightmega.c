@@ -18,26 +18,8 @@
 
 // #define DEBUG
 
-// to be tidyed into propper .h files:
-void _miniSwapSector();
-unsigned char _miniReadNextSector(unsigned char drive);
-void _miniChainSector();
-unsigned char _miniReadByte();
-unsigned char _miniFindFile();
-unsigned char waitforkeyandletgo(void);
-unsigned char getd81(void);
-unsigned char hyppo_setname(char *filename);
-unsigned char hyppo_d81attach0(void);
-unsigned char hyppo_d81attach1(void);
-unsigned char getdirent(void);
-void listbox(unsigned char x, unsigned char y,
-             unsigned char currentitem, unsigned char nbritems);
-void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector);
-
 #include "regions.h"
 #include "conioextensions.h"
-#include "minime.h"
-#include "libc.h"
 
 char* inputstr = (char*) INPUTSTRPAGE;
 

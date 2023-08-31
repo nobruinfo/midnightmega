@@ -19,9 +19,10 @@ SET DATADISK=datadisk
 set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
 set LLVM_BAT=%LLVM_HOME%\bin\mos-mega65-clang.bat
 set LLVMDUMP=%LLVM_HOME%\bin\llvm-objdump.exe
-SET cfilesdir=..\..\mega65-libc\src
-SET cfiles=%cfilesdir%\conio.c %cfilesdir%\memory.c include\memory_asm.s
-REM  %cfilesdir%\llvm\memory_asm.s
+SET libcfilesdir=..\..\mega65-libc\src
+SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c include\memory_asm.s
+REM  %libcfilesdir%\llvm\memory_asm.s
+SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
 SET opts=--include-directory=.\include
 SET opts=%opts% --include-directory=..\..\mega65-libc\include
@@ -34,10 +35,10 @@ SET opts=%opts% -Wl,-trace
 SET opts=%opts% -Wl,--reproduce=reproduce.tar
 
 REM DEL %TEMP%\*.o
-CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %PRJ%.c %cfiles%
+CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %cfiles% %libcfiles%
 ECHO ------------------------------------------------------
 REM  -Wall
-CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %PRJ%.c %cfiles%
+CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %cfiles% %libcfiles%
 
 for /f "tokens=1* delims=?" %%i in ('DIR /B /O:DN "%TEMP%\*.o"') do (
   ECHO File is %%i

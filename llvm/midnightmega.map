@@ -45,16 +45,12 @@
       28     201d        0     1 __zp_data_size = SIZEOF ( .zp.data )
       28       28       45     1 .zp.bss
       28       28        0     1         __zp_bss_start = .
-      28       28        1     1         lto.tmp:(.zp.bss.testsector)
-      28       28        1     1                 testsector
-      29       29        2     1         lto.tmp:(.zp.bss.worksectorasBAM.0)
-      29       29        2     1                 worksectorasBAM.0
-      2b       2b        1     1         lto.tmp:(.zp.bss.i)
-      2b       2b        1     1                 i
-      2c       2c       28     1         lto.tmp:(.zp.bss.s)
-      2c       2c       28     1                 s
-      54       54        1     1         lto.tmp:(.zp.bss.fnamehi)
-      54       54        1     1                 fnamehi
+      28       28        1     1         lto.tmp:(.zp.bss.fnamehi)
+      28       28        1     1                 fnamehi
+      29       29        4     1         lto.tmp:(.zp.bss.ptrMiniOffs)
+      29       29        4     1                 ptrMiniOffs
+      2d       2d       28     1         lto.tmp:(.zp.bss.s)
+      2d       2d       28     1                 s
       55       55        1     1         lto.tmp:(.zp.bss.g_curScreenW)
       55       55        1     1                 g_curScreenW
       56       56        1     1         lto.tmp:(.zp.bss.g_curScreenH)
@@ -68,7 +64,7 @@
       6d       6d        0     1 __zp_bss_size = SIZEOF ( .zp.bss )
       6d       6d       23     1 .zp
       6d       6d       23     1         lto.tmp:(.zp.noinit..Lzp_stack)
-    201d     201d     337e     1 .text
+    201d     201d     3336     1 .text
     201d     201d        0     1         _init = .
     201d     201d        0     1         _start = .
     201d     201d        e     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\unmap-basic.o:(.init.010)
@@ -86,7 +82,7 @@
     2042     2042        0     1         _fini = .
     2042     2042        a     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\unmap-basic.o:(.fini.990)
     204c     204c        1     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/common/lib\crt0.o:(.fini_rts)
-    204d     204d       79     1         C:\Users\SUPERU~1\AppData\Local\Temp\memory_asm-95d84e.o:(.text)
+    204d     204d       79     1         C:\Users\SUPERU~1\AppData\Local\Temp\memory_asm-28374b.o:(.text)
     204d     204d        0     1                 fourbytes
     2051     2051        0     1                 lpstore
     206c     206c        0     1                 lprestore
@@ -105,127 +101,133 @@
     354e     354e       13     1                 __zero_zp_bss
     3561     3561       17     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/commodore/lib\libcrt0.a(copy-zp-data.c.obj):(.text)
     3561     3561       17     1                 __copy_zp_data
-    3578     3578      137     1         lto.tmp:(.text.cputln)
-    3578     3578      137     1                 cputln
-    36af     36af      100     1         lto.tmp:(.text.mprintf)
-    36af     36af      100     1                 mprintf
-    37af     37af      25a     1         lto.tmp:(.text.mcbox)
-    37af     37af      25a     1                 mcbox
-    3a09     3a09       92     1         lto.tmp:(.text.messagebox)
-    3a09     3a09       92     1                 messagebox
-    3a9b     3a9b      190     1         lto.tmp:(.text.getdirent)
-    3a9b     3a9b      190     1                 getdirent
-    3c2b     3c2b      174     1         lto.tmp:(.text.getdirententry)
-    3c2b     3c2b      174     1                 getdirententry
-    3d9f     3d9f       e0     1         lto.tmp:(.text.GetWholeSector)
-    3d9f     3d9f       e0     1                 GetWholeSector
-    3dc6     3dc6        0     1                 wait020
-    3ddb     3ddb        0     1                 succeed020
-    3df3     3df3        0     1                 upper020
-    3dfb     3dfb        0     1                 endsub020
-    3e03     3e03        0     1                 err020
-    3e05     3e05        0     1                 end020
-    3e7f     3e7f      f7c     1         lto.tmp:(.text.main)
-    3e7f     3e7f      f7c     1                 main
-    432b     432b        0     1                 errgetcurdrv1
-    432f     432f        0     1                 donegetcurdrv1
-    434a     434a        0     1                 errhypopendir2
-    434e     434e        0     1                 donehypopendir2
-    43e4     43e4        0     1                 hypreaddirloop3
-    43fc     43fc        0     1                 errhypreaddir3
-    43fe     43fe        0     1                 donehypreaddir3
-    4755     4755        0     1                 errhypclosedir4
-    4757     4757        0     1                 donehypclosedir4
-    489b     489b        0     1                 errhypsetnam5
-    489f     489f        0     1                 donehypsetnam5
-    48b1     48b1        0     1                 errhyp1att6
-    48b5     48b5        0     1                 donehyp1att6
-    4b71     4b71        0     1                 wait027
-    4b86     4b86        0     1                 succeed027
-    4b9e     4b9e        0     1                 upper027
-    4ba6     4ba6        0     1                 endsub027
-    4bae     4bae        0     1                 err027
-    4bb0     4bb0        0     1                 end027
-    4c89     4c89        0     1                 wait038
-    4c9e     4c9e        0     1                 succeed038
-    4ca4     4ca4        0     1                 endsub038
-    4cab     4cab        0     1                 err038
-    4cad     4cad        0     1                 end038
-    4dfb     4dfb        1     1         lto.tmp:(.text.escNOP)
-    4dfb     4dfb        1     1                 escNOP
-    4dfc     4dfc       a1     1         lto.tmp:(.text.clrscr)
-    4dfc     4dfc       a1     1                 clrscr
-    4e9d     4e9d       ee     1         lto.tmp:(.text.cputcxy)
-    4e9d     4e9d       ee     1                 cputcxy
-    4f8b     4f8b       df     1         lto.tmp:(.text.cputsxy)
-    4f8b     4f8b       df     1                 cputsxy
-    506a     506a       d2     1         lto.tmp:(.text.lcopy)
-    506a     506a       d2     1                 lcopy
-    513c     513c       88     1         lto.tmp:(.text.lfill)
-    513c     513c       88     1                 lfill
-    51c4     51c4       38     1         lto.tmp:(.text.strcpy)
-    51c4     51c4       38     1                 strcpy
-    51fc     51fc       34     1         lto.tmp:(.text.strlen)
-    51fc     51fc       34     1                 strlen
-    5230     5230       13     1         lto.tmp:(.text.__ashlhi3)
-    5230     5230       13     1                 __ashlhi3
-    5243     5243       32     1         lto.tmp:(.text.__mulhi3)
-    5243     5243       32     1                 __mulhi3
-    5275     5275       da     1         lto.tmp:(.text.__udivmodhi4)
-    5275     5275       da     1                 __udivmodhi4
-    534f     534f       2d     1         lto.tmp:(.text.memcpy)
-    534f     534f       2d     1                 memcpy
-    537c     537c       1f     1         lto.tmp:(.text.__memset)
-    537c     537c       1f     1                 __memset
-    539b     539b        0     1         __init_array_start = .
-    539b     539b        0     1         __init_array_end = .
-    539b     539b        0     1         __fini_array_start = .
-    539b     539b        0     1         __fini_array_end = .
-    539b     539b       db     1 .rodata
-    539b     539b        1     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/common/lib\libcrt.a(const.S.obj):(.rodata)
-    539b     539b        0     1                 __set_v
-    539c     539c       ca     1         <internal>:(.rodata.str1.1)
-    5466     5466       10     1         <internal>:(.rodata.cst16)
-    5476     5476        0     1 .data
-    5476     5476        0     1         __data_start = .
-    5476     5476        0     1         __data_end = .
-    5476     5476        0     1 __data_load_start = LOADADDR ( .data )
-    5476     5476        0     1 __data_size = SIZEOF ( .data )
-    5476     5476      7e2     1 .bss
-    5476     5476        0     1         __bss_start = .
-    5476     5476      492     1         lto.tmp:(.bss.filelist)
-    5476     5476      492     1                 filelist
-    5908     5908       41     1         lto.tmp:(.bss.curfile)
-    5908     5908       41     1                 curfile
-    5949     5949        1     1         lto.tmp:(.bss.testtrack)
-    5949     5949        1     1                 testtrack
-    594a     594a        1     1         lto.tmp:(.bss.offsCurrIdx)
-    594a     594a        1     1                 offsCurrIdx
-    594b     594b        1     1         lto.tmp:(.bss.flagCurrSec)
-    594b     594b        1     1                 flagCurrSec
-    594c     594c        4     1         lto.tmp:(.bss.BAMsector)
-    594c     594c        4     1                 BAMsector
-    5950     5950        4     1         lto.tmp:(.bss.worksector)
-    5950     5950        4     1                 worksector
-    5954     5954        2     1         lto.tmp:(.bss.direntryblock.0)
-    5954     5954        2     1                 direntryblock.0
-    5956     5956        4     1         lto.tmp:(.bss.ptrMiniOffs)
-    5956     5956        4     1                 ptrMiniOffs
-    595a     595a        1     1         lto.tmp:(.bss.BAMside)
-    595a     595a        1     1                 BAMside
-    595b     595b      2fd     1         lto.tmp:(.bss.escapeCode)
-    595b     595b      2fd     1                 escapeCode
-    5c58     5c58        0     1         __bss_end = .
-    5c58     5c58        0     1 __bss_size = SIZEOF ( .bss )
-    5c58     5c58        1     1 .noinit
-    5c58     5c58        1     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/commodore/lib\libcrt0.a(exit-return.c.obj):(.noinit)
-    5c59     5c59        0     1         __heap_start = .
-    5c59     5c59        0     1 __stack = 0xd000
+    3578     3578      e82     1         lto.tmp:(.text.main)
+    3578     3578      e82     1                 main
+    39c4     39c4        0     1                 errgetcurdrv0
+    39c8     39c8        0     1                 donegetcurdrv0
+    39e3     39e3        0     1                 errhypopendir1
+    39e7     39e7        0     1                 donehypopendir1
+    3a83     3a83        0     1                 hypreaddirloop2
+    3a9b     3a9b        0     1                 errhypreaddir2
+    3a9d     3a9d        0     1                 donehypreaddir2
+    3d4f     3d4f        0     1                 errhypclosedir3
+    3d51     3d51        0     1                 donehypclosedir3
+    3e95     3e95        0     1                 errhypsetnam4
+    3e99     3e99        0     1                 donehypsetnam4
+    3eab     3eab        0     1                 errhyp1att5
+    3eaf     3eaf        0     1                 donehyp1att5
+    4178     4178        0     1                 wait026
+    418d     418d        0     1                 succeed026
+    41a4     41a4        0     1                 upper026
+    41ab     41ab        0     1                 endsub026
+    41b3     41b3        0     1                 err026
+    41b5     41b5        0     1                 end026
+    4294     4294        0     1                 wait037
+    42a9     42a9        0     1                 succeed037
+    42af     42af        0     1                 endsub037
+    42b6     42b6        0     1                 err037
+    42b8     42b8        0     1                 end037
+    43fa     43fa       de     1         lto.tmp:(.text.GetWholeSector)
+    43fa     43fa       de     1                 GetWholeSector
+    4421     4421        0     1                 wait028
+    4436     4436        0     1                 succeed028
+    444d     444d        0     1                 upper028
+    4454     4454        0     1                 endsub028
+    445c     445c        0     1                 err028
+    445e     445e        0     1                 end028
+    44d8     44d8      17b     1         lto.tmp:(.text.getdirententry)
+    44d8     44d8      17b     1                 getdirententry
+    4653     4653      1bd     1         lto.tmp:(.text.getdirent)
+    4653     4653      1bd     1                 getdirent
+    4810     4810      137     1         lto.tmp:(.text.cputln)
+    4810     4810      137     1                 cputln
+    4947     4947       51     1         lto.tmp:(.text.msprintf)
+    4947     4947       51     1                 msprintf
+    4998     4998      100     1         lto.tmp:(.text.mprintf)
+    4998     4998      100     1                 mprintf
+    4a98     4a98      25a     1         lto.tmp:(.text.mcbox)
+    4a98     4a98      25a     1                 mcbox
+    4cf2     4cf2       92     1         lto.tmp:(.text.messagebox)
+    4cf2     4cf2       92     1                 messagebox
+    4d84     4d84        1     1         lto.tmp:(.text.escNOP)
+    4d84     4d84        1     1                 escNOP
+    4d85     4d85       a1     1         lto.tmp:(.text.clrscr)
+    4d85     4d85       a1     1                 clrscr
+    4e26     4e26       ee     1         lto.tmp:(.text.cputcxy)
+    4e26     4e26       ee     1                 cputcxy
+    4f14     4f14       df     1         lto.tmp:(.text.cputsxy)
+    4f14     4f14       df     1                 cputsxy
+    4ff3     4ff3       d2     1         lto.tmp:(.text.lcopy)
+    4ff3     4ff3       d2     1                 lcopy
+    50c5     50c5       88     1         lto.tmp:(.text.lfill)
+    50c5     50c5       88     1                 lfill
+    514d     514d       2f     1         lto.tmp:(.text.memcmp)
+    514d     514d       2f     1                 memcmp
+    517c     517c       2d     1         lto.tmp:(.text.memcpy)
+    517c     517c       2d     1                 memcpy
+    51a9     51a9       1f     1         lto.tmp:(.text.__memset)
+    51a9     51a9       1f     1                 __memset
+    51c8     51c8       38     1         lto.tmp:(.text.strcpy)
+    51c8     51c8       38     1                 strcpy
+    5200     5200       34     1         lto.tmp:(.text.strlen)
+    5200     5200       34     1                 strlen
+    5234     5234       13     1         lto.tmp:(.text.__ashlhi3)
+    5234     5234       13     1                 __ashlhi3
+    5247     5247       32     1         lto.tmp:(.text.__mulhi3)
+    5247     5247       32     1                 __mulhi3
+    5279     5279       da     1         lto.tmp:(.text.__udivmodhi4)
+    5279     5279       da     1                 __udivmodhi4
+    5353     5353        0     1         __init_array_start = .
+    5353     5353        0     1         __init_array_end = .
+    5353     5353        0     1         __fini_array_start = .
+    5353     5353        0     1         __fini_array_end = .
+    5353     5353       db     1 .rodata
+    5353     5353        1     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/common/lib\libcrt.a(const.S.obj):(.rodata)
+    5353     5353        0     1                 __set_v
+    5354     5354       ca     1         <internal>:(.rodata.str1.1)
+    541e     541e       10     1         <internal>:(.rodata.cst16)
+    542e     542e        0     1 .data
+    542e     542e        0     1         __data_start = .
+    542e     542e        0     1         __data_end = .
+    542e     542e        0     1 __data_load_start = LOADADDR ( .data )
+    542e     542e        0     1 __data_size = SIZEOF ( .data )
+    542e     542e      7e1     1 .bss
+    542e     542e        0     1         __bss_start = .
+    542e     542e        1     1         lto.tmp:(.bss.offsCurrIdx)
+    542e     542e        1     1                 offsCurrIdx
+    542f     542f        1     1         lto.tmp:(.bss.flagCurrSec)
+    542f     542f        1     1                 flagCurrSec
+    5430     5430        4     1         lto.tmp:(.bss.BAMsector)
+    5430     5430        4     1                 BAMsector
+    5434     5434        4     1         lto.tmp:(.bss.worksector)
+    5434     5434        4     1                 worksector
+    5438     5438        2     1         lto.tmp:(.bss.worksectorasBAM.0)
+    5438     5438        2     1                 worksectorasBAM.0
+    543a     543a        2     1         lto.tmp:(.bss.direntryblock.0)
+    543a     543a        2     1                 direntryblock.0
+    543c     543c        1     1         lto.tmp:(.bss.BAMside)
+    543c     543c        1     1                 BAMside
+    543d     543d      492     1         lto.tmp:(.bss.filelist)
+    543d     543d      492     1                 filelist
+    58cf     58cf       41     1         lto.tmp:(.bss.curfile)
+    58cf     58cf       41     1                 curfile
+    5910     5910        1     1         lto.tmp:(.bss.testtrack)
+    5910     5910        1     1                 testtrack
+    5911     5911        1     1         lto.tmp:(.bss.testsector)
+    5911     5911        1     1                 testsector
+    5912     5912      2fd     1         lto.tmp:(.bss.escapeCode)
+    5912     5912      2fd     1                 escapeCode
+    5c0f     5c0f        0     1         __bss_end = .
+    5c0f     5c0f        0     1 __bss_size = SIZEOF ( .bss )
+    5c0f     5c0f        1     1 .noinit
+    5c0f     5c0f        1     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/commodore/lib\libcrt0.a(exit-return.c.obj):(.noinit)
+    5c10     5c10        0     1         __heap_start = .
+    5c10     5c10        0     1 __stack = 0xd000
        0        0       79     1 .comment
        0        0       79     1         <internal>:(.comment)
-       0        0      9d0     4 .symtab
-       0        0      9d0     4         <internal>:(.symtab)
+       0        0      9e0     4 .symtab
+       0        0      9e0     4         <internal>:(.symtab)
        0        0       68     1 .shstrtab
        0        0       68     1         <internal>:(.shstrtab)
-       0        0      64a     1 .strtab
-       0        0      64a     1         <internal>:(.strtab)
+       0        0      658     1 .strtab
+       0        0      658     1         <internal>:(.strtab)

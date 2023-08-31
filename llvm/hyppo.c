@@ -1,41 +1,18 @@
-// *********************************************************
-// ***  libc.h abstraction to hyppo mount handling       ***
-// *********************************************************
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include "regions.h"
+#include "conioextensions.h"
+#include "hyppo.h"
+#include "fileio.h"
 
-// char __align(0x100) Hyppo_Filename[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxFSHOT.D81";
-struct HYPPOFILENAME {
-	char name[65];
-	char sfn[65];
-	unsigned char dummy[256-65-65];  // blown up to fill a whole page
-};
-
-struct DIRENT {
-	char lfn[0x40];    // The long file name
-	char length;      // The length of long file name
-	char sfn[8];      // The short file name without the extension
-	char ext[3];      // The extension
-	char res[2];      // unused
-	unsigned long clusternumber; // The cluster number where the file
-	                             // begins. For sub-directories, this
-								 // is where the FAT dir entries start
-								 // for that sub-directory
-	unsigned long size; // The length of file in bytes
-	char attr;        // The type and attribute bits:
-					  // Bit Meaning if bit is set
-					  // 0   Read only
-					  // 1   Hidden
-					  // 2   System
-					  // 3   Volume label
-					  // 4   Sub-directory
-					  // 5   Archive
-	unsigned char dummy[256-87];  // blown up to fill a whole page
-};
+// *********************************************************
+// ***  hyppo.c abstraction to hyppo mount handling      ***
+// *********************************************************
 
 // need to be at a page frame border, CAREFUL as this define does not throw warnings:
 #define readdir_direntasm DIRENTPAGELOW
 struct DIRENT* const __attribute__((used)) readdir_dirent = (struct DIRENT*) DIRENTPAGELOW;
-struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) FILENAMEPAGE;
-
 // static char * __attribute__((used)) HTRAP00asm = HTRAP00;
 #define HTRAP00asm $d640
 #define STR(x) #x
@@ -43,16 +20,15 @@ struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) FILENAMEPAGE;
 __asm__(".set HTRAP00, " XSTR(HTRAP00asm) );
 __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
 
+struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) FILENAMEPAGE;
+
 // https://stackoverflow.com/questions/8810390/how-to-use-a-global-variable-in-gcc-inline-assembly
 // define fnamehi (unsigned char)((unsigned int)hyppofn->name >> 8)
 static unsigned char __attribute__((used)) fnamehi;
 unsigned char hyppo_setup_transfer_area(void)  {
 	unsigned char retval;
 
-//  unsigned char fnamelo = (unsigned int)hyppofn & 0xFFFF;
-//  unsigned char fnamehi = (unsigned int)hyppofn->name >> 8;
   fnamehi = (unsigned int)hyppofn->name >> 8;
-//  unsigned char fnamelen = strlen(hyppofn);
 
   asm volatile(
 	"ldx #$00\n"         // shouldn't be necessary
@@ -72,8 +48,7 @@ unsigned char hyppo_setup_transfer_area(void)  {
   return retval;
 }
 
-unsigned char hyppo_getcurrentdrive(void)
-{
+unsigned char hyppo_getcurrentdrive(void)  {
 	unsigned char retval;
 
   // ; Get the current drive
@@ -101,8 +76,7 @@ unsigned char hyppo_getcurrentdrive(void)
 //                asm         :input:output:clobber  comma separated
 // asm volatile ("st%0 0x1234"::"R"(value));
 
-unsigned char hyppo_selectdrive(unsigned char nb)
-{
+unsigned char hyppo_selectdrive(unsigned char nb)  {
 	unsigned char retval;
 
   asm volatile(
@@ -126,14 +100,10 @@ unsigned char hyppo_selectdrive(unsigned char nb)
   return retval;
 }
 
-unsigned char hyppo_setname(char *filename)
-{
+unsigned char hyppo_setname(char *filename)  {
 	unsigned char retval;
 
-//  unsigned char fnamelo = (unsigned int)hyppofn & 0xFFFF;
-//  unsigned char fnamehi = (unsigned int)hyppofn->name >> 8;
 fnamehi = (unsigned int)hyppofn->name >> 8;
-//  unsigned char fnamelen = strlen(hyppofn);
 
   strcpy(hyppofn->name, filename);
 
@@ -156,8 +126,7 @@ fnamehi = (unsigned int)hyppofn->name >> 8;
   return retval;
 }
 
-unsigned char hyppo_d81attach0(void)
-{
+unsigned char hyppo_d81attach0(void)  {
 	unsigned char retval;
 
   // ; Get the current drive
@@ -179,8 +148,7 @@ unsigned char hyppo_d81attach0(void)
   return retval;
 }
 
-unsigned char hyppo_d81attach1(void)
-{
+unsigned char hyppo_d81attach1(void)  {
 	unsigned char retval;
 
   // ; Get the current drive
@@ -224,8 +192,7 @@ void hyppo_loadfile(__zp unsigned long addr) {
 }
 */
 
-unsigned char hyppo_opendir(void)
-{
+unsigned char hyppo_opendir(void)  {
 	unsigned char retval;
 
   // ; Get the current drive
@@ -246,8 +213,7 @@ unsigned char hyppo_opendir(void)
   return retval;
 }
 
-unsigned char hyppo_closedir(unsigned char filedescriptor)
-{
+unsigned char hyppo_closedir(unsigned char filedescriptor)  {
 	unsigned char retval;
 
   asm volatile(
@@ -266,13 +232,8 @@ unsigned char hyppo_closedir(unsigned char filedescriptor)
   return retval;
 }
 
-unsigned char hyppo_readdir(unsigned char filedescriptor)
-{
+unsigned char hyppo_readdir(unsigned char filedescriptor)  {
 	unsigned char retval;
-
-//  volatile char register(Y) _rd = _readdir_dirent / 256;
-//  unsigned char direntlo = (unsigned int)readdir_dirent & 0xFFFF;
-//  unsigned char direnthi = (unsigned int)hyppofn->name >> 8;
 
   asm volatile(
 	// pha
@@ -307,30 +268,10 @@ unsigned char hyppo_readdir(unsigned char filedescriptor)
   readdir_dirent->lfn[readdir_dirent->length] = 0; // put str terminate null
 
   return retval;
-/*	nop
-
-	bcs @readDirSuccess
-
-	//  Return end of directory
-	lda #$00
-	ldx #$00
-	// RTS
-    lda #$FF
-	sta retval
-	jmp done
-
-@readDirSuccess:
-	lda #$00
-	sta retval
-done:
-    nop
-  }}
-  readdir_dirent->lfn[readdir_dirent->length] = 0; // put str terminate null
-  
-  return retval;   */
 }
 
 char * getsfn() {
+  unsigned char i;
 //  char sfn[20]; //    [13];
   char c = 0;
 
@@ -352,99 +293,13 @@ char * getsfn() {
   return /*strlowr(*/hyppofn->sfn;  // );
 }
 
+char * getlfn() {
+  return readdir_dirent->lfn;
+}
+
 // ******************************************
 // ***  End of hyppo related functions    ***
 // ******************************************
 
 // to test
-// - replace keyboard empty wait and keypress routines to one from Discord
 // - loop both drives but only use "0" as the parameter
-
-int minimedir(void)
-{
-    unsigned char go = 0;
-    unsigned char rc;
-
-    for (unsigned char i = 0; i <= 1; i++)  {
-	  /* Open the directory. */
-	  miniSetDriveNbr(i);
-	  const char *filename = "midnightmega.0";
-	  miniSetFileName(filename);
-	  miniSetFileType(VAL_DOSFTYPE_PRG);
-      if ((rc = miniOpenFile()) != 0) {
-          printf("error opening %s: %02x\n", filename, rc);
-          return 1;
-      }
-	  unsigned char keycode;
-	  while(! (keycode=waitforkeyandletgo())) {}
-	}
-
-    /* Output the directory. * /
-    printf("contents of \"%s\":\n", name);
-    while ((rc = cbm_readdir (myLFN, &E)) != 2) {
-        if (rc != 0) {
-          if (rc <= 6) {
-            printf ("\ndirectory error:\n %s.\n", error[rc]);
-          }
-          cbm_closedir (myLFN);
-          return 1;
-        }
-
-        printf (" name[]: \"%s\"\n", E.name);
-        printf (" size  :%6u\n",     E.size);
-        printf (" type  : %s\n",     type[E.type]);
-        printf (" access: %s\n",     access[E.access > 3 ? 0 : E.access]);
-        printf ("----\n");
-
-        if (!go) {
-            switch (cgetc ()) {
-              case 'q':
-//                goto done;
-				break;
-
-              case 'g':
-                go = 1;
-            }
-        }
-    }
-
-    printf (" size  :%6u free.\n", E.size);
-done:
-*/
-    /* Close the directory. */
-    miniCloseFile();
-    return 0;
-}
-
-unsigned char getd81(void)  {
-  unsigned char curdrv = 0;
-  unsigned char fd = 0xff;
-  unsigned char readerr = 0xff;
-  unsigned char entries = 0;
-
-  curdrv = hyppo_getcurrentdrive();
-
-  if (curdrv < 0xff)  {
-    fd = hyppo_opendir();
-
-    if (fd != 0x84 && fd != 0x87 && fd != 0xff) {
-      readerr = 0;
-      for (i = 0; i < FILEENTRIES; i++)  {
-        readerr = hyppo_readdir(fd);
-        if (readerr != 0x85 && readerr != 0xff) {
-          getsfn();
-          msprintfd("filename is: ");
-          msprintfd(hyppofn->sfn); // already null terminated
-		  cputlnd();
-		  strcpy((char *) filelist[i], readdir_dirent->lfn);
-		  entries++;
-        }
-		else  {
-		  filelist[i][0] = 32; filelist[i][1] = 0;
-		}
-	  }
-	  hyppo_closedir(fd);
-	}
-  }
-  return entries;
-}
