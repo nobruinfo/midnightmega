@@ -25,7 +25,14 @@ void _miniChainSector();
 unsigned char _miniReadByte();
 unsigned char _miniFindFile();
 unsigned char waitforkeyandletgo(void);
-void cputln(void);
+unsigned char getd81(void);
+unsigned char hyppo_setname(char *filename);
+unsigned char hyppo_d81attach0(void);
+unsigned char hyppo_d81attach1(void);
+unsigned char getdirent(void);
+void listbox(unsigned char x, unsigned char y,
+             unsigned char currentitem, unsigned char nbritems);
+void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector);
 
 #include "regions.h"
 #include "conioextensions.h"
@@ -65,16 +72,16 @@ int main() {
   VICIV->CONTROLB &= ~(VICIV_FAST);
   VICIV->CONTROLC &= ~(VICIV_VFAST);
 
-  msprintf("UPPERCASE lowercase.");
+  msprintf("UPPERCASE lowercase."); // Atticend=", ATTICEND);
   cputln();
-  cgetc();
+  cgetcd();
 
   textcolor (COLOUR_CYAN);
   bordercolor (COLOUR_BLACK);
   bgcolor (COLOUR_BLUE);
 
   clrhome();
-
+#ifdef sduhgsiuzfgsuzd
   // cputu("hyppo_setname is: ", hyppo_setname("EMPTY.D81"), HEXADECIMAL);
   mhprintf("hyppo_setname is: ", hyppo_setname("DATADISK.d81"));
   // cputu("hyppo_d81attach1 is: ", hyppo_d81attach1(), HEXADECIMAL);
@@ -91,11 +98,13 @@ int main() {
 hyppo_setname("DATADISK.D81");
   mhprintf(" hyppo_d81attach1 is: ", hyppo_d81attach1());
   cputln();
+  cgetc();
+
 //  clrscr ();
 //  for (i = 0; i <= 12; i++) {
   // for (i = 0; i <= 32; i++) {
   // i = inputvalue("input device number for floppy drive:");
-  i = 9;
+  i = 1;
 //    cursor (0);
 	j = hyppo_selectdrive(i);
 //	if (j > i)  continue;
@@ -133,7 +142,7 @@ hyppo_setname("DATADISK.D81");
         } while (readerr != 0x85 && readerr != 0xff);
         mhprintf("hyppo_closedir is: ", hyppo_closedir(fd));
 	    cputln();
-        cgetc();
+        cgetcd();
 	  }
     }
 //  }
@@ -159,10 +168,10 @@ hyppo_setname("DATADISK.D81");
 */
 
   readblockchain(ATTICDIRENTBUFFER, DIRENTBLOCKS, 40, 3);
-  readblockchain(ATTICFILEBUFFER, 99, 45, 8);
+  readblockchain(ATTICFILEBUFFER, DATABLOCKS, 45, 8);
   msprintf("dirent in attic done.");
-  cgetc();
-
+  cgetcd();
+#endif
 
 #ifdef dshkjdsgjfhgds
   printf("savefiletomemory begin, ");
@@ -190,16 +199,19 @@ hyppo_setname("DATADISK.D81");
 //  initkeyboard();
 #endif
 
+  navi();
+//  unsigned char e = getdirent();
+
   msprintf("Have fun with your Mega65!");
   cputln();
   cgetc();
-
+/*
   asm volatile(
 	"rts\n"
     // jmp restor, restore vectors to initial system
 	// https://mega65.atlassian.net/wiki/spaces/MEGA65/pages/6619137/Kernel+Jump+Table
 	"jmp $ff8a"
   );
-
+*/
   return 0;
 }

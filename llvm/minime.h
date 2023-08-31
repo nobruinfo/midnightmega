@@ -51,7 +51,7 @@ unsigned char datEntrySec = 0;
 unsigned char datTempByte = 0;
 
 #define ENTRIESPERBLOCK 8 // nbr of entries on disk block
-#define DIRENTBLOCKS 4    // nbr of dirent pages in attic
+#define DIRENTBLOCKS 14    // nbr of dirent pages in attic
 #define NBRENTRIES (DIRENTBLOCKS * ENTRIESPERBLOCK) // nbr of GUI entries
 typedef struct structdirent {
 	unsigned char chntrack;
@@ -74,6 +74,7 @@ DIRENT direntryright[NBRENTRIES];
 SECTDIRENT * direntryblock[2];
 
 #define BLOCKSIZE 0x100
+#define DIRENTSIZE 32
 
 typedef struct structBAMentry {
 	unsigned char free;
@@ -97,7 +98,9 @@ typedef struct structBAM {
 	unsigned char dummy[8];
     BAMentry      entry[40];
 } BAM;
+#define BAMBLOCKS    2   // nbr of BAM pages in attic
 
+#define DATABLOCKS 199   // nbr of file data pages in attic
 typedef struct structdatablock {
 // struct DATABLOCK {
 	unsigned char chntrack;
@@ -325,7 +328,8 @@ unsigned char ReadSector(unsigned char drive, char track,
 
 	if (track == 0)  return 0xFC;
 	drive += 0x60;   // #$60 drive 0
-    msprintfd("Begin ReadSector.");
+    mprintfd("Begin ReadSector t=", track);
+    mprintfd(" s=", sector);
 	asm volatile(
 		// Turn on motor + led (which causes led to light solid):
 //		"lda	drive\n"
@@ -574,7 +578,7 @@ void GetWholeSector(BAM * entry)  {
 // depending on the sector's side this returns the wanted
 // sector in the regular or upper 256 bytes of the 512
 // bytes buffer:
-unsigned char GetWholeSector(/*struct*/ BAM* entry, unsigned char drive,
+unsigned char ______GetWholeSector(/*struct*/ BAM* entry, unsigned char drive,
                              char track, char sector)  {
 	unsigned char retval;
 
@@ -620,6 +624,32 @@ unsigned char GetWholeSector(/*struct*/ BAM* entry, unsigned char drive,
   cgetcd();
   clrhomed();
   msprintfd("GetWholeSector done.");
+  return side;
+}
+unsigned char GetWholeSector(BAM* entry, unsigned char drive,
+                             char track, char sector)  {
+  unsigned char retval;
+  unsigned char * p = (unsigned char *) entry;
+
+  BAM* ws = entry;   // later to be DATABLOCK*
+  unsigned char side;
+#ifdef DEBUG
+  mprintf("GetWholeSector before ReadSector. Track=", track);
+  mprintf(" Sector=", sector);
+  mh4printf(" p=", (long) p);
+  cputln();
+  cgetc();
+#endif
+  side = ReadSector(drive, track, sector);
+
+  if (side > 1)  return side;
+  lcopy(SECTBUF,      (uint32_t) ws,             BLOCKSIZE);
+  lcopy(SECTBUFUPPER, (uint32_t) ws + BLOCKSIZE, BLOCKSIZE);
+/*
+  mprintf("GetWholeSector done. side=", side);
+  cputln();
+  cgetc();
+*/
   return side;
 }
 unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
@@ -985,13 +1015,17 @@ void readblockchain(uint32_t destination_address, // attic RAM
   _miniInit();
   nexttrack = track;
   nextsector = sector;
-  
+
+		mprintf("nexttrack ", nexttrack);
+		mprintf(" nextsector ", nextsector);
+		cputln();
+
   for (i = 0; i < maxblocks; i++)  {
     workside = GetWholeSector(worksectorasBAM[0], DRIVE, nexttrack, nextsector);
     DATABLOCK* ws = worksector[workside];
 	nexttrack = ws->chntrack;
 	nextsector = ws->chnsector;
-
+#ifdef DEBUG
 		mprintf("nexttrack ", nexttrack);
 		mprintf(" nextsector ", nextsector);
 		mprintf(" workside ", workside);
@@ -999,7 +1033,7 @@ void readblockchain(uint32_t destination_address, // attic RAM
 		mh4printf(" is: ", (long) &ws);
 		mh4printf(" worksector[workside]: ", (long) worksector[workside]);
 		cputln();
-
+#endif
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
     lcopy((uint32_t) ws, destination_address + i * BLOCKSIZE, BLOCKSIZE);
 	
@@ -1007,6 +1041,288 @@ void readblockchain(uint32_t destination_address, // attic RAM
   }
   
   if (nexttrack > 0)  {
-	// dir too long
+	messagebox("number of sectors too big");
+	cgetc();
   }
+}
+
+void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector)  {
+  unsigned char bitshifter = 1;
+  unsigned char track;
+  unsigned char sector;
+  unsigned char done = 0;
+  BAM* bs;
+
+  _miniInit();
+  BAMside = GetWholeSector(BAMsector[0], DRIVE, BAMTRACK, BAMSECT);
+  bs = BAMsector[BAMside];
+
+  // access track array zero based
+  for (track = 0; track <= 39; track++)  {
+    for (sector = 0; sector <= 39; sector++)  {
+      if (sector < 8)  {
+        if (bs->entry[track].alloc1 & (bitshifter << sector))  {
+          done = 1;
+
+		gotoxy(42, 7);
+		mprintf("t=", track);
+		mprintf(" s=", sector);
+		mprintf(" nt=", bs->chntrack);
+		mprintf(" ns=", bs->chnsector);
+		mprintf(" a1=", bs->entry[track].alloc1);
+		cgetc();
+
+          break;
+        }
+      }
+      else if (sector < 16)  {
+        if (bs->entry[track].alloc2 & (bitshifter << (sector - 8)))  {
+          done = 1;
+
+		gotoxy(42, 8);
+		mprintf("t=", track);
+		mprintf(" s=", sector);
+		mprintf(" nt=", bs->chntrack);
+		mprintf(" ns=", bs->chnsector);
+		cgetc();
+
+          break;
+        }
+      }
+      else if (sector < 24)  {
+        if (bs->entry[track].alloc3 & (bitshifter << (sector - 16)))  {
+          done = 1;
+
+		gotoxy(42, 9);
+		mprintf("t=", track);
+		mprintf(" s=", sector);
+		mprintf(" nt=", bs->chntrack);
+		mprintf(" ns=", bs->chnsector);
+		cgetc();
+
+          break;
+        }
+      }
+      else if (sector < 32)  {
+        if (bs->entry[track].alloc4 & (bitshifter << (sector - 24)))  {
+          done = 1;
+
+		gotoxy(42, 10);
+		mprintf("t=", track);
+		mprintf(" s=", sector);
+		mprintf(" nt=", bs->chntrack);
+		mprintf(" ns=", bs->chnsector);
+		cgetc();
+
+          break;
+        }
+      }
+      else  {
+        if (bs->entry[track].alloc5 & (bitshifter << (sector - 32)))  {
+          done = 1;
+
+		gotoxy(42, 11);
+		mprintf("t=", track);
+		mprintf(" s=", sector);
+		mprintf(" nt=", bs->chntrack);
+		mprintf(" ns=", bs->chnsector);
+		cgetc();
+
+          break;
+        }
+      }
+      if (done)  break;
+    }
+	if (done)  break;
+  }
+  track++;  // access array zero based, but tracks are 1..80
+
+  if (done)  {
+    BAMSectorUpdate(BAMsector[BAMside], track, sector, 1); // 1=allocate
+    PutWholeSector(BAMsector[BAMside], BAMside, DRIVE, BAMTRACK, BAMSECT);
+  
+    // return values:
+    *nexttrack  = track;
+    *nextsector = sector;
+  } else {
+    *nexttrack  = 0xff;
+    *nextsector = 0;
+  }
+}
+
+void writeblockchain(uint32_t source_address, // attic RAM
+                    unsigned char maxblocks,
+                    unsigned char track, unsigned char sector)  {
+  unsigned char nexttrack;
+  unsigned char nextsector;
+
+  _miniInit();
+  nexttrack = track;
+  nextsector = sector;
+  DATABLOCK* ws = worksector[workside];
+  
+  for (i = 0; i < maxblocks; i++)  {
+    // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
+    lcopy(source_address + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
+
+	nexttrack = ws->chntrack;
+	nextsector = ws->chnsector;
+#ifdef DEBUG
+		mprintf("nexttrack ", nexttrack);
+		mprintf(" nextsector ", nextsector);
+		mprintf(" workside ", workside);
+		mprintf(" block ", i);
+		mh4printf(" is: ", (long) &ws);
+		mh4printf(" worksector[workside]: ", (long) worksector[workside]);
+		cputln();
+#endif
+
+	PutWholeSector(worksectorasBAM[0], 0, DRIVE, nexttrack, nextsector);
+	
+	if (nexttrack == 0)  break;
+  }
+  
+  if (nexttrack > 0)  {
+	messagebox("number of sectors too big");
+	cgetc();
+  }
+}
+
+void _____getdirent(void)  {
+  SECTDIRENT* ds;
+
+  _miniInit();
+  readblockchain(ATTICDIRENTBUFFER, DIRENTBLOCKS, 40, 3);
+  ds = direntryblock[0];
+
+  // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
+  lcopy(ATTICDIRENTBUFFER, (uint32_t) ds, 2 * BLOCKSIZE);
+
+  for (i = 0; i < 2 * ENTRIESPERBLOCK; i++)  {
+	mprintf("direntry ", i);
+	if (ds->entry[i].track > 0)  {
+		mh4printf(" is: ", (long) &ds->entry[i]);
+		memcpy(dosfilename, ds->entry[i].name, DOSFILENAMELEN);
+		dosfilename[DOSFILENAMELEN] = 0; // proper null termination
+		msprintf(" name ");
+//		msprintf((char *) dosfilename);
+		mprintf(" chntrk ", ds->entry[i].chntrack);
+		mprintf(" chnsect ", ds->entry[i].chnsector);
+		mhprintf(" type ", ds->entry[i].type);
+		mprintf(" trk ", ds->entry[i].track);
+		mprintf(" sect ", ds->entry[i].sector);
+		mprintf(" size ", ds->entry[i].size);
+		mhprintf(" access ", ds->entry[i].access);
+		cputln();
+        strcpy((char *) filelist[i], (char *) dosfilename);
+    }
+    else  {
+	  filelist[i][0] = 32; filelist[i][1] = 0;
+	}
+  }
+  cgetc();
+}
+
+DIRENT* getdirententry(unsigned char entry)  {
+  DIRENT* ds;
+  unsigned int max = ENTRIESPERBLOCK;
+
+  _miniInit();
+  ds = (DIRENT *) direntryblock[0]; // to be changed to smaller array
+
+  for (i = 0; i < max; i++)  {
+    // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
+    lcopy(ATTICDIRENTBUFFER + i * DIRENTSIZE, (uint32_t) ds, DIRENTSIZE);
+
+	if (ds->track == 0)  return NULL; // no more entries
+	if (ds->chntrack > 0)  max += ENTRIESPERBLOCK; // more attic pages
+	if (i == entry)  return ds; // found
+
+#ifdef DEBUG
+	if (ds->track > 0)  {
+	  mprintf("direntry ", i);
+	  mh4printf(" is: ", (long) &ds);
+	  memcpy(dosfilename, ds->name, DOSFILENAMELEN);
+	  dosfilename[DOSFILENAMELEN] = 0; // proper null termination
+	  msprintf(" name ");
+//		msprintf((char *) dosfilename);
+	  mprintf(" chntrk ", ds->chntrack);
+	  mprintf(" chnsect ", ds->chnsector);
+	  mhprintf(" type ", ds->type);
+	  mprintf(" trk ", ds->track);
+	  mprintf(" sect ", ds->sector);
+	  mprintf(" size ", ds->size);
+	  mhprintf(" access ", ds->access);
+	  cputln();
+//        strcpy((char *) filelist[i], (char *) dosfilename);
+    }
+//    else  {
+//	  filelist[i][0] = 32; filelist[i][1] = 0;
+//	}
+#endif
+  }
+//  cgetc();
+  return NULL;
+}
+unsigned char getdirent(void)  {
+  _miniInit();
+/*
+  msprintf("before readblockchain");
+  cputln();
+  cgetc();
+*/
+  readblockchain(ATTICDIRENTBUFFER, DIRENTBLOCKS, 40, 3);
+/*
+  msprintf("after readblockchain");
+  cputln();
+  cgetc();
+*/
+  for (i = ENTRIESPERBLOCK * DIRENTBLOCKS; i > 0; i--)  {
+	if (getdirententry(i) != NULL)  return i;  // nbr of entries
+  }
+  return 0;
+}
+
+#define DIRENTENTRIES 22
+unsigned char s[40];
+void listbox(unsigned char x, unsigned char y,
+             unsigned char currentitem, unsigned char nbritems)  {
+  unsigned int n = 0;
+  unsigned char j = 0;
+  unsigned int ofs = 0;
+  DIRENT* ds;
+
+  if (currentitem + 1 >= DIRENTENTRIES)  ofs = currentitem + 1 - DIRENTENTRIES;
+
+  for (n = 0 ; n < DIRENTENTRIES; n++)  {
+	ds = getdirententry(n + ofs);
+	if (ds == NULL)  break;
+
+	i = 0;
+	if (n + ofs == currentitem)  s[i++] = '>';
+	else                   s[i++] = ' ';
+	s[i++] = ' ';
+	j = 0;
+	while (ds->name[j] != 0xa0 && j < DOSFILENAMELEN)  {
+	  s[i++] = ds->name[j];
+	  j++;
+	}
+	for ( ; j < DOSFILENAMELEN; j++)  s[i++] = ' ';
+	s[i++] = ' ';
+	s[i++] = 93; // '|';
+	s[i++] = ' ';
+	s[i++] = ((ds->type&0xf)==VAL_DOSFTYPE_CBM?'D':'P');
+	s[i++] = ((ds->type&0xf)==VAL_DOSFTYPE_CBM?'I':'R');
+	s[i++] = ((ds->type&0xf)==VAL_DOSFTYPE_CBM?'R':'G');
+	s[i++] = ' ';
+	if (n + ofs == currentitem)  s[i++] = '<';
+	else                   s[i++] = ' ';
+	s[i++] = 0;
+
+	if (n + ofs == currentitem)  revers(1);
+	else                   revers(0);
+	cputsxy(x, y + n, s);
+  }
+  revers(0);
+  cputln();
 }

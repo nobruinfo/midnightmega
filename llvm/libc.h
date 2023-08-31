@@ -415,3 +415,36 @@ done:
     miniCloseFile();
     return 0;
 }
+
+unsigned char getd81(void)  {
+  unsigned char curdrv = 0;
+  unsigned char fd = 0xff;
+  unsigned char readerr = 0xff;
+  unsigned char entries = 0;
+
+  curdrv = hyppo_getcurrentdrive();
+
+  if (curdrv < 0xff)  {
+    fd = hyppo_opendir();
+
+    if (fd != 0x84 && fd != 0x87 && fd != 0xff) {
+      readerr = 0;
+      for (i = 0; i < FILEENTRIES; i++)  {
+        readerr = hyppo_readdir(fd);
+        if (readerr != 0x85 && readerr != 0xff) {
+          getsfn();
+          msprintfd("filename is: ");
+          msprintfd(hyppofn->sfn); // already null terminated
+		  cputlnd();
+		  strcpy((char *) filelist[i], readdir_dirent->lfn);
+		  entries++;
+        }
+		else  {
+		  filelist[i][0] = 32; filelist[i][1] = 0;
+		}
+	  }
+	  hyppo_closedir(fd);
+	}
+  }
+  return entries;
+}

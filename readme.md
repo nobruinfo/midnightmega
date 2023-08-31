@@ -53,9 +53,23 @@ as describes in subchapter `llvm` above.
 * the full removal of `KickC` based include files from folder
   `llvm/include`
 
+## contributions to llvm-mos
+
+* The following line do autodeclare `DIRENTPAGELOW` in case it
+  is not defined elsewhere. It's value then is indetermined.
+
+```c
+#define readdir_direntasm DIRENTPAGELOW
+__asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
+```
+
 # bugs
 
+* BAM is only supported for one sector, tracks 41 to 80 therefore not
+  yet covered
+* BAM is not yet in attic RAM, therefore multiple discs not cached
+* Handling of DEL type files
 * ~~reading/writing .d81 always takes two logical sectors at once,~~
-  ~~ writing of a single one should first read its accompaigning one~~
+  ~~writing of a single one should first read its accompaigning one~~
 * ~~reading the last sector 39 results in side 1 and an invalid next~~
   ~~track~~

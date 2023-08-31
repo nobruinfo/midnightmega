@@ -84,6 +84,6 @@ IF ERRORLEVEL == 1 (
     %c1541% -attach %DATADISK%.d81 -write %PRJ%.prg %PRJ%.%%i
   )
 
-  XMEGA65 -besure -8 %PRJ%.d81 -9 %DATADISK%.d81 -autoload -hdosvirt -syscon
-  REM XMEGA65 -besure -prg %PRJ%.prg
+  XMEGA65 -besure -8 %PRJ%.d81 -9 %DATADISK%.d81 -autoload -hdosvirt
+  REM XMEGA65 -syscon -besure -prg %PRJ%.prg
 )
