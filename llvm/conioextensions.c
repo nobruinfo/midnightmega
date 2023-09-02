@@ -531,7 +531,7 @@ void navi(void)  {
 	  case 13: // return
 		messagebox("not yet implemented");
 		cgetc();
-		if (strcmp(curfile, "already mounted") == 0)  {
+		if (strcmp((char *) curfile, "already mounted") == 0)  {
 		  findnextBAMtracksector(&testtrack, &testsector);
 		  gotoxy(42, 0);
 		  mprintf("t=", testtrack);

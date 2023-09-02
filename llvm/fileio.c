@@ -14,18 +14,18 @@
 // static unsigned char __attribute__((used)) retval;
 
 // unsigned char ptrMiniOffs = $DE;
-#pragma bss-name (push, "ZEROPAGE")
-/* volatile __zp */ unsigned long ptrMiniOffs;
-#pragma bss-name (pop)
+// #pragma bss-name (push, "ZEROPAGE")
+// /* volatile __zp */ unsigned long ptrMiniOffs;
+// #pragma bss-name (pop)
 // unsigned char * ptrMiniOffs = 0xFFD6C00; the address region is given
 #define SECTBUF      0xFFD6C00
 #define SECTBUFUPPER 0xFFD6D00
 
 unsigned char __attribute__((used)) offsCurrIdx = 0;
 unsigned char __attribute__((used)) flagCurrSec = 0;
-#pragma bss-name (push, "ZEROPAGE")
+// #pragma bss-name (push, "ZEROPAGE")
 // for zp global vars use: unsigned char var = 0;
-#pragma bss-name (pop)
+// #pragma bss-name (pop)
 
 BAM * BAMsector[2]; // to point into the disk buffer
 DATABLOCK * worksector[2]; // to point into the disk buffer
@@ -58,13 +58,12 @@ void _miniInit()  {
 	ptrMiniOffs[1] = 0x6C;  // mega65-book.pdf#3ec
 	ptrMiniOffs[2] = 0xFD;
 	ptrMiniOffs[3] = 0x0F;  */
-  ptrMiniOffs = SECTBUF;
   asm volatile(
     "lda #$00\n"    // clear F011 Floppy Controller Registers
     "sta $D080\n"
   );
-  mh4printfd("_miniinit 32addr is: ", ptrMiniOffs >> 16);
-  mh4printfd(" ", ptrMiniOffs & 0xffff);
+  mh4printfd("_miniinit SECTBUF 32addr is: ", SECTBUF >> 16);
+  mh4printfd(" ", SECTBUF & 0xffff);
   cputlnd();
 }
 
@@ -143,14 +142,14 @@ unsigned char ReadSector(unsigned char drive, char track,
 		"lda	flagCurrSec\n"
 		"beq	upper02%=\n"
 
-		"lda	#$6D\n"
-		"sta	ptrMiniOffs + 1\n"
+//		"lda	#$6D\n"
+//		"sta	ptrMiniOffs + 1\n"
 
 		"jmp endsub02%=\n"
 
 "upper02%=:\n"
-		"lda	#$6C\n"
-		"sta	ptrMiniOffs + 1\n"
+//		"lda	#$6C\n"
+//		"sta	ptrMiniOffs + 1\n"
 		"jmp endsub02%=\n"
 
 "endsub02%=:\n"
@@ -249,9 +248,6 @@ unsigned char WriteSector(unsigned char drive, char track,
 // bytes buffer:
 unsigned char GetWholeSector(BAM* entry, unsigned char drive,
                              char track, char sector)  {
-  unsigned char retval;
-  unsigned char * p = (unsigned char *) entry;
-
   BAM* ws = entry;   // later to be DATABLOCK*
   unsigned char side;
 #ifdef DEBUG
@@ -266,18 +262,16 @@ unsigned char GetWholeSector(BAM* entry, unsigned char drive,
   if (side > 1)  return side;
   lcopy(SECTBUF,      (uint32_t) ws,             BLOCKSIZE);
   lcopy(SECTBUFUPPER, (uint32_t) ws + BLOCKSIZE, BLOCKSIZE);
-/*
+#ifdef DEBUG
   mprintf("GetWholeSector done. side=", side);
   cputln();
   cgetc();
-*/
+#endif
   return side;
 }
 unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
                     unsigned char drive, char track, char sector)  {
-  unsigned char * p = (unsigned char *) entry;
-  unsigned int i;
-  unsigned char val;
+  BAM* ws = entry;   // later to be DATABLOCK*
 
   if (side > 1)  return side;
   
@@ -286,31 +280,19 @@ unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
   ReadSector(drive, track, sector);
   
   if (side == 0)  {
-    ptrMiniOffs = SECTBUF;
 //  clrhome();
     mprintfd("PutWholeSector before lower buffer. Track=", track);
     mprintfd(" Sector=", sector);
     cputlnd();
     cgetcd();
-    for (i=0; i < BLOCKSIZE; i++)  {
-      mhprintfd(" ", p[i]);
-	  lpoke(ptrMiniOffs + i, p[i]);
-    }
+    lcopy((uint32_t) ws, SECTBUF, BLOCKSIZE);
   } else {
-    ptrMiniOffs = SECTBUFUPPER;
     clrhome();
     mprintfd("PutWholeSector before upper buffer. Track=", track);
     mprintfd(" Sector=", sector);
     cputlnd();
-    for (i=0; i < BLOCKSIZE; i++)  {
-      mhprintfd(" ", p[i]);
-      lpoke(ptrMiniOffs + i, p[i]);
-    }
+    lcopy((uint32_t) ws, SECTBUFUPPER, BLOCKSIZE);
   }
-  cputlnd();
-  cgetcd();
-  clrhomed();
-
   msprintfd("PutWholeSector done. Returning while WriteSector.");
   cgetcd();
   return WriteSector(drive, track, sector - side);
