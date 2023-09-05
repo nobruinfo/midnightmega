@@ -187,13 +187,16 @@ hyppo_setname("DATADISK.D81");
   msprintf("Have fun with your Mega65!");
   cputln();
   cgetc();
-/*
+  flushkeybuf();
+
   asm volatile(
-	"rts\n"
+	"lda #$37\n"  // reinstate previous banking
+	"sta $01\n"
+//	"rts\n"
     // jmp restor, restore vectors to initial system
 	// https://mega65.atlassian.net/wiki/spaces/MEGA65/pages/6619137/Kernel+Jump+Table
-	"jmp $ff8a"
+	"jmp ($FFF6)" // ($FFFC)"  // $e4b8" // $ff8a"
   );
-*/
+
   return 0;
 }

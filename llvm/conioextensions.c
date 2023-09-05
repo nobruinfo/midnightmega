@@ -496,12 +496,15 @@ void ______navi(void)  {
   }
 }
 
-unsigned char testtrack;
-unsigned char testsector;
+// unsigned char testtrack;
+// unsigned char testsector;
 void navi(void)  {
   char c;
   unsigned char pos = 0;
   unsigned char entries = 0;
+  unsigned char starttrack;
+  unsigned char startsector;
+  DIRENT* ds;
 
   // title of mcbox is .d81 file name, cannot be read at startup:
   strcpy((char *) curfile, (char *) "already mounted");
@@ -528,9 +531,58 @@ void navi(void)  {
 	    if (d81navi())  entries = getdirent();
       break;
 
+	  case 0xf5: // ASC_F5 copy
+	  case 0xf8: // Modifier and ASC_F8 delete
+        ds = getdirententry(pos);
+/*
+		gotoxy(42, 20);
+        msprintf("name: ");
+        msprintf(ds->name);
+        mprintf(" t=", ds->track);
+        mprintf(" s=", ds->sector);
+        mprintf(" type=", ds->type&0xf);
+
+//		gotoxy(42, 20);
+//  mh4printf("ATTICFILEBUFFER 32addr is: ", ATTICFILEBUFFER >> 16);
+//  mh4printf(" ", ATTICFILEBUFFER & 0xffff);
+		  gotoxy(42, 0);
+		  mprintf("before write type=", ds->type);
+	  cputln();
+	      cgetc();
+*/
+	    if (c == 0xf5)  {  // copy
+		  readblockchain(ATTICFILEBUFFER, DATABLOCKS,
+                      /* track */ ds->track, /* sector*/ ds->sector);
+		  writeblockchain(ATTICFILEBUFFER, DATABLOCKS, &starttrack, &startsector);
+		  ds->track = starttrack;  // recycle src dirent for destination
+		  ds->sector = startsector;
+//	    ds->type = 
+//	    ds->name = "dest";
+//	    ds->size = 
+//	    ds->access = 
+/*
+		  gotoxy(42, 0);
+		  mprintf("   before newds type=", ds->type);
+	  cputln();
+	      cgetc();
+*/
+		  writenewdirententry(ds);
+		} else {  // delete
+		  // confirmation box
+		  ds->type = VAL_DOSFTYPE_DEL;
+		  deletedirententry(pos);
+		}
+		entries = getdirent();
+      break;
+
+	  case 0x12: // Ctrl-r
+		entries = getdirent();
+      break;
+
 	  case 13: // return
 		messagebox("not yet implemented");
 		cgetc();
+/* DESTRUCTIVE test:
 		if (strcmp((char *) curfile, "already mounted") == 0)  {
 		  findnextBAMtracksector(&testtrack, &testsector);
 		  gotoxy(42, 0);
@@ -538,6 +590,7 @@ void navi(void)  {
 		  mprintf(" s=", testsector);
 //	      cgetc();
 		}
+*/
       break;
 
 	  // case 0xF9: // ASC_F9:

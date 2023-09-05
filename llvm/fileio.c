@@ -287,7 +287,7 @@ unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
     cgetcd();
     lcopy((uint32_t) ws, SECTBUF, BLOCKSIZE);
   } else {
-    clrhome();
+    clrhomed();
     mprintfd("PutWholeSector before upper buffer. Track=", track);
     mprintfd(" Sector=", sector);
     cputlnd();
@@ -596,22 +596,25 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
 
 void writeblockchain(uint32_t source_address, // attic RAM
                     unsigned char maxblocks,
-                    unsigned char track, unsigned char sector)  {
+					unsigned char * starttrack, unsigned char * startsector)  {
   unsigned char i;
-  unsigned char nexttrack;
-  unsigned char nextsector;
+  unsigned char nexttrack = 0;
+  unsigned char nextsector = 0xff;
+  unsigned char track;
+  unsigned char sector;
 
   _miniInit();
-  nexttrack = track;
-  nextsector = sector;
   DATABLOCK* ws = worksector[workside];
+
+  // get a first sector anyway:
+  findnextBAMtracksector(&track, &sector);
+  *starttrack = track;  // to later write dirent
+  *startsector = sector;
   
   for (i = 0; i < maxblocks; i++)  {
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
     lcopy(source_address + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
 
-	nexttrack = ws->chntrack;
-	nextsector = ws->chnsector;
 #ifdef DEBUG
 		mprintf("nexttrack ", nexttrack);
 		mprintf(" nextsector ", nextsector);
@@ -622,12 +625,20 @@ void writeblockchain(uint32_t source_address, // attic RAM
 		cputln();
 #endif
 
-	PutWholeSector(worksectorasBAM[0], 0, DRIVE, nexttrack, nextsector);
-	
-	if (nexttrack == 0)  break;
+	// replace chain with available ones or leave 0 if last datablock:
+	if (ws->chntrack > 0)  {
+      findnextBAMtracksector(&nexttrack, &nextsector);
+      ws->chntrack = nexttrack;
+      ws->chnsector = nextsector;
+	}
+
+	PutWholeSector((BAM *) ws, sector % 2, DRIVE, track, sector);
+	if (ws->chntrack == 0)  break;
+    track = nexttrack;
+    sector = nextsector;
   }
   
-  if (nexttrack > 0)  {
+  if (nexttrack > 0 && i >= maxblocks)  {
 	messagebox("number of sectors too big");
 	cgetc();
   }
@@ -659,7 +670,7 @@ DIRENT* getdirententry(unsigned char entry)  {
 //		msprintf((char *) dosfilename);
 	  mprintf(" chntrk ", ds->chntrack);
 	  mprintf(" chnsect ", ds->chnsector);
-	  mhprintf(" type ", ds->type);
+	  mhprintf(" type ", ds->type&0xf);
 	  mprintf(" trk ", ds->track);
 	  mprintf(" sect ", ds->sector);
 	  mprintf(" size ", ds->size);
@@ -690,4 +701,154 @@ unsigned char getdirent(void)  {
 	if (getdirententry(i) != NULL)  return i;  // nbr of entries
   }
   return 0;
+}
+
+// start track/sector must be present in newds:
+void writenewdirententry(DIRENT* newds2)  {
+  unsigned char i;
+  DIRENT* ds;
+  DIRENT* newds;
+  unsigned int max = ENTRIESPERBLOCK;
+  unsigned char track = 40;
+  unsigned char sector = 3;  // to be changed for sector chained by t=40, s=0
+
+  _miniInit();
+
+  ds = (DIRENT *) direntryblock[0]; // to be changed to smaller array
+  // for write operations:
+  newds = (DIRENT *) direntryblock[1]; // to be changed to smaller array
+  // to use own pointer for write dirent:
+  lcopy((uint32_t) newds2, (uint32_t) newds, DIRENTSIZE);
+
+  // first try overwriting DEL file entry:
+  for (i = 0; i < max; i++)  {
+    // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
+    lcopy(ATTICDIRENTBUFFER + i * DIRENTSIZE, (uint32_t) ds, DIRENTSIZE);
+
+//	if (ds->track == 0)  break; // no more entries
+	if (ds->chntrack > 0)  {
+      max += ENTRIESPERBLOCK; // more attic pages
+	  track = ds->chntrack;  // chain for where to write dirent sector
+	  sector = ds->chnsector;
+	  mprintf("PutWholeSector next block at i=", i);
+	  cputln();
+	  cgetc();
+	}
+	if ((ds->type&0xf) == VAL_DOSFTYPE_DEL)  {
+	  newds->chntrack = ds->chntrack;  // keep original chain
+	  newds->chnsector = ds->chnsector;
+	  lcopy((uint32_t) newds, ATTICDIRENTBUFFER + i * DIRENTSIZE, DIRENTSIZE);
+	  mprintf("PutWholeSector i=", i);
+	  mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
+	  mprintf(" side=", sector % 2);
+	  mprintf(" track=", track);
+	  mprintf(" sector=", sector);
+	  mprintf(" type=", (newds->type&0xf));
+	  mh4printf(" ds addr=", (long) &ds);
+	  mh4printf(" newds addr=", (long) &newds);
+	  mh4printf(" newds2 addr=", (long) &newds2);
+	  cputln();
+	  cgetc();
+	  lcopy(ATTICDIRENTBUFFER + i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
+	        BLOCKDATALOW, BLOCKSIZE);
+	  PutWholeSector((BAM *) worksectorasBAM[0], sector % 2, DRIVE, track, sector);
+	  msprintf("PutWholeSector done");
+	  cputln();
+	  cgetc();
+	  return;
+	}
+
+#ifdef DEBUG
+	if (ds->track > 0)  {
+	  mprintf("direntry ", i);
+	  mh4printf(" is: ", (long) &ds);
+	  memcpy(dosfilename, ds->name, DOSFILENAMELEN);
+	  dosfilename[DOSFILENAMELEN] = 0; // proper null termination
+	  msprintf(" name ");
+//		msprintf((char *) dosfilename);
+	  mprintf(" chntrk ", ds->chntrack);
+	  mprintf(" chnsect ", ds->chnsector);
+	  mhprintf(" type ", ds->type&0xf);
+	  mprintf(" trk ", ds->track);
+	  mprintf(" sect ", ds->sector);
+	  mprintf(" size ", ds->size);
+	  mhprintf(" access ", ds->access);
+	  cputln();
+	  cgetc();
+    }
+#endif
+  }
+  messagebox("directory entries exhausted");
+  cgetc();
+}
+
+void deletedirententry(unsigned char entry)  {
+  unsigned char i;
+  DIRENT* ds;
+  unsigned int max = ENTRIESPERBLOCK;
+  unsigned char track = 40;
+  unsigned char sector = 3;  // to be changed for sector chained by t=40, s=0
+
+  _miniInit();
+
+  ds = (DIRENT *) direntryblock[0]; // to be changed to smaller array
+
+  // loop all entries:
+  for (i = 0; i < max; i++)  {
+    // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
+    lcopy(ATTICDIRENTBUFFER + i * DIRENTSIZE, (uint32_t) ds, DIRENTSIZE);
+
+//	if (ds->track == 0)  break; // no more entries
+	if (ds->chntrack > 0)  {
+      max += ENTRIESPERBLOCK; // more attic pages
+	  track = ds->chntrack;  // chain for where to write dirent sector
+	  sector = ds->chnsector;
+	  mprintf("PutWholeSector next block at i=", i);
+	  cputln();
+	  cgetc();
+	}
+	// if (()  {
+	if (i == entry)  {
+	  ds->type = VAL_DOSFTYPE_DEL + (ds->type & ~0xf);
+	  lcopy((uint32_t) ds, ATTICDIRENTBUFFER + i * DIRENTSIZE, DIRENTSIZE);
+	  mprintf("PutWholeSector i=", i);
+	  mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
+	  mprintf(" side=", sector % 2);
+	  mprintf(" track=", track);
+	  mprintf(" sector=", sector);
+	  mprintf(" type=", (ds->type&0xf));
+	  mh4printf(" ds addr=", (long) &ds);
+	  cputln();
+	  cgetc();
+	  lcopy(ATTICDIRENTBUFFER + i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
+	        BLOCKDATALOW, BLOCKSIZE);
+	  PutWholeSector((BAM *) worksectorasBAM[0], sector % 2, DRIVE, track, sector);
+	  msprintf("PutWholeSector done");
+	  cputln();
+	  cgetc();
+	  return;
+	}
+
+#ifdef DEBUG
+	if (ds->track > 0)  {
+	  mprintf("direntry ", i);
+	  mh4printf(" is: ", (long) &ds);
+	  memcpy(dosfilename, ds->name, DOSFILENAMELEN);
+	  dosfilename[DOSFILENAMELEN] = 0; // proper null termination
+	  msprintf(" name ");
+//		msprintf((char *) dosfilename);
+	  mprintf(" chntrk ", ds->chntrack);
+	  mprintf(" chnsect ", ds->chnsector);
+	  mhprintf(" type ", ds->type&0xf);
+	  mprintf(" trk ", ds->track);
+	  mprintf(" sect ", ds->sector);
+	  mprintf(" size ", ds->size);
+	  mhprintf(" access ", ds->access);
+	  cputln();
+	  cgetc();
+    }
+#endif
+  }
+  messagebox("entry not found");
+  cgetc();
 }

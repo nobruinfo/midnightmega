@@ -76,6 +76,7 @@ void readblockchain(uint32_t destination_address, // attic RAM
 void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector);
 void writeblockchain(uint32_t source_address, // attic RAM
                     unsigned char maxblocks,
-                    unsigned char track, unsigned char sector);
+					unsigned char * starttrack, unsigned char * startsector);
 DIRENT* getdirententry(unsigned char entry);
 unsigned char getdirent(void);
+void writenewdirententry(DIRENT* newds);
