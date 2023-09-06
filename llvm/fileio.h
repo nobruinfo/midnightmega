@@ -8,6 +8,7 @@
 #define VAL_DOSFTYPE_CBM 5
 
 #define DOSFILENAMELEN 16  // dirent DOS file name with no null termination
+#define DOSFILENAMEANDTYPELEN 40  // dirent output string with no null termination
 
 #define LEFTSIDE 0
 #define RIGHTSIDE 1
@@ -21,7 +22,7 @@ typedef struct structdirent {
 	unsigned char track;
 	unsigned char sector;
              char name[DOSFILENAMELEN]; /* File name in PetSCII, limited to 16 chars */
-	unsigned char dummy[8];
+	unsigned char dummy[9];
     unsigned int  size;
     unsigned char access;
 } DIRENT;
@@ -77,6 +78,8 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
 void writeblockchain(uint32_t source_address, // attic RAM
                     unsigned char maxblocks,
 					unsigned char * starttrack, unsigned char * startsector);
+unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i);
 DIRENT* getdirententry(unsigned char entry);
 unsigned char getdirent(void);
 void writenewdirententry(DIRENT* newds);
+void deletedirententry(unsigned char entry);

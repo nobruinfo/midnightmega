@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 #include <mega65/conio.h>  // llvm instead of <printf.h>
 #include <mega65/memory.h>  // mega65-libc
@@ -356,7 +357,7 @@ unsigned char getd81(void)  {
 }
 
 #define DIRENTENTRIES 22
-unsigned char s[40];
+unsigned char s[DOSFILENAMEANDTYPELEN];
 void listbox(unsigned char x, unsigned char y,
              unsigned char currentitem, unsigned char nbritems)  {
   unsigned int n;
@@ -384,9 +385,11 @@ void listbox(unsigned char x, unsigned char y,
 	s[i++] = ' ';
 	s[i++] = 93; // '|';
 	s[i++] = ' ';
-	s[i++] = ((ds->type&0xf)==VAL_DOSFTYPE_CBM?'D':'P');
-	s[i++] = ((ds->type&0xf)==VAL_DOSFTYPE_CBM?'I':'R');
-	s[i++] = ((ds->type&0xf)==VAL_DOSFTYPE_CBM?'R':'G');
+	i = gettype(ds->type, s, i);
+	s[i++] = ' ';
+	s[i++] = 93; // '|';
+	s[i++] = ' ';
+	i = i + sprintf(&s[i], "%4d", ds->size);
 	s[i++] = ' ';
 	if (n + ofs == currentitem)  s[i++] = '<';
 	else                   s[i++] = ' ';

@@ -644,6 +644,44 @@ void writeblockchain(uint32_t source_address, // attic RAM
   }
 }
 
+unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i)  {
+  unsigned char t = (unsigned char) (type & 0xf);
+
+  switch (t) { // (type & 0xf) {
+    case VAL_DOSFTYPE_SEQ:
+	  s[i++] = 'S';
+	  s[i++] = 'E';
+	  s[i++] = 'Q';
+    break;
+    case VAL_DOSFTYPE_PRG:
+	  s[i++] = 'P';
+	  s[i++] = 'R';
+	  s[i++] = 'G';
+    break;
+    case VAL_DOSFTYPE_USR:
+	  s[i++] = 'U';
+	  s[i++] = 'S';
+	  s[i++] = 'R';
+    break;
+    case VAL_DOSFTYPE_REL:
+	  s[i++] = 'R';
+	  s[i++] = 'E';
+	  s[i++] = 'L';
+    break;
+    case VAL_DOSFTYPE_CBM:
+	  s[i++] = 'C';
+	  s[i++] = 'B';
+	  s[i++] = 'M';
+    break;
+    default: // VAL_DOSFTYPE_DEL
+	  s[i++] = 'D';
+	  s[i++] = 'E';
+	  s[i++] = 'L';
+    break;
+  }
+  return i;
+}
+
 DIRENT* getdirententry(unsigned char entry)  {
   unsigned char i;
   DIRENT* ds;
