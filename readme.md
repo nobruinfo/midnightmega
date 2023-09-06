@@ -14,16 +14,16 @@ positions with no apparent reason.
 ## llvm
 
 Downloaded the .7z file `release` from the llvm-mos Github repo and
-built my own make batch file for it. Seems to have wasted all zeropage
-*imaginary registers* and won't let me have a running programme. When
-arbitrarily commenting out line the amount of overflow varies accordingly.
+built my own make batch file for it. In this folder I'm currently
+adding functionality to my little file manager project.
 
 ## ninja
 
 Switched to repo `https://github.com/mlund/llvm-mos-sdk` branch
 `mega65-headers` to have KickC alike include files. Did have to rebuild
-the whole `llvm-mos-sdk` first but now am stuck at the exact position
-as describes in subchapter `llvm` above.
+the whole `llvm-mos-sdk` to get it to cross compile. Currently I'm not
+following this line of development chain. I'm awaiting the latest
+additions to the [mega65-libc](https://github.com/mega65/mega65-libc).
 
 # requirements
 
@@ -65,6 +65,10 @@ __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
 
 # bugs
 
+* `dirent` is currently not fully updated, additional sectors are
+  currently not added automatically
+* The yet state of development only uses the left file list so *copy*
+  actually only duplicates files on the same disk
 * BAM is only supported for one sector, tracks 41 to 80 therefore not
   yet covered
 * BAM is not yet in attic RAM, therefore multiple discs not cached

@@ -459,11 +459,11 @@ void readblockchain(uint32_t destination_address, // attic RAM
   _miniInit();
   nexttrack = track;
   nextsector = sector;
-
+#ifdef DEBUG
 		mprintf("nexttrack ", nexttrack);
 		mprintf(" nextsector ", nextsector);
 		cputln();
-
+#endif
   for (i = 0; i < maxblocks; i++)  {
     workside = GetWholeSector(worksectorasBAM[0], DRIVE, nexttrack, nextsector);
     DATABLOCK* ws = worksector[workside];
@@ -507,7 +507,7 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
       if (sector < 8)  {
         if (bs->entry[track].alloc1 & (bitshifter << sector))  {
           done = 1;
-
+#ifdef DEBUG
 		gotoxy(42, 7);
 		mprintf("t=", track);
 		mprintf(" s=", sector);
@@ -515,63 +515,63 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
 		mprintf(" ns=", bs->chnsector);
 		mprintf(" a1=", bs->entry[track].alloc1);
 		cgetc();
-
+#endif
           break;
         }
       }
       else if (sector < 16)  {
         if (bs->entry[track].alloc2 & (bitshifter << (sector - 8)))  {
           done = 1;
-
+#ifdef DEBUG
 		gotoxy(42, 8);
 		mprintf("t=", track);
 		mprintf(" s=", sector);
 		mprintf(" nt=", bs->chntrack);
 		mprintf(" ns=", bs->chnsector);
 		cgetc();
-
+#endif
           break;
         }
       }
       else if (sector < 24)  {
         if (bs->entry[track].alloc3 & (bitshifter << (sector - 16)))  {
           done = 1;
-
+#ifdef DEBUG
 		gotoxy(42, 9);
 		mprintf("t=", track);
 		mprintf(" s=", sector);
 		mprintf(" nt=", bs->chntrack);
 		mprintf(" ns=", bs->chnsector);
 		cgetc();
-
+#endif
           break;
         }
       }
       else if (sector < 32)  {
         if (bs->entry[track].alloc4 & (bitshifter << (sector - 24)))  {
           done = 1;
-
+#ifdef DEBUG
 		gotoxy(42, 10);
 		mprintf("t=", track);
 		mprintf(" s=", sector);
 		mprintf(" nt=", bs->chntrack);
 		mprintf(" ns=", bs->chnsector);
 		cgetc();
-
+#endif
           break;
         }
       }
       else  {
         if (bs->entry[track].alloc5 & (bitshifter << (sector - 32)))  {
           done = 1;
-
+#ifdef DEBUG
 		gotoxy(42, 11);
 		mprintf("t=", track);
 		mprintf(" s=", sector);
 		mprintf(" nt=", bs->chntrack);
 		mprintf(" ns=", bs->chnsector);
 		cgetc();
-
+#endif
           break;
         }
       }
@@ -768,14 +768,15 @@ void writenewdirententry(DIRENT* newds2)  {
       max += ENTRIESPERBLOCK; // more attic pages
 	  track = ds->chntrack;  // chain for where to write dirent sector
 	  sector = ds->chnsector;
-	  mprintf("PutWholeSector next block at i=", i);
-	  cputln();
-	  cgetc();
+	  mprintfd("PutWholeSector next block at i=", i);
+	  cputlnd();
+	  cgetcd();
 	}
 	if ((ds->type&0xf) == VAL_DOSFTYPE_DEL)  {
 	  newds->chntrack = ds->chntrack;  // keep original chain
 	  newds->chnsector = ds->chnsector;
 	  lcopy((uint32_t) newds, ATTICDIRENTBUFFER + i * DIRENTSIZE, DIRENTSIZE);
+#ifdef DEBUG
 	  mprintf("PutWholeSector i=", i);
 	  mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
 	  mprintf(" side=", sector % 2);
@@ -787,12 +788,15 @@ void writenewdirententry(DIRENT* newds2)  {
 	  mh4printf(" newds2 addr=", (long) &newds2);
 	  cputln();
 	  cgetc();
+#endif
 	  lcopy(ATTICDIRENTBUFFER + i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
 	        BLOCKDATALOW, BLOCKSIZE);
 	  PutWholeSector((BAM *) worksectorasBAM[0], sector % 2, DRIVE, track, sector);
+#ifdef DEBUG
 	  msprintf("PutWholeSector done");
 	  cputln();
 	  cgetc();
+#endif
 	  return;
 	}
 
@@ -841,14 +845,16 @@ void deletedirententry(unsigned char entry)  {
       max += ENTRIESPERBLOCK; // more attic pages
 	  track = ds->chntrack;  // chain for where to write dirent sector
 	  sector = ds->chnsector;
+#ifdef DEBUG
 	  mprintf("PutWholeSector next block at i=", i);
 	  cputln();
 	  cgetc();
+#endif
 	}
-	// if (()  {
 	if (i == entry)  {
 	  ds->type = VAL_DOSFTYPE_DEL + (ds->type & ~0xf);
 	  lcopy((uint32_t) ds, ATTICDIRENTBUFFER + i * DIRENTSIZE, DIRENTSIZE);
+#ifdef DEBUG
 	  mprintf("PutWholeSector i=", i);
 	  mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
 	  mprintf(" side=", sector % 2);
@@ -858,12 +864,15 @@ void deletedirententry(unsigned char entry)  {
 	  mh4printf(" ds addr=", (long) &ds);
 	  cputln();
 	  cgetc();
+#endif
 	  lcopy(ATTICDIRENTBUFFER + i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
 	        BLOCKDATALOW, BLOCKSIZE);
 	  PutWholeSector((BAM *) worksectorasBAM[0], sector % 2, DRIVE, track, sector);
+#ifdef DEBUG
 	  msprintf("PutWholeSector done");
 	  cputln();
 	  cgetc();
+#endif
 	  return;
 	}
 

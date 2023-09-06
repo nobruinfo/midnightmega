@@ -389,7 +389,7 @@ void listbox(unsigned char x, unsigned char y,
 	s[i++] = ' ';
 	s[i++] = 93; // '|';
 	s[i++] = ' ';
-	i = i + sprintf(&s[i], "%4d", ds->size);
+	i = i + sprintf((char*) &s[i], "%4d", ds->size);
 	s[i++] = ' ';
 	if (n + ofs == currentitem)  s[i++] = '<';
 	else                   s[i++] = ' ';

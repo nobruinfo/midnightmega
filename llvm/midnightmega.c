@@ -63,6 +63,12 @@ int main() {
   bgcolor (COLOUR_BLUE);
 
   clrhome();
+
+  messagebox("currently beta, does destroy .d81 and disks!");
+  gotoxy(15,7);
+  msprintf("Press almost any key to continue.");
+  cgetc();
+
 #ifdef sduhgsiuzfgsuzd
   // cputu("hyppo_setname is: ", hyppo_setname("EMPTY.D81"), HEXADECIMAL);
   mhprintf("hyppo_setname is: ", hyppo_setname("DATADISK.d81"));
