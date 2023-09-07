@@ -594,6 +594,7 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
   }
 }
 
+// ignores start track and sector upon call but gives them back:
 void writeblockchain(uint32_t source_address, // attic RAM
                     unsigned char maxblocks,
 					unsigned char * starttrack, unsigned char * startsector)  {

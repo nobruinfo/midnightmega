@@ -75,6 +75,9 @@ IF ERRORLEVEL == 1 (
   ECHO this is a relential file for testing.>%DATADISK%.seq
   %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.1,l80,01,01
   ECHO this is a sequential file for testing.>%DATADISK%.seq
+  for /l %%i in (1, 1, 1500) do (
+    ECHO trying to make this file %%l times bigger.>>%DATADISK%.seq
+  )
   %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.2,s
   ECHO this is a sequential file for testing.>%DATADISK%.seq
   %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.3,s

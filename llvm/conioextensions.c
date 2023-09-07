@@ -75,6 +75,31 @@ void lpoke___________(uint32_t address, uint8_t value)
   dma_poke(address, value);
 }
 
+#define MAXDECDIGITS 10
+void csputdec(long n, unsigned char padding, unsigned char leadingZeros)
+{
+    unsigned char buffer[MAXDECDIGITS + 1];
+    unsigned char rem = 0, i = 0;
+    char digit = MAXDECDIGITS - 1;
+    buffer[MAXDECDIGITS] = 0;
+    do {
+        rem = n % 10;
+        n /= 10;
+        buffer[digit--] = '0' + rem; // static: hexDigits[rem];
+    } while (((int)digit >= 0) && (n != 0));
+
+    while (digit > 0)  {
+	  if (leadingZeros > 0)  {
+		leadingZeros--;
+        buffer[digit--] = '0'; // static: hexDigits[0];
+	  } else if (digit > (MAXDECDIGITS - padding))  {  // padding actually aligns
+		buffer[digit--] = ' ';
+	  } else break;
+    }
+
+    cputs(&buffer[digit + 1]);
+}
+
 char asciitoscreencode(char c)
 {
 //    if (c >= 64 && c <= 95) {
@@ -119,7 +144,7 @@ void msprintf(char* str)  {
 }
 void mprintf(char* str, long n)  {
   cputs((const unsigned char*) asciitoscreencode_s(str));
-  cputdec(n, 0, 0);
+  csputdec(n, 0, 0);
 }
 void mhprintf(char* str, long n)  {
   cputs((const unsigned char*) asciitoscreencode_s(str));
@@ -389,15 +414,21 @@ void listbox(unsigned char x, unsigned char y,
 	s[i++] = ' ';
 	s[i++] = 93; // '|';
 	s[i++] = ' ';
-	i = i + sprintf((char*) &s[i], "%4d", ds->size);
-	s[i++] = ' ';
-	if (n + ofs == currentitem)  s[i++] = '<';
-	else                   s[i++] = ' ';
+	
 	s[i++] = 0;
-
 	if (n + ofs == currentitem)  revers(1);
 	else                   revers(0);
-	cputsxy(x, y + n, s);
+	cputsxy(x, y + n, s);  // print what we've got so far
+	// i = i + sprintf((char*) &s[i], "%4d", ds->size);
+	csputdec(ds->size, 5, 0);
+	cputc(' '); // s[i++] = ' ';
+	if (n + ofs == currentitem)  cputc('<'); // s[i++] = '<';
+	else                   cputc(' '); // s[i++] = ' ';
+//	s[i++] = 0;
+
+//	if (n + ofs == currentitem)  revers(1);
+//	else                   revers(0);
+//	cputsxy(x, y + n, s);
   }
   revers(0);
   cputln();
@@ -445,58 +476,6 @@ unsigned char d81navi(void)  {
     }
   }
   return 0;
-}
-
-void ______navi(void)  {
-  char c;
-  char pos = 0;
-
-  // title of mcbox is .d81 file name, cannot be read at startup:
-  strcpy((char *) curfile, (char *) "already mounted");
-  getdirent();
-  while (1)  {
-    if (pos >= FILEENTRIES || filelist[pos][0] == 0)  pos = 0;
-    mcbox(0, 0, 0 + 39, 0 + 24, COLOUR_CYAN, BOX_STYLE_INNER, 1, 1);
-    revers(1);
-    mcputsxy(12, 0, " ");
-	msprintf((char *) curfile);
-	cputc(' ');
-    revers(0);
-    listbox(10, 5, pos, 30);
-    c = cgetc();
-    switch (c) {
-	  case 145: // Crsrup
-	    if (pos > 0)  pos--;
-      break;
-	  case 17: // Crsrdown
-	    pos++;
-      break;
-
-	  case 0xf2: // Modifier and ASC_F1:
-	    if (d81navi())  getdirent();
-      break;
-
-	  case 13: // return
-		messagebox("not yet implemented");
-	    cgetc();
-      break;
-
-	  // case 0xF9: // ASC_F9:
-	  case 0xFA: // Modifier and ASC_F9:
-	    if (getkeymodstate() == KEYMOD_RSHIFT || getkeymodstate() == KEYMOD_LSHIFT)  {
-	      clrhome();
-    	    return;
-	    }
-      break;
-
-	  case 27:
-	    return;
-      break;
-	
-	  default:
-	    mprintf("val=", c);
-    }
-  }
 }
 
 // unsigned char testtrack;
@@ -600,7 +579,7 @@ void navi(void)  {
 	  case 0xFA: // Modifier and ASC_F9:
 	    if (getkeymodstate() == KEYMOD_RSHIFT || getkeymodstate() == KEYMOD_LSHIFT)  {
 	      clrhome();
-    	    return;
+    	  return;
 	    }
       break;
 
