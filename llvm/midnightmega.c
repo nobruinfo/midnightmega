@@ -22,7 +22,7 @@
 #include "conioextensions.h"
 // #include "fileio.h"
 
-char* inputstr = (char*) INPUTSTRPAGE;
+// char* inputstr = (char*) INPUTSTRPAGE;
 
 // KickC calls conio_mega65_init() before doing main():
 int main() {
@@ -197,7 +197,7 @@ hyppo_setname("DATADISK.D81");
 //  initkeyboard();
 #endif
 
-  navi();
+  navi(0);
 //  unsigned char e = getdirent();
 
   msprintf("Have fun with your Mega65!");

@@ -360,7 +360,7 @@ void readblockchain(uint32_t destination_address, // attic RAM
     DATABLOCK* ws = worksector[workside];
 	nexttrack = ws->chntrack;
 	nextsector = ws->chnsector;
-// #ifdef DEBUG
+#ifdef DEBUG
 		gotoxy(42, 0);
 		mprintf("nexttrack ", nexttrack);
 		mprintf(" nextsector ", nextsector);
@@ -373,8 +373,8 @@ void readblockchain(uint32_t destination_address, // attic RAM
 		gotoxy(42, 2);
 		mh4printf(" worksector[workside]: ", (long) worksector[workside]);
 		cputln();
-		cgetc;
-// #endif
+		cgetc();
+#endif
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
     lcopy((uint32_t) ws, destination_address + i * BLOCKSIZE, BLOCKSIZE);
 	

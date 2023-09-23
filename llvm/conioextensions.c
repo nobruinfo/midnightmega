@@ -332,7 +332,6 @@ char* inputbox(char* inputstr, char* message)  {
 
 #define FILEENTRIES 18
 unsigned char filelist[FILEENTRIES][65];
-unsigned char curfile[65];
 
 void listboxd81(unsigned char x, unsigned char y,
              unsigned char currentitem, unsigned char nbritems)  {
@@ -434,7 +433,11 @@ void listbox(unsigned char x, unsigned char y,
   cputln();
 }
 
-unsigned char d81navi(void)  {
+// flags and stuff:
+MIDNIGHT* midnight[2] = { (MIDNIGHT*) MIDNIGHTLEFTPAGE,
+                          (MIDNIGHT*) MIDNIGHTRIGHTPAGE };
+
+unsigned char d81navi(unsigned char side)  {
   char c;
   char pos = 0;
   unsigned char entries = 0;
@@ -462,7 +465,7 @@ unsigned char d81navi(void)  {
 		  messagebox("mount failed");
 		  cgetc();
 		} else {
-		  strcpy((char *) curfile, (char *) filelist[pos]);
+		  strcpy((char *) midnight[side]->curfile, (char *) filelist[pos]);
 		  return 1;
 		}		
       break;
@@ -480,42 +483,53 @@ unsigned char d81navi(void)  {
 
 // unsigned char testtrack;
 // unsigned char testsector;
-void navi(void)  {
+void navi(unsigned char side)  {
   char c;
-  unsigned char pos = 0;
-  unsigned char entries = 0;
+//  unsigned char pos = 0;
+//  unsigned char entries = 0;
+  unsigned char leftx;
   unsigned char starttrack;
   unsigned char startsector;
   DIRENT* ds;
 
   // title of mcbox is .d81 file name, cannot be read at startup:
-  strcpy((char *) curfile, (char *) "already mounted");
-  entries = getdirent();
+  strcpy((char *) midnight[0]->curfile, (char *) "already mounted");
+  strcpy((char *) midnight[1]->curfile, (char *) "already mounted");
+  midnight[side]->entries = getdirent();
+  midnight[side]->pos = 0;
   while (1)  {
-    if (pos > entries)  pos = entries;
-    mcbox(0, 0, 0 + 39, 0 + 23, COLOUR_CYAN, BOX_STYLE_INNER, 1, 1);
+    if (midnight[side]->pos > midnight[side]->entries)  {
+      midnight[side]->pos = midnight[side]->entries;
+	}
+	leftx = side * 40;
+    mcbox(leftx, 0, leftx + 39, 0 + 23, COLOUR_CYAN, BOX_STYLE_INNER, 1, 0);
     revers(1);
-    mcputsxy(2, 0, " ");
-	msprintf((char *) curfile);
+    mcputsxy(leftx + 2, 0, " ");
+	msprintf((char *) midnight[side]->curfile);
 	cputc(' ');
     revers(0);
-    listbox(1, 1, pos, entries);
+    listbox(leftx + 1, 1, midnight[side]->pos, midnight[side]->entries);
     c = cgetc();
     switch (c) {
 	  case 145: // Crsrup
-	    if (pos > 0)  pos--;
+	    if (midnight[side]->pos > 0)  midnight[side]->pos--;
       break;
 	  case 17: // Crsrdown
-	    pos++;
+	    midnight[side]->pos++;
+      break;
+
+	  case 9: // Tab
+	    side = (side ? 0 : 1);
+		midnight[side]->entries = getdirent();
       break;
 
 	  case 0xf2: // Modifier and ASC_F1:
-	    if (d81navi())  entries = getdirent();
+	    if (d81navi(side))  midnight[side]->entries = getdirent();
       break;
 
 	  case 0xf5: // ASC_F5 copy
 	  case 0xf8: // Modifier and ASC_F8 delete
-        ds = getdirententry(pos);
+        ds = getdirententry(midnight[side]->pos);
 /*
 		gotoxy(42, 20);
         msprintf("name: ");
@@ -552,20 +566,20 @@ void navi(void)  {
 		} else {  // delete
 		  // confirmation box
 		  ds->type = VAL_DOSFTYPE_DEL;
-		  deletedirententry(pos);
+		  deletedirententry(midnight[side]->pos);
 		}
-		entries = getdirent();
+		midnight[side]->entries = getdirent();
       break;
 
 	  case 0x12: // Ctrl-r
-		entries = getdirent();
+		midnight[side]->entries = getdirent();
       break;
 
 	  case 13: // return
 		messagebox("not yet implemented");
 		cgetc();
 /* DESTRUCTIVE test:
-		if (strcmp((char *) curfile, "already mounted") == 0)  {
+		if (strcmp((char *) midnight[side]->curfile, "already mounted") == 0)  {
 		  findnextBAMtracksector(&testtrack, &testsector);
 		  gotoxy(42, 0);
 		  mprintf("t=", testtrack);
@@ -589,6 +603,7 @@ void navi(void)  {
 	
 	  default:
 	    mprintf("val=", c);
+		cputc('  ');
     }
   }
 }
