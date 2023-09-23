@@ -21,8 +21,8 @@
 #define SECTBUF      0xFFD6C00
 #define SECTBUFUPPER 0xFFD6D00
 
-unsigned char __attribute__((used)) offsCurrIdx = 0;
-unsigned char __attribute__((used)) flagCurrSec = 0;
+// unsigned char __attribute__((used)) offsCurrIdx = 0;
+// unsigned char __attribute__((used)) flagCurrSec = 0;
 // #pragma bss-name (push, "ZEROPAGE")
 // for zp global vars use: unsigned char var = 0;
 // #pragma bss-name (pop)
@@ -51,17 +51,9 @@ void _miniInit()  {
   direntryblock[0] = (SECTDIRENT*) DIRENTPAGELOW; // eight entries per single block
   direntryblock[1] = (SECTDIRENT*) DIRENTPAGEHIGH;
 
-  offsCurrIdx = 0;
-  flagCurrSec = 0;
+  // clear F011 Floppy Controller Registers
+  POKE(0xd080U, 0);
 
-/*	ptrMiniOffs[0] = 0;    // Buffered Sector Operations:
-	ptrMiniOffs[1] = 0x6C;  // mega65-book.pdf#3ec
-	ptrMiniOffs[2] = 0xFD;
-	ptrMiniOffs[3] = 0x0F;  */
-  asm volatile(
-    "lda #$00\n"    // clear F011 Floppy Controller Registers
-    "sta $D080\n"
-  );
   mh4printfd("_miniinit SECTBUF 32addr is: ", SECTBUF >> 16);
   mh4printfd(" ", SECTBUF & 0xffff);
   cputlnd();
@@ -76,89 +68,32 @@ unsigned char ReadSector(unsigned char drive, char track,
 	drive += 0x60;   // #$60 drive 0
     mprintfd("Begin ReadSector t=", track);
     mprintfd(" s=", sector);
-	asm volatile(
-		// Turn on motor + led (which causes led to light solid):
-//		"lda	drive\n"
-		"sta	$D080\n"
+	
+	// Turn on motor + led (which causes led to light solid):
+	POKE(0xd080U, drive);
+	// Wait for ready:
+	POKE(0xd081U, 0x20);
+	// Track (start at 0):
+	POKE(0xd084U, track - 1);
+	// Sector (only side 0 ones):
+	POKE(0xd085U, sector / 2 + 1);
+	// Side:
+	POKE(0xd086U, 0);
+	// Flag which side we need:
+	retval = sector % 2;
+	// Read:
+	POKE(0xd081U, 0x41);
+	// Wait while busy:
+	while (PEEK(0xd082U) & 0x80) {}
+	// Check for error:
+	if (PEEK(0xd082U) & 0x18) {
+      // Turn on just the LED, this causes to blink:
+	  POKE(0xd080U, 0x40);
+	  return 0xff;
+	}
+	// Make sure we can see the data, clear bit 7:
+	POKE(0xd689U, PEEK(0xd689U) & ~0x80);
 
-		// Wait for ready:
-		"lda	#$20\n"
-		"sta	$D081\n"
-
-		// Track (start at 0)
-//		"ldx	track\n"
-		"dex\n"
-		"stx	$D084\n"
-
-		// Sector (only side 0 ones)
-//		"lda	sector\n"
-		"tya\n"
-		"lsr\n"
-
-		// Sectors start at 1
-		"tax\n"
-		"inx\n"
-		"stx	$D085\n"
-
-		// Side
-		"lda	#$00\n"
-		"sta	$D086\n"
-
-		// Flag which side we need
-		"adc	#$00\n"
-		"sta	flagCurrSec\n"
-
-		// Read
-		"lda	#$41\n"
-		"sta	$D081\n"
-
-		// Wait while busy:
-"wait02%=:\n"
-		"lda	$D082\n"
-		"bmi	wait02%=\n"
-
-		// Check for error
-		"lda	$D082\n"
-		"and	#$18\n"
-		"beq	succeed02%=\n"
-
-		// Turn on just the LED, this causes to blink
-		"lda	#$40\n"
-		"sta	$D080\n"
-
-		"sec\n"
-		"jmp endsub02%=\n"
-
-"succeed02%=:\n"
-		// Make sure we can see the data
-		"lda	#$80\n"    // bit 7 as mask
-		"trb	$D689\n"   // clear bit 7
-
-		"clc\n"
-
-		"lda	#$00\n"
-		"sta	offsCurrIdx\n"
-
-		"lda	flagCurrSec\n"
-		"beq	upper02%=\n"
-
-//		"lda	#$6D\n"
-//		"sta	ptrMiniOffs + 1\n"
-
-		"jmp endsub02%=\n"
-
-"upper02%=:\n"
-//		"lda	#$6C\n"
-//		"sta	ptrMiniOffs + 1\n"
-		"jmp endsub02%=\n"
-
-"endsub02%=:\n"
-		"bcs err02%=\n"
-		"lda flagCurrSec\n"
-		"jmp end02%=\n"
-"err02%=:   lda #$ff\n"
-"end02%=:   sta %0\n"
-	: "=r"(retval) :"a"(drive),"x"(track),"y"(sector):);
 	return retval;
 }
 
@@ -168,78 +103,36 @@ unsigned char WriteSector(unsigned char drive, char track,
 	unsigned char retval;
 
 	drive += 0x60;   // #$60 drive 0
-	char side = 0;
 	if (sector >= 20)  {
 		drive += 0x08; // second side of disk
-		side = 1;
 	}
-    asm volatile(
-		// Turn on motor + led (which causes led to light solid):
-//		"lda	drive\n"
-		"sta	$D080\n"
 
-		// Wait for ready:
-		"lda	#$20\n"
-		"sta	$D081\n"
+	// Turn on motor + led (which causes led to light solid):
+	POKE(0xd080U, drive);
+	// Wait for ready:
+	POKE(0xd081U, 0x20);
+	// Track (start at 0):
+	POKE(0xd084U, track - 1);
+	// Sector (only side 0 ones):
+	// Sectors start at 1   mega65-book.pdf#3f0
+	POKE(0xd085U, sector / 2 + 1);
+	// Side:
+	POKE(0xd086U, 0);
+	// Flag which side we need:
+	retval = sector % 2;
+	// Write:
+	POKE(0xd081U, 0x84);
+	// Wait while busy:
+	while (PEEK(0xd082U) & 0x80) {}
+	// Check for error:
+	if (PEEK(0xd082U) & 0x18) {
+      // Turn on just the LED, this causes to blink:
+	  POKE(0xd080U, 0x40);
+	  return 0xff;
+	}
+	// Make sure we can see the data, clear bit 7:
+	POKE(0xd689U, PEEK(0xd689U) & ~0x80);
 
-		// Track (start at 0)
-//		"ldx	track\n"
-		"dex\n"
-		"stx	$D084\n"
-
-		// Sector (only side 0 ones)
-//		"lda	sector\n"
-		"tya\n"
-		"lsr\n"
-
-		// Sectors start at 1   mega65-book.pdf#3f0
-		"tax\n"
-		"inx\n"
-		"stx	$D085\n"
-
-		// Side
-		"lda	#$00\n"   // side
-		"sta	$D086\n"
-
-		// Flag which side we need
-		"adc	#$00\n"
-		"sta	flagCurrSec\n"
-
-		// Write
-		"lda	#$84\n"
-		"sta	$D081\n"
-
-		// Wait while busy:
-"wait03%=:\n"
-		"lda	$D082\n"
-		"bmi	wait03%=\n"
-
-		// Check for error
-		"lda	$D082\n"
-		"and	#$18\n"
-		"beq	succeed03%=\n"
-
-		// Turn on just the LED, this causes to blink
-		"lda	#$40\n"
-		"sta	$D080\n"
-
-		"sec\n"
-		"jmp endsub03%=\n"
-
-"succeed03%=:\n"
-		// Make sure we can see the data
-		"lda	#$80\n"    // bit 7 as mask
-		"trb	$D689\n"   // clear bit 7
-
-		"clc\n"
-
-"endsub03%=:\n"
-		"bcs err03%=\n"
-		"lda #$00\n"
-		"jmp end03%=\n"
-"err03%=:   lda #$ff\n"
-"end03%=:   sta %0\n"
-	: "=r"(retval) :"a"(drive),"x"(track),"y"(sector):"a","x");
 	return retval;
 }
 
@@ -300,9 +193,7 @@ unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
 
 unsigned char driveled(unsigned char errorcode)  {
 	// Turn on just the LED, this causes it to blink:
-    asm volatile(
-		"lda	#$40\n"
-		"sta	$D080\n");
+    POKE(0xd080U, 0x40);
 	return errorcode;
 }
 
@@ -469,15 +360,21 @@ void readblockchain(uint32_t destination_address, // attic RAM
     DATABLOCK* ws = worksector[workside];
 	nexttrack = ws->chntrack;
 	nextsector = ws->chnsector;
-#ifdef DEBUG
+// #ifdef DEBUG
+		gotoxy(42, 0);
 		mprintf("nexttrack ", nexttrack);
 		mprintf(" nextsector ", nextsector);
 		mprintf(" workside ", workside);
+		cputln();
+		gotoxy(42, 1);
 		mprintf(" block ", i);
 		mh4printf(" is: ", (long) &ws);
+		cputln();
+		gotoxy(42, 2);
 		mh4printf(" worksector[workside]: ", (long) worksector[workside]);
 		cputln();
-#endif
+		cgetc;
+// #endif
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
     lcopy((uint32_t) ws, destination_address + i * BLOCKSIZE, BLOCKSIZE);
 	

@@ -30,7 +30,7 @@ typedef struct structsectdirent {
 	DIRENT entry[ENTRIESPERBLOCK];
 } SECTDIRENT;
 
-#define BLOCKSIZE 0x100
+#define BLOCKSIZE 0x100UL  // regions.h needs unsigned long
 #define DIRENTSIZE 32
 
 typedef struct structBAMentry {
@@ -43,7 +43,6 @@ typedef struct structBAMentry {
 } BAMentry;
 
 typedef struct structBAM {
-// struct BAM {
 	unsigned char chntrack;
 	unsigned char chnsector;
     unsigned char version;
@@ -59,7 +58,6 @@ typedef struct structBAM {
 
 #define DATABLOCKS 199   // nbr of file data pages in attic
 typedef struct structdatablock {
-// struct DATABLOCK {
 	unsigned char chntrack;
 	unsigned char chnsector;
 	unsigned char data[254];

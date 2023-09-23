@@ -68,24 +68,26 @@ IF ERRORLEVEL == 1 (
   %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.4,d
   DEL %PRJ%.seq>NUL
 
-  %c1541% -format disk%DATADISK%,id d81 %DATADISK%.d81
-  %c1541% -attach %DATADISK%.d81 -delete %DATADISK%
-  ECHO this is a sequential file for testing.>%DATADISK%.seq
-  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.0
-  ECHO this is a relential file for testing.>%DATADISK%.seq
-  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.1,l80,01,01
-  ECHO this is a sequential file for testing.>%DATADISK%.seq
-  for /l %%i in (1, 1, 1500) do (
-    ECHO trying to make this file %%l times bigger.>>%DATADISK%.seq
-  )
-  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.2,s
-  ECHO this is a sequential file for testing.>%DATADISK%.seq
-  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.3,s
-  ECHO this is a deleted file for testing.>%DATADISK%.seq
-  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.4,d
-  DEL %DATADISK%.seq>NUL
-  for /l %%i in (1, 1, 10) do (
-    %c1541% -attach %DATADISK%.d81 -write %PRJ%.prg %PRJ%.%%i
+  IF NOT EXIST %DATADISK%.ro (
+    %c1541% -format disk%DATADISK%,id d81 %DATADISK%.d81
+    %c1541% -attach %DATADISK%.d81 -delete %DATADISK%
+    ECHO this is a sequential file for testing.>%DATADISK%.seq
+    %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.0
+    ECHO this is a relential file for testing.>%DATADISK%.seq
+    %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.1,l80,01,01
+    ECHO this is a sequential file for testing.>%DATADISK%.seq
+    for /l %%i in (1, 1, 1500) do (
+      ECHO trying to make this file %%l times bigger.>>%DATADISK%.seq
+    )
+    %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.2,s
+    ECHO this is a sequential file for testing.>%DATADISK%.seq
+    %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.3,s
+    ECHO this is a deleted file for testing.>%DATADISK%.seq
+    %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.4,d
+    DEL %DATADISK%.seq>NUL
+    for /l %%i in (1, 1, 10) do (
+      %c1541% -attach %DATADISK%.d81 -write %PRJ%.prg %PRJ%.%%i
+    )
   )
 
   XMEGA65 -besure -8 %PRJ%.d81 -9 %DATADISK%.d81 -autoload -hdosvirt

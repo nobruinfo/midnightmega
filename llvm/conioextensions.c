@@ -583,9 +583,9 @@ void navi(void)  {
 	    }
       break;
 
-	  case 27:
-	    return;
-      break;
+//	  case 27:
+//	    return;
+//    break;
 	
 	  default:
 	    mprintf("val=", c);

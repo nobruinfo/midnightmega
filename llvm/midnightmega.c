@@ -20,6 +20,7 @@
 
 #include "regions.h"
 #include "conioextensions.h"
+// #include "fileio.h"
 
 char* inputstr = (char*) INPUTSTRPAGE;
 
@@ -30,6 +31,9 @@ int main() {
   unsigned char curdrv = 0;
   unsigned char fd = 0;
   unsigned char readerr = 0;
+
+  // Backup ZP:
+//  lcopy(0, ATTICZPBACKUP, BLOCKSIZE);
 
 /*
 	// Enable MEGA65 features
@@ -63,7 +67,13 @@ int main() {
   bgcolor (COLOUR_BLUE);
 
   clrhome();
-
+/*
+  mh4printf("ATTICZPBACKUP 32addr is: ", ATTICZPBACKUP >> 16);
+  mh4printf(" ", ATTICZPBACKUP & 0xffff);
+  cputln();
+  printf("ATTICZPBACKUP 32addr is: %08lx", (unsigned long) ATTICZPBACKUP);
+  cgetc();
+*/
   messagebox("currently beta, does destroy .d81 and disks!");
   gotoxy(15,7);
   msprintf("Press almost any key to continue.");
@@ -194,6 +204,9 @@ hyppo_setname("DATADISK.D81");
   cputln();
   cgetc();
   flushkeybuf();
+
+  // Restore ZP:
+//  lcopy(ATTICZPBACKUP, 0, BLOCKSIZE);
 
   asm volatile(
 	"lda #$37\n"  // reinstate previous banking
