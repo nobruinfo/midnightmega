@@ -139,10 +139,10 @@ unsigned char hyppo_d81attach0(void)  {
     "lda #$00\n"
     "sta %0\n"
 	"jmp donehyp0att%=\n"
-"err0hypatt%=:\n"
+"errhyp0att%=:\n"
     "lda #$FF\n"
 	"sta %0\n"
-"done0hypatt%=:\n"
+"donehyp0att%=:\n"
     "nop\n"
 	: "=r"(retval) : : "a", "x");
   return retval;

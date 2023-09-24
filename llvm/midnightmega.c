@@ -20,7 +20,7 @@
 
 #include "regions.h"
 #include "conioextensions.h"
-// #include "fileio.h"
+#include "nav.h"
 
 // char* inputstr = (char*) INPUTSTRPAGE;
 
@@ -165,8 +165,8 @@ hyppo_setname("DATADISK.D81");
   lcopy(SECTBUFUPPER, ATTICFILEBUFFER, BLOCKSIZE);
 */
 
-  readblockchain(ATTICDIRENTBUFFER, DIRENTBLOCKS, 40, 3);
-  readblockchain(ATTICFILEBUFFER, DATABLOCKS, 45, 8);
+  readblockchain(ATTICDIRENTBUFFER, DIRENTBLOCKS, 1, 40, 3);
+  readblockchain(ATTICFILEBUFFER, DATABLOCKS, 1, 45, 8);
   msprintf("dirent in attic done.");
   cgetcd();
 #endif
@@ -198,7 +198,6 @@ hyppo_setname("DATADISK.D81");
 #endif
 
   navi(0);
-//  unsigned char e = getdirent();
 
   msprintf("Have fun with your Mega65!");
   cputln();

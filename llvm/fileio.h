@@ -63,21 +63,21 @@ typedef struct structdatablock {
 	unsigned char data[254];
 } DATABLOCK;
 
-#define DRIVE     1
 #define BAMTRACK 40
 #define BAMSECT   1
 #define DIRENTTRACK 40
 #define DIRENTSECT   3
 
 void readblockchain(uint32_t destination_address, // attic RAM
-                    unsigned char maxblocks,
+                    unsigned char maxblocks, unsigned char drive,
                     unsigned char track, unsigned char sector);
-void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector);
+void findnextBAMtracksector(unsigned char drive,
+                            unsigned char * nexttrack, unsigned char * nextsector);
 void writeblockchain(uint32_t source_address, // attic RAM
-                    unsigned char maxblocks,
+                    unsigned char maxblocks, unsigned char drive,
 					unsigned char * starttrack, unsigned char * startsector);
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i);
 DIRENT* getdirententry(unsigned char entry);
-unsigned char getdirent(void);
-void writenewdirententry(DIRENT* newds);
-void deletedirententry(unsigned char entry);
+unsigned char getdirent(unsigned char drive);
+void writenewdirententry(unsigned char drive, DIRENT* newds);
+void deletedirententry(unsigned char drive, unsigned char entry);

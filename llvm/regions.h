@@ -12,9 +12,9 @@
 
 #define DIRENTPAGELOW  0x1A00  // used by DOS and Hyppo
 #define DIRENTPAGEHIGH 0x1B00
-#define FILENAMEPAGE   0x1C00
+#define FILENAMEPAGE   0x1C00  // used by nav
 
-#define MIDNIGHTLEFTPAGE   0x1D00
+#define MIDNIGHTLEFTPAGE   0x1D00  // used by nav
 #define MIDNIGHTRIGHTPAGE  0x1E00
 
 // visit the attic mega65-book.pdf#229

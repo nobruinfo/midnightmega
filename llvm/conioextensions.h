@@ -58,10 +58,3 @@ void mcbox(unsigned char left, unsigned char top, unsigned char right, unsigned 
     unsigned char color, unsigned char style, unsigned char clear, unsigned char shadow);
 void messagebox(char* message);
 char* inputbox(char* inputstr, char* message);
-
-void listboxd81(unsigned char x, unsigned char y,
-             unsigned char currentitem, unsigned char nbritems);
-void listbox(unsigned char x, unsigned char y,
-             unsigned char currentitem, unsigned char nbritems);
-unsigned char d81navi(unsigned char side);
-void navi(unsigned char side);

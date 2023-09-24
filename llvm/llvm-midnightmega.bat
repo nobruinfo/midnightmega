@@ -22,7 +22,7 @@ set LLVMDUMP=%LLVM_HOME%\bin\llvm-objdump.exe
 SET libcfilesdir=..\..\mega65-libc\src
 SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
-SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c
+SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
 SET opts=--include-directory=.\include
 SET opts=%opts% --include-directory=..\..\mega65-libc\include
