@@ -129,7 +129,6 @@ fnamehi = (unsigned int)hyppofn->name >> 8;
 unsigned char hyppo_d81attach0(void)  {
 	unsigned char retval;
 
-  // ; Get the current drive
   asm volatile(
 	"ldx #$00\n"    // shouldn't be necessary
     "lda #$40\n"
@@ -151,7 +150,6 @@ unsigned char hyppo_d81attach0(void)  {
 unsigned char hyppo_d81attach1(void)  {
 	unsigned char retval;
 
-  // ; Get the current drive
   asm volatile(
 	"ldx #$00\n"    // shouldn't be necessary
     "lda #$46\n"
@@ -195,7 +193,6 @@ void hyppo_loadfile(__zp unsigned long addr) {
 unsigned char hyppo_opendir(void)  {
 	unsigned char retval;
 
-  // ; Get the current drive
   asm volatile(
 	"ldx #$00\n"    // shouldn't be necessary
     "lda #$12\n"

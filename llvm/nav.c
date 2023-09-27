@@ -69,7 +69,8 @@ unsigned char getd81(void)  {
 
 #define DIRENTENTRIES 22
 unsigned char s[DOSFILENAMEANDTYPELEN];
-void listbox(unsigned char x, unsigned char y,
+void listbox(unsigned char iscurrent,
+             unsigned char x, unsigned char y,
              unsigned char currentitem, unsigned char nbritems)  {
   unsigned int n;
   unsigned char i;
@@ -102,8 +103,8 @@ void listbox(unsigned char x, unsigned char y,
 	s[i++] = ' ';
 	
 	s[i++] = 0;
-	if (n + ofs == currentitem)  revers(1);
-	else                   revers(0);
+	if ((n + ofs == currentitem) && iscurrent)  revers(1);
+	else  revers(0);
 	cputsxy(x, y + n, s);  // print what we've got so far
 	// i = i + sprintf((char*) &s[i], "%4d", ds->size);
 	csputdec(ds->size, 5, 0);
@@ -120,6 +121,81 @@ void listbox(unsigned char x, unsigned char y,
   cputln();
 }
 
+void shortcuts()  {
+  // @@ todo: Modifier key display
+  textcolor(COLOUR_WHITE);
+  mcputsxy(0, 24, "1");
+  textcolor(COLOUR_GREY);
+  revers(1);
+  msprintf("Help  ");
+  revers(0);
+
+  textcolor(COLOUR_WHITE);
+  msprintf(" 2");
+  textcolor(COLOUR_CYAN);
+  revers(1);
+  msprintf("Mount ");
+  revers(0);
+
+  textcolor(COLOUR_WHITE);
+  msprintf(" 3");
+  textcolor(COLOUR_GREY);
+  revers(1);
+  msprintf("View  ");
+  revers(0);
+
+  textcolor(COLOUR_WHITE);
+  msprintf(" 4");
+  textcolor(COLOUR_GREY);
+  revers(1);
+  msprintf("Edit  ");
+  revers(0);
+
+  textcolor(COLOUR_WHITE);
+  msprintf(" 5");
+  textcolor(COLOUR_CYAN);
+  revers(1);
+  msprintf("Copy  ");
+  revers(0);
+
+  textcolor(COLOUR_WHITE);
+  msprintf(" 6");
+  textcolor(COLOUR_GREY);
+  revers(1);
+  msprintf("RenMov");
+  revers(0);
+
+  textcolor(COLOUR_WHITE);
+  msprintf(" 7");
+  textcolor(COLOUR_GREY);
+  revers(1);
+  msprintf("Mkdir ");
+  revers(0);
+
+  textcolor(COLOUR_WHITE);
+  msprintf(" 8");
+  textcolor(COLOUR_CYAN);
+  revers(1);
+  msprintf("Delete");
+  revers(0);
+
+  textcolor(COLOUR_WHITE);
+  msprintf(" 9");
+  textcolor(COLOUR_GREY);
+  revers(1);
+  msprintf("Menu  ");
+  revers(0);
+
+  textcolor(COLOUR_WHITE);
+  msprintf(" 10");
+  textcolor(COLOUR_CYAN);
+  revers(1);
+  msprintf("Quit  ");
+  revers(0);
+
+  textcolor(COLOUR_CYAN);
+}
+
 unsigned char d81navi(unsigned char side)  {
   char c;
   char pos = 0;
@@ -131,7 +207,9 @@ unsigned char d81navi(unsigned char side)  {
     if (pos >= entries || filelist[pos][0] == 0)  pos = 0;
     mcbox(8, 3, 8 + 65, 3 + 20, COLOUR_CYAN, BOX_STYLE_INNER, 1, 1);
     revers(1);
-    mcputsxy(12, 3, " Choose disk image file: ");
+    mcputsxy(12, 3, " Choose disk image file for drive ");
+	csputdec(midnight[side]->drive, 0, 0);
+    msprintf(": ");
     revers(0);
     listboxd81(10, 5, pos, entries);
     c = cgetc();
@@ -144,9 +222,16 @@ unsigned char d81navi(unsigned char side)  {
       break;
 
 	  case 13: // return
-	    // @@ todo choose drive
-		hyppo_setname((char *) filelist[pos]);
-		attachresult = (midnight[side]->drive ? hyppo_d81attach1() : hyppo_d81attach0());
+	    // @@ todo: choose drive
+		if (midnight[side]->drive)  {
+		  hyppo_setname((char *) filelist[pos]);
+		  attachresult = hyppo_d81attach1();
+		} else {
+		  hyppo_setname((char *) filelist[pos]);
+		  attachresult = hyppo_d81attach0();
+		}
+//		hyppo_setname((char *) filelist[pos]);
+//		attachresult = (midnight[side]->drive ? hyppo_d81attach1() : hyppo_d81attach0());
 		if (attachresult != 0)  {
 		  messagebox("mount failed");
 		  cgetc();
@@ -176,6 +261,7 @@ void navi(unsigned char side)  {
   unsigned char leftx;
   unsigned char starttrack;
   unsigned char startsector;
+  unsigned char i;
   DIRENT* ds;
   
   // @@ test
@@ -185,20 +271,32 @@ void navi(unsigned char side)  {
   // title of mcbox is .d81 file name, cannot be read at startup:
   strcpy((char *) midnight[0]->curfile, (char *) "already mounted");
   strcpy((char *) midnight[1]->curfile, (char *) "already mounted");
-  midnight[side]->entries = getdirent(midnight[side]->drive);
-  midnight[side]->pos = 0;
+  midnight[0]->pos = 0;
+  midnight[1]->pos = 0;
   while (1)  {
-    if (midnight[side]->pos > midnight[side]->entries)  {
-      midnight[side]->pos = midnight[side]->entries;
+    for (i = 0; i <= 1; i++)  {
+      midnight[i]->entries = getdirent(midnight[i]->drive);
+      if (midnight[i]->pos > midnight[i]->entries)  {
+        midnight[i]->pos = midnight[i]->entries;
+      }
+	  leftx = i * 40;
+      mcbox(leftx, 0, leftx + 39, 0 + 23, COLOUR_CYAN, BOX_STYLE_INNER, 1, 0);
+      revers(1);
+      mcputsxy(leftx + 2, 0, " ");  // @@ to be string optimised as in listbox()
+	  msprintf("drv:");
+      csputdec(midnight[i]->drive, 0, 0);
+	  cputc(' ');
+      mcputsxy(leftx + 10, 0, " ");
+      msprintf((char *) midnight[i]->curfile);
+	  cputc(' ');
+      revers(0);
+      listbox((side == i), leftx + 1, 1, midnight[i]->pos, midnight[i]->entries);
 	}
-	leftx = side * 40;
-    mcbox(leftx, 0, leftx + 39, 0 + 23, COLOUR_CYAN, BOX_STYLE_INNER, 1, 0);
-    revers(1);
-    mcputsxy(leftx + 2, 0, " ");
-	msprintf((char *) midnight[side]->curfile);
-	cputc(' ');
-    revers(0);
-    listbox(leftx + 1, 1, midnight[side]->pos, midnight[side]->entries);
+
+	shortcuts();
+	// @@ as long as dirents are not kept seperately in Attic RAM:
+	midnight[side]->entries = getdirent(midnight[side]->drive);
+
     c = cgetc();
     switch (c) {
 	  case 145: // Crsrup
@@ -267,6 +365,12 @@ void navi(unsigned char side)  {
       break;
 
 	  case 13: // return
+	  case 0xf1: // unused F keys
+	  case 0xf3:
+	  case 0xf4:
+	  case 0xf6:
+	  case 0xf7:
+	  case 0xf9:
 		messagebox("not yet implemented");
 		cgetc();
 /* DESTRUCTIVE test:
@@ -294,7 +398,7 @@ void navi(unsigned char side)  {
 	
 	  default:
 	    mprintf("val=", c);
-		cputc('  ');
+		cputc(' ');
     }
   }
 }

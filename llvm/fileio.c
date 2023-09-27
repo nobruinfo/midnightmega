@@ -543,6 +543,48 @@ void writeblockchain(uint32_t source_address, // attic RAM
   }
 }
 
+// not physically deleting but BAM deallocating:
+void deleteblockchain(unsigned char drive,
+                      unsigned char track, unsigned char sector)  {
+  unsigned char nexttrack;
+  unsigned char nextsector;
+  BAM* bs;
+
+  _miniInit();
+  BAMside = GetWholeSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
+  bs = BAMsector[BAMside];
+
+  nexttrack = track;
+  nextsector = sector;
+#ifdef DEBUG
+		mprintf("nexttrack ", nexttrack);
+		mprintf(" nextsector ", nextsector);
+		cputln();
+#endif
+  while (nexttrack > 0)  {
+    workside = GetWholeSector(worksectorasBAM[0], drive, nexttrack, nextsector);
+    DATABLOCK* ws = worksector[workside];
+	BAMSectorUpdate(BAMsector[BAMside], nexttrack, nextsector, 0); // 0=free up
+//#ifdef DEBUG
+		gotoxy(42, 0);
+		mprintf("nexttrack ", nexttrack);
+		mprintf(" nextsector ", nextsector);
+		mprintf(" workside ", workside);
+		cputln();
+		gotoxy(42, 1);
+		mh4printf(" block is: ", (long) &ws);
+		cputln();
+		gotoxy(42, 2);
+		mh4printf(" worksector[workside]: ", (long) worksector[workside]);
+		cputln();
+		cgetc();
+//#endif
+	nexttrack = ws->chntrack;
+	nextsector = ws->chnsector;
+  }
+  PutWholeSector(BAMsector[BAMside], BAMside, drive, BAMTRACK, BAMSECT);
+}
+
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i)  {
   unsigned char t = (unsigned char) (type & 0xf);
 
@@ -751,7 +793,8 @@ void deletedirententry(unsigned char drive, unsigned char entry)  {
 #endif
 	}
 	if (i == entry)  {
-	  ds->type = VAL_DOSFTYPE_DEL + (ds->type & ~0xf);
+	  //                           also clear upper bits:
+	  ds->type = VAL_DOSFTYPE_DEL; // + (ds->type & ~0xf);
 	  lcopy((uint32_t) ds, ATTICDIRENTBUFFER + i * DIRENTSIZE, DIRENTSIZE);
 #ifdef DEBUG
 	  mprintf("PutWholeSector i=", i);
@@ -767,6 +810,7 @@ void deletedirententry(unsigned char drive, unsigned char entry)  {
 	  lcopy(ATTICDIRENTBUFFER + i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
 	        BLOCKDATALOW, BLOCKSIZE);
 	  PutWholeSector((BAM *) worksectorasBAM[0], sector % 2, drive, track, sector);
+	  deleteblockchain(drive, ds->track, ds->sector);
 #ifdef DEBUG
 	  msprintf("PutWholeSector done");
 	  cputln();

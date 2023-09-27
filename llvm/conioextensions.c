@@ -316,7 +316,7 @@ void messagebox(char* message)  {
 
   mcbox(10, 4, 70, 9, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
   
-  gotoxy(12, 5);
+  gotoxy(12, 6);
   msprintf(message);
   gotoxy(1, 10);
 }

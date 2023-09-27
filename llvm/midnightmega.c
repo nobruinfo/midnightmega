@@ -74,8 +74,12 @@ int main() {
   printf("ATTICZPBACKUP 32addr is: %08lx", (unsigned long) ATTICZPBACKUP);
   cgetc();
 */
-  messagebox("currently beta, does destroy .d81 and disks!");
-  gotoxy(15,7);
+  messagebox("    is currently beta and does destroy .d81 and disks!");
+  revers(1);
+  mcputsxy(14, 4, " Midnight Mega ");
+  mcputsxy(40, 4, " The Mega65 file commander ");
+  revers(0);
+  gotoxy(22,7);
   msprintf("Press almost any key to continue.");
   cgetc();
 

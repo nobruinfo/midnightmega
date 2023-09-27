@@ -68,6 +68,7 @@ typedef struct structdatablock {
 #define DIRENTTRACK 40
 #define DIRENTSECT   3
 
+void BAMSectorUpdate(/*struct*/ BAM* BAMsector, char track, char sector, char set);
 void readblockchain(uint32_t destination_address, // attic RAM
                     unsigned char maxblocks, unsigned char drive,
                     unsigned char track, unsigned char sector);
@@ -76,6 +77,8 @@ void findnextBAMtracksector(unsigned char drive,
 void writeblockchain(uint32_t source_address, // attic RAM
                     unsigned char maxblocks, unsigned char drive,
 					unsigned char * starttrack, unsigned char * startsector);
+void deleteblockchain(unsigned char drive,
+                      unsigned char track, unsigned char sector);
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i);
 DIRENT* getdirententry(unsigned char entry);
 unsigned char getdirent(unsigned char drive);
