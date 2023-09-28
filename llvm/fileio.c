@@ -35,7 +35,7 @@ DIRENT direntryleft[NBRENTRIES];
 DIRENT direntryright[NBRENTRIES];
 SECTDIRENT * direntryblock[2];
 
-unsigned char workside;
+// unsigned char workside;
 unsigned char BAMside;
 unsigned char direntside;
 
@@ -162,6 +162,29 @@ unsigned char GetWholeSector(BAM* entry, unsigned char drive,
 #endif
   return side;
 }
+unsigned char GetOneSector(BAM* entry, unsigned char drive,
+                             char track, char sector)  {
+  BAM* ws = entry;   // later to be DATABLOCK*
+  unsigned char side;
+#ifdef DEBUG
+  mprintf("GetOneSector before ReadSector. Track=", track);
+  mprintf(" Sector=", sector);
+  mh4printf(" p=", (long) p);
+  cputln();
+  cgetc();
+#endif
+  side = ReadSector(drive, track, sector);
+
+  if (side > 1)  return side;
+  if (side == 0)  lcopy(SECTBUF,      (uint32_t) ws, BLOCKSIZE);
+  else            lcopy(SECTBUFUPPER, (uint32_t) ws, BLOCKSIZE);
+#ifdef DEBUG
+  mprintf("GetOneSector done. side=", side);
+  cputln();
+  cgetc();
+#endif
+  return side;
+}
 unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
                     unsigned char drive, char track, char sector)  {
   BAM* ws = entry;   // later to be DATABLOCK*
@@ -190,6 +213,34 @@ unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
   cgetcd();
   return WriteSector(drive, track, sector - side);
 }
+unsigned char PutOneSector(BAM* entry, unsigned char drive, 
+                           char track, char sector)  {
+  BAM* ws = entry;   // later to be DATABLOCK*
+
+  unsigned char side = sector % 2;
+  
+  // Now first read the state from the disk, because only one of
+  // the two logical sectors will be overwritten:
+  ReadSector(drive, track, sector);
+  
+  if (side == 0)  {
+//  clrhome();
+    mprintfd("PutOneSector before lower buffer. Track=", track);
+    mprintfd(" Sector=", sector);
+    cputlnd();
+    cgetcd();
+    lcopy((uint32_t) ws, SECTBUF, BLOCKSIZE);
+  } else {
+    clrhomed();
+    mprintfd("PutOneSector before upper buffer. Track=", track);
+    mprintfd(" Sector=", sector);
+    cputlnd();
+    lcopy((uint32_t) ws, SECTBUFUPPER, BLOCKSIZE);
+  }
+  msprintfd("PutOneSector done. Returning while WriteSector.");
+  cgetcd();
+  return WriteSector(drive, track, sector - side);
+}
 
 unsigned char driveled(unsigned char errorcode)  {
 	// Turn on just the LED, this causes it to blink:
@@ -198,12 +249,22 @@ unsigned char driveled(unsigned char errorcode)  {
 }
 
 // this expects data in sector buffer:
-void BAMSectorUpdate(/*struct*/ BAM* BAMsector, char track, char sector, char set) {
+void BAMSectorUpdate(BAM* BAMsector, BAM* BAMsector2, char track, char sector, char set) {
   unsigned char bitshifter = 1;
 
 //  BAMsector += $100;  // @@@@@ dirty test
 //  printf("BAMSectorUpdate BAMsector is: %lx\n", (unsigned long) BAMsector);
 
+  // next BAM sector of two in total:
+  if (track > 40)  {
+    track -= 40;
+	BAMsector = BAMsector2;
+  }
+		gotoxy(42, 20);
+		mh4printf("BAMsector ", (long) BAMsector);
+		cputln();
+		cgetc();
+  
   track--;  // access array zero based
   if (set)  {  // if set clear alloc bit below to allocate:
     if (sector < 8)  {
@@ -243,103 +304,6 @@ void BAMSectorUpdate(/*struct*/ BAM* BAMsector, char track, char sector, char se
   }
 }
 
-void testsectors(unsigned char drive, unsigned char track, unsigned char sector)  {
-  unsigned char i;
-// lfill(BLOCKBAMLOW, 0xaa, 4 * 0x100);
-  _miniInit();
-//  track = BAMTRACK;
-//  sector = BAMSECT;
-//  _miniReadNextSector(drive);
-  direntside = GetWholeSector((BAM *) direntryblock[0], drive, DIRENTTRACK, DIRENTSECT);
-  SECTDIRENT* ds = direntryblock[direntside];
-  for (i = 0; i < ENTRIESPERBLOCK; i++)  {
-	if (ds->entry[i].track > 0)  {
-		mprintf("direntry ", i);
-		mh4printf(" is: ", (long) &ds->entry[i]);
-		memcpy(dosfilename, ds->entry[i].name, DOSFILENAMELEN);
-		dosfilename[DOSFILENAMELEN] = 0; // proper null termination
-		msprintf(" name "); msprintf((char *) dosfilename);
-		mprintf(" chntrk ", ds->entry[i].chntrack);
-		mprintf(" chnsect ", ds->entry[i].chnsector);
-		mhprintf(" type ", ds->entry[i].type);
-		mprintf(" trk ", ds->entry[i].track);
-		mprintf(" sect ", ds->entry[i].sector);
-		mprintf(" size ", ds->entry[i].size);
-		mhprintf(" access ", ds->entry[i].access);
-		cputln();
-		cgetc();
-	}
-  }
-  msprintf("Dirlist done.");
-  cgetc();
-  
-  clrhomed();
-  msprintfd("Before GetWholeSector.");
-  cgetcd();
-  BAMside = GetWholeSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
-  msprintfd("GetWholeSector done.");
-//  for (i = 0; i < 40; i++)  {
-//	_miniReadNextSector(drive);
-    clrhomed();
-	msprintfd("Begin GetWholeSector worksectorasBAM. ");
-	workside = GetWholeSector(worksectorasBAM[0], drive, track, sector);
-    msprintfd("worksectorasBAM done.");
-	cputlnd();
-	DATABLOCK* ws = worksector[workside];
-	ws->chntrack = track;
-	ws->chnsector = sector + 1;
-	ws->data[0] = track;
-	ws->data[1] = sector + 1;
-	ws->data[252]=0xEE; // test highest byte
-	ws->data[253]=0xAA; // test highest byte
-    mprintfd("track: ", track);
-    mprintfd(" ws->data[1]: ", ws->data[1]);
-	cputlnd();
-	cgetcd();
-	BAMSectorUpdate(BAMsector[BAMside], track, i, 1); // 1=allocate
-	// printf("testsectors: sector %d  workside %d ",
-    //        (int) i, (int) workside);
-    msprintfd("BAMSectorUpdate done.");
-	cputlnd();
-    mprintfd("testsectors: sector ", i);
-    mprintfd(" workside ", workside);
-	// printf("bytes %02x %02x %02x %02x\n", PEEK(0x4100),
-	//  	 PEEK(0x4101), PEEK(0x41FE), PEEK(0x41FF));
-    mhprintfd(" bytes ", PEEK(BLOCKBAMHIGH));
-    mhprintfd(" ",    PEEK(BLOCKBAMHIGH + 1));
-    mhprintfd(" ",    PEEK(BLOCKBAMHIGH + 0xFE));
-    mhprintfd(" ",    PEEK(BLOCKBAMHIGH + 0xFF));
-	cputlnd();
-	cgetcd();
-
-	// printf("testsectors: %04x %04x %04x %04x\n", (unsigned int) PEEK(0x4000),
-	//  	 PEEK(0x4001), PEEK(0x4002), PEEK(0x4003));
-    mhprintfd(" testsectors: ", PEEK(BLOCKBAMLOW));
-    mhprintfd(" ",    PEEK(BLOCKBAMLOW + 1));
-    mhprintfd(" ",    PEEK(BLOCKBAMLOW + 2));
-    mhprintfd(" ",    PEEK(BLOCKBAMLOW + 3));
-	cputlnd();
-	cgetcd();
-//	printf("entry: %04x %04x %04x %04x\n", (unsigned int) PEEK($4016),
-//		 PEEK($4017), PEEK($4018), PEEK($4019));
-	PutWholeSector(worksectorasBAM[workside], workside, drive, track, sector);
-    msprintfd("PutWholeSector done.");
-	cputlnd();
-	cgetcd();
-	//           drive track sector:
-//	WriteSector(drive, track, sector);
-//  }
-  PutWholeSector(BAMsector[BAMside], BAMside, drive, BAMTRACK, BAMSECT);
-//  WriteSector(drive, BAMTRACK, BAMSECT);
-  // printf("testsectors done, track %d  sector %d, BAMside %d\n\n",
-  //       (int) track, (int) sector, (int) BAMside);
-  mprintfd("testsectors done, track ", track);
-  mprintfd(" sector ", sector);
-  mprintfd(" BAMside ", BAMside);
-  cputlnd();
-  cgetcd();
-}
-
 void readblockchain(uint32_t destination_address, // attic RAM
                     unsigned char maxblocks, unsigned char drive,
                     unsigned char track, unsigned char sector)  {
@@ -356,22 +320,22 @@ void readblockchain(uint32_t destination_address, // attic RAM
 		cputln();
 #endif
   for (i = 0; i < maxblocks; i++)  {
-    workside = GetWholeSector(worksectorasBAM[0], drive, nexttrack, nextsector);
-    DATABLOCK* ws = worksector[workside];
+    /* workside = */ GetOneSector(worksectorasBAM[0], drive, nexttrack, nextsector);
+    DATABLOCK* ws = worksector[0];
 	nexttrack = ws->chntrack;
 	nextsector = ws->chnsector;
 #ifdef DEBUG
 		gotoxy(42, 0);
 		mprintf("nexttrack ", nexttrack);
 		mprintf(" nextsector ", nextsector);
-		mprintf(" workside ", workside);
+//		mprintf(" workside ", workside);
 		cputln();
 		gotoxy(42, 1);
 		mprintf(" block ", i);
 		mh4printf(" is: ", (long) &ws);
 		cputln();
 		gotoxy(42, 2);
-		mh4printf(" worksector[workside]: ", (long) worksector[workside]);
+		mh4printf(" worksector[0]: ", (long) worksector[0]);
 		cputln();
 		cgetc();
 #endif
@@ -396,11 +360,12 @@ void findnextBAMtracksector(unsigned char drive,
   BAM* bs;
 
   _miniInit();
-  BAMside = GetWholeSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
-  bs = BAMsector[BAMside];
+  /* BAMside = */ GetOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
+  bs = BAMsector[0];
+  GetOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
 
   // access track array zero based
-  for (track = 0; track <= 39; track++)  {
+  for (track = 0; track <= 79; track++)  {
     for (sector = 0; sector <= 39; sector++)  {
       if (sector < 8)  {
         if (bs->entry[track].alloc1 & (bitshifter << sector))  {
@@ -480,8 +445,9 @@ void findnextBAMtracksector(unsigned char drive,
   track++;  // access array zero based, but tracks are 1..80
 
   if (done)  {
-    BAMSectorUpdate(BAMsector[BAMside], track, sector, 1); // 1=allocate
-    PutWholeSector(BAMsector[BAMside], BAMside, drive, BAMTRACK, BAMSECT);
+    BAMSectorUpdate(BAMsector[0], BAMsector[1], track, sector, 1); // 1=allocate
+    PutOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
+    PutOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
   
     // return values:
     *nexttrack  = track;
@@ -503,7 +469,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
   unsigned char sector;
 
   _miniInit();
-  DATABLOCK* ws = worksector[workside];
+  DATABLOCK* ws = worksector[0];
 
   // get a first sector anyway:
   findnextBAMtracksector(drive, &track, &sector);
@@ -517,10 +483,10 @@ void writeblockchain(uint32_t source_address, // attic RAM
 #ifdef DEBUG
 		mprintf("nexttrack ", nexttrack);
 		mprintf(" nextsector ", nextsector);
-		mprintf(" workside ", workside);
+//		mprintf(" workside ", workside);
 		mprintf(" block ", i);
 		mh4printf(" is: ", (long) &ws);
-		mh4printf(" worksector[workside]: ", (long) worksector[workside]);
+		mh4printf(" worksector[0]: ", (long) worksector[0]);
 		cputln();
 #endif
 
@@ -531,7 +497,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
       ws->chnsector = nextsector;
 	}
 
-	PutWholeSector((BAM *) ws, sector % 2, drive, track, sector);
+	PutOneSector((BAM *) ws, drive, track, sector);
 	if (ws->chntrack == 0)  break;
     track = nexttrack;
     sector = nextsector;
@@ -551,8 +517,9 @@ void deleteblockchain(unsigned char drive,
   BAM* bs;
 
   _miniInit();
-  BAMside = GetWholeSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
-  bs = BAMsector[BAMside];
+  /* BAMside = */ GetOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
+  bs = BAMsector[0];
+  GetOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
 
   nexttrack = track;
   nextsector = sector;
@@ -562,27 +529,28 @@ void deleteblockchain(unsigned char drive,
 		cputln();
 #endif
   while (nexttrack > 0)  {
-    workside = GetWholeSector(worksectorasBAM[0], drive, nexttrack, nextsector);
-    DATABLOCK* ws = worksector[workside];
-	BAMSectorUpdate(BAMsector[BAMside], nexttrack, nextsector, 0); // 0=free up
+    /* workside = */ GetOneSector(worksectorasBAM[0], drive, nexttrack, nextsector);
+    DATABLOCK* ws = worksector[0];
+	BAMSectorUpdate(BAMsector[0], BAMsector[1], nexttrack, nextsector, 0); // 0=free up
 //#ifdef DEBUG
 		gotoxy(42, 0);
 		mprintf("nexttrack ", nexttrack);
 		mprintf(" nextsector ", nextsector);
-		mprintf(" workside ", workside);
+//		mprintf(" workside ", workside);
 		cputln();
 		gotoxy(42, 1);
 		mh4printf(" block is: ", (long) &ws);
 		cputln();
 		gotoxy(42, 2);
-		mh4printf(" worksector[workside]: ", (long) worksector[workside]);
+		mh4printf(" worksector[0]: ", (long) worksector[0]);
 		cputln();
 		cgetc();
 //#endif
 	nexttrack = ws->chntrack;
 	nextsector = ws->chnsector;
   }
-  PutWholeSector(BAMsector[BAMside], BAMside, drive, BAMTRACK, BAMSECT);
+  PutOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
+  PutOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
 }
 
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i)  {
@@ -709,7 +677,7 @@ void writenewdirententry(unsigned char drive, DIRENT* newds2)  {
       max += ENTRIESPERBLOCK; // more attic pages
 	  track = ds->chntrack;  // chain for where to write dirent sector
 	  sector = ds->chnsector;
-	  mprintfd("PutWholeSector next block at i=", i);
+	  mprintfd("writenewdirententry next block at i=", i);
 	  cputlnd();
 	  cgetcd();
 	}
@@ -718,7 +686,7 @@ void writenewdirententry(unsigned char drive, DIRENT* newds2)  {
 	  newds->chnsector = ds->chnsector;
 	  lcopy((uint32_t) newds, ATTICDIRENTBUFFER + i * DIRENTSIZE, DIRENTSIZE);
 #ifdef DEBUG
-	  mprintf("PutWholeSector i=", i);
+	  mprintf("writenewdirententry i=", i);
 	  mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
 	  mprintf(" side=", sector % 2);
 	  mprintf(" track=", track);
@@ -732,9 +700,9 @@ void writenewdirententry(unsigned char drive, DIRENT* newds2)  {
 #endif
 	  lcopy(ATTICDIRENTBUFFER + i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
 	        BLOCKDATALOW, BLOCKSIZE);
-	  PutWholeSector((BAM *) worksectorasBAM[0], sector % 2, drive, track, sector);
+	  PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
 #ifdef DEBUG
-	  msprintf("PutWholeSector done");
+	  msprintf("writenewdirententry done");
 	  cputln();
 	  cgetc();
 #endif
@@ -787,7 +755,7 @@ void deletedirententry(unsigned char drive, unsigned char entry)  {
 	  track = ds->chntrack;  // chain for where to write dirent sector
 	  sector = ds->chnsector;
 #ifdef DEBUG
-	  mprintf("PutWholeSector next block at i=", i);
+	  mprintf("deletedirententry next block at i=", i);
 	  cputln();
 	  cgetc();
 #endif
@@ -797,7 +765,7 @@ void deletedirententry(unsigned char drive, unsigned char entry)  {
 	  ds->type = VAL_DOSFTYPE_DEL; // + (ds->type & ~0xf);
 	  lcopy((uint32_t) ds, ATTICDIRENTBUFFER + i * DIRENTSIZE, DIRENTSIZE);
 #ifdef DEBUG
-	  mprintf("PutWholeSector i=", i);
+	  mprintf("deletedirententry i=", i);
 	  mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
 	  mprintf(" side=", sector % 2);
 	  mprintf(" track=", track);
@@ -809,10 +777,10 @@ void deletedirententry(unsigned char drive, unsigned char entry)  {
 #endif
 	  lcopy(ATTICDIRENTBUFFER + i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
 	        BLOCKDATALOW, BLOCKSIZE);
-	  PutWholeSector((BAM *) worksectorasBAM[0], sector % 2, drive, track, sector);
+	  PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
 	  deleteblockchain(drive, ds->track, ds->sector);
 #ifdef DEBUG
-	  msprintf("PutWholeSector done");
+	  msprintf("deletedirententry done");
 	  cputln();
 	  cgetc();
 #endif

@@ -4,6 +4,16 @@ A simple file commander and disk mounting programme.
 
 Work in progress.
 
+# installation
+
+Try only with **backed up** disks and .d81 ! The current state
+of this development will **eat** your files.
+
+* Goto branch `development` and dive into folder `llvm`.
+* Use `MOUNT "midnightmega.d81"` as programme disk.
+* Optionally use `MOUNT "datadisk.d81",U9` as torture disk. Or
+  use copies of your own disks.
+
 # subfolders
 
 ## kickc
@@ -51,11 +61,13 @@ more cc65 style to llvm.
 
 # tasks
 
-* proof of concept accessing .d81 mount handling
+* ✓ proof of concept accessing .d81 mount handling
+* ability to use the same drive number on both sides of the commander
+  to copy files onto the same disk
 * proof of concept abstraction layer real/virtual floppy image
 * proof of concept reading floppy (sub-) directories
-* proof of concept reading files, sectors, tracks
-* proof of concept writing files, sectors, tracks
+* ✓ proof of concept reading files, sectors, tracks
+* ✓ proof of concept writing files, sectors, tracks
 * refactoring for code runtime optimisation
 * test data copy by exceeding the maximum number of allowed blocks
 * test unmounted drives and other error handling
@@ -87,11 +99,11 @@ __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
   entries not supporting the disk name block at track 40 sector 0.
 * The yet state of development only uses the left file list so *copy*
   actually only duplicates files on the same disk
-* BAM is only supported for one sector, tracks 41 to 80 therefore not
-  yet covered.
+* ✓ ~~BAM is only supported for one sector, tracks 41 to 80~~
+  ~~therefore not yet covered.~~
 * BAM is not yet in attic RAM, therefore multiple discs not cached.
-* Handling of DEL type files.
-* ~~reading/writing .d81 always takes two logical sectors at once,~~
+* Improve handling of DEL type files.
+* ✓ ~~reading/writing .d81 always takes two logical sectors at once,~~
   ~~writing of a single one should first read its accompaigning one~~
-* ~~reading the last sector 39 results in side 1 and an invalid next~~
+* ✓ ~~reading the last sector 39 results in side 1 and an invalid next~~
   ~~track~~

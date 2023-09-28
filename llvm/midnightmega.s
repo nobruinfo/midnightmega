@@ -109,7 +109,7 @@ main:                                   ; @main
 .LBB0_4:
 	ldx	#25
 .LBB0_5:
-	stx	g_curScreenH
+	stx	mos8(g_curScreenH)
 	bra	.LBB0_7
 .LBB0_6:                                ;   in Loop: Header=BB0_7 Depth=1
 	stz	54800
@@ -261,8 +261,8 @@ main:                                   ; @main
                                         ;     Child Loop BB0_70 Depth 2
                                         ;     Child Loop BB0_129 Depth 2
                                         ;     Child Loop BB0_138 Depth 2
-                                        ;     Child Loop BB0_180 Depth 2
-                                        ;       Child Loop BB0_181 Depth 3
+                                        ;     Child Loop BB0_179 Depth 2
+                                        ;       Child Loop BB0_180 Depth 3
                                         ;     Child Loop BB0_78 Depth 2
                                         ;     Child Loop BB0_84 Depth 2
                                         ;     Child Loop BB0_87 Depth 2
@@ -279,7 +279,7 @@ main:                                   ; @main
 	ldx	#1
 	lda	#0
 	stz	__rc23
-; %bb.190:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.188:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_57
 .LBB0_19:                               ;   in Loop: Header=BB0_62 Depth=3
 	lda	#1
@@ -349,8 +349,8 @@ main:                                   ; @main
 	lda	#mos8(0)
 	adc	#0
 	sta	__rc3
-	sec
 	lda	#15
+	sec
 	sbc	__rc28
 	stz	__rc4
 	inc
@@ -422,12 +422,12 @@ main:                                   ; @main
 ; %bb.39:                               ;   in Loop: Header=BB0_62 Depth=3
 	ldx	__rc4
 	lda	.Lswitch.table.gettype-1,x
-	ldy	.Lswitch.table.gettype.42-1,x
+	ldy	.Lswitch.table.gettype.20-1,x
 	pha
 	tya
 	ldy	#17
 	sta	(__rc0),y                       ; 1-byte Folded Spill
-	lda	.Lswitch.table.gettype.43-1,x
+	lda	.Lswitch.table.gettype.21-1,x
 	tax
 	txa
 	dey
@@ -569,12 +569,12 @@ main:                                   ; @main
 .LBB0_54:                               ;   in Loop: Header=BB0_62 Depth=3
 	lda	__rc27
 	beq	.LBB0_55
-; %bb.232:                              ;   in Loop: Header=BB0_62 Depth=3
+; %bb.230:                              ;   in Loop: Header=BB0_62 Depth=3
 	jmp	.LBB0_62
 .LBB0_55:                               ;   in Loop: Header=BB0_62 Depth=3
 	cpx	#22
 	beq	.LBB0_56
-; %bb.234:                              ;   in Loop: Header=BB0_62 Depth=3
+; %bb.232:                              ;   in Loop: Header=BB0_62 Depth=3
 	jmp	.LBB0_62
 .LBB0_56:                               ;   in Loop: Header=BB0_57 Depth=2
 	lda	#223
@@ -597,7 +597,7 @@ main:                                   ; @main
 	pla
 	ldy	__rc2
 	bne	.LBB0_57
-; %bb.236:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.234:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_69
 .LBB0_57:                               ;   Parent Loop BB0_18 Depth=1
                                         ; =>  This Loop Header: Depth=2
@@ -667,9 +667,9 @@ main:                                   ; @main
 	pla
 	ldx	#0
 	jsr	mcputsxy
-	ldx	#mos16lo(.L.str.27.52)
+	ldx	#mos16lo(.L.str.27)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.27.52)
+	ldx	#mos16hi(.L.str.27)
 	stx	__rc3
 	jsr	msprintf
 	lda	(__rc20)
@@ -766,7 +766,7 @@ main:                                   ; @main
 	ldx	__rc20
 	cpx	__rc2
 	bne	.LBB0_66
-; %bb.238:                              ;   in Loop: Header=BB0_57 Depth=2
+; %bb.236:                              ;   in Loop: Header=BB0_57 Depth=2
 	jmp	.LBB0_56
 .LBB0_66:                               ;   in Loop: Header=BB0_62 Depth=3
 	lda	__rc27
@@ -775,26 +775,26 @@ main:                                   ; @main
 	adc	__rc26
 	sta	__rc29
 	beq	.LBB0_67
-; %bb.240:                              ;   in Loop: Header=BB0_62 Depth=3
+; %bb.238:                              ;   in Loop: Header=BB0_62 Depth=3
 	jmp	.LBB0_19
 .LBB0_67:                               ;   in Loop: Header=BB0_62 Depth=3
 	ldx	__rc22
 	cpx	__rc24
 	beq	.LBB0_68
-; %bb.242:                              ;   in Loop: Header=BB0_62 Depth=3
+; %bb.240:                              ;   in Loop: Header=BB0_62 Depth=3
 	jmp	.LBB0_19
 .LBB0_68:                               ;   in Loop: Header=BB0_62 Depth=3
 	lda	#0
-; %bb.192:                              ;   in Loop: Header=BB0_62 Depth=3
+; %bb.190:                              ;   in Loop: Header=BB0_62 Depth=3
 	jmp	.LBB0_20
 .LBB0_69:                               ;   in Loop: Header=BB0_18 Depth=1
 	lda	__rc20
 	and	#208
 	ora	#1
 	sta	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.1.43)
+	ldx	#mos16lo(.L.str.1.38)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.1.43)
+	ldx	#mos16hi(.L.str.1.38)
 	stx	__rc3
 	ldx	#24
 	lda	#0
@@ -805,132 +805,132 @@ main:                                   ; @main
 	ora	#44
 	sta	mos8(g_curTextColor)
 	sta	__rc21
-	ldx	#mos16lo(.L.str.2.44)
+	ldx	#mos16lo(.L.str.2.39)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.2.44)
+	ldx	#mos16hi(.L.str.2.39)
 	stx	__rc3
 	jsr	msprintf
 	lda	__rc20
 	ora	#1
 	sta	mos8(g_curTextColor)
 	sta	__rc22
-	ldx	#mos16lo(.L.str.3.45)
+	ldx	#mos16lo(.L.str.3.40)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.3.45)
+	ldx	#mos16hi(.L.str.3.40)
 	stx	__rc3
 	jsr	msprintf
 	lda	__rc20
 	ora	#35
 	sta	mos8(g_curTextColor)
 	sta	__rc23
-	ldx	#mos16lo(.L.str.4.46)
+	ldx	#mos16lo(.L.str.4.41)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.4.46)
+	ldx	#mos16hi(.L.str.4.41)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.5.47)
+	ldx	#mos16lo(.L.str.5.42)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.5.47)
+	ldx	#mos16hi(.L.str.5.42)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc21
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.6.48)
+	ldx	#mos16lo(.L.str.6.43)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.6.48)
+	ldx	#mos16hi(.L.str.6.43)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.7.49)
+	ldx	#mos16lo(.L.str.7)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.7.49)
+	ldx	#mos16hi(.L.str.7)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc21
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.8)
+	ldx	#mos16lo(.L.str.8.44)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.8)
+	ldx	#mos16hi(.L.str.8.44)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.9)
+	ldx	#mos16lo(.L.str.9.45)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.9)
+	ldx	#mos16hi(.L.str.9.45)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc23
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.10)
+	ldx	#mos16lo(.L.str.10.46)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.10)
+	ldx	#mos16hi(.L.str.10.46)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.11)
+	ldx	#mos16lo(.L.str.11.47)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.11)
+	ldx	#mos16hi(.L.str.11.47)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc21
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.12)
+	ldx	#mos16lo(.L.str.12.48)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.12)
+	ldx	#mos16hi(.L.str.12.48)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.13)
+	ldx	#mos16lo(.L.str.13.49)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.13)
+	ldx	#mos16hi(.L.str.13.49)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc21
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.14)
+	ldx	#mos16lo(.L.str.14.50)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.14)
+	ldx	#mos16hi(.L.str.14.50)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.15)
+	ldx	#mos16lo(.L.str.15.51)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.15)
+	ldx	#mos16hi(.L.str.15.51)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc23
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.16)
+	ldx	#mos16lo(.L.str.16.52)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.16)
+	ldx	#mos16hi(.L.str.16.52)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.17)
+	ldx	#mos16lo(.L.str.17.53)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.17)
+	ldx	#mos16hi(.L.str.17.53)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc21
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.18)
+	ldx	#mos16lo(.L.str.18.54)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.18)
+	ldx	#mos16hi(.L.str.18.54)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.19)
+	ldx	#mos16lo(.L.str.19.55)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.19)
+	ldx	#mos16hi(.L.str.19.55)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc23
@@ -979,7 +979,7 @@ main:                                   ; @main
 	stz	54800
 	cmp	#34
 	bcc	.LBB0_72
-; %bb.244:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.242:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_97
 .LBB0_72:                               ;   in Loop: Header=BB0_18 Depth=1
 	tax
@@ -1001,7 +1001,7 @@ main:                                   ; @main
 	beq	.LBB0_74
 ; %bb.75:                               ;   in Loop: Header=BB0_18 Depth=1
 	stz	54800
-; %bb.194:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.192:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_18
 .LBB0_76:                               ;   in Loop: Header=BB0_18 Depth=1
 	ldy	#1
@@ -1010,7 +1010,7 @@ main:                                   ; @main
 	ldx	__rc20
 	cpx	#245
 	beq	.LBB0_77
-; %bb.246:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.244:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_128
 .LBB0_77:                               ;   in Loop: Header=BB0_18 Depth=1
 	lda	(__rc26)
@@ -1064,18 +1064,15 @@ main:                                   ; @main
 	sta	(__rc0),y                       ; 1-byte Folded Spill
 	pla
 	sta	(__rc24)
-	stz	mos8(BAMsector)
+	stz	mos8(BAMsector.0)
 	ldx	#22
-	stx	mos8(BAMsector+1)
-	stz	mos8(BAMsector+2)
+	stx	mos8(BAMsector.0+1)
+	stz	mos8(BAMsector.1)
 	inx
-	stx	mos8(BAMsector+3)
-	stz	mos8(worksector)
+	stx	mos8(BAMsector.1+1)
+	stz	mos8(worksector.0)
 	inx
-	stx	mos8(worksector+1)
-	stz	mos8(worksector+2)
-	ldy	#25
-	sty	mos8(worksector+3)
+	stx	mos8(worksector.0+1)
 	stz	mos8(worksectorasBAM.0)
 	stx	mos8(worksectorasBAM.0+1)
 	stz	mos8(direntryblock.0)
@@ -1092,51 +1089,41 @@ main:                                   ; @main
 	iny
 	sta	(__rc0),y                       ; 1-byte Folded Spill
 	lda	(__rc26)
-	tax
 	stz	53376
-	lda	workside
-	asl
-	sta	__rc2
-	stz	__rc3
-	rol	__rc3
-	lda	#mos8(worksector)
-	clc
-	adc	__rc2
-	sta	__rc2
-	lda	#mos8(0)
-	adc	__rc3
-	sta	__rc3
-	lda	(__rc2)
+	ldx	mos8(worksector.0)
+	pha
+	txa
 	ldy	#16
 	sta	(__rc0),y                       ; 1-byte Folded Spill
-	sta	__rc26
-	ldy	#1
-	lda	(__rc2),y
-	ldy	#15
+	stx	__rc26
+	ldx	mos8(worksector.0+1)
+	txa
+	dey
 	sta	(__rc0),y                       ; 1-byte Folded Spill
-	sta	__rc27
+	stx	__rc27
 	clc
 	lda	__rc0
 	adc	#20
-	sta	__rc20
-	lda	__rc1
-	adc	#0
-	sta	__rc21
-	ldy	__rc20
-	sty	__rc2
-	sta	__rc3
-	clc
-	lda	__rc0
-	adc	#19
 	sta	__rc28
 	lda	__rc1
 	adc	#0
 	sta	__rc29
-	ldy	__rc28
-	sty	__rc4
-	sta	__rc5
-	txa
-	stx	__rc31
+	ldx	__rc28
+	stx	__rc2
+	sta	__rc3
+	clc
+	lda	__rc0
+	adc	#19
+	sta	__rc20
+	lda	__rc1
+	adc	#0
+	sta	__rc21
+	pla
+	ldx	__rc20
+	stx	__rc4
+	ldx	__rc21
+	stx	__rc5
+	sta	__rc31
 	jsr	findnextBAMtracksector
 	lda	(__rc28)
 	ldx	#0
@@ -1149,9 +1136,9 @@ main:                                   ; @main
 	sta	__rc29
 .LBB0_78:                               ;   Parent Loop BB0_18 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
-	clc
 	stx	__rc21
 	txa
+	clc
 	adc	#16
 	sta	__rc10
 	lda	#0
@@ -1174,7 +1161,7 @@ main:                                   ; @main
 	ldx	__rc10
 	lda	#0
 	jsr	lcopy
-	lda	(__rc26)
+	ldx	6144
 	beq	.LBB0_80
 ; %bb.79:                               ;   in Loop: Header=BB0_78 Depth=2
 	ldx	__rc22
@@ -1188,17 +1175,15 @@ main:                                   ; @main
 	lda	__rc31
 	jsr	findnextBAMtracksector
 	lda	(__rc22)
-	sta	(__rc26)
+	sta	6144
+	lda	(__rc24)
+	sta	6145
+	lda	(__rc22)
+	sta	__rc30
 	lda	(__rc24)
 	ldy	#17
 	sta	(__rc0),y                       ; 1-byte Folded Spill
-	ldy	#1
-	sta	(__rc26),y
-	lda	(__rc22)
-	sta	__rc30
 .LBB0_80:                               ;   in Loop: Header=BB0_78 Depth=2
-	lda	__rc28
-	and	#1
 	ldx	__rc26
 	stx	__rc2
 	ldx	__rc27
@@ -1206,30 +1191,29 @@ main:                                   ; @main
 	ldx	__rc29
 	stx	__rc4
 	ldx	__rc28
-	stx	__rc5
-	ldx	__rc31
-	jsr	PutWholeSector
-	lda	(__rc26)
+	lda	__rc31
+	jsr	PutOneSector
+	ldx	6144
 	beq	.LBB0_86
 ; %bb.81:                               ;   in Loop: Header=BB0_78 Depth=2
 	ldx	__rc21
 	inx
+	ldy	__rc30
+	sty	__rc28
 	ldy	#17
 	lda	(__rc0),y                       ; 1-byte Folded Reload
-	sta	__rc28
-	ldy	__rc30
-	sty	__rc29
+	sta	__rc29
 	cpx	#199
 	beq	.LBB0_82
-; %bb.248:                              ;   in Loop: Header=BB0_78 Depth=2
+; %bb.246:                              ;   in Loop: Header=BB0_78 Depth=2
 	jmp	.LBB0_78
 .LBB0_82:                               ;   in Loop: Header=BB0_18 Depth=1
 	lda	__rc30
 	beq	.LBB0_86
 ; %bb.83:                               ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.34)
+	ldx	#mos16lo(.L.str.12)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.34)
+	ldx	#mos16hi(.L.str.12)
 	stx	__rc3
 	jsr	messagebox
 .LBB0_84:                               ;   Parent Loop BB0_18 Depth=1
@@ -1247,7 +1231,7 @@ main:                                   ; @main
 	iny
 	lda	(__rc0),y                       ; 1-byte Folded Reload
 	sta	__rc11
-	ldy	#8
+	ldy	#9
 	lda	(__rc0),y                       ; 1-byte Folded Reload
 	ply
 	sta	(__rc10),y
@@ -1261,7 +1245,7 @@ main:                                   ; @main
 	sta	(__rc0),y                       ; 1-byte Folded Spill
 	ldy	#4
 	phy
-	ldy	#9
+	ldy	#8
 	lda	(__rc0),y                       ; 1-byte Folded Reload
 	ply
 	sta	(__rc10),y
@@ -1273,18 +1257,15 @@ main:                                   ; @main
 	sta	__rc27
 	lda	(__rc26)
 	sta	__rc22
-	stz	mos8(BAMsector)
+	stz	mos8(BAMsector.0)
 	ldx	#22
-	stx	mos8(BAMsector+1)
-	stz	mos8(BAMsector+2)
+	stx	mos8(BAMsector.0+1)
+	stz	mos8(BAMsector.1)
 	inx
-	stx	mos8(BAMsector+3)
-	stz	mos8(worksector)
+	stx	mos8(BAMsector.1+1)
+	stz	mos8(worksector.0)
 	inx
-	stx	mos8(worksector+1)
-	stz	mos8(worksector+2)
-	ldy	#25
-	sty	mos8(worksector+3)
+	stx	mos8(worksector.0+1)
 	stz	mos8(worksectorasBAM.0)
 	stx	mos8(worksectorasBAM.0+1)
 	stz	mos8(direntryblock.0)
@@ -1380,7 +1361,7 @@ main:                                   ; @main
 	lda	#15
 	and	6658
 	bne	.LBB0_91
-; %bb.250:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.248:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_177
 .LBB0_91:                               ;   in Loop: Header=BB0_87 Depth=2
 	ldx	__rc23
@@ -1402,19 +1383,19 @@ main:                                   ; @main
 	ldy	__rc3
 	sty	__rc30
 	bcs	.LBB0_95
-; %bb.252:                              ;   in Loop: Header=BB0_87 Depth=2
+; %bb.250:                              ;   in Loop: Header=BB0_87 Depth=2
 	jmp	.LBB0_87
 .LBB0_95:                               ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.40)
+	ldx	#mos16lo(.L.str.18)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.40)
+	ldx	#mos16hi(.L.str.18)
 	stx	__rc3
 	jsr	messagebox
 .LBB0_96:                               ;   Parent Loop BB0_18 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
 	ldx	54800
 	beq	.LBB0_96
-; %bb.196:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.194:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_139
 .LBB0_97:                               ;   in Loop: Header=BB0_18 Depth=1
 	ldx	__rc20
@@ -1424,12 +1405,12 @@ main:                                   ; @main
 	ldy	#1
 	lda	(__rc26),y
 	bne	.LBB0_99
-; %bb.254:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.252:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_18
 .LBB0_99:                               ;   in Loop: Header=BB0_18 Depth=1
 	dec
 	sta	(__rc26),y
-; %bb.198:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.196:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_18
 .LBB0_100:                              ;   in Loop: Header=BB0_18 Depth=1
 	ldx	#mos16lo(.L.str.24)
@@ -1446,7 +1427,7 @@ main:                                   ; @main
 	ldy	#32
 	sty	__rc2
 	jsr	cputcxy
-; %bb.200:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.198:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_18
 .LBB0_101:                              ;   in Loop: Header=BB0_18 Depth=1
 	;APP
@@ -1467,7 +1448,7 @@ donegetcurdrv0:
 	stz	__rc21
 	cpx	#255
 	bne	.LBB0_102
-; %bb.256:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.254:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_143
 .LBB0_102:                              ;   in Loop: Header=BB0_18 Depth=1
 	;APP
@@ -1488,21 +1469,21 @@ donehypopendir1:
 	lda	__rc2
 	cmp	#132
 	bne	.LBB0_103
-; %bb.258:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.256:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_143
 .LBB0_103:                              ;   in Loop: Header=BB0_18 Depth=1
 	cmp	#135
 	bne	.LBB0_104
-; %bb.260:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.258:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_143
 .LBB0_104:                              ;   in Loop: Header=BB0_18 Depth=1
 	cmp	#255
 	bne	.LBB0_105
-; %bb.262:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.260:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_143
 .LBB0_105:                              ;   in Loop: Header=BB0_18 Depth=1
 	ldx	#0
-; %bb.202:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.200:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_118
 .LBB0_106:                              ;   in Loop: Header=BB0_118 Depth=2
 	ldy	#0
@@ -1574,7 +1555,7 @@ donehypopendir1:
 	inx
 	cpy	#17
 	bcc	.LBB0_118
-; %bb.264:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.262:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_142
 .LBB0_118:                              ;   Parent Loop BB0_18 Depth=1
                                         ; =>  This Loop Header: Depth=2
@@ -1615,7 +1596,7 @@ donehypreaddir2:
 ; %bb.119:                              ;   in Loop: Header=BB0_118 Depth=2
 	cpy	#255
 	beq	.LBB0_120
-; %bb.266:                              ;   in Loop: Header=BB0_118 Depth=2
+; %bb.264:                              ;   in Loop: Header=BB0_118 Depth=2
 	jmp	.LBB0_106
 .LBB0_120:                              ;   in Loop: Header=BB0_118 Depth=2
 	ldx	#65
@@ -1644,16 +1625,16 @@ donehypreaddir2:
 	ldx	54801
 	cpx	#1
 	bne	.LBB0_122
-; %bb.268:
-	jmp	.LBB0_186
+; %bb.266:
+	jmp	.LBB0_184
 .LBB0_122:                              ;   in Loop: Header=BB0_18 Depth=1
 	ldx	54801
 	cpx	#2
-	beq	.LBB0_204
-; %bb.270:                              ;   in Loop: Header=BB0_18 Depth=1
+	beq	.LBB0_202
+; %bb.268:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_18
-.LBB0_204:
-	jmp	.LBB0_186
+.LBB0_202:
+	jmp	.LBB0_184
 .LBB0_123:                              ;   in Loop: Header=BB0_18 Depth=1
 	ldx	#1
 	ldy	#10
@@ -1664,35 +1645,32 @@ donehypreaddir2:
 .LBB0_125:                              ;   in Loop: Header=BB0_18 Depth=1
 	txa
 	bne	.LBB0_126
-; %bb.272:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.270:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_140
 .LBB0_126:                              ;   in Loop: Header=BB0_18 Depth=1
 	ldx	#1
-; %bb.206:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.204:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_141
 .LBB0_127:                              ;   in Loop: Header=BB0_18 Depth=1
 	ldy	#1
 	lda	(__rc26),y
 	inc
 	sta	(__rc26),y
-; %bb.208:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.206:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_18
 .LBB0_128:                              ;   in Loop: Header=BB0_18 Depth=1
 	lda	#0
 	ldy	#2
 	sta	(__rc2),y
-	stz	mos8(BAMsector)
+	stz	mos8(BAMsector.0)
 	ldx	#22
-	stx	mos8(BAMsector+1)
-	stz	mos8(BAMsector+2)
+	stx	mos8(BAMsector.0+1)
+	stz	mos8(BAMsector.1)
 	inx
-	stx	mos8(BAMsector+3)
-	stz	mos8(worksector)
+	stx	mos8(BAMsector.1+1)
+	stz	mos8(worksector.0)
 	inx
-	stx	mos8(worksector+1)
-	stz	mos8(worksector+2)
-	ldy	#25
-	sty	mos8(worksector+3)
+	stx	mos8(worksector.0+1)
 	stz	mos8(worksectorasBAM.0)
 	stx	mos8(worksectorasBAM.0+1)
 	stz	mos8(direntryblock.0)
@@ -1703,7 +1681,7 @@ donehypreaddir2:
 	stx	mos8(direntryblock.1+1)
 	lda	(__rc26)
 	sta	__rc23
-	ldy	#1
+	dey
 	lda	(__rc26),y
 	sta	__rc24
 	lda	#0
@@ -1786,7 +1764,7 @@ donehypreaddir2:
 	ldx	__rc24
 	cpx	__rc22
 	bne	.LBB0_133
-; %bb.274:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.272:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_178
 .LBB0_133:                              ;   in Loop: Header=BB0_129 Depth=2
 	ldx	__rc22
@@ -1809,12 +1787,12 @@ donehypreaddir2:
 	ldx	__rc3
 	stx	__rc29
 	bcs	.LBB0_137
-; %bb.276:                              ;   in Loop: Header=BB0_129 Depth=2
+; %bb.274:                              ;   in Loop: Header=BB0_129 Depth=2
 	jmp	.LBB0_129
 .LBB0_137:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.41)
+	ldx	#mos16lo(.L.str.19)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.41)
+	ldx	#mos16hi(.L.str.19)
 	stx	__rc3
 	jsr	messagebox
 .LBB0_138:                              ;   Parent Loop BB0_18 Depth=1
@@ -1823,7 +1801,7 @@ donehypreaddir2:
 	beq	.LBB0_138
 .LBB0_139:                              ;   in Loop: Header=BB0_18 Depth=1
 	stz	54800
-; %bb.210:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.208:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_176
 .LBB0_140:                              ;   in Loop: Header=BB0_18 Depth=1
 	ldx	#0
@@ -1844,7 +1822,7 @@ donehypreaddir2:
 	jsr	getdirent
 	ldy	#2
 	sta	(__rc20),y
-; %bb.212:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.210:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_18
 .LBB0_142:                              ;   in Loop: Header=BB0_18 Depth=1
 	tax
@@ -1863,11 +1841,11 @@ donehypclosedir3:
 	;NO_APP
 .LBB0_143:                              ;   in Loop: Header=BB0_18 Depth=1
 	ldx	#0
-; %bb.214:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.212:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_163
 .LBB0_144:                              ;   in Loop: Header=BB0_168 Depth=4
 	ora	#32
-; %bb.216:                              ;   in Loop: Header=BB0_168 Depth=4
+; %bb.214:                              ;   in Loop: Header=BB0_168 Depth=4
 	jmp	.LBB0_172
 .LBB0_145:                              ;   in Loop: Header=BB0_164 Depth=3
 	lda	mos8(g_curTextColor)
@@ -1895,7 +1873,7 @@ donehypclosedir3:
 ; %bb.151:                              ;   in Loop: Header=BB0_164 Depth=3
 	cmp	#27
 	bne	.LBB0_152
-; %bb.278:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.276:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_18
 .LBB0_152:                              ;   in Loop: Header=BB0_164 Depth=3
 	ldx	#mos16lo(.L.str.24)
@@ -1908,23 +1886,23 @@ donehypclosedir3:
 	jsr	mprintf
 	ldy	#1
 	ldx	__rc20
-; %bb.218:                              ;   in Loop: Header=BB0_164 Depth=3
+; %bb.216:                              ;   in Loop: Header=BB0_164 Depth=3
 	jmp	.LBB0_164
 .LBB0_153:                              ;   in Loop: Header=BB0_164 Depth=3
 	ldx	#0
 	lda	__rc20
 	bne	.LBB0_154
-; %bb.280:                              ;   in Loop: Header=BB0_164 Depth=3
+; %bb.278:                              ;   in Loop: Header=BB0_164 Depth=3
 	jmp	.LBB0_164
 .LBB0_154:                              ;   in Loop: Header=BB0_164 Depth=3
 	dec	__rc20
 	ldx	__rc20
-; %bb.220:                              ;   in Loop: Header=BB0_164 Depth=3
+; %bb.218:                              ;   in Loop: Header=BB0_164 Depth=3
 	jmp	.LBB0_164
 .LBB0_155:                              ;   in Loop: Header=BB0_164 Depth=3
 	inc	__rc20
 	ldx	__rc20
-; %bb.222:                              ;   in Loop: Header=BB0_164 Depth=3
+; %bb.220:                              ;   in Loop: Header=BB0_164 Depth=3
 	jmp	.LBB0_164
 .LBB0_156:                              ;   in Loop: Header=BB0_163 Depth=2
 	lda	(__rc26)
@@ -2011,7 +1989,7 @@ donehyp0att6:
 .LBB0_159:                              ;   in Loop: Header=BB0_163 Depth=2
 	lda	__rc2
 	bne	.LBB0_160
-; %bb.282:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.280:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_175
 .LBB0_160:                              ;   in Loop: Header=BB0_163 Depth=2
 	ldx	#mos16lo(.L.str.23)
@@ -2118,7 +2096,7 @@ donehyp0att6:
 	lda	mos8(g_curTextColor)
 	cpx	#0
 	bne	.LBB0_169
-; %bb.284:                              ;   in Loop: Header=BB0_164 Depth=3
+; %bb.282:                              ;   in Loop: Header=BB0_164 Depth=3
 	jmp	.LBB0_146
 .LBB0_169:                              ;   in Loop: Header=BB0_168 Depth=4
 	ldx	__rc25
@@ -2126,7 +2104,7 @@ donehyp0att6:
 ; %bb.170:                              ;   in Loop: Header=BB0_168 Depth=4
 	ldx	__rc24
 	bne	.LBB0_171
-; %bb.286:                              ;   in Loop: Header=BB0_168 Depth=4
+; %bb.284:                              ;   in Loop: Header=BB0_168 Depth=4
 	jmp	.LBB0_144
 .LBB0_171:                              ;   in Loop: Header=BB0_168 Depth=4
 	and	#223
@@ -2163,7 +2141,7 @@ donehyp0att6:
 	ldx	__rc30
 	cpx	#23
 	bne	.LBB0_168
-; %bb.224:                              ;   in Loop: Header=BB0_164 Depth=3
+; %bb.222:                              ;   in Loop: Header=BB0_164 Depth=3
 	jmp	.LBB0_145
 .LBB0_175:                              ;   in Loop: Header=BB0_18 Depth=1
 	clc
@@ -2183,7 +2161,7 @@ donehyp0att6:
 	jsr	getdirent
 	ldy	#2
 	sta	(__rc26),y
-; %bb.226:                              ;   in Loop: Header=BB0_18 Depth=1
+; %bb.224:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_18
 .LBB0_177:                              ;   in Loop: Header=BB0_18 Depth=1
 	stx	6912
@@ -2228,16 +2206,13 @@ donehyp0att6:
 	sty	__rc3
 	ldy	#16
 	lda	(__rc0),y                       ; 1-byte Folded Reload
-	sta	__rc5
-	and	#1
-	pha
+	sta	__rc4
 	dey
 	lda	(__rc0),y                       ; 1-byte Folded Reload
-	sta	__rc4
-	pla
-	ldx	__rc22
-; %bb.228:                              ;   in Loop: Header=BB0_18 Depth=1
-	jmp	.LBB0_185
+	tax
+	lda	__rc22
+; %bb.226:                              ;   in Loop: Header=BB0_18 Depth=1
+	jmp	.LBB0_183
 .LBB0_178:                              ;   in Loop: Header=BB0_18 Depth=1
 	stz	6658
 	stz	__rc2
@@ -2279,155 +2254,121 @@ donehyp0att6:
 	sty	__rc3
 	ldy	#16
 	lda	(__rc0),y                       ; 1-byte Folded Reload
-	sta	__rc5
-	and	#1
-	pha
+	sta	__rc4
 	dey
 	lda	(__rc0),y                       ; 1-byte Folded Reload
-	sta	__rc4
-	pla
-	ldx	__rc23
-	jsr	PutWholeSector
+	tax
+	lda	__rc23
+	jsr	PutOneSector
 	ldx	6659
 	stx	__rc22
-	stz	mos8(BAMsector)
+	stz	mos8(BAMsector.0)
 	ldx	#22
-	stx	mos8(BAMsector+1)
-	stz	mos8(BAMsector+2)
+	stx	mos8(BAMsector.0+1)
+	stz	mos8(BAMsector.1)
 	inx
-	stx	mos8(BAMsector+3)
-	stz	mos8(worksector)
-	ldy	#24
-	sty	mos8(worksector+1)
-	stz	mos8(worksector+2)
-	ldx	#25
-	stx	mos8(worksector+3)
+	stx	mos8(BAMsector.1+1)
+	stz	mos8(worksector.0)
+	inx
+	stx	mos8(worksector.0+1)
 	stz	mos8(worksectorasBAM.0)
-	sty	mos8(worksectorasBAM.0+1)
+	stx	mos8(worksectorasBAM.0+1)
 	stz	mos8(direntryblock.0)
-	inx
+	ldx	#26
 	stx	mos8(direntryblock.0+1)
 	stz	mos8(direntryblock.1)
 	inx
 	stx	mos8(direntryblock.1+1)
 	ldx	6660
-	stx	__rc21
+	stx	__rc24
 	stz	53376
-	ldx	mos8(BAMsector)
+	ldx	mos8(BAMsector.0)
 	stx	__rc2
-	ldx	mos8(BAMsector+1)
+	ldx	mos8(BAMsector.0+1)
 	stx	__rc3
 	ldx	#1
 	stx	__rc4
 	ldx	#40
 	lda	__rc23
-	jsr	GetWholeSector
-	tax
-	sta	BAMside
+	jsr	GetOneSector
+	ldx	mos8(BAMsector.1)
+	ldy	mos8(BAMsector.1+1)
+	stx	__rc2
+	sty	__rc3
+	ldx	5632
+	ldy	5633
+	sty	__rc4
+	lda	__rc23
+	jsr	GetOneSector
 	lda	__rc22
 	bne	.LBB0_179
-; %bb.288:                              ;   in Loop: Header=BB0_18 Depth=1
-	jmp	.LBB0_184
-.LBB0_179:                              ;   in Loop: Header=BB0_18 Depth=1
-	lda	__rc21
-.LBB0_180:                              ;   Parent Loop BB0_18 Depth=1
+; %bb.286:                              ;   in Loop: Header=BB0_18 Depth=1
+	jmp	.LBB0_182
+.LBB0_179:                              ;   Parent Loop BB0_18 Depth=1
                                         ; =>  This Loop Header: Depth=2
-                                        ;       Child Loop BB0_181 Depth 3
+                                        ;       Child Loop BB0_180 Depth 3
 	clc
-	pha
 	lda	__rc0
 	adc	#23
 	sta	__rc20
 	lda	__rc1
 	adc	#0
 	sta	__rc21
-	pla
 	ldx	mos8(worksectorasBAM.0)
 	ldy	mos8(worksectorasBAM.0+1)
 	stx	__rc2
 	sty	__rc3
-	sta	__rc24
-	sta	__rc4
+	ldx	__rc24
+	stx	__rc4
 	ldx	__rc22
 	lda	__rc23
-	jsr	GetWholeSector
-	sta	workside
-	asl
-	sta	__rc2
-	lda	#0
-	rol
-	sta	__rc3
-	lda	#mos8(worksector)
-	clc
-	adc	__rc2
-	sta	__rc2
-	lda	#mos8(0)
-	adc	__rc3
-	sta	__rc3
-	lda	(__rc2)
+	jsr	GetOneSector
+	lda	mos8(worksector.0)
 	sta	(__rc20)
+	lda	mos8(worksector.0+1)
 	ldy	#1
-	lda	(__rc2),y
 	sta	(__rc20),y
-	lda	BAMside
-	asl
-	sta	__rc2
-	lda	#0
-	rol
-	sta	__rc3
-	lda	#mos8(BAMsector)
-	clc
-	adc	__rc2
-	sta	__rc4
-	lda	#mos8(0)
-	adc	__rc3
-	sta	__rc5
-	lda	(__rc4)
-	sta	__rc2
-	lda	(__rc4),y
-	sta	__rc3
-	stz	__rc4
+	ldx	mos8(BAMsector.0)
+	ldy	mos8(BAMsector.0+1)
+	stx	__rc2
+	sty	__rc3
+	ldx	mos8(BAMsector.1)
+	ldy	mos8(BAMsector.1+1)
+	stx	__rc4
+	sty	__rc5
+	stz	__rc6
 	ldx	__rc24
 	lda	__rc22
 	jsr	BAMSectorUpdate
 	ldx	#42
 	stx	mos8(g_curX)
 	stz	mos8(g_curY)
-	ldx	#mos16lo(.L.str.35)
+	ldx	#mos16lo(.L.str.13)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.35)
+	ldx	#mos16hi(.L.str.13)
 	stx	__rc3
 	stz	__rc4
 	stz	__rc5
 	ldx	#0
 	lda	__rc22
 	jsr	mprintf
-	ldx	#mos16lo(.L.str.36)
+	ldx	#mos16lo(.L.str.14)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.36)
+	ldx	#mos16hi(.L.str.14)
 	stx	__rc3
 	stz	__rc4
 	stz	__rc5
 	ldx	#0
 	lda	__rc24
 	jsr	mprintf
-	lda	workside
-	ldx	#mos16lo(.L.str.27)
-	stx	__rc2
-	ldx	#mos16hi(.L.str.27)
-	stx	__rc3
-	stz	__rc4
-	stz	__rc5
-	ldx	#0
-	jsr	mprintf
 	jsr	cputln
 	ldx	#42
 	stx	mos8(g_curX)
 	ldx	#1
 	stx	mos8(g_curY)
-	ldx	#mos16lo(.L.str.37)
+	ldx	#mos16lo(.L.str.15)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.37)
+	ldx	#mos16hi(.L.str.15)
 	stx	__rc3
 	stz	__rc4
 	stz	__rc5
@@ -2435,43 +2376,26 @@ donehyp0att6:
 	lda	__rc20
 	jsr	mh4printf
 	jsr	cputln
-	lda	workside
-	asl
-	sta	__rc2
-	lda	#0
-	rol
-	sta	__rc3
-	lda	#mos8(worksector)
-	clc
-	adc	__rc2
-	sta	__rc2
-	lda	#mos8(0)
-	adc	__rc3
 	ldx	#42
 	stx	mos8(g_curX)
 	ldx	#2
 	stx	mos8(g_curY)
-	sta	__rc3
-	lda	(__rc2)
-	sta	__rc6
-	ldy	#1
-	lda	(__rc2),y
-	ldx	#mos16lo(.L.str.38)
-	stx	__rc2
-	ldx	#mos16hi(.L.str.38)
-	stx	__rc3
+	lda	mos8(worksector.0)
+	ldx	mos8(worksector.0+1)
+	ldy	#mos16lo(.L.str.16)
+	sty	__rc2
+	ldy	#mos16hi(.L.str.16)
+	sty	__rc3
 	stz	__rc4
 	stz	__rc5
-	tax
-	lda	__rc6
 	jsr	mh4printf
 	jsr	cputln
-.LBB0_181:                              ;   Parent Loop BB0_18 Depth=1
-                                        ;     Parent Loop BB0_180 Depth=2
+.LBB0_180:                              ;   Parent Loop BB0_18 Depth=1
+                                        ;     Parent Loop BB0_179 Depth=2
                                         ; =>    This Inner Loop Header: Depth=3
 	ldx	54800
-	beq	.LBB0_181
-; %bb.182:                              ;   in Loop: Header=BB0_180 Depth=2
+	beq	.LBB0_180
+; %bb.181:                              ;   in Loop: Header=BB0_179 Depth=2
 	stz	54800
 	lda	(__rc20)
 	sta	__rc2
@@ -2481,39 +2405,34 @@ donehyp0att6:
 	lda	(__rc2)
 	sta	__rc22
 	lda	(__rc2),y
-	ldx	__rc22
-	beq	.LBB0_183
-; %bb.290:                              ;   in Loop: Header=BB0_180 Depth=2
-	jmp	.LBB0_180
-.LBB0_183:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	BAMside
-.LBB0_184:                              ;   in Loop: Header=BB0_18 Depth=1
+	sta	__rc24
+	lda	__rc22
+	beq	.LBB0_182
+; %bb.288:                              ;   in Loop: Header=BB0_179 Depth=2
+	jmp	.LBB0_179
+.LBB0_182:                              ;   in Loop: Header=BB0_18 Depth=1
+	ldx	mos8(BAMsector.0)
+	ldy	mos8(BAMsector.0+1)
 	stx	__rc2
-	asl	__rc2
-	stz	__rc3
-	rol	__rc3
-	lda	#mos8(BAMsector)
-	clc
-	adc	__rc2
-	sta	__rc4
-	lda	#mos8(0)
-	adc	__rc3
-	sta	__rc5
-	lda	(__rc4)
-	sta	__rc2
-	ldy	#1
-	lda	(__rc4),y
-	sta	__rc3
-	txa
-	ldx	#40
+	sty	__rc3
+	ldx	#1
 	stx	__rc4
-	sty	__rc5
-	ldx	__rc23
-.LBB0_185:                              ;   in Loop: Header=BB0_18 Depth=1
-	jsr	PutWholeSector
-; %bb.230:                              ;   in Loop: Header=BB0_18 Depth=1
+	ldx	#40
+	lda	__rc23
+	jsr	PutOneSector
+	ldx	mos8(BAMsector.1)
+	ldy	mos8(BAMsector.1+1)
+	stx	__rc2
+	sty	__rc3
+	ldx	5632
+	ldy	5633
+	sty	__rc4
+	lda	__rc23
+.LBB0_183:                              ;   in Loop: Header=BB0_18 Depth=1
+	jsr	PutOneSector
+; %bb.228:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_176
-.LBB0_186:
+.LBB0_184:
 	jsr	clrhome
 	ldx	#mos16lo(.L.str.5)
 	stx	__rc2
@@ -2521,14 +2440,14 @@ donehyp0att6:
 	stx	__rc3
 	jsr	msprintf
 	jsr	cputln
-.LBB0_187:                              ; =>This Inner Loop Header: Depth=1
+.LBB0_185:                              ; =>This Inner Loop Header: Depth=1
 	ldx	54800
-	beq	.LBB0_187
-.LBB0_188:                              ; =>This Inner Loop Header: Depth=1
+	beq	.LBB0_185
+.LBB0_186:                              ; =>This Inner Loop Header: Depth=1
 	stz	54800
 	ldx	54800
-	bne	.LBB0_188
-; %bb.189:
+	bne	.LBB0_186
+; %bb.187:
 	;APP
 	lda	#55
 	sta	1
@@ -2698,9 +2617,9 @@ ReadSector:                             ; @ReadSector
 .Lfunc_end1:
 	.size	ReadSector, .Lfunc_end1-ReadSector
                                         ; -- End function
-	.section	.text.GetWholeSector,"ax",@progbits
-	.type	GetWholeSector,@function        ; -- Begin function GetWholeSector
-GetWholeSector:                         ; @GetWholeSector
+	.section	.text.GetOneSector,"ax",@progbits
+	.type	GetOneSector,@function          ; -- Begin function GetOneSector
+GetOneSector:                           ; @GetOneSector
 ; %bb.0:
 	ldy	__rc20
 	phy
@@ -2716,153 +2635,128 @@ GetWholeSector:                         ; @GetWholeSector
 	sty	__rc2
 	jsr	ReadSector
 	cmp	#2
-	bcs	.LBB2_2
+	bcs	.LBB2_5
 ; %bb.1:
-	ldy	#253
-	ldx	#15
-	sty	__rc2
-	stx	__rc3
-	ldx	__rc20
-	stx	__rc4
-	ldx	__rc21
-	stx	__rc5
+	tax
+	beq	.LBB2_3
+; %bb.2:
+	ldx	#109
+	bra	.LBB2_4
+.LBB2_3:
+	ldx	#108
+.LBB2_4:
+	ldy	#1
+	lda	#253
+	sta	__rc2
+	lda	#15
+	sta	__rc3
+	lda	__rc20
+	sta	__rc4
+	lda	__rc21
+	sta	__rc5
 	stz	__rc6
 	stz	__rc7
 	stz	__rc8
-	ldx	#1
-	stx	__rc9
-	ldx	#108
-	sta	mos8(.LGetWholeSector_zp_stk)   ; 1-byte Folded Spill
-	lda	#0
-	jsr	lcopy
-	clc
-	lda	__rc20
-	adc	#0
-	sta	__rc4
-	lda	__rc21
-	adc	#1
-	sta	__rc5
-	lda	#0
-	adc	#0
-	sta	__rc6
-	lda	#0
-	adc	#0
-	ldx	#109
-	sta	__rc7
-	ldy	#253
-	sty	__rc2
-	ldy	#15
-	sty	__rc3
-	ldy	#1
 	sty	__rc9
-	stz	__rc8
 	lda	#0
 	jsr	lcopy
-	lda	mos8(.LGetWholeSector_zp_stk)   ; 1-byte Folded Reload
-.LBB2_2:
+.LBB2_5:
 	plx
 	stx	__rc21
 	plx
 	stx	__rc20
 	rts
 .Lfunc_end2:
-	.size	GetWholeSector, .Lfunc_end2-GetWholeSector
+	.size	GetOneSector, .Lfunc_end2-GetOneSector
                                         ; -- End function
-	.section	.text.PutWholeSector,"ax",@progbits
-	.type	PutWholeSector,@function        ; -- Begin function PutWholeSector
-PutWholeSector:                         ; @PutWholeSector
+	.section	.text.PutOneSector,"ax",@progbits
+	.type	PutOneSector,@function          ; -- Begin function PutOneSector
+PutOneSector:                           ; @PutOneSector
 ; %bb.0:
-	sta	mos8(.LPutWholeSector_zp_stk)
-	txa
-	ldx	mos8(.LPutWholeSector_zp_stk)
-	cpx	#2
-	bcc	.LBB3_1
-; %bb.13:
-	jmp	.LBB3_12
-.LBB3_1:
-	ldy	__rc5
-	ldx	__rc2
-	stx	.LPutWholeSector_sstk           ; 1-byte Folded Spill
-	ldx	__rc3
-	stx	.LPutWholeSector_sstk+1         ; 1-byte Folded Spill
-	sty	mos8(.LPutWholeSector_zp_stk+1) ; 1-byte Folded Spill
+	ldy	__rc20
+	phy
+	ldy	__rc21
+	phy
+	ldy	__rc4
+	sty	mos8(.LPutOneSector_zp_stk+2)
+	ldy	__rc2
+	sty	__rc20
+	ldy	__rc3
+	sty	__rc21
+	ldy	__rc4
 	sty	__rc2
-	ldx	__rc4
-	stx	mos8(.LPutWholeSector_zp_stk+2) ; 1-byte Folded Spill
-	sta	mos8(.LPutWholeSector_zp_stk+3) ; 1-byte Folded Spill
+	stx	mos8(.LPutOneSector_zp_stk)
+	sta	mos8(.LPutOneSector_zp_stk+1)
 	jsr	ReadSector
-	lda	mos8(.LPutWholeSector_zp_stk)
-	beq	.LBB3_3
-; %bb.2:
-	ldx	#109
-	bra	.LBB3_4
-.LBB3_3:
-	ldx	#108
-.LBB3_4:
-	ldy	#1
-	stx	__rc5
-	ldx	#253
-	stx	__rc6
+	ldy	#108
+	ldx	mos8(.LPutOneSector_zp_stk+2)
+	stx	mos8(.LPutOneSector_zp_stk+3)
+	lsr	mos8(.LPutOneSector_zp_stk+2)
+	bcc	.LBB3_2
+; %bb.1:
+	ldy	#109
+.LBB3_2:
+	ldx	#1
+	sty	__rc5
+	ldy	#253
+	sty	__rc6
 	stz	__rc2
 	stz	__rc3
 	stz	__rc4
-	ldx	#15
-	stx	__rc7
+	ldy	#15
+	sty	__rc7
 	stz	__rc8
-	sty	__rc9
-	ldx	.LPutWholeSector_sstk           ; 1-byte Folded Reload
-	stx	__rc10
-	ldx	.LPutWholeSector_sstk+1         ; 1-byte Folded Reload
-	lda	__rc10
+	stx	__rc9
+	ldx	__rc21
+	lda	__rc20
 	jsr	lcopy
-	sec
-	lda	mos8(.LPutWholeSector_zp_stk+1) ; 1-byte Folded Reload
-	sbc	mos8(.LPutWholeSector_zp_stk)
-	sta	__rc3
-	cmp	#20
-	bcc	.LBB3_6
-; %bb.5:
-	lda	mos8(.LPutWholeSector_zp_stk+3) ; 1-byte Folded Reload
+	ldx	mos8(.LPutOneSector_zp_stk+3)
+	lda	mos8(.LPutOneSector_zp_stk+1)
+	cpx	#20
+	bcc	.LBB3_4
+; %bb.3:
 	clc
 	adc	#104
-	bra	.LBB3_7
-.LBB3_6:
-	lda	mos8(.LPutWholeSector_zp_stk+3) ; 1-byte Folded Reload
+	bra	.LBB3_5
+.LBB3_4:
 	clc
 	adc	#96
-.LBB3_7:
+.LBB3_5:
+	ldy	mos8(.LPutOneSector_zp_stk)
 	sta	53376
 	ldx	#32
 	stx	53377
-	ldx	mos8(.LPutWholeSector_zp_stk+2) ; 1-byte Folded Reload
-	dex
-	stx	53380
-	lda	__rc3
-	lsr
-	inc
-	sta	53381
+	dey
+	sty	53380
+	ldx	mos8(.LPutOneSector_zp_stk+2)
+	inx
+	stx	53381
 	stz	53382
 	ldx	#132
 	stx	53377
-.LBB3_8:                                ; =>This Inner Loop Header: Depth=1
+.LBB3_6:                                ; =>This Inner Loop Header: Depth=1
 	ldx	53378
-	bmi	.LBB3_8
-; %bb.9:
+	bmi	.LBB3_6
+; %bb.7:
 	lda	53378
 	and	#24
-	beq	.LBB3_11
-; %bb.10:
+	beq	.LBB3_9
+; %bb.8:
 	ldx	#64
 	stx	53376
-	rts
-.LBB3_11:
+	bra	.LBB3_10
+.LBB3_9:
 	lda	54921
 	and	#127
 	sta	54921
-.LBB3_12:
+.LBB3_10:
+	plx
+	stx	__rc21
+	plx
+	stx	__rc20
 	rts
 .Lfunc_end3:
-	.size	PutWholeSector, .Lfunc_end3-PutWholeSector
+	.size	PutOneSector, .Lfunc_end3-PutOneSector
                                         ; -- End function
 	.section	.text.BAMSectorUpdate,"ax",@progbits
 	.type	BAMSectorUpdate,@function       ; -- Begin function BAMSectorUpdate
@@ -2876,66 +2770,64 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	phy
 	ldy	__rc23
 	phy
-	sta	__rc22
-	txa
+	ldy	__rc24
+	sty	.LBAMSectorUpdate_sstk+3        ; 1-byte Folded Spill
+	stx	__rc24
+	ldx	__rc6
+	stx	__rc22
+	cmp	#41
+	bcc	.LBB4_2
+; %bb.1:
+	ldx	__rc4
+	stx	__rc20
+	ldx	__rc5
+	stx	__rc21
+	clc
+	adc	#216
+	sta	__rc23
+	bra	.LBB4_3
+.LBB4_2:
+	sta	__rc23
 	ldx	__rc2
 	stx	__rc20
 	ldx	__rc3
 	stx	__rc21
-	dec	__rc22
-	ldx	__rc4
-	beq	.LBB4_3
-; %bb.1:
-	cmp	#8
-	bcc	.LBB4_2
-; %bb.38:
-	jmp	.LBB4_5
-.LBB4_2:
-	ldx	#6
-	stx	__rc2
-	stz	__rc3
-	ldx	#0
-	sta	__rc23
-	lda	__rc22
-	jsr	__mulhi3
-	stx	__rc4
-	clc
-	adc	__rc20
-	tay
-	ldx	__rc20
-	stx	__rc2
-	ldx	__rc21
-	stx	__rc3
-	ldx	__rc2
-	lda	__rc23
-	sta	__rc2
-	stz	__rc23
-	stx	.LBAMSectorUpdate_sstk          ; 1-byte Folded Spill
-	ldx	__rc3
-	stx	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
-	lda	__rc4
-	adc	__rc21
-	sta	__rc3
-	clc
-	tya
-	adc	#17
-; %bb.22:
-	jmp	.LBB4_18
 .LBB4_3:
-	cmp	#8
-	bcc	.LBB4_4
-; %bb.40:
-	jmp	.LBB4_7
-.LBB4_4:
+	ldx	#42
+	stx	mos8(g_curX)
+	ldx	#20
+	stx	mos8(g_curY)
+	ldx	#mos16lo(.L.str.11)
+	stx	__rc2
+	ldx	#mos16hi(.L.str.11)
+	stx	__rc3
+	stz	__rc4
+	stz	__rc5
+	ldx	__rc21
+	lda	__rc20
+	jsr	mh4printf
+	jsr	cputln
+.LBB4_4:                                ; =>This Inner Loop Header: Depth=1
+	ldx	54800
+	beq	.LBB4_4
+; %bb.5:
+	stz	54800
+	dec	__rc23
+	lda	__rc22
+	beq	.LBB4_8
+; %bb.6:
+	ldx	__rc24
+	cpx	#8
+	bcs	.LBB4_10
+; %bb.7:
 	ldx	#6
 	stx	__rc2
 	stz	__rc3
 	ldx	#0
-	stx	.LBAMSectorUpdate_sstk          ; 1-byte Folded Spill
-	ldy	__rc22
-	sty	mos8(.LBAMSectorUpdate_zp_stk+1) ; 1-byte Folded Spill
-	sta	__rc23
-	lda	__rc22
+	stx	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
+	ldy	__rc23
+	sty	.LBAMSectorUpdate_sstk+2        ; 1-byte Folded Spill
+	lda	__rc23
 	jsr	__mulhi3
 	clc
 	adc	__rc20
@@ -2946,64 +2838,55 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	clc
 	tya
 	adc	#17
-; %bb.24:
-	jmp	.LBB4_20
-.LBB4_5:
-	cmp	#16
-	stz	__rc23
-	bcc	.LBB4_6
-; %bb.42:
-	jmp	.LBB4_9
-.LBB4_6:
-	clc
-	adc	#248
-	sta	mos8(.LBAMSectorUpdate_zp_stk)  ; 1-byte Folded Spill
-	ldx	#6
-	stz	__rc3
-	stx	__rc2
-	ldx	#0
-	lda	__rc22
-	jsr	__mulhi3
-	stx	__rc4
-	clc
-	adc	__rc20
-	sta	__rc5
-	ldx	__rc20
-	stx	__rc2
-	ldx	__rc21
-	stx	__rc3
-	ldx	__rc2
-	ldy	mos8(.LBAMSectorUpdate_zp_stk)  ; 1-byte Folded Reload
-	sty	__rc2
-	stx	.LBAMSectorUpdate_sstk          ; 1-byte Folded Spill
-	ldx	__rc3
-	stx	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
-	lda	__rc4
-	adc	__rc21
-	sta	__rc3
-	clc
-	lda	__rc5
-	adc	#18
-; %bb.26:
-	jmp	.LBB4_18
-.LBB4_7:
-	cmp	#16
-	ldx	#0
-	bcc	.LBB4_8
-; %bb.44:
-	jmp	.LBB4_11
+; %bb.27:
+	jmp	.LBB4_23
 .LBB4_8:
+	lda	__rc24
+	cmp	#8
+	bcc	.LBB4_9
+; %bb.43:
+	jmp	.LBB4_12
+.LBB4_9:
+	ldx	#6
+	stx	__rc2
+	stz	__rc3
+	ldx	#0
+	stx	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
+	ldy	__rc23
+	sty	.LBAMSectorUpdate_sstk+2        ; 1-byte Folded Spill
+	lda	__rc23
+	jsr	__mulhi3
 	clc
+	adc	__rc20
+	tay
+	txa
+	adc	__rc21
+	sta	__rc2
+	clc
+	tya
+	adc	#17
+; %bb.29:
+	jmp	.LBB4_25
+.LBB4_10:
+	ldx	__rc24
+	cpx	#16
+	ldx	#0
+	bcc	.LBB4_11
+; %bb.45:
+	jmp	.LBB4_14
+.LBB4_11:
+	clc
+	lda	__rc24
 	adc	#248
+	sta	__rc24
 	ldy	#6
 	stz	__rc3
 	sty	__rc2
 	ldy	#0
-	sty	.LBAMSectorUpdate_sstk          ; 1-byte Folded Spill
-	ldy	__rc22
-	sty	mos8(.LBAMSectorUpdate_zp_stk+1) ; 1-byte Folded Spill
-	sta	__rc23
-	lda	__rc22
+	sty	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
+	ldy	__rc23
+	sty	.LBAMSectorUpdate_sstk+2        ; 1-byte Folded Spill
+	lda	__rc23
 	jsr	__mulhi3
 	clc
 	adc	__rc20
@@ -3014,62 +2897,25 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	clc
 	tya
 	adc	#18
-; %bb.28:
-	jmp	.LBB4_20
-.LBB4_9:
-	cmp	#24
-	bcc	.LBB4_10
-; %bb.46:
-	jmp	.LBB4_13
-.LBB4_10:
+; %bb.31:
+	jmp	.LBB4_23
+.LBB4_12:
+	cmp	#16
+	bcc	.LBB4_13
+; %bb.47:
+	jmp	.LBB4_16
+.LBB4_13:
 	clc
-	adc	#240
-	sta	mos8(.LBAMSectorUpdate_zp_stk)  ; 1-byte Folded Spill
+	adc	#248
 	ldx	#6
 	stz	__rc3
 	stx	__rc2
 	ldx	#0
-	lda	__rc22
-	jsr	__mulhi3
-	stx	__rc4
-	clc
-	adc	__rc20
-	sta	__rc5
-	ldx	__rc20
-	stx	__rc2
-	ldx	__rc21
-	stx	__rc3
-	ldx	__rc2
-	ldy	mos8(.LBAMSectorUpdate_zp_stk)  ; 1-byte Folded Reload
-	sty	__rc2
-	stx	.LBAMSectorUpdate_sstk          ; 1-byte Folded Spill
-	ldx	__rc3
 	stx	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
-	lda	__rc4
-	adc	__rc21
-	sta	__rc3
-	clc
-	lda	__rc5
-	adc	#19
-; %bb.30:
-	jmp	.LBB4_18
-.LBB4_11:
-	cmp	#24
-	bcc	.LBB4_12
-; %bb.48:
-	jmp	.LBB4_15
-.LBB4_12:
-	clc
-	adc	#240
-	ldy	#6
-	stz	__rc3
-	sty	__rc2
-	ldy	#0
-	sty	.LBAMSectorUpdate_sstk          ; 1-byte Folded Spill
-	ldy	__rc22
-	sty	mos8(.LBAMSectorUpdate_zp_stk+1) ; 1-byte Folded Spill
-	sta	__rc23
-	lda	__rc22
+	ldy	__rc23
+	sty	.LBAMSectorUpdate_sstk+2        ; 1-byte Folded Spill
+	sta	__rc24
+	lda	__rc23
 	jsr	__mulhi3
 	clc
 	adc	__rc20
@@ -3079,63 +2925,28 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	sta	__rc2
 	clc
 	tya
-	adc	#19
-; %bb.32:
-	jmp	.LBB4_20
-.LBB4_13:
-	cmp	#32
-	bcc	.LBB4_14
-; %bb.50:
-	jmp	.LBB4_17
+	adc	#18
+; %bb.33:
+	jmp	.LBB4_25
 .LBB4_14:
-	clc
-	adc	#232
-	sta	mos8(.LBAMSectorUpdate_zp_stk)  ; 1-byte Folded Spill
-	ldx	#6
-	stz	__rc3
-	stx	__rc2
-	ldx	#0
-	lda	__rc22
-	jsr	__mulhi3
-	stx	__rc4
-	clc
-	adc	__rc20
-	sta	__rc5
-	ldx	__rc20
-	stx	__rc2
-	ldx	__rc21
-	stx	__rc3
-	ldx	__rc2
-	ldy	mos8(.LBAMSectorUpdate_zp_stk)  ; 1-byte Folded Reload
-	sty	__rc2
-	stx	.LBAMSectorUpdate_sstk          ; 1-byte Folded Spill
-	ldx	__rc3
-	stx	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
-	lda	__rc4
-	adc	__rc21
-	sta	__rc3
-	clc
-	lda	__rc5
-	adc	#20
-; %bb.34:
+	ldy	__rc24
+	cpy	#24
+	bcc	.LBB4_15
+; %bb.49:
 	jmp	.LBB4_18
 .LBB4_15:
-	cmp	#32
-	bcc	.LBB4_16
-; %bb.52:
-	jmp	.LBB4_19
-.LBB4_16:
 	clc
-	adc	#232
+	lda	__rc24
+	adc	#240
+	sta	__rc24
 	ldy	#6
 	stz	__rc3
 	sty	__rc2
 	ldy	#0
-	sty	.LBAMSectorUpdate_sstk          ; 1-byte Folded Spill
-	ldy	__rc22
-	sty	mos8(.LBAMSectorUpdate_zp_stk+1) ; 1-byte Folded Spill
-	sta	__rc23
-	lda	__rc22
+	sty	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
+	ldy	__rc23
+	sty	.LBAMSectorUpdate_sstk+2        ; 1-byte Folded Spill
+	lda	__rc23
 	jsr	__mulhi3
 	clc
 	adc	__rc20
@@ -3145,69 +2956,111 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	sta	__rc2
 	clc
 	tya
-	adc	#20
-; %bb.36:
+	adc	#19
+; %bb.35:
+	jmp	.LBB4_23
+.LBB4_16:
+	cmp	#24
+	bcc	.LBB4_17
+; %bb.51:
 	jmp	.LBB4_20
 .LBB4_17:
 	clc
-	adc	#224
-	sta	mos8(.LBAMSectorUpdate_zp_stk)  ; 1-byte Folded Spill
+	adc	#240
 	ldx	#6
 	stz	__rc3
 	stx	__rc2
 	ldx	#0
-	lda	__rc22
+	stx	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
+	ldy	__rc23
+	sty	.LBAMSectorUpdate_sstk+2        ; 1-byte Folded Spill
+	sta	__rc24
+	lda	__rc23
 	jsr	__mulhi3
-	stx	__rc4
 	clc
 	adc	__rc20
-	sta	__rc5
-	ldx	__rc20
-	stx	__rc2
-	ldx	__rc21
-	stx	__rc3
-	ldx	__rc2
-	ldy	mos8(.LBAMSectorUpdate_zp_stk)  ; 1-byte Folded Reload
-	sty	__rc2
-	stx	.LBAMSectorUpdate_sstk          ; 1-byte Folded Spill
-	ldx	__rc3
-	stx	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
-	lda	__rc4
+	tay
+	txa
 	adc	__rc21
-	sta	__rc3
+	sta	__rc2
 	clc
-	lda	__rc5
-	adc	#21
+	tya
+	adc	#19
+; %bb.37:
+	jmp	.LBB4_25
 .LBB4_18:
-	sta	__rc20
-	lda	__rc3
-	adc	#0
-	sta	__rc21
-	lda	#1
-	ldx	#0
-	jsr	__ashlhi3
-	eor	#255
-	and	(__rc20)
-	sta	(__rc20)
-	ldx	#255
-	stx	mos8(.LBAMSectorUpdate_zp_stk)  ; 1-byte Folded Spill
-	ldx	.LBAMSectorUpdate_sstk          ; 1-byte Folded Reload
-	stx	__rc20
-	ldx	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Reload
-	stx	__rc21
-	bra	.LBB4_21
+	ldy	__rc24
+	cpy	#32
+	bcc	.LBB4_19
+; %bb.53:
+	jmp	.LBB4_22
 .LBB4_19:
 	clc
-	adc	#224
+	lda	__rc24
+	adc	#232
+	sta	__rc24
 	ldy	#6
 	stz	__rc3
 	sty	__rc2
 	ldy	#0
-	sty	.LBAMSectorUpdate_sstk          ; 1-byte Folded Spill
-	ldy	__rc22
-	sty	mos8(.LBAMSectorUpdate_zp_stk+1) ; 1-byte Folded Spill
-	sta	__rc23
-	lda	__rc22
+	sty	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
+	ldy	__rc23
+	sty	.LBAMSectorUpdate_sstk+2        ; 1-byte Folded Spill
+	lda	__rc23
+	jsr	__mulhi3
+	clc
+	adc	__rc20
+	tay
+	txa
+	adc	__rc21
+	sta	__rc2
+	clc
+	tya
+	adc	#20
+; %bb.39:
+	jmp	.LBB4_23
+.LBB4_20:
+	cmp	#32
+	bcc	.LBB4_21
+; %bb.55:
+	jmp	.LBB4_24
+.LBB4_21:
+	clc
+	adc	#232
+	ldx	#6
+	stz	__rc3
+	stx	__rc2
+	ldx	#0
+	stx	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
+	ldy	__rc23
+	sty	.LBAMSectorUpdate_sstk+2        ; 1-byte Folded Spill
+	sta	__rc24
+	lda	__rc23
+	jsr	__mulhi3
+	clc
+	adc	__rc20
+	tay
+	txa
+	adc	__rc21
+	sta	__rc2
+	clc
+	tya
+	adc	#20
+; %bb.41:
+	jmp	.LBB4_25
+.LBB4_22:
+	clc
+	lda	__rc24
+	adc	#224
+	sta	__rc24
+	ldy	#6
+	stz	__rc3
+	sty	__rc2
+	ldy	#0
+	sty	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
+	ldy	__rc23
+	sty	.LBAMSectorUpdate_sstk+2        ; 1-byte Folded Spill
+	lda	__rc23
 	jsr	__mulhi3
 	clc
 	adc	__rc20
@@ -3218,30 +3071,64 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	clc
 	tya
 	adc	#21
-.LBB4_20:
+.LBB4_23:
 	sta	__rc22
 	lda	__rc2
 	adc	#0
-	ldx	__rc23
-	stx	__rc2
 	sta	__rc23
-	ldx	#0
 	lda	#1
-	tay
-	sty	mos8(.LBAMSectorUpdate_zp_stk)  ; 1-byte Folded Spill
+	ldx	#0
+	ldy	__rc24
+	sty	__rc2
 	jsr	__ashlhi3
-	ora	(__rc22)
+	eor	#255
+	and	(__rc22)
 	sta	(__rc22)
-	ldx	mos8(.LBAMSectorUpdate_zp_stk+1) ; 1-byte Folded Reload
-	stx	__rc22
-	ldx	.LBAMSectorUpdate_sstk          ; 1-byte Folded Reload
-	stx	__rc23
-.LBB4_21:
+	ldx	#255
+	stx	.LBAMSectorUpdate_sstk          ; 1-byte Folded Spill
+	bra	.LBB4_26
+.LBB4_24:
+	clc
+	adc	#224
 	ldx	#6
 	stz	__rc3
 	stx	__rc2
-	ldx	__rc23
-	lda	__rc22
+	ldx	#0
+	stx	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Spill
+	ldy	__rc23
+	sty	.LBAMSectorUpdate_sstk+2        ; 1-byte Folded Spill
+	sta	__rc24
+	lda	__rc23
+	jsr	__mulhi3
+	clc
+	adc	__rc20
+	tay
+	txa
+	adc	__rc21
+	sta	__rc2
+	clc
+	tya
+	adc	#21
+.LBB4_25:
+	sta	__rc22
+	lda	__rc2
+	adc	#0
+	sta	__rc23
+	ldx	__rc24
+	stx	__rc2
+	ldx	#0
+	lda	#1
+	tay
+	sty	.LBAMSectorUpdate_sstk          ; 1-byte Folded Spill
+	jsr	__ashlhi3
+	ora	(__rc22)
+	sta	(__rc22)
+.LBB4_26:
+	ldx	.LBAMSectorUpdate_sstk+1        ; 1-byte Folded Reload
+	lda	.LBAMSectorUpdate_sstk+2        ; 1-byte Folded Reload
+	ldy	#6
+	stz	__rc3
+	sty	__rc2
 	jsr	__mulhi3
 	stx	__rc2
 	clc
@@ -3252,9 +3139,11 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	sta	__rc5
 	ldy	#16
 	clc
-	lda	mos8(.LBAMSectorUpdate_zp_stk)  ; 1-byte Folded Reload
+	lda	.LBAMSectorUpdate_sstk          ; 1-byte Folded Reload
 	adc	(__rc4),y
 	sta	(__rc4),y
+	ldx	.LBAMSectorUpdate_sstk+3        ; 1-byte Folded Reload
+	stx	__rc24
 	plx
 	stx	__rc23
 	plx
@@ -3308,26 +3197,23 @@ readblockchain:                         ; @readblockchain
 	sta	__rc24
 	stx	__rc25
 	lda	__rc6
+	stz	mos8(BAMsector.0)
 	ldx	#22
-	stx	mos8(BAMsector+1)
+	stx	mos8(BAMsector.0+1)
+	stz	mos8(BAMsector.1)
 	inx
-	stx	mos8(BAMsector+3)
-	ldx	#25
-	stx	mos8(worksector+3)
-	dex
-	stx	mos8(worksector+1)
+	stx	mos8(BAMsector.1+1)
+	stz	mos8(worksector.0)
+	inx
+	stx	mos8(worksector.0+1)
+	stz	mos8(worksectorasBAM.0)
 	stx	mos8(worksectorasBAM.0+1)
+	stz	mos8(direntryblock.0)
 	ldx	#26
 	stx	mos8(direntryblock.0+1)
+	stz	mos8(direntryblock.1)
 	inx
 	stx	mos8(direntryblock.1+1)
-	stz	mos8(BAMsector)
-	stz	mos8(BAMsector+2)
-	stz	mos8(worksector)
-	stz	mos8(worksector+2)
-	stz	mos8(worksectorasBAM.0)
-	stz	mos8(direntryblock.0)
-	stz	mos8(direntryblock.1)
 	stz	53376
 	ldx	__rc4
 	bne	.LBB5_1
@@ -3343,70 +3229,52 @@ readblockchain:                         ; @readblockchain
 	ldx	__rc5
 	stx	__rc23
 	ldx	__rc7
-	stx	__rc27
-	stz	__rc26
+	stx	__rc26
+	stz	__rc27
 .LBB5_2:                                ; =>This Inner Loop Header: Depth=1
 	ldx	mos8(worksectorasBAM.0)
 	ldy	mos8(worksectorasBAM.0+1)
 	stx	__rc2
 	sty	__rc3
-	ldx	__rc27
+	ldx	__rc26
 	stx	__rc4
 	tax
 	lda	__rc23
-	jsr	GetWholeSector
-	sta	workside
-	asl
-	sta	__rc2
-	lda	#0
-	rol
-	sta	__rc3
-	lda	#mos8(worksector)
-	clc
-	adc	__rc2
-	sta	__rc2
-	lda	#mos8(0)
-	adc	__rc3
-	sta	__rc3
+	jsr	GetOneSector
 	lda	#0
 	clc
 	adc	__rc24
 	sta	__rc4
-	lda	__rc26
+	lda	__rc27
 	adc	__rc25
 	sta	__rc5
 	lda	#0
 	adc	__rc20
-	tax
+	sta	__rc6
 	lda	#0
 	adc	__rc21
+	ldx	mos8(worksector.0)
+	stx	__rc10
+	ldx	mos8(worksector.0+1)
+	ldy	6144
+	sty	__rc28
+	ldy	6145
+	sty	__rc26
 	sta	__rc7
-	lda	(__rc2)
-	sta	__rc8
-	sta	__rc10
-	ldy	#1
-	lda	(__rc2),y
-	sta	__rc9
-	sta	__rc11
-	lda	(__rc8)
-	sta	__rc28
-	lda	(__rc8),y
-	sta	__rc27
-	stx	__rc6
 	stz	__rc2
 	stz	__rc3
 	stz	__rc8
+	ldy	#1
 	sty	__rc9
-	ldx	__rc11
 	lda	__rc10
 	jsr	lcopy
 	lda	__rc28
 	beq	.LBB5_8
 ; %bb.3:                                ;   in Loop: Header=BB5_2 Depth=1
 	lda	__rc28
-	ldx	__rc26
+	ldx	__rc27
 	inx
-	stx	__rc26
+	stx	__rc27
 	cpx	__rc22
 	beq	.LBB5_5
 ; %bb.11:                               ;   in Loop: Header=BB5_2 Depth=1
@@ -3415,9 +3283,9 @@ readblockchain:                         ; @readblockchain
 	tax
 	beq	.LBB5_8
 .LBB5_5:
-	ldx	#mos16lo(.L.str.34)
+	ldx	#mos16lo(.L.str.12)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.34)
+	ldx	#mos16hi(.L.str.12)
 	stx	__rc3
 	jsr	messagebox
 .LBB5_6:                                ; =>This Inner Loop Header: Depth=1
@@ -3464,36 +3332,49 @@ readblockchain:                         ; @readblockchain
 	.type	findnextBAMtracksector,@function ; -- Begin function findnextBAMtracksector
 findnextBAMtracksector:                 ; @findnextBAMtracksector
 ; %bb.0:
-	ldx	__rc26
+	ldx	__rc20
 	phx
-	ldx	__rc27
+	ldx	__rc21
 	phx
-	ldx	__rc28
+	ldx	__rc22
 	phx
-	ldx	__rc29
+	ldx	__rc23
 	phx
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+3)
-	ldx	__rc2
+	ldx	__rc24
 	stx	.LfindnextBAMtracksector_sstk   ; 1-byte Folded Spill
-	ldx	__rc3
+	ldx	__rc25
 	stx	.LfindnextBAMtracksector_sstk+1 ; 1-byte Folded Spill
-	ldx	__rc4
+	ldx	__rc26
 	stx	.LfindnextBAMtracksector_sstk+2 ; 1-byte Folded Spill
-	ldx	__rc5
+	ldx	__rc27
 	stx	.LfindnextBAMtracksector_sstk+3 ; 1-byte Folded Spill
-	stz	mos8(.LfindnextBAMtracksector_zp_stk+4)
-	stz	mos8(BAMsector)
+	ldx	__rc28
+	stx	.LfindnextBAMtracksector_sstk+4 ; 1-byte Folded Spill
+	ldx	__rc29
+	stx	.LfindnextBAMtracksector_sstk+5 ; 1-byte Folded Spill
+	ldx	__rc30
+	stx	.LfindnextBAMtracksector_sstk+6 ; 1-byte Folded Spill
+	ldx	__rc31
+	stx	.LfindnextBAMtracksector_sstk+7 ; 1-byte Folded Spill
+	sta	__rc24
+	ldx	__rc2
+	stx	__rc20
+	ldx	__rc3
+	stx	__rc21
+	ldx	__rc4
+	stx	__rc22
+	ldx	__rc5
+	stx	__rc23
+	stz	__rc25
+	stz	mos8(BAMsector.0)
 	ldx	#22
-	stx	mos8(BAMsector+1)
-	stz	mos8(BAMsector+2)
+	stx	mos8(BAMsector.0+1)
+	stz	mos8(BAMsector.1)
 	inx
-	stx	mos8(BAMsector+3)
-	stz	mos8(worksector)
+	stx	mos8(BAMsector.1+1)
+	stz	mos8(worksector.0)
 	inx
-	stx	mos8(worksector+1)
-	stz	mos8(worksector+2)
-	ldy	#25
-	sty	mos8(worksector+3)
+	stx	mos8(worksector.0+1)
 	stz	mos8(worksectorasBAM.0)
 	stx	mos8(worksectorasBAM.0+1)
 	stz	mos8(direntryblock.0)
@@ -3503,53 +3384,46 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	inx
 	stx	mos8(direntryblock.1+1)
 	stz	53376
-	ldx	mos8(BAMsector)
-	ldy	mos8(BAMsector+1)
+	ldx	mos8(BAMsector.0)
+	ldy	mos8(BAMsector.0+1)
 	stx	__rc2
 	sty	__rc3
 	ldx	#40
 	ldy	#1
 	sty	__rc4
-	jsr	GetWholeSector
-	sta	BAMside
-	asl
-	stz	__rc2
-	rol	__rc2
-	clc
-	sta	__rc3
-	lda	#mos8(BAMsector)
-	adc	__rc3
-	tax
-	lda	#mos8(0)
-	adc	__rc2
+	jsr	GetOneSector
+	ldx	mos8(BAMsector.0)
+	stx	__rc30
+	ldx	mos8(BAMsector.1)
+	ldy	mos8(BAMsector.1+1)
 	stx	__rc2
-	sta	__rc3
-	lda	(__rc2)
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+1)
-	sta	__rc26
-	ldy	#1
-	lda	(__rc2),y
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+2)
-	sta	__rc27
+	sty	__rc3
+	ldx	5632
+	ldy	5633
+	lda	mos8(BAMsector.0+1)
+	sta	__rc31
+	sty	__rc4
+	lda	__rc24
+	jsr	GetOneSector
 	lda	#6
+	ldy	#0
 	ldx	#0
-	dey
 .LBB6_1:                                ; =>This Loop Header: Depth=1
                                         ;     Child Loop BB6_12 Depth 2
 	sta	__rc2
 	stz	__rc3
-	sty	mos8(.LfindnextBAMtracksector_zp_stk+6)
+	sty	__rc28
 	tya
 	jsr	__mulhi3
 	sta	__rc2
 	stx	__rc3
-	lda	mos8(.LfindnextBAMtracksector_zp_stk+1)
+	lda	__rc30
 	clc
 	adc	__rc2
-	sta	__rc28
-	lda	mos8(.LfindnextBAMtracksector_zp_stk+2)
+	sta	__rc26
+	lda	__rc31
 	adc	__rc3
-	sta	__rc29
+	sta	__rc27
 	ldx	#0
 ; %bb.18:                               ;   in Loop: Header=BB6_1 Depth=1
 	jmp	.LBB6_12
@@ -3558,9 +3432,9 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	bcs	.LBB6_4
 ; %bb.3:                                ;   in Loop: Header=BB6_12 Depth=2
 	ldy	#18
-	lda	(__rc28),y
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+5)
-	stx	mos8(.LfindnextBAMtracksector_zp_stk)
+	lda	(__rc26),y
+	sta	__rc25
+	stx	__rc29
 	txa
 	clc
 	adc	#248
@@ -3570,9 +3444,9 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	bcs	.LBB6_6
 ; %bb.5:                                ;   in Loop: Header=BB6_12 Depth=2
 	ldy	#19
-	lda	(__rc28),y
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+5)
-	stx	mos8(.LfindnextBAMtracksector_zp_stk)
+	lda	(__rc26),y
+	sta	__rc25
+	stx	__rc29
 	txa
 	clc
 	adc	#240
@@ -3582,18 +3456,18 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	bcs	.LBB6_8
 ; %bb.7:                                ;   in Loop: Header=BB6_12 Depth=2
 	ldy	#20
-	lda	(__rc28),y
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+5)
-	stx	mos8(.LfindnextBAMtracksector_zp_stk)
+	lda	(__rc26),y
+	sta	__rc25
+	stx	__rc29
 	txa
 	clc
 	adc	#232
 	bra	.LBB6_9
 .LBB6_8:                                ;   in Loop: Header=BB6_12 Depth=2
 	ldy	#21
-	lda	(__rc28),y
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+5)
-	stx	mos8(.LfindnextBAMtracksector_zp_stk)
+	lda	(__rc26),y
+	sta	__rc25
+	stx	__rc29
 	txa
 	clc
 	adc	#224
@@ -3603,11 +3477,11 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	ldx	#0
 	lda	#1
 	jsr	__ashlhi3
-	and	mos8(.LfindnextBAMtracksector_zp_stk+5)
+	and	__rc25
 	bne	.LBB6_16
 ; %bb.11:                               ;   in Loop: Header=BB6_12 Depth=2
-	lda	mos8(.LfindnextBAMtracksector_zp_stk)
-	ldx	mos8(.LfindnextBAMtracksector_zp_stk)
+	lda	__rc29
+	ldx	__rc29
 	inx
 	cmp	#39
 	bcs	.LBB6_14
@@ -3620,84 +3494,90 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 .LBB6_13:                               ;   in Loop: Header=BB6_12 Depth=2
 	stx	__rc2
 	ldy	#17
-	lda	(__rc28),y
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+5)
-	stx	mos8(.LfindnextBAMtracksector_zp_stk)
+	lda	(__rc26),y
+	sta	__rc25
+	stx	__rc29
 	bra	.LBB6_10
 .LBB6_14:                               ;   in Loop: Header=BB6_1 Depth=1
-	lda	mos8(.LfindnextBAMtracksector_zp_stk+6)
-	ldy	mos8(.LfindnextBAMtracksector_zp_stk+6)
+	lda	__rc28
+	ldy	__rc28
 	iny
 	ldx	#0
-	cmp	#39
+	cmp	#79
+	stz	__rc25
 	lda	#6
 	bcs	.LBB6_15
 ; %bb.22:                               ;   in Loop: Header=BB6_1 Depth=1
 	jmp	.LBB6_1
 .LBB6_15:
-	stz	mos8(.LfindnextBAMtracksector_zp_stk)
+	stz	__rc26
 	lda	#255
 	bra	.LBB6_17
 .LBB6_16:
-	ldx	#1
-	ldy	mos8(.LfindnextBAMtracksector_zp_stk+6)
-	sty	mos8(.LfindnextBAMtracksector_zp_stk+4)
-	inc	mos8(.LfindnextBAMtracksector_zp_stk+4)
-	ldy	__rc26
-	sty	__rc2
-	ldy	__rc27
-	sty	__rc3
-	stx	__rc4
-	ldx	mos8(.LfindnextBAMtracksector_zp_stk)
-	lda	mos8(.LfindnextBAMtracksector_zp_stk+4)
-	jsr	BAMSectorUpdate
-	ldx	BAMside
-	lda	#0
+	ldx	mos8(BAMsector.0)
 	stx	__rc2
-	stx	__rc6
-	asl	__rc2
-	rol
-	clc
-	sta	__rc3
-	lda	#mos8(BAMsector)
-	adc	__rc2
-	sta	__rc4
-	lda	#mos8(0)
-	adc	__rc3
-	sta	__rc5
-	lda	(__rc4)
-	sta	__rc2
-	ldy	#1
-	lda	(__rc4),y
-	sta	__rc3
-	ldx	#40
+	ldx	mos8(BAMsector.0+1)
+	stx	__rc3
+	ldx	mos8(BAMsector.1)
 	stx	__rc4
-	ldx	#1
+	ldx	mos8(BAMsector.1+1)
 	stx	__rc5
-	ldx	mos8(.LfindnextBAMtracksector_zp_stk+3)
-	lda	__rc6
-	jsr	PutWholeSector
-	lda	mos8(.LfindnextBAMtracksector_zp_stk+4)
-.LBB6_17:
-	ldx	.LfindnextBAMtracksector_sstk   ; 1-byte Folded Reload
-	stx	__rc2
-	ldx	.LfindnextBAMtracksector_sstk+1 ; 1-byte Folded Reload
-	stx	__rc3
-	sta	(__rc2)
-	lda	mos8(.LfindnextBAMtracksector_zp_stk)
-	ldx	.LfindnextBAMtracksector_sstk+2 ; 1-byte Folded Reload
-	stx	__rc2
-	ldx	.LfindnextBAMtracksector_sstk+3 ; 1-byte Folded Reload
-	stx	__rc3
-	sta	(__rc2)
-	plx
-	stx	__rc29
-	plx
-	stx	__rc28
-	plx
-	stx	__rc27
-	plx
+	ldx	#1
+	ldy	__rc28
+	sty	__rc25
+	inc	__rc25
+	stx	__rc6
+	ldx	__rc29
 	stx	__rc26
+	lda	__rc25
+	jsr	BAMSectorUpdate
+	ldx	mos8(BAMsector.0)
+	ldy	mos8(BAMsector.0+1)
+	stx	__rc2
+	sty	__rc3
+	ldx	#40
+	ldy	#1
+	sty	__rc4
+	lda	__rc24
+	jsr	PutOneSector
+	ldx	mos8(BAMsector.1)
+	ldy	mos8(BAMsector.1+1)
+	stx	__rc2
+	sty	__rc3
+	ldx	5632
+	ldy	5633
+	sty	__rc4
+	lda	__rc24
+	jsr	PutOneSector
+	lda	__rc25
+.LBB6_17:
+	sta	(__rc20)
+	lda	__rc26
+	sta	(__rc22)
+	ldx	.LfindnextBAMtracksector_sstk+7 ; 1-byte Folded Reload
+	stx	__rc31
+	ldx	.LfindnextBAMtracksector_sstk+6 ; 1-byte Folded Reload
+	stx	__rc30
+	ldx	.LfindnextBAMtracksector_sstk+5 ; 1-byte Folded Reload
+	stx	__rc29
+	ldx	.LfindnextBAMtracksector_sstk+4 ; 1-byte Folded Reload
+	stx	__rc28
+	ldx	.LfindnextBAMtracksector_sstk+3 ; 1-byte Folded Reload
+	stx	__rc27
+	ldx	.LfindnextBAMtracksector_sstk+2 ; 1-byte Folded Reload
+	stx	__rc26
+	ldx	.LfindnextBAMtracksector_sstk+1 ; 1-byte Folded Reload
+	stx	__rc25
+	ldx	.LfindnextBAMtracksector_sstk   ; 1-byte Folded Reload
+	stx	__rc24
+	plx
+	stx	__rc23
+	plx
+	stx	__rc22
+	plx
+	stx	__rc21
+	plx
+	stx	__rc20
 	rts
 .Lfunc_end6:
 	.size	findnextBAMtracksector, .Lfunc_end6-findnextBAMtracksector
@@ -3712,18 +3592,15 @@ getdirententry:                         ; @getdirententry
 	ldx	#0
 	stx	mos8(.Lgetdirententry_zp_stk+5)
 	stz	__rc2
-	stz	mos8(BAMsector)
+	stz	mos8(BAMsector.0)
 	ldx	#22
-	stx	mos8(BAMsector+1)
-	stz	mos8(BAMsector+2)
+	stx	mos8(BAMsector.0+1)
+	stz	mos8(BAMsector.1)
 	inx
-	stx	mos8(BAMsector+3)
-	stz	mos8(worksector)
+	stx	mos8(BAMsector.1+1)
+	stz	mos8(worksector.0)
 	inx
-	stx	mos8(worksector+1)
-	stz	mos8(worksector+2)
-	ldy	#25
-	sty	mos8(worksector+3)
+	stx	mos8(worksector.0+1)
 	stz	mos8(worksectorasBAM.0)
 	stx	mos8(worksectorasBAM.0+1)
 	stz	mos8(direntryblock.0)
@@ -3736,12 +3613,12 @@ getdirententry:                         ; @getdirententry
 	ldy	mos8(direntryblock.0)
 	ldx	mos8(direntryblock.0+1)
 	sty	mos8(.Lgetdirententry_zp_stk)
-	sty	__rc4
+	stx	mos8(.Lgetdirententry_zp_stk+6)
 	stx	mos8(.Lgetdirententry_zp_stk+1)
 	lda	#0
 	stz	__rc3
-	ldy	#8
-	sty	mos8(.Lgetdirententry_zp_stk+9) ; 1-byte Folded Spill
+	ldx	#8
+	stx	mos8(.Lgetdirententry_zp_stk+9) ; 1-byte Folded Spill
 	stz	mos8(.Lgetdirententry_zp_stk+8)
 .LBB7_1:                                ; =>This Inner Loop Header: Depth=1
 	lsr	__rc3
@@ -3756,11 +3633,11 @@ getdirententry:                         ; @getdirententry
 	lsr	__rc3
 	ror	__rc10
 	ror
-	ldy	#8
-	sty	__rc3
-	ldy	__rc4
+	ldx	#8
+	stx	__rc3
 	sty	mos8(.Lgetdirententry_zp_stk+3)
-	stx	mos8(.Lgetdirententry_zp_stk+6)
+	sty	__rc4
+	ldx	mos8(.Lgetdirententry_zp_stk+6)
 	stx	__rc5
 	stz	__rc6
 	stz	__rc7
@@ -3789,8 +3666,6 @@ getdirententry:                         ; @getdirententry
 	ldx	mos8(.Lgetdirententry_zp_stk+8)
 	stx	__rc3
 .LBB7_5:                                ;   in Loop: Header=BB7_1 Depth=1
-	ldx	mos8(.Lgetdirententry_zp_stk+3)
-	stx	__rc4
 	lda	mos8(.Lgetdirententry_zp_stk+7)
 	cmp	mos8(.Lgetdirententry_zp_stk+2)
 	beq	.LBB7_10
@@ -3812,7 +3687,7 @@ getdirententry:                         ; @getdirententry
 	ldx	__rc3
 	stx	mos8(.Lgetdirententry_zp_stk+8)
 	stz	__rc2
-	ldx	mos8(.Lgetdirententry_zp_stk+6)
+	ldy	mos8(.Lgetdirententry_zp_stk+3)
 	stz	__rc3
 ; %bb.12:                               ;   in Loop: Header=BB7_1 Depth=1
 	jmp	.LBB7_1
@@ -3841,18 +3716,15 @@ getdirent:                              ; @getdirent
 	ldx	__rc22
 	phx
 	sta	__rc5
-	stz	mos8(BAMsector)
+	stz	mos8(BAMsector.0)
 	ldx	#22
-	stx	mos8(BAMsector+1)
-	stz	mos8(BAMsector+2)
+	stx	mos8(BAMsector.0+1)
+	stz	mos8(BAMsector.1)
 	inx
-	stx	mos8(BAMsector+3)
-	stz	mos8(worksector)
+	stx	mos8(BAMsector.1+1)
+	stz	mos8(worksector.0)
 	inx
-	stx	mos8(worksector+1)
-	stz	mos8(worksector+2)
-	ldy	#25
-	sty	mos8(worksector+3)
+	stx	mos8(worksector.0+1)
 	stz	mos8(worksectorasBAM.0)
 	stx	mos8(worksectorasBAM.0+1)
 	stz	mos8(direntryblock.0)
@@ -3913,7 +3785,7 @@ getdirent:                              ; @getdirent
 	.type	cputln,@function                ; -- Begin function cputln
 cputln:                                 ; @cputln
 ; %bb.0:
-	ldx	g_curScreenH
+	ldx	mos8(g_curScreenH)
 	stx	__rc4
 	ldx	mos8(g_curY)
 	lda	#0
@@ -4213,7 +4085,7 @@ clrhome:                                ; @clrhome
 	ldx	__rc2
 	stx	mos8(.Lclrhome_zp_stk)          ; 1-byte Folded Spill
 	ldx	mos8(g_curScreenW)
-	lda	g_curScreenH
+	lda	mos8(g_curScreenH)
 	stx	__rc2
 	stz	__rc3
 	ldx	#0
@@ -4353,15 +4225,13 @@ msprintf:                               ; @msprintf
 	.type	mprintf,@function               ; -- Begin function mprintf
 mprintf:                                ; @mprintf
 ; %bb.0:
-	ldy	__rc20
-	phy
 	ldy	__rc21
 	phy
 	ldy	__rc22
 	phy
 	ldy	__rc23
 	phy
-	sta	__rc20
+	sta	mos8(.Lmprintf_zp_stk)
 	stx	__rc21
 	ldx	__rc4
 	stx	__rc22
@@ -4428,7 +4298,7 @@ mprintf:                                ; @mprintf
 	ldx	__rc23
 	stx	__rc3
 	ldx	__rc21
-	lda	__rc20
+	lda	mos8(.Lmprintf_zp_stk)
 	jsr	csputdec
 	plx
 	stx	__rc23
@@ -4436,8 +4306,6 @@ mprintf:                                ; @mprintf
 	stx	__rc22
 	plx
 	stx	__rc21
-	plx
-	stx	__rc20
 	rts
 .Lfunc_end13:
 	.size	mprintf, .Lfunc_end13-mprintf
@@ -4446,12 +4314,8 @@ mprintf:                                ; @mprintf
 	.type	mh4printf,@function             ; -- Begin function mh4printf
 mh4printf:                              ; @mh4printf
 ; %bb.0:
-	ldy	__rc20
-	phy
-	ldy	__rc21
-	phy
-	sta	__rc20
-	stx	__rc21
+	sta	mos8(.Lmh4printf_zp_stk)
+	stx	mos8(.Lmh4printf_zp_stk+1)
 	ldx	__rc2
 	stx	__rc4
 	ldx	__rc3
@@ -4514,11 +4378,11 @@ mh4printf:                              ; @mh4printf
 	lda	#mos16hi(.Lmh4printf_sstk)
 	adc	#0
 	sta	__rc3
-	lda	__rc21
+	lda	mos8(.Lmh4printf_zp_stk+1)
 	sta	__rc4
 	and	#15
 	sta	__rc5
-	lda	__rc20
+	lda	mos8(.Lmh4printf_zp_stk)
 	lsr
 	lsr
 	lsr
@@ -4539,7 +4403,7 @@ mh4printf:                              ; @mh4printf
 	stx	.Lmh4printf_sstk+5
 	ldx	__rc5
 	ldy	hexDigits,x
-	lda	__rc20
+	lda	mos8(.Lmh4printf_zp_stk)
 	and	#15
 	tax
 	sty	.Lmh4printf_sstk+6
@@ -4556,12 +4420,7 @@ mh4printf:                              ; @mh4printf
 	sty	.Lmh4printf_sstk+4
 	lda	mos8(g_curX)
 	ldx	mos8(g_curY)
-	jsr	cputsxy
-	plx
-	stx	__rc21
-	plx
-	stx	__rc20
-	rts
+	jmp	cputsxy
 .Lfunc_end14:
 	.size	mh4printf, .Lfunc_end14-mh4printf
                                         ; -- End function
@@ -4837,7 +4696,7 @@ mcbox:                                  ; @mcbox
 	jmp	.LBB16_17
 .LBB16_9:
 	ldy	__rc27
-	cpy	g_curScreenH
+	cpy	mos8(g_curScreenH)
 	bcc	.LBB16_10
 ; %bb.24:
 	jmp	.LBB16_17
@@ -9958,17 +9817,23 @@ fnamehi:
 	.byte	0                               ; 0x0
 	.size	fnamehi, 1
 
-	.type	BAMsector,@object               ; @BAMsector
-	.section	.zp.bss.BAMsector,"aw",@nobits
-BAMsector:
-	.zero	4
-	.size	BAMsector, 4
+	.type	BAMsector.0,@object             ; @BAMsector.0
+	.section	.zp.bss.BAMsector.0,"aw",@nobits
+BAMsector.0:
+	.short	0
+	.size	BAMsector.0, 2
 
-	.type	worksector,@object              ; @worksector
-	.section	.zp.bss.worksector,"aw",@nobits
-worksector:
-	.zero	4
-	.size	worksector, 4
+	.type	BAMsector.1,@object             ; @BAMsector.1
+	.section	.zp.bss.BAMsector.1,"aw",@nobits
+BAMsector.1:
+	.short	0
+	.size	BAMsector.1, 2
+
+	.type	worksector.0,@object            ; @worksector.0
+	.section	.zp.bss.worksector.0,"aw",@nobits
+worksector.0:
+	.short	0
+	.size	worksector.0, 2
 
 	.type	worksectorasBAM.0,@object       ; @worksectorasBAM.0
 	.section	.zp.bss.worksectorasBAM.0,"aw",@nobits
@@ -9988,58 +9853,46 @@ direntryblock.1:
 	.short	0
 	.size	direntryblock.1, 2
 
-	.type	BAMside,@object                 ; @BAMside
-	.section	.bss.BAMside,"aw",@nobits
-BAMside:
-	.byte	0                               ; 0x0
-	.size	BAMside, 1
-
-	.type	workside,@object                ; @workside
-	.section	.bss.workside,"aw",@nobits
-workside:
-	.byte	0                               ; 0x0
-	.size	workside, 1
-
-	.type	.L.str.27,@object               ; @.str.27
+	.type	.L.str.11,@object               ; @.str.11
 	.section	.rodata.str1.1,"aMS",@progbits,1
-.L.str.27:
-	.asciz	" workside "
-	.size	.L.str.27, 11
+.L.str.11:
+	.asciz	"BAMsector "
+	.size	.L.str.11, 11
 
-	.type	.L.str.34,@object               ; @.str.34
-.L.str.34:
+	.type	.L.str.12,@object               ; @.str.12
+.L.str.12:
 	.asciz	"number of sectors too big"
-	.size	.L.str.34, 26
+	.size	.L.str.12, 26
 
-	.type	.L.str.35,@object               ; @.str.35
-.L.str.35:
+	.type	.L.str.13,@object               ; @.str.13
+.L.str.13:
 	.asciz	"nexttrack "
-	.size	.L.str.35, 11
+	.size	.L.str.13, 11
 
-	.type	.L.str.36,@object               ; @.str.36
-.L.str.36:
+	.type	.L.str.14,@object               ; @.str.14
+.L.str.14:
 	.asciz	" nextsector "
-	.size	.L.str.36, 13
+	.size	.L.str.14, 13
 
-	.type	.L.str.37,@object               ; @.str.37
-.L.str.37:
+	.type	.L.str.15,@object               ; @.str.15
+.L.str.15:
 	.asciz	" block is: "
-	.size	.L.str.37, 12
+	.size	.L.str.15, 12
 
-	.type	.L.str.38,@object               ; @.str.38
-.L.str.38:
-	.asciz	" worksector[workside]: "
-	.size	.L.str.38, 24
+	.type	.L.str.16,@object               ; @.str.16
+.L.str.16:
+	.asciz	" worksector[0]: "
+	.size	.L.str.16, 17
 
-	.type	.L.str.40,@object               ; @.str.40
-.L.str.40:
+	.type	.L.str.18,@object               ; @.str.18
+.L.str.18:
 	.asciz	"directory entries exhausted"
-	.size	.L.str.40, 28
+	.size	.L.str.18, 28
 
-	.type	.L.str.41,@object               ; @.str.41
-.L.str.41:
+	.type	.L.str.19,@object               ; @.str.19
+.L.str.19:
 	.asciz	"entry not found"
-	.size	.L.str.41, 16
+	.size	.L.str.19, 16
 
 	.type	.Lswitch.table.gettype,@object  ; @switch.table.gettype
 	.section	.rodata..Lswitch.table.gettype,"a",@progbits
@@ -10047,17 +9900,17 @@ workside:
 	.ascii	"SPURC"
 	.size	.Lswitch.table.gettype, 5
 
-	.type	.Lswitch.table.gettype.42,@object ; @switch.table.gettype.42
-	.section	.rodata..Lswitch.table.gettype.42,"a",@progbits
-.Lswitch.table.gettype.42:
+	.type	.Lswitch.table.gettype.20,@object ; @switch.table.gettype.20
+	.section	.rodata..Lswitch.table.gettype.20,"a",@progbits
+.Lswitch.table.gettype.20:
 	.ascii	"ERSEB"
-	.size	.Lswitch.table.gettype.42, 5
+	.size	.Lswitch.table.gettype.20, 5
 
-	.type	.Lswitch.table.gettype.43,@object ; @switch.table.gettype.43
-	.section	.rodata..Lswitch.table.gettype.43,"a",@progbits
-.Lswitch.table.gettype.43:
+	.type	.Lswitch.table.gettype.21,@object ; @switch.table.gettype.21
+	.section	.rodata..Lswitch.table.gettype.21,"a",@progbits
+.Lswitch.table.gettype.21:
 	.ascii	"QGRLM"
-	.size	.Lswitch.table.gettype.43, 5
+	.size	.Lswitch.table.gettype.21, 5
 
 	.type	.Lswitch.table.asciitoscreencode_s,@object ; @switch.table.asciitoscreencode_s
 	.section	.rodata..Lswitch.table.asciitoscreencode_s,"a",@progbits
@@ -10084,101 +9937,101 @@ s:
 	.zero	40
 	.size	s, 40
 
-	.type	.L.str.1.43,@object             ; @.str.1.43
+	.type	.L.str.1.38,@object             ; @.str.1.38
 	.section	.rodata.str1.1,"aMS",@progbits,1
-.L.str.1.43:
+.L.str.1.38:
 	.asciz	"1"
-	.size	.L.str.1.43, 2
+	.size	.L.str.1.38, 2
 
-	.type	.L.str.2.44,@object             ; @.str.2.44
-.L.str.2.44:
+	.type	.L.str.2.39,@object             ; @.str.2.39
+.L.str.2.39:
 	.asciz	"Help  "
-	.size	.L.str.2.44, 7
+	.size	.L.str.2.39, 7
 
-	.type	.L.str.3.45,@object             ; @.str.3.45
-.L.str.3.45:
+	.type	.L.str.3.40,@object             ; @.str.3.40
+.L.str.3.40:
 	.asciz	" 2"
-	.size	.L.str.3.45, 3
+	.size	.L.str.3.40, 3
 
-	.type	.L.str.4.46,@object             ; @.str.4.46
-.L.str.4.46:
+	.type	.L.str.4.41,@object             ; @.str.4.41
+.L.str.4.41:
 	.asciz	"Mount "
-	.size	.L.str.4.46, 7
+	.size	.L.str.4.41, 7
 
-	.type	.L.str.5.47,@object             ; @.str.5.47
-.L.str.5.47:
+	.type	.L.str.5.42,@object             ; @.str.5.42
+.L.str.5.42:
 	.asciz	" 3"
-	.size	.L.str.5.47, 3
+	.size	.L.str.5.42, 3
 
-	.type	.L.str.6.48,@object             ; @.str.6.48
-.L.str.6.48:
+	.type	.L.str.6.43,@object             ; @.str.6.43
+.L.str.6.43:
 	.asciz	"View  "
-	.size	.L.str.6.48, 7
+	.size	.L.str.6.43, 7
 
-	.type	.L.str.7.49,@object             ; @.str.7.49
-.L.str.7.49:
+	.type	.L.str.7,@object                ; @.str.7
+.L.str.7:
 	.asciz	" 4"
-	.size	.L.str.7.49, 3
+	.size	.L.str.7, 3
 
-	.type	.L.str.8,@object                ; @.str.8
-.L.str.8:
+	.type	.L.str.8.44,@object             ; @.str.8.44
+.L.str.8.44:
 	.asciz	"Edit  "
-	.size	.L.str.8, 7
+	.size	.L.str.8.44, 7
 
-	.type	.L.str.9,@object                ; @.str.9
-.L.str.9:
+	.type	.L.str.9.45,@object             ; @.str.9.45
+.L.str.9.45:
 	.asciz	" 5"
-	.size	.L.str.9, 3
+	.size	.L.str.9.45, 3
 
-	.type	.L.str.10,@object               ; @.str.10
-.L.str.10:
+	.type	.L.str.10.46,@object            ; @.str.10.46
+.L.str.10.46:
 	.asciz	"Copy  "
-	.size	.L.str.10, 7
+	.size	.L.str.10.46, 7
 
-	.type	.L.str.11,@object               ; @.str.11
-.L.str.11:
+	.type	.L.str.11.47,@object            ; @.str.11.47
+.L.str.11.47:
 	.asciz	" 6"
-	.size	.L.str.11, 3
+	.size	.L.str.11.47, 3
 
-	.type	.L.str.12,@object               ; @.str.12
-.L.str.12:
+	.type	.L.str.12.48,@object            ; @.str.12.48
+.L.str.12.48:
 	.asciz	"RenMov"
-	.size	.L.str.12, 7
+	.size	.L.str.12.48, 7
 
-	.type	.L.str.13,@object               ; @.str.13
-.L.str.13:
+	.type	.L.str.13.49,@object            ; @.str.13.49
+.L.str.13.49:
 	.asciz	" 7"
-	.size	.L.str.13, 3
+	.size	.L.str.13.49, 3
 
-	.type	.L.str.14,@object               ; @.str.14
-.L.str.14:
+	.type	.L.str.14.50,@object            ; @.str.14.50
+.L.str.14.50:
 	.asciz	"Mkdir "
-	.size	.L.str.14, 7
+	.size	.L.str.14.50, 7
 
-	.type	.L.str.15,@object               ; @.str.15
-.L.str.15:
+	.type	.L.str.15.51,@object            ; @.str.15.51
+.L.str.15.51:
 	.asciz	" 8"
-	.size	.L.str.15, 3
+	.size	.L.str.15.51, 3
 
-	.type	.L.str.16,@object               ; @.str.16
-.L.str.16:
+	.type	.L.str.16.52,@object            ; @.str.16.52
+.L.str.16.52:
 	.asciz	"Delete"
-	.size	.L.str.16, 7
+	.size	.L.str.16.52, 7
 
-	.type	.L.str.17,@object               ; @.str.17
-.L.str.17:
+	.type	.L.str.17.53,@object            ; @.str.17.53
+.L.str.17.53:
 	.asciz	" 9"
-	.size	.L.str.17, 3
+	.size	.L.str.17.53, 3
 
-	.type	.L.str.18,@object               ; @.str.18
-.L.str.18:
+	.type	.L.str.18.54,@object            ; @.str.18.54
+.L.str.18.54:
 	.asciz	"Menu  "
-	.size	.L.str.18, 7
+	.size	.L.str.18.54, 7
 
-	.type	.L.str.19,@object               ; @.str.19
-.L.str.19:
+	.type	.L.str.19.55,@object            ; @.str.19.55
+.L.str.19.55:
 	.asciz	" 10"
-	.size	.L.str.19, 4
+	.size	.L.str.19.55, 4
 
 	.type	.L.str.20,@object               ; @.str.20
 .L.str.20:
@@ -10215,10 +10068,10 @@ s:
 	.asciz	" "
 	.size	.L.str.26, 2
 
-	.type	.L.str.27.52,@object            ; @.str.27.52
-.L.str.27.52:
+	.type	.L.str.27,@object               ; @.str.27
+.L.str.27:
 	.asciz	"drv:"
-	.size	.L.str.27.52, 5
+	.size	.L.str.27, 5
 
 	.type	.L.str.28,@object               ; @.str.28
 .L.str.28:
@@ -10232,7 +10085,7 @@ g_curScreenW:
 	.size	g_curScreenW, 1
 
 	.type	g_curScreenH,@object            ; @g_curScreenH
-	.section	.bss.g_curScreenH,"aw",@nobits
+	.section	.zp.bss.g_curScreenH,"aw",@nobits
 g_curScreenH:
 	.byte	0                               ; 0x0
 	.size	g_curScreenH, 1
@@ -10276,18 +10129,18 @@ dmalist:
 	.type	.Lzp_stack,@object              ; @zp_stack
 	.section	.zp.noinit..Lzp_stack,"aw",@nobits
 .Lzp_stack:
-	.zero	32
-	.size	.Lzp_stack, 32
+	.zero	33
+	.size	.Lzp_stack, 33
 
 	.type	.Lstatic_stack,@object          ; @static_stack
 	.section	.noinit..Lstatic_stack,"aw",@nobits
 .Lstatic_stack:
-	.zero	10
-	.size	.Lstatic_stack, 10
+	.zero	22
+	.size	.Lstatic_stack, 22
 
-.set .L__udivmodhi4_zp_stk, .Lzp_stack+31
+.set .L__udivmodhi4_zp_stk, .Lzp_stack+32
 	.size	.L__udivmodhi4_zp_stk, 1
-.set .Lcputsxy_zp_stk, .Lzp_stack+22
+.set .Lcputsxy_zp_stk, .Lzp_stack+23
 	.size	.Lcputsxy_zp_stk, 9
 .set .Lcputln_zp_stk, .Lzp_stack
 	.size	.Lcputln_zp_stk, 6
@@ -10327,26 +10180,22 @@ dmalist:
 	.size	.Lmemset_zp_stk, 2
 .set .Lmemmove_zp_stk, .Lzp_stack
 	.size	.Lmemmove_zp_stk, 2
-.set .LGetWholeSector_zp_stk, .Lzp_stack+7
-	.size	.LGetWholeSector_zp_stk, 1
 .set .Lgetdirententry_zp_stk, .Lzp_stack
 	.size	.Lgetdirententry_zp_stk, 10
-.set .Lcsputdec_zp_stk, .Lzp_stack
+.set .Lcsputdec_zp_stk, .Lzp_stack+1
 	.size	.Lcsputdec_zp_stk, 22
-.set .LBAMSectorUpdate_zp_stk, .Lzp_stack+7
-	.size	.LBAMSectorUpdate_zp_stk, 2
-.set .LPutWholeSector_zp_stk, .Lzp_stack+7
-	.size	.LPutWholeSector_zp_stk, 4
-.set .LfindnextBAMtracksector_zp_stk, .Lzp_stack
-	.size	.LfindnextBAMtracksector_zp_stk, 7
-.set .LBAMSectorUpdate_sstk, .Lstatic_stack+4
-	.size	.LBAMSectorUpdate_sstk, 2
-.set .LPutWholeSector_sstk, .Lstatic_stack+4
-	.size	.LPutWholeSector_sstk, 2
-.set .LfindnextBAMtracksector_sstk, .Lstatic_stack
-	.size	.LfindnextBAMtracksector_sstk, 4
-.set .Lmh4printf_sstk, .Lstatic_stack
+.set .Lmprintf_zp_stk, .Lzp_stack
+	.size	.Lmprintf_zp_stk, 1
+.set .Lmh4printf_zp_stk, .Lzp_stack
+	.size	.Lmh4printf_zp_stk, 2
+.set .LPutOneSector_zp_stk, .Lzp_stack
+	.size	.LPutOneSector_zp_stk, 4
+.set .Lmh4printf_sstk, .Lstatic_stack+12
 	.size	.Lmh4printf_sstk, 10
+.set .LBAMSectorUpdate_sstk, .Lstatic_stack+8
+	.size	.LBAMSectorUpdate_sstk, 4
+.set .LfindnextBAMtracksector_sstk, .Lstatic_stack
+	.size	.LfindnextBAMtracksector_sstk, 8
 	.ident	"clang version 18.0.0 (https://github.com/llvm-mos/llvm-mos e0380cf4b8a252e7032622846436ede2f1bf9165)"
 	.ident	"clang version 18.0.0 (https://github.com/llvm-mos/llvm-mos e0380cf4b8a252e7032622846436ede2f1bf9165)"
 	.ident	"clang version 18.0.0 (https://github.com/llvm-mos/llvm-mos e0380cf4b8a252e7032622846436ede2f1bf9165)"
