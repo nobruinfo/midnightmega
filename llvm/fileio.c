@@ -260,10 +260,12 @@ void BAMSectorUpdate(BAM* BAMsector, BAM* BAMsector2, char track, char sector, c
     track -= 40;
 	BAMsector = BAMsector2;
   }
+#ifdef DEBUG
 		gotoxy(42, 20);
 		mh4printf("BAMsector ", (long) BAMsector);
 		cputln();
 		cgetc();
+#endif
   
   track--;  // access array zero based
   if (set)  {  // if set clear alloc bit below to allocate:
@@ -315,27 +317,26 @@ void readblockchain(uint32_t destination_address, // attic RAM
   nexttrack = track;
   nextsector = sector;
 #ifdef DEBUG
-		mprintf("nexttrack ", nexttrack);
+		mprintf("readblockchain first nexttrack ", nexttrack);
 		mprintf(" nextsector ", nextsector);
 		cputln();
 #endif
+
   for (i = 0; i < maxblocks; i++)  {
     /* workside = */ GetOneSector(worksectorasBAM[0], drive, nexttrack, nextsector);
     DATABLOCK* ws = worksector[0];
 	nexttrack = ws->chntrack;
 	nextsector = ws->chnsector;
 #ifdef DEBUG
-		gotoxy(42, 0);
 		mprintf("nexttrack ", nexttrack);
 		mprintf(" nextsector ", nextsector);
 //		mprintf(" workside ", workside);
 		cputln();
-		gotoxy(42, 1);
 		mprintf(" block ", i);
 		mh4printf(" is: ", (long) &ws);
 		cputln();
-		gotoxy(42, 2);
 		mh4printf(" worksector[0]: ", (long) worksector[0]);
+		mh4printf(" worksectorasBAM[0]: ", (long) worksectorasBAM[0]);
 		cputln();
 		cgetc();
 #endif
@@ -532,7 +533,7 @@ void deleteblockchain(unsigned char drive,
     /* workside = */ GetOneSector(worksectorasBAM[0], drive, nexttrack, nextsector);
     DATABLOCK* ws = worksector[0];
 	BAMSectorUpdate(BAMsector[0], BAMsector[1], nexttrack, nextsector, 0); // 0=free up
-//#ifdef DEBUG
+#ifdef DEBUG
 		gotoxy(42, 0);
 		mprintf("nexttrack ", nexttrack);
 		mprintf(" nextsector ", nextsector);
@@ -545,7 +546,7 @@ void deleteblockchain(unsigned char drive,
 		mh4printf(" worksector[0]: ", (long) worksector[0]);
 		cputln();
 		cgetc();
-//#endif
+#endif
 	nexttrack = ws->chntrack;
 	nextsector = ws->chnsector;
   }
@@ -591,7 +592,7 @@ unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i)  {
   return i;
 }
 
-DIRENT* getdirententry(unsigned char entry)  {
+DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
   unsigned char i;
   DIRENT* ds;
   unsigned int max = ENTRIESPERBLOCK;
@@ -601,7 +602,8 @@ DIRENT* getdirententry(unsigned char entry)  {
 
   for (i = 0; i < max; i++)  {
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
-    lcopy(ATTICDIRENTBUFFER + i * DIRENTSIZE, (uint32_t) ds, DIRENTSIZE);
+    lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+          (uint32_t) ds, DIRENTSIZE);
 
 	if (ds->track == 0)  return NULL; // no more entries
 	if (ds->chntrack > 0)  max += ENTRIESPERBLOCK; // more attic pages
@@ -629,7 +631,7 @@ DIRENT* getdirententry(unsigned char entry)  {
 //  cgetc();
   return NULL;
 }
-unsigned char getdirent(unsigned char drive)  {
+unsigned char getdirent(unsigned char drive, unsigned char side)  {
   unsigned char i;
 
   _miniInit();
@@ -638,26 +640,27 @@ unsigned char getdirent(unsigned char drive)  {
   cputln();
   cgetc();
 */
-  readblockchain(ATTICDIRENTBUFFER, DIRENTBLOCKS, drive, 40, 3);
+  readblockchain(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE,
+                 DIRENTBLOCKS, drive, 40, 3);
 /*
   msprintf("after readblockchain");
   cputln();
   cgetc();
 */
   for (i = ENTRIESPERBLOCK * DIRENTBLOCKS; i > 0; i--)  {
-	if (getdirententry(i) != NULL)  return i;  // nbr of entries
+	if (getdirententry(side, i) != NULL)  return i;  // nbr of entries
   }
   return 0;
 }
 
 // start track/sector must be present in newds:
-void writenewdirententry(unsigned char drive, DIRENT* newds2)  {
+void writenewdirententry_____(unsigned char drive, unsigned char side, DIRENT* newds2)  {
   unsigned char i;
   DIRENT* ds;
   DIRENT* newds;
   unsigned int max = ENTRIESPERBLOCK;
   unsigned char track = 40;
-  unsigned char sector = 3;  // to be changed for sector chained by t=40, s=0
+  unsigned char sector = 3;  // @@ to be changed for sector chained by t=40, s=0
 
   _miniInit();
 
@@ -670,7 +673,8 @@ void writenewdirententry(unsigned char drive, DIRENT* newds2)  {
   // first try overwriting DEL file entry:
   for (i = 0; i < max; i++)  {
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
-    lcopy(ATTICDIRENTBUFFER + i * DIRENTSIZE, (uint32_t) ds, DIRENTSIZE);
+    lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+	      (uint32_t) ds, DIRENTSIZE);
 
 //	if (ds->track == 0)  break; // no more entries
 	if (ds->chntrack > 0)  {
@@ -684,7 +688,9 @@ void writenewdirententry(unsigned char drive, DIRENT* newds2)  {
 	if ((ds->type&0xf) == VAL_DOSFTYPE_DEL)  {
 	  newds->chntrack = ds->chntrack;  // keep original chain
 	  newds->chnsector = ds->chnsector;
-	  lcopy((uint32_t) newds, ATTICDIRENTBUFFER + i * DIRENTSIZE, DIRENTSIZE);
+	  lcopy((uint32_t) newds,
+	        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+			DIRENTSIZE);
 #ifdef DEBUG
 	  mprintf("writenewdirententry i=", i);
 	  mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
@@ -698,10 +704,12 @@ void writenewdirententry(unsigned char drive, DIRENT* newds2)  {
 	  cputln();
 	  cgetc();
 #endif
-	  lcopy(ATTICDIRENTBUFFER + i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
+	  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
+              i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
 	        BLOCKDATALOW, BLOCKSIZE);
 	  PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
 #ifdef DEBUG
+	  gotoxy(42, 0);
 	  msprintf("writenewdirententry done");
 	  cputln();
 	  cgetc();
@@ -733,12 +741,110 @@ void writenewdirententry(unsigned char drive, DIRENT* newds2)  {
   cgetc();
 }
 
-void deletedirententry(unsigned char drive, unsigned char entry)  {
+// start track/sector must be present in newds:
+void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)  {
+  unsigned char i;
+  DIRENT* ds;
+//  DIRENT* newds;
+  unsigned int max = ENTRIESPERBLOCK;
+  unsigned char track = 40;
+  unsigned char sector = 3;  // @@ to be changed for sector chained by t=40, s=0
+  unsigned char nexttrack = 0;
+  unsigned char nextsector = 0;
+
+  _miniInit();
+
+  // blatantly misuse the unfilled DIRENT buffer:
+  ds = (DIRENT *) direntryblock[1]; // to be changed to smaller array
+
+  // first try overwriting DEL file entry:
+  for (i = 0; i < max; i++)  {
+    // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
+    lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+	      (uint32_t) ds, DIRENTSIZE);
+
+	// not for the first iteration:
+	if (i > 0 && (i % ENTRIESPERBLOCK) == 0)  {
+	  track = nexttrack;
+	  sector = nextsector;
+	}
+	if (ds->chntrack > 0)  {
+      max += ENTRIESPERBLOCK; // more attic pages
+	  nexttrack = ds->chntrack;  // chain for where to write dirent sector
+	  nextsector = ds->chnsector;
+	}
+	if ((ds->type&0xf) == VAL_DOSFTYPE_DEL)  {
+	  newds->chntrack = ds->chntrack;  // keep blockchain
+	  newds->chnsector = ds->chnsector;
+	  lcopy((uint32_t) newds,
+	        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+			DIRENTSIZE);
+
+#ifdef DEBUG
+	  mprintf("writenewdirententry i=", i);
+	  mprintf(" ofs=", side * ATTICDIRENTSIZE +
+                       i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
+	  mprintf(" side=", sector % 2);
+	  mprintf(" newds->track=", newds->track);
+	  mprintf(" newds->sector=", newds->sector);
+	  cputln();
+	  mprintf("track=", track);
+	  mprintf(" sector=", sector);
+	  mprintf(" nexttrack=", nexttrack);
+	  mprintf(" nextsector=", nextsector);
+	  mprintf(" type=", (newds->type&0xf));
+	  cputln();
+	  mh4printf(" ds addr=", (long) &ds);
+	  mh4printf(" newds addr=", (long) &newds);
+//	  mh4printf(" newds2 addr=", (long) &newds2);
+	  cputln();
+	  cgetc();
+#endif
+
+	  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
+              i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
+	        BLOCKDATALOW, BLOCKSIZE);
+	  PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
+#ifdef DEBUG
+	  msprintf("writenewdirententry done");
+	  cputln();
+	  cgetc();
+#endif
+	  return;
+	}
+
+#ifdef DEBUG
+	if (ds->track > 0)  {
+	  mprintf("writedirentry ", i);
+	  mh4printf(" is: ", (long) &ds);
+	  memcpy(dosfilename, ds->name, DOSFILENAMELEN);
+	  dosfilename[DOSFILENAMELEN] = 0; // proper null termination
+	  msprintf(" name ");
+//		msprintf((char *) dosfilename);
+	  mprintf(" chntrk ", ds->chntrack);
+	  mprintf(" chnsect ", ds->chnsector);
+	  mhprintf(" type ", ds->type&0xf);
+	  mprintf(" trk ", ds->track);
+	  mprintf(" sect ", ds->sector);
+	  mprintf(" size ", ds->size);
+	  mhprintf(" access ", ds->access);
+	  cputln();
+	  cgetc();
+    }
+#endif
+  }
+  messagebox("directory entries exhausted");
+  cgetc();
+}
+
+void deletedirententry(unsigned char drive, unsigned char side, unsigned char entry)  {
   unsigned char i;
   DIRENT* ds;
   unsigned int max = ENTRIESPERBLOCK;
   unsigned char track = 40;
   unsigned char sector = 3;  // to be changed for sector chained by t=40, s=0
+  unsigned char nexttrack = 0;
+  unsigned char nextsector = 0;
 
   _miniInit();
 
@@ -747,35 +853,40 @@ void deletedirententry(unsigned char drive, unsigned char entry)  {
   // loop all entries:
   for (i = 0; i < max; i++)  {
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
-    lcopy(ATTICDIRENTBUFFER + i * DIRENTSIZE, (uint32_t) ds, DIRENTSIZE);
+    lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+	      (uint32_t) ds, DIRENTSIZE);
 
-//	if (ds->track == 0)  break; // no more entries
+	// not for the first iteration:
+	if (i > 0 && (i % ENTRIESPERBLOCK) == 0)  {
+	  track = nexttrack;
+	  sector = nextsector;
+	}
 	if (ds->chntrack > 0)  {
       max += ENTRIESPERBLOCK; // more attic pages
-	  track = ds->chntrack;  // chain for where to write dirent sector
-	  sector = ds->chnsector;
-#ifdef DEBUG
-	  mprintf("deletedirententry next block at i=", i);
-	  cputln();
-	  cgetc();
-#endif
+	  nexttrack = ds->chntrack;  // chain for where to write dirent sector
+	  nextsector = ds->chnsector;
 	}
+
 	if (i == entry)  {
 	  //                           also clear upper bits:
 	  ds->type = VAL_DOSFTYPE_DEL; // + (ds->type & ~0xf);
-	  lcopy((uint32_t) ds, ATTICDIRENTBUFFER + i * DIRENTSIZE, DIRENTSIZE);
+	  lcopy((uint32_t) ds, ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+	        DIRENTSIZE);
 #ifdef DEBUG
 	  mprintf("deletedirententry i=", i);
 	  mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
-	  mprintf(" side=", sector % 2);
+	  mprintf(" side=", side);
 	  mprintf(" track=", track);
 	  mprintf(" sector=", sector);
+	  mprintf(" nexttrack=", nexttrack);
+	  mprintf(" nextsector=", nextsector);
 	  mprintf(" type=", (ds->type&0xf));
 	  mh4printf(" ds addr=", (long) &ds);
 	  cputln();
 	  cgetc();
 #endif
-	  lcopy(ATTICDIRENTBUFFER + i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
+	  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
+	          i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
 	        BLOCKDATALOW, BLOCKSIZE);
 	  PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
 	  deleteblockchain(drive, ds->track, ds->sector);

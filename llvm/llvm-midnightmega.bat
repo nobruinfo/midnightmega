@@ -77,7 +77,7 @@ IF ERRORLEVEL == 1 (
     %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.1,l80,01,01
     ECHO this is a sequential file for testing.>%DATADISK%.seq
     for /l %%i in (1, 1, 1500) do (
-      ECHO trying to make this file %%l times bigger.>>%DATADISK%.seq
+      ECHO trying to make this file %%i times bigger.>>%DATADISK%.seq
     )
     %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.2,s
     ECHO this is a sequential file for testing.>%DATADISK%.seq
@@ -86,7 +86,7 @@ IF ERRORLEVEL == 1 (
     %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.4,d
     DEL %DATADISK%.seq>NUL
     for /l %%i in (1, 1, 10) do (
-      %c1541% -attach %DATADISK%.d81 -write %PRJ%.prg %PRJ%.%%i
+      %c1541% -attach %DATADISK%.d81 -write %PRJ%.prg _%PRJ%.%%i
     )
   )
 

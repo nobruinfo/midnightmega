@@ -80,7 +80,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
 void deleteblockchain(unsigned char drive,
                       unsigned char track, unsigned char sector);
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i);
-DIRENT* getdirententry(unsigned char entry);
-unsigned char getdirent(unsigned char drive);
-void writenewdirententry(unsigned char drive, DIRENT* newds);
-void deletedirententry(unsigned char drive, unsigned char entry);
+DIRENT* getdirententry(unsigned char side, unsigned char entry);
+unsigned char getdirent(unsigned char drive, unsigned char side);
+void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds);
+void deletedirententry(unsigned char drive, unsigned char side, unsigned char entry);

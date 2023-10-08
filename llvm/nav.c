@@ -8,6 +8,7 @@
 #include "conioextensions.h"
 #include "hyppo.h"
 #include "fileio.h"
+#include "nav.h"
 
 // *********************************************************
 // ***  nav.c Midnight Mega's window mgmt                ***
@@ -69,7 +70,7 @@ unsigned char getd81(void)  {
 
 #define DIRENTENTRIES 22
 unsigned char s[DOSFILENAMEANDTYPELEN];
-void listbox(unsigned char iscurrent,
+void listbox(unsigned char iscurrent, unsigned char side,
              unsigned char x, unsigned char y,
              unsigned char currentitem, unsigned char nbritems)  {
   unsigned int n;
@@ -81,7 +82,7 @@ void listbox(unsigned char iscurrent,
   if (currentitem + 1 >= DIRENTENTRIES)  ofs = currentitem + 1 - DIRENTENTRIES;
 
   for (n = 0 ; n < DIRENTENTRIES; n++)  {
-	ds = getdirententry(n + ofs);
+	ds = getdirententry(side, n + ofs);
 	if (ds == NULL)  break;
 
 	i = 0;
@@ -275,7 +276,8 @@ void navi(unsigned char side)  {
   midnight[1]->pos = 0;
   while (1)  {
     for (i = 0; i <= 1; i++)  {
-      midnight[i]->entries = getdirent(midnight[i]->drive);
+      // @@ todo put dirents of both sides into seperate Attic buffers:
+	  midnight[i]->entries = getdirent(midnight[i]->drive, i);
       if (midnight[i]->pos > midnight[i]->entries)  {
         midnight[i]->pos = midnight[i]->entries;
       }
@@ -290,13 +292,14 @@ void navi(unsigned char side)  {
       msprintf((char *) midnight[i]->curfile);
 	  cputc(' ');
       revers(0);
-      listbox((side == i), leftx + 1, 1, midnight[i]->pos, midnight[i]->entries);
+      listbox((side == i), i, leftx + 1, 1, midnight[i]->pos, midnight[i]->entries);
 	}
 
 	shortcuts();
+	
 	// @@ as long as dirents are not kept seperately in Attic RAM:
-	midnight[side]->entries = getdirent(midnight[side]->drive);
-
+	// midnight[side]->entries = getdirent(midnight[side]->drive, side);
+	gotoxy(0, 0); // @@ To get debug output from top left
     c = cgetc();
     switch (c) {
 	  case 145: // Crsrup
@@ -308,60 +311,62 @@ void navi(unsigned char side)  {
 
 	  case 9: // Tab
 	    side = (side ? 0 : 1);
-		midnight[side]->entries = getdirent(midnight[side]->drive);
+		midnight[side]->entries = getdirent(midnight[side]->drive, side);
       break;
 
 	  case 0xf2: // Modifier and ASC_F1:
-	    if (d81navi(side))  midnight[side]->entries = getdirent(midnight[side]->drive);
+	    if (d81navi(side))  {
+		  midnight[side]->entries = getdirent(midnight[side]->drive, side);
+		}
       break;
 
 	  case 0xf5: // ASC_F5 copy
 	  case 0xf8: // Modifier and ASC_F8 delete
-        ds = getdirententry(midnight[side]->pos);
-/*
-		gotoxy(42, 20);
+        ds = getdirententry(side, midnight[side]->pos);
+
+#ifdef DEBUG
         msprintf("name: ");
         msprintf(ds->name);
         mprintf(" t=", ds->track);
         mprintf(" s=", ds->sector);
         mprintf(" type=", ds->type&0xf);
 
-//		gotoxy(42, 20);
 //  mh4printf("ATTICFILEBUFFER 32addr is: ", ATTICFILEBUFFER >> 16);
 //  mh4printf(" ", ATTICFILEBUFFER & 0xffff);
-		  gotoxy(42, 0);
-		  mprintf("before write type=", ds->type);
+	  cputln();
+		  mprintf("before copy/del type=", ds->type);
 	  cputln();
 	      cgetc();
-*/
+#endif
 	    if (c == 0xf5)  {  // copy
 		  readblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side]->drive,
                          ds->track, ds->sector);
-		  writeblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side]->drive,
+		  // write on opposing side disk:
+		  writeblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side?0:1]->drive,
 		                  &starttrack, &startsector);
 		  ds->track = starttrack;  // recycle src dirent for destination
 		  ds->sector = startsector;
-//	    ds->type = 
-//	    ds->name = "dest";
-//	    ds->size = 
-//	    ds->access = 
-/*
-		  gotoxy(42, 0);
+
+#ifdef DEBUG
 		  mprintf("   before newds type=", ds->type);
 	  cputln();
 	      cgetc();
-*/
-		  writenewdirententry(midnight[side]->drive, ds);
+#endif
+		  // load opposing side dirent block into Attic:
+//		  midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
+		  writenewdirententry(midnight[side?0:1]->drive, side?0:1, ds);
+		  // re-read altered dirent on opposing side after entry added:
+//		  midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
 		} else {  // delete
 		  // confirmation box
 		  ds->type = VAL_DOSFTYPE_DEL;
-		  deletedirententry(midnight[side]->drive, midnight[side]->pos);
+		  deletedirententry(midnight[side]->drive, side, midnight[side]->pos);
 		}
-		midnight[side]->entries = getdirent(midnight[side]->drive);
+		midnight[side]->entries = getdirent(midnight[side]->drive, side?0:1);
       break;
 
 	  case 0x12: // Ctrl-r
-		midnight[side]->entries = getdirent(midnight[side]->drive);
+		midnight[side]->entries = getdirent(midnight[side]->drive, side?0:1);
       break;
 
 	  case 13: // return

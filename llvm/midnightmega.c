@@ -82,6 +82,9 @@ int main() {
   gotoxy(22,7);
   msprintf("Press almost any key to continue.");
   cgetc();
+  
+  // setscreensize(80, 50);  or 40 25
+  setscreensize(80, 25);
 
 #ifdef sduhgsiuzfgsuzd
   // cputu("hyppo_setname is: ", hyppo_setname("EMPTY.D81"), HEXADECIMAL);
