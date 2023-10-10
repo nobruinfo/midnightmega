@@ -654,96 +654,9 @@ unsigned char getdirent(unsigned char drive, unsigned char side)  {
 }
 
 // start track/sector must be present in newds:
-void writenewdirententry_____(unsigned char drive, unsigned char side, DIRENT* newds2)  {
-  unsigned char i;
-  DIRENT* ds;
-  DIRENT* newds;
-  unsigned int max = ENTRIESPERBLOCK;
-  unsigned char track = 40;
-  unsigned char sector = 3;  // @@ to be changed for sector chained by t=40, s=0
-
-  _miniInit();
-
-  ds = (DIRENT *) direntryblock[0]; // to be changed to smaller array
-  // for write operations:
-  newds = (DIRENT *) direntryblock[1]; // to be changed to smaller array
-  // to use own pointer for write dirent:
-  lcopy((uint32_t) newds2, (uint32_t) newds, DIRENTSIZE);
-
-  // first try overwriting DEL file entry:
-  for (i = 0; i < max; i++)  {
-    // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
-    lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
-	      (uint32_t) ds, DIRENTSIZE);
-
-//	if (ds->track == 0)  break; // no more entries
-	if (ds->chntrack > 0)  {
-      max += ENTRIESPERBLOCK; // more attic pages
-	  track = ds->chntrack;  // chain for where to write dirent sector
-	  sector = ds->chnsector;
-	  mprintfd("writenewdirententry next block at i=", i);
-	  cputlnd();
-	  cgetcd();
-	}
-	if ((ds->type&0xf) == VAL_DOSFTYPE_DEL)  {
-	  newds->chntrack = ds->chntrack;  // keep original chain
-	  newds->chnsector = ds->chnsector;
-	  lcopy((uint32_t) newds,
-	        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
-			DIRENTSIZE);
-#ifdef DEBUG
-	  mprintf("writenewdirententry i=", i);
-	  mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
-	  mprintf(" side=", sector % 2);
-	  mprintf(" track=", track);
-	  mprintf(" sector=", sector);
-	  mprintf(" type=", (newds->type&0xf));
-	  mh4printf(" ds addr=", (long) &ds);
-	  mh4printf(" newds addr=", (long) &newds);
-	  mh4printf(" newds2 addr=", (long) &newds2);
-	  cputln();
-	  cgetc();
-#endif
-	  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
-              i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
-	        BLOCKDATALOW, BLOCKSIZE);
-	  PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
-#ifdef DEBUG
-	  gotoxy(42, 0);
-	  msprintf("writenewdirententry done");
-	  cputln();
-	  cgetc();
-#endif
-	  return;
-	}
-
-#ifdef DEBUG
-	if (ds->track > 0)  {
-	  mprintf("direntry ", i);
-	  mh4printf(" is: ", (long) &ds);
-	  memcpy(dosfilename, ds->name, DOSFILENAMELEN);
-	  dosfilename[DOSFILENAMELEN] = 0; // proper null termination
-	  msprintf(" name ");
-//		msprintf((char *) dosfilename);
-	  mprintf(" chntrk ", ds->chntrack);
-	  mprintf(" chnsect ", ds->chnsector);
-	  mhprintf(" type ", ds->type&0xf);
-	  mprintf(" trk ", ds->track);
-	  mprintf(" sect ", ds->sector);
-	  mprintf(" size ", ds->size);
-	  mhprintf(" access ", ds->access);
-	  cputln();
-	  cgetc();
-    }
-#endif
-  }
-  messagebox("directory entries exhausted");
-  cgetc();
-}
-
-// start track/sector must be present in newds:
 void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)  {
   unsigned char i;
+  unsigned char topdirent = 0;  // keep number of first dirent of current sector
   DIRENT* ds;
 //  DIRENT* newds;
   unsigned int max = ENTRIESPERBLOCK;
@@ -763,10 +676,13 @@ void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)
     lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
 	      (uint32_t) ds, DIRENTSIZE);
 
-	// not for the first iteration:
-	if (i > 0 && (i % ENTRIESPERBLOCK) == 0)  {
-	  track = nexttrack;
-	  sector = nextsector;
+	if ((i % ENTRIESPERBLOCK) == 0)  {
+	  topdirent = i;
+      // not for the first iteration:
+	  if (i > 0)  {
+	    track = nexttrack;
+	    sector = nextsector;
+	  }
 	}
 	if (ds->chntrack > 0)  {
       max += ENTRIESPERBLOCK; // more attic pages
@@ -833,6 +749,42 @@ void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)
     }
 #endif
   }
+  
+  // peek first dirent of full block to set new chain:
+  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + topdirent * DIRENTSIZE,
+	    (uint32_t) ds, DIRENTSIZE);
+  // dirent already full, establish an additional sector:
+  // @@ sector strategy needed
+  findnextBAMtracksector(drive, &nexttrack, &nextsector);
+  ds->chntrack = nexttrack;
+  ds->chnsector = nextsector;
+  // write new chain:
+  lcopy((uint32_t) ds, // first dirent is the new one
+	    ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + topdirent * DIRENTSIZE,
+		DIRENTSIZE);
+  // dirty, copy attic back to block buffer and save it:
+  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
+		topdirent / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
+		BLOCKDATALOW, BLOCKSIZE);
+  PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
+  mprintf("first sector set, i=", i);
+	  cputln();
+  cgetc();
+
+  // i is already incremented after the loop, so step into next dirent block
+  lfill(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+        0, BLOCKSIZE); // zero the whole block to fill one dirent after
+  newds->chntrack = 0;  // indicate end of chain
+  newds->chnsector = 0xff;
+  lcopy((uint32_t) newds, // first dirent is the new one
+	    ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+		DIRENTSIZE);
+
+  // dirty, copy attic back to block buffer and save it:
+  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
+		i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
+		BLOCKDATALOW, BLOCKSIZE);
+  PutOneSector((BAM *) worksectorasBAM[0], drive, nexttrack, nextsector);
   messagebox("directory entries exhausted");
   cgetc();
 }

@@ -8,6 +8,7 @@ SET VICE=%VICE%\GTK3VICE-3.6.1-win64\bin\
 SET c1541="%VICE%\c1541"
 
 SET XMEGA65=D:\Game Collections\C64\Mega65\Xemu\xemu-binaries-win64\
+SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos\
 SET PATH=%PATH%;%VICE%;%XMEGA65%
 
 CD /D %~dp0
@@ -89,7 +90,10 @@ IF ERRORLEVEL == 1 (
       %c1541% -attach %DATADISK%.d81 -write %PRJ%.prg _%PRJ%.%%i
     )
   )
+  REM Use in Xemu's out of the image file fs access:
+  XCOPY /Y %PRJ%.d81 %HDOS%
+  XCOPY /Y %DATADISK%.d81 %HDOS%
 
-  XMEGA65 -besure -8 %PRJ%.d81 -9 %DATADISK%.d81 -autoload -hdosvirt
+  XMEGA65 -besure -8 %HDOS%%PRJ%.d81 -9 %HDOS%%DATADISK%.d81 -autoload -hdosvirt
   REM XMEGA65 -syscon -besure -prg %PRJ%.prg
 )
