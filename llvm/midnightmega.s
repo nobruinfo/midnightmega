@@ -432,12 +432,12 @@ main:                                   ; @main
 ; %bb.39:                               ;   in Loop: Header=BB0_62 Depth=3
 	ldx	__rc4
 	lda	.Lswitch.table.gettype-1,x
-	ldy	.Lswitch.table.gettype.15-1,x
+	ldy	.Lswitch.table.gettype.16-1,x
 	pha
 	tya
 	ldy	#22
 	sta	(__rc0),y                       ; 1-byte Folded Spill
-	lda	.Lswitch.table.gettype.16-1,x
+	lda	.Lswitch.table.gettype.17-1,x
 	tax
 	txa
 	dey
@@ -805,9 +805,9 @@ main:                                   ; @main
 	and	#208
 	ora	#1
 	sta	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.1.36)
+	ldx	#mos16lo(.L.str.1.39)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.1.36)
+	ldx	#mos16hi(.L.str.1.39)
 	stx	__rc3
 	ldx	#24
 	lda	#0
@@ -818,41 +818,41 @@ main:                                   ; @main
 	ora	#44
 	sta	mos8(g_curTextColor)
 	sta	__rc21
-	ldx	#mos16lo(.L.str.2.37)
+	ldx	#mos16lo(.L.str.2.40)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.2.37)
+	ldx	#mos16hi(.L.str.2.40)
 	stx	__rc3
 	jsr	msprintf
 	lda	__rc20
 	ora	#1
 	sta	mos8(g_curTextColor)
 	sta	__rc22
-	ldx	#mos16lo(.L.str.3.38)
+	ldx	#mos16lo(.L.str.3.41)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.3.38)
+	ldx	#mos16hi(.L.str.3.41)
 	stx	__rc3
 	jsr	msprintf
 	lda	__rc20
 	ora	#35
 	sta	mos8(g_curTextColor)
 	sta	__rc23
-	ldx	#mos16lo(.L.str.4.39)
+	ldx	#mos16lo(.L.str.4.42)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.4.39)
+	ldx	#mos16hi(.L.str.4.42)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.5.40)
+	ldx	#mos16lo(.L.str.5.43)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.5.40)
+	ldx	#mos16hi(.L.str.5.43)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc21
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.6.41)
+	ldx	#mos16lo(.L.str.6.44)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.6.41)
+	ldx	#mos16hi(.L.str.6.44)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
@@ -864,58 +864,58 @@ main:                                   ; @main
 	jsr	msprintf
 	ldx	__rc21
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.8.42)
+	ldx	#mos16lo(.L.str.8)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.8.42)
+	ldx	#mos16hi(.L.str.8)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.9.43)
+	ldx	#mos16lo(.L.str.9.45)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.9.43)
+	ldx	#mos16hi(.L.str.9.45)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc23
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.10.44)
+	ldx	#mos16lo(.L.str.10.46)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.10.44)
+	ldx	#mos16hi(.L.str.10.46)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.11.45)
+	ldx	#mos16lo(.L.str.11.47)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.11.45)
+	ldx	#mos16hi(.L.str.11.47)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc21
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.12.46)
+	ldx	#mos16lo(.L.str.12.48)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.12.46)
+	ldx	#mos16hi(.L.str.12.48)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.13.47)
+	ldx	#mos16lo(.L.str.13.49)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.13.47)
+	ldx	#mos16hi(.L.str.13.49)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc21
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.14.48)
+	ldx	#mos16lo(.L.str.14.50)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.14.48)
+	ldx	#mos16hi(.L.str.14.50)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc22
 	stx	mos8(g_curTextColor)
-	ldx	#mos16lo(.L.str.15)
+	ldx	#mos16lo(.L.str.15.51)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.15)
+	ldx	#mos16hi(.L.str.15.51)
 	stx	__rc3
 	jsr	msprintf
 	ldx	__rc23
@@ -1607,9 +1607,9 @@ donehypreaddir2:
 ; %bb.296:                              ;   in Loop: Header=BB0_112 Depth=2
 	jmp	.LBB0_112
 .LBB0_124:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.14)
+	ldx	#mos16lo(.L.str.15)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.14)
+	ldx	#mos16hi(.L.str.15)
 	stx	__rc3
 	jsr	messagebox
 .LBB0_125:                              ;   Parent Loop BB0_18 Depth=1
@@ -1812,9 +1812,9 @@ donehypreaddir2:
 	lda	__rc30
 	beq	.LBB0_136
 ; %bb.133:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.11)
+	ldx	#mos16lo(.L.str.12)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.11)
+	ldx	#mos16hi(.L.str.12)
 	stx	__rc3
 	jsr	messagebox
 .LBB0_134:                              ;   Parent Loop BB0_18 Depth=1
@@ -2269,9 +2269,9 @@ donehypreaddir2:
 	tax
 	lda	__rc21
 	jsr	PutOneSector
-	ldx	#mos16lo(.L.str.12)
+	ldx	#mos16lo(.L.str.13)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.12)
+	ldx	#mos16hi(.L.str.13)
 	stx	__rc3
 	stz	__rc4
 	stz	__rc5
@@ -2386,9 +2386,9 @@ donehypreaddir2:
 	ldy	#20
 	lda	(__rc0),y                       ; 1-byte Folded Reload
 	jsr	PutOneSector
-	ldx	#mos16lo(.L.str.13)
+	ldx	#mos16lo(.L.str.14)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.13)
+	ldx	#mos16hi(.L.str.14)
 	stx	__rc3
 	jsr	messagebox
 	ldy	#16
@@ -3229,42 +3229,440 @@ ReadSector:                             ; @ReadSector
 .Lfunc_end1:
 	.size	ReadSector, .Lfunc_end1-ReadSector
                                         ; -- End function
-	.section	.text.GetOneSector,"ax",@progbits
-	.type	GetOneSector,@function          ; -- Begin function GetOneSector
-GetOneSector:                           ; @GetOneSector
+	.section	.text.ShowAccess,"ax",@progbits
+	.type	ShowAccess,@function            ; -- Begin function ShowAccess
+ShowAccess:                             ; @ShowAccess
 ; %bb.0:
+	pha
+	clc
+	lda	__rc0
+	adc	#253
+	sta	__rc0
+	lda	__rc1
+	adc	#255
+	sta	__rc1
+	pla
 	ldy	__rc20
 	phy
 	ldy	__rc21
 	phy
-	ldy	__rc4
-	pha
-	lda	__rc2
-	sta	__rc20
-	lda	__rc3
+	ldy	__rc22
+	phy
+	ldy	__rc23
+	phy
 	sta	__rc21
+	stx	__rc22
+	ldx	__rc2
+	stx	__rc20
+	ldx	__rc3
+	stx	__rc23
+	lda	#47
+	ora	mos8(g_curTextColor)
+	sta	mos8(g_curTextColor)
+	lda	#10
+	ldx	#23
+	ldy	#mos16lo(.L.str.4.10)
+	sty	__rc2
+	ldy	#mos16hi(.L.str.4.10)
+	sty	__rc3
+	jsr	mcputsxy
+	ldx	#1
+	stz	__rc2
+	stz	__rc3
+	stx	__rc4
+	dex
+	lda	__rc21
+	jsr	csputdec
+	lda	#240
+	and	mos8(g_curTextColor)
+	ora	#8
+	sta	mos8(g_curTextColor)
+	lda	mos8(g_curX)
+	ldx	mos8(g_curY)
+	ldy	#84
+	sty	__rc2
+	jsr	cputcxy
+	ldx	#2
+	stz	__rc2
+	stz	__rc3
+	stx	__rc4
+	ldx	#0
+	lda	__rc22
+	jsr	csputdec
+	lda	#240
+	and	mos8(g_curTextColor)
+	ora	#14
+	sta	mos8(g_curTextColor)
+	lda	mos8(g_curX)
+	ldx	mos8(g_curY)
+	ldy	#83
+	sty	__rc2
+	jsr	cputcxy
+	stz	__rc2
+	stz	__rc3
+	ldx	#2
+	stx	__rc4
+	stz	__rc21
+	ldx	#0
+	lda	__rc20
+	jsr	csputdec
+	lda	mos8(g_curX)
+	ldx	mos8(g_curY)
+	ldy	#32
+	sty	__rc2
+	jsr	cputcxy
+	ldx	#87
+	txa
+	ldy	#0
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	ldx	#2
+	stx	__rc2
+	ldx	__rc23
+	cpx	#1
+	beq	.LBB2_2
+; %bb.1:
+	ldx	#8
+	ldy	#82
+	tya
+	ldy	#0
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	stx	__rc2
+.LBB2_2:
+	lda	#240
+	and	mos8(g_curTextColor)
+	ora	__rc2
+	sta	mos8(g_curTextColor)
+	lda	mos8(g_curX)
+	ldx	mos8(g_curY)
+	ldy	#12
+	pha
+	tya
+	ldy	#1
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	dey
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	sta	__rc2
 	pla
+	jsr	cputcxy
+	lda	mos8(g_curX)
+	ldx	mos8(g_curY)
+	ldy	#32
+	sty	__rc2
+	jsr	cputcxy
+	lda	#223
+	and	mos8(g_curTextColor)
+	ldx	mos8(g_curTextColor)
+	stx	__rc4
+	sta	mos8(g_curTextColor)
+	lda	#53
+	stz	__rc2
+.LBB2_3:                                ; =>This Loop Header: Depth=1
+                                        ;     Child Loop BB2_4 Depth 2
+	ldx	__rc2
+	stx	__rc5
+	tay
+	ldx	53266
+	stx	__rc2
+.LBB2_4:                                ;   Parent Loop BB2_3 Depth=1
+                                        ; =>  This Inner Loop Header: Depth=2
+	ldx	53266
+	cpx	__rc2
+	beq	.LBB2_4
+; %bb.5:                                ;   in Loop: Header=BB2_3 Depth=1
+	clc
+	lda	__rc21
+	adc	#192
+	sta	__rc21
+	tya
+	adc	#255
+	tax
+	ldy	#1
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	adc	#255
+	tay
+	lda	__rc5
+	adc	#255
+	bne	.LBB2_9
+; %bb.6:                                ;   in Loop: Header=BB2_3 Depth=1
+	cpy	#0
+	bne	.LBB2_10
+; %bb.7:                                ;   in Loop: Header=BB2_3 Depth=1
+	pha
+	tya
+	ldy	#1
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	pla
+	sta	__rc2
+	txa
+	bne	.LBB2_12
+; %bb.8:                                ;   in Loop: Header=BB2_3 Depth=1
+	ldx	__rc21
+	cpx	#65
+	bcs	.LBB2_3
+	bra	.LBB2_13
+.LBB2_9:                                ;   in Loop: Header=BB2_3 Depth=1
+	pha
+	tya
+	ldy	#1
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	pla
+	cmp	#0
+	bra	.LBB2_11
+.LBB2_10:                               ;   in Loop: Header=BB2_3 Depth=1
+	pha
+	tya
+	phy
+	ldy	#1
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	ply
+	pla
+	cpy	#0
+.LBB2_11:                               ;   in Loop: Header=BB2_3 Depth=1
+	sta	__rc2
+	txa
+	bcc	.LBB2_13
+; %bb.25:                               ;   in Loop: Header=BB2_3 Depth=1
+	jmp	.LBB2_3
+.LBB2_12:                               ;   in Loop: Header=BB2_3 Depth=1
+	cmp	#0
+	bcc	.LBB2_13
+; %bb.27:                               ;   in Loop: Header=BB2_3 Depth=1
+	jmp	.LBB2_3
+.LBB2_13:
+	lda	__rc4
+	and	#208
+	ora	#3
+	sta	mos8(g_curTextColor)
+	ldx	#32
+	txa
+	ldy	#1
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	lda	#10
+	ldx	#mos16lo(.L.str.4.10)
+	stx	__rc2
+	ldx	#mos16hi(.L.str.4.10)
+	stx	__rc3
+	ldx	#23
+	jsr	mcputsxy
+	lda	mos8(g_curScreenW)
+	ldx	#23
+	stx	__rc2
+	stz	__rc3
+	ldx	#0
+	jsr	__mulhi3
+	clc
+	adc	#10
+	sta	__rc20
+	txa
+	adc	#0
+	sta	__rc21
+	lda	53347
+	and	#7
+	tay
+	ldx	53346
+	stx	__rc4
+	ldx	53345
+	stx	__rc2
+	ldx	53344
+	stx	__rc3
+	clc
+	lda	__rc20
+	adc	#0
+	tax
+	lda	__rc21
+	adc	__rc2
+	sta	__rc5
+	lda	__rc4
+	adc	#0
+	sta	__rc2
+	tya
+	adc	#0
+	sta	__rc4
+	clc
+	txa
+	adc	__rc3
+	tay
+	lda	__rc5
+	adc	#0
+	sta	__rc7
+	lda	__rc2
+	adc	#0
+	sta	__rc2
+	lda	__rc4
+	adc	#0
+	ldx	#64
+	sta	__rc3
+	stx	__rc4
+	ldx	#12
+	stx	__rc5
+	stz	__rc6
+	ldx	__rc7
+	tya
+	jsr	lfill
+	ldx	mos8(g_curTextColor)
+	ldy	#248
+	lda	#15
+	sty	__rc2
+	sta	__rc3
+	stx	__rc4
+	ldx	#12
+	stx	__rc5
+	stz	__rc22
+	stz	__rc6
+	ldx	__rc21
+	lda	__rc20
+	jsr	lfill
+	ldx	mos8(g_curScreenW)
+	clc
+	lda	__rc0
+	adc	#2
+	sta	__rc20
+	lda	__rc1
+	adc	#0
+	sta	__rc21
+	lda	#22
+	ldy	__rc20
+	sty	__rc2
+	ldy	__rc21
+	sty	__rc3
+	jsr	__udivmodqi4
+	clc
+	adc	#23
+	tax
+	lda	(__rc20)
+	stx	mos8(g_curY)
+	ldy	#78
+	sta	mos8(g_curX)
+	stz	__rc4
+.LBB2_14:                               ; =>This Loop Header: Depth=1
+                                        ;     Child Loop BB2_15 Depth 2
+	ldx	53266
+	stx	__rc2
+.LBB2_15:                               ;   Parent Loop BB2_14 Depth=1
+                                        ; =>  This Inner Loop Header: Depth=2
+	ldx	53266
+	cpx	__rc2
+	beq	.LBB2_15
+; %bb.16:                               ;   in Loop: Header=BB2_14 Depth=1
+	clc
+	phy
+	ldy	#1
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	adc	#192
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	ply
+	tya
+	adc	#255
+	tay
+	lda	__rc22
+	adc	#255
+	sta	__rc22
+	lda	__rc4
+	adc	#255
+	bne	.LBB2_20
+; %bb.17:                               ;   in Loop: Header=BB2_14 Depth=1
+	ldx	__rc22
+	bne	.LBB2_21
+; %bb.18:                               ;   in Loop: Header=BB2_14 Depth=1
+	sta	__rc4
+	tya
+	bne	.LBB2_23
+; %bb.19:                               ;   in Loop: Header=BB2_14 Depth=1
+	phy
+	ldy	#1
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	ply
+	cmp	#65
+	bcs	.LBB2_14
+	bra	.LBB2_24
+.LBB2_20:                               ;   in Loop: Header=BB2_14 Depth=1
+	cmp	#0
+	bra	.LBB2_22
+.LBB2_21:                               ;   in Loop: Header=BB2_14 Depth=1
+	cpx	#0
+.LBB2_22:                               ;   in Loop: Header=BB2_14 Depth=1
+	sta	__rc4
+	bcs	.LBB2_14
+	bra	.LBB2_24
+.LBB2_23:                               ;   in Loop: Header=BB2_14 Depth=1
+	cpy	#0
+	bcs	.LBB2_14
+.LBB2_24:
+	plx
+	stx	__rc23
+	plx
+	stx	__rc22
+	plx
+	stx	__rc21
+	plx
+	stx	__rc20
+	clc
+	lda	__rc0
+	adc	#3
+	sta	__rc0
+	lda	__rc1
+	adc	#0
+	sta	__rc1
+	rts
+.Lfunc_end2:
+	.size	ShowAccess, .Lfunc_end2-ShowAccess
+                                        ; -- End function
+	.section	.text.GetOneSector,"ax",@progbits
+	.type	GetOneSector,@function          ; -- Begin function GetOneSector
+GetOneSector:                           ; @GetOneSector
+; %bb.0:
+	pha
+	clc
+	lda	__rc0
+	adc	#255
+	sta	__rc0
+	lda	__rc1
+	adc	#255
+	sta	__rc1
+	pla
+	ldy	__rc20
+	phy
+	ldy	__rc21
+	phy
+	ldy	__rc22
+	phy
+	ldy	__rc24
+	phy
+	pha
+	lda	__rc25
+	ldy	#0
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	pla
+	sta	__rc20
+	stx	__rc21
+	ldy	__rc4
+	sty	__rc22
+	ldy	__rc2
+	sty	__rc24
+	ldy	__rc3
+	sty	__rc25
+	ldy	__rc4
 	sty	__rc2
 	jsr	ReadSector
 	cmp	#2
-	bcs	.LBB2_5
+	bcs	.LBB3_5
 ; %bb.1:
 	tax
-	beq	.LBB2_3
+	beq	.LBB3_3
 ; %bb.2:
 	ldx	#109
-	bra	.LBB2_4
-.LBB2_3:
+	bra	.LBB3_4
+.LBB3_3:
 	ldx	#108
-.LBB2_4:
+.LBB3_4:
 	ldy	#1
 	lda	#253
 	sta	__rc2
 	lda	#15
 	sta	__rc3
-	lda	__rc20
+	lda	__rc24
 	sta	__rc4
-	lda	__rc21
+	lda	__rc25
 	sta	__rc5
 	stz	__rc6
 	stz	__rc7
@@ -3272,38 +3670,83 @@ GetOneSector:                           ; @GetOneSector
 	sty	__rc9
 	lda	#0
 	jsr	lcopy
-.LBB2_5:
+	stz	__rc3
+	ldx	__rc22
+	stx	__rc2
+	ldx	__rc21
+	lda	__rc20
+	jsr	ShowAccess
+.LBB3_5:
+	ldy	#0
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	sta	__rc25
+	plx
+	stx	__rc24
+	plx
+	stx	__rc22
 	plx
 	stx	__rc21
 	plx
 	stx	__rc20
+	clc
+	lda	__rc0
+	adc	#1
+	sta	__rc0
+	lda	__rc1
+	adc	#0
+	sta	__rc1
 	rts
-.Lfunc_end2:
-	.size	GetOneSector, .Lfunc_end2-GetOneSector
+.Lfunc_end3:
+	.size	GetOneSector, .Lfunc_end3-GetOneSector
                                         ; -- End function
 	.section	.text.PutOneSector,"ax",@progbits
 	.type	PutOneSector,@function          ; -- Begin function PutOneSector
 PutOneSector:                           ; @PutOneSector
 ; %bb.0:
+	pha
+	clc
+	lda	__rc0
+	adc	#254
+	sta	__rc0
+	lda	__rc1
+	adc	#255
+	sta	__rc1
+	pla
+	ldy	__rc20
+	phy
+	ldy	__rc21
+	phy
+	ldy	__rc22
+	phy
+	ldy	__rc23
+	phy
+	pha
+	lda	__rc24
+	ldy	#1
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	lda	__rc25
+	dey
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	pla
+	stx	__rc22
 	ldy	__rc4
-	sty	mos8(.LPutOneSector_zp_stk+4)
+	sty	__rc24
 	ldy	__rc2
-	sty	mos8(.LPutOneSector_zp_stk)
+	sty	__rc20
 	ldy	__rc3
-	sty	mos8(.LPutOneSector_zp_stk+1)
+	sty	__rc21
 	ldy	__rc4
 	sty	__rc2
-	stx	mos8(.LPutOneSector_zp_stk+2)
-	sta	mos8(.LPutOneSector_zp_stk+3)
+	sta	__rc23
 	jsr	ReadSector
 	ldy	#108
-	ldx	mos8(.LPutOneSector_zp_stk+4)
-	stx	mos8(.LPutOneSector_zp_stk+5)
-	lsr	mos8(.LPutOneSector_zp_stk+4)
-	bcc	.LBB3_2
+	ldx	__rc24
+	stx	__rc25
+	lsr	__rc24
+	bcc	.LBB4_2
 ; %bb.1:
 	ldy	#109
-.LBB3_2:
+.LBB4_2:
 	ldx	#1
 	sty	__rc5
 	ldy	#253
@@ -3315,51 +3758,82 @@ PutOneSector:                           ; @PutOneSector
 	sty	__rc7
 	stz	__rc8
 	stx	__rc9
-	ldx	mos8(.LPutOneSector_zp_stk+1)
-	lda	mos8(.LPutOneSector_zp_stk)
+	ldx	__rc21
+	lda	__rc20
 	jsr	lcopy
-	ldx	mos8(.LPutOneSector_zp_stk+5)
-	lda	mos8(.LPutOneSector_zp_stk+3)
+	ldx	#1
+	ldy	__rc25
+	sty	__rc2
+	sty	__rc21
+	stx	__rc3
+	ldx	__rc22
+	lda	__rc23
+	jsr	ShowAccess
+	ldx	__rc21
+	lda	__rc23
 	cpx	#20
-	bcc	.LBB3_4
+	bcc	.LBB4_4
 ; %bb.3:
 	clc
 	adc	#104
-	bra	.LBB3_5
-.LBB3_4:
+	bra	.LBB4_5
+.LBB4_4:
 	clc
 	adc	#96
-.LBB3_5:
-	ldy	mos8(.LPutOneSector_zp_stk+2)
-	sta	53376
+.LBB4_5:
+	ldy	__rc22
+	tax
+	lda	__rc24
+	stx	53376
 	ldx	#32
 	stx	53377
 	dey
 	sty	53380
-	ldx	mos8(.LPutOneSector_zp_stk+4)
-	inx
-	stx	53381
+	inc
+	sta	53381
 	stz	53382
 	ldx	#132
 	stx	53377
-.LBB3_6:                                ; =>This Inner Loop Header: Depth=1
+.LBB4_6:                                ; =>This Inner Loop Header: Depth=1
 	ldx	53378
-	bmi	.LBB3_6
+	bmi	.LBB4_6
 ; %bb.7:
 	lda	53378
 	and	#24
-	beq	.LBB3_9
+	beq	.LBB4_9
 ; %bb.8:
 	ldx	#64
 	stx	53376
-	rts
-.LBB3_9:
+	bra	.LBB4_10
+.LBB4_9:
 	lda	54921
 	and	#127
 	sta	54921
+.LBB4_10:
+	ldy	#0
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	sta	__rc25
+	iny
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	sta	__rc24
+	plx
+	stx	__rc23
+	plx
+	stx	__rc22
+	plx
+	stx	__rc21
+	plx
+	stx	__rc20
+	clc
+	lda	__rc0
+	adc	#2
+	sta	__rc0
+	lda	__rc1
+	adc	#0
+	sta	__rc1
 	rts
-.Lfunc_end3:
-	.size	PutOneSector, .Lfunc_end3-PutOneSector
+.Lfunc_end4:
+	.size	PutOneSector, .Lfunc_end4-PutOneSector
                                         ; -- End function
 	.section	.text.BAMSectorUpdate,"ax",@progbits
 	.type	BAMSectorUpdate,@function       ; -- Begin function BAMSectorUpdate
@@ -3375,7 +3849,7 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	phy
 	tay
 	cmp	#41
-	bcc	.LBB4_2
+	bcc	.LBB5_2
 ; %bb.1:
 	ldy	__rc4
 	sty	__rc20
@@ -3384,21 +3858,21 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	clc
 	adc	#216
 	tay
-	bra	.LBB4_3
-.LBB4_2:
+	bra	.LBB5_3
+.LBB5_2:
 	lda	__rc2
 	sta	__rc20
 	lda	__rc3
 	sta	__rc21
-.LBB4_3:
+.LBB5_3:
 	dey
 	sty	__rc5
 	lda	__rc6
-	beq	.LBB4_6
+	beq	.LBB5_6
 ; %bb.4:
 	stx	mos8(.LBAMSectorUpdate_zp_stk)
 	cpx	#8
-	bcs	.LBB4_8
+	bcs	.LBB5_8
 ; %bb.5:
 	ldx	#6
 	stx	__rc2
@@ -3418,14 +3892,14 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	tya
 	adc	#17
 ; %bb.25:
-	jmp	.LBB4_21
-.LBB4_6:
+	jmp	.LBB5_21
+.LBB5_6:
 	stx	mos8(.LBAMSectorUpdate_zp_stk)
 	cpx	#8
-	bcc	.LBB4_7
+	bcc	.LBB5_7
 ; %bb.41:
-	jmp	.LBB4_10
-.LBB4_7:
+	jmp	.LBB5_10
+.LBB5_7:
 	ldx	#6
 	stx	__rc2
 	stz	__rc3
@@ -3444,14 +3918,14 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	tya
 	adc	#17
 ; %bb.27:
-	jmp	.LBB4_23
-.LBB4_8:
+	jmp	.LBB5_23
+.LBB5_8:
 	cpx	#16
 	ldx	#0
-	bcc	.LBB4_9
+	bcc	.LBB5_9
 ; %bb.43:
-	jmp	.LBB4_12
-.LBB4_9:
+	jmp	.LBB5_12
+.LBB5_9:
 	clc
 	lda	mos8(.LBAMSectorUpdate_zp_stk)
 	adc	#248
@@ -3475,13 +3949,13 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	tya
 	adc	#18
 ; %bb.29:
-	jmp	.LBB4_21
-.LBB4_10:
+	jmp	.LBB5_21
+.LBB5_10:
 	cpx	#16
-	bcc	.LBB4_11
+	bcc	.LBB5_11
 ; %bb.45:
-	jmp	.LBB4_14
-.LBB4_11:
+	jmp	.LBB5_14
+.LBB5_11:
 	clc
 	txa
 	adc	#248
@@ -3504,14 +3978,14 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	tya
 	adc	#18
 ; %bb.31:
-	jmp	.LBB4_23
-.LBB4_12:
+	jmp	.LBB5_23
+.LBB5_12:
 	ldy	mos8(.LBAMSectorUpdate_zp_stk)
 	cpy	#24
-	bcc	.LBB4_13
+	bcc	.LBB5_13
 ; %bb.47:
-	jmp	.LBB4_16
-.LBB4_13:
+	jmp	.LBB5_16
+.LBB5_13:
 	clc
 	lda	mos8(.LBAMSectorUpdate_zp_stk)
 	adc	#240
@@ -3535,13 +4009,13 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	tya
 	adc	#19
 ; %bb.33:
-	jmp	.LBB4_21
-.LBB4_14:
+	jmp	.LBB5_21
+.LBB5_14:
 	cpx	#24
-	bcc	.LBB4_15
+	bcc	.LBB5_15
 ; %bb.49:
-	jmp	.LBB4_18
-.LBB4_15:
+	jmp	.LBB5_18
+.LBB5_15:
 	clc
 	txa
 	adc	#240
@@ -3564,14 +4038,14 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	tya
 	adc	#19
 ; %bb.35:
-	jmp	.LBB4_23
-.LBB4_16:
+	jmp	.LBB5_23
+.LBB5_16:
 	ldy	mos8(.LBAMSectorUpdate_zp_stk)
 	cpy	#32
-	bcc	.LBB4_17
+	bcc	.LBB5_17
 ; %bb.51:
-	jmp	.LBB4_20
-.LBB4_17:
+	jmp	.LBB5_20
+.LBB5_17:
 	clc
 	lda	mos8(.LBAMSectorUpdate_zp_stk)
 	adc	#232
@@ -3595,13 +4069,13 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	tya
 	adc	#20
 ; %bb.37:
-	jmp	.LBB4_21
-.LBB4_18:
+	jmp	.LBB5_21
+.LBB5_18:
 	cpx	#32
-	bcc	.LBB4_19
+	bcc	.LBB5_19
 ; %bb.53:
-	jmp	.LBB4_22
-.LBB4_19:
+	jmp	.LBB5_22
+.LBB5_19:
 	clc
 	txa
 	adc	#232
@@ -3624,8 +4098,8 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	tya
 	adc	#20
 ; %bb.39:
-	jmp	.LBB4_23
-.LBB4_20:
+	jmp	.LBB5_23
+.LBB5_20:
 	clc
 	lda	mos8(.LBAMSectorUpdate_zp_stk)
 	adc	#224
@@ -3648,7 +4122,7 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	clc
 	tya
 	adc	#21
-.LBB4_21:
+.LBB5_21:
 	sta	__rc22
 	lda	__rc2
 	adc	#0
@@ -3663,8 +4137,8 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	sta	(__rc22)
 	ldx	#255
 	stx	mos8(.LBAMSectorUpdate_zp_stk+1) ; 1-byte Folded Spill
-	bra	.LBB4_24
-.LBB4_22:
+	bra	.LBB5_24
+.LBB5_22:
 	clc
 	txa
 	adc	#224
@@ -3686,7 +4160,7 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	clc
 	tya
 	adc	#21
-.LBB4_23:
+.LBB5_23:
 	sta	__rc22
 	lda	__rc2
 	adc	#0
@@ -3700,7 +4174,7 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	jsr	__ashlhi3
 	ora	(__rc22)
 	sta	(__rc22)
-.LBB4_24:
+.LBB5_24:
 	ldx	mos8(.LBAMSectorUpdate_zp_stk+2) ; 1-byte Folded Reload
 	lda	mos8(.LBAMSectorUpdate_zp_stk+3) ; 1-byte Folded Reload
 	ldy	#6
@@ -3728,8 +4202,8 @@ BAMSectorUpdate:                        ; @BAMSectorUpdate
 	plx
 	stx	__rc20
 	rts
-.Lfunc_end4:
-	.size	BAMSectorUpdate, .Lfunc_end4-BAMSectorUpdate
+.Lfunc_end5:
+	.size	BAMSectorUpdate, .Lfunc_end5-BAMSectorUpdate
                                         ; -- End function
 	.section	.text.readblockchain,"ax",@progbits
 	.type	readblockchain,@function        ; -- Begin function readblockchain
@@ -3791,10 +4265,10 @@ readblockchain:                         ; @readblockchain
 	stx	mos8(direntryblock.1+1)
 	stz	53376
 	ldx	__rc4
-	bne	.LBB5_1
+	bne	.LBB6_1
 ; %bb.9:
-	jmp	.LBB5_4
-.LBB5_1:
+	jmp	.LBB6_4
+.LBB6_1:
 	ldx	__rc2
 	stx	__rc20
 	ldx	__rc3
@@ -3806,7 +4280,7 @@ readblockchain:                         ; @readblockchain
 	ldx	__rc7
 	stx	__rc26
 	stz	__rc27
-.LBB5_2:                                ; =>This Inner Loop Header: Depth=1
+.LBB6_2:                                ; =>This Inner Loop Header: Depth=1
 	ldx	mos8(worksectorasBAM.0)
 	ldy	mos8(worksectorasBAM.0+1)
 	stx	__rc2
@@ -3844,31 +4318,31 @@ readblockchain:                         ; @readblockchain
 	lda	__rc10
 	jsr	lcopy
 	lda	__rc28
-	beq	.LBB5_8
-; %bb.3:                                ;   in Loop: Header=BB5_2 Depth=1
+	beq	.LBB6_8
+; %bb.3:                                ;   in Loop: Header=BB6_2 Depth=1
 	lda	__rc28
 	ldx	__rc27
 	inx
 	stx	__rc27
 	cpx	__rc22
-	beq	.LBB5_5
-; %bb.11:                               ;   in Loop: Header=BB5_2 Depth=1
-	jmp	.LBB5_2
-.LBB5_4:
+	beq	.LBB6_5
+; %bb.11:                               ;   in Loop: Header=BB6_2 Depth=1
+	jmp	.LBB6_2
+.LBB6_4:
 	tax
-	beq	.LBB5_8
-.LBB5_5:
-	ldx	#mos16lo(.L.str.11)
+	beq	.LBB6_8
+.LBB6_5:
+	ldx	#mos16lo(.L.str.12)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.11)
+	ldx	#mos16hi(.L.str.12)
 	stx	__rc3
 	jsr	messagebox
-.LBB5_6:                                ; =>This Inner Loop Header: Depth=1
+.LBB6_6:                                ; =>This Inner Loop Header: Depth=1
 	ldx	54800
-	beq	.LBB5_6
+	beq	.LBB6_6
 ; %bb.7:
 	stz	54800
-.LBB5_8:
+.LBB6_8:
 	ldy	#0
 	lda	(__rc0),y                       ; 1-byte Folded Reload
 	sta	__rc28
@@ -3900,13 +4374,22 @@ readblockchain:                         ; @readblockchain
 	adc	#0
 	sta	__rc1
 	rts
-.Lfunc_end5:
-	.size	readblockchain, .Lfunc_end5-readblockchain
+.Lfunc_end6:
+	.size	readblockchain, .Lfunc_end6-readblockchain
                                         ; -- End function
 	.section	.text.findnextBAMtracksector,"ax",@progbits
 	.type	findnextBAMtracksector,@function ; -- Begin function findnextBAMtracksector
 findnextBAMtracksector:                 ; @findnextBAMtracksector
 ; %bb.0:
+	pha
+	clc
+	lda	__rc0
+	adc	#248
+	sta	__rc0
+	lda	__rc1
+	adc	#255
+	sta	__rc1
+	pla
 	ldx	__rc20
 	phx
 	ldx	__rc21
@@ -3915,11 +4398,33 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	phx
 	ldx	__rc23
 	phx
-	ldx	__rc26
-	stx	.LfindnextBAMtracksector_sstk   ; 1-byte Folded Spill
-	ldx	__rc27
-	stx	.LfindnextBAMtracksector_sstk+1 ; 1-byte Folded Spill
-	sta	mos8(.LfindnextBAMtracksector_zp_stk)
+	pha
+	lda	__rc24
+	ldy	#7
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	lda	__rc25
+	dey
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	lda	__rc26
+	dey
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	lda	__rc27
+	dey
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	lda	__rc28
+	dey
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	lda	__rc29
+	dey
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	lda	__rc30
+	dey
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	lda	__rc31
+	dey
+	sta	(__rc0),y                       ; 1-byte Folded Spill
+	pla
+	sta	__rc24
 	ldx	__rc2
 	stx	__rc20
 	ldx	__rc3
@@ -3928,7 +4433,7 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	stx	__rc22
 	ldx	__rc5
 	stx	__rc23
-	stz	mos8(.LfindnextBAMtracksector_zp_stk+1)
+	stz	__rc25
 	stz	mos8(BAMsector.0)
 	ldx	#22
 	stx	mos8(BAMsector.0+1)
@@ -3956,7 +4461,7 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	sty	__rc4
 	jsr	GetOneSector
 	ldx	mos8(BAMsector.0)
-	stx	mos8(.LfindnextBAMtracksector_zp_stk+4)
+	stx	__rc30
 	ldx	mos8(BAMsector.1)
 	ldy	mos8(BAMsector.1+1)
 	stx	__rc2
@@ -3964,119 +4469,119 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	ldx	5632
 	ldy	5633
 	lda	mos8(BAMsector.0+1)
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+5)
+	sta	__rc31
 	sty	__rc4
-	lda	mos8(.LfindnextBAMtracksector_zp_stk)
+	lda	__rc24
 	jsr	GetOneSector
 	lda	#6
 	ldy	#0
 	ldx	#0
-.LBB6_1:                                ; =>This Loop Header: Depth=1
-                                        ;     Child Loop BB6_12 Depth 2
+.LBB7_1:                                ; =>This Loop Header: Depth=1
+                                        ;     Child Loop BB7_12 Depth 2
 	sta	__rc2
 	stz	__rc3
-	sty	mos8(.LfindnextBAMtracksector_zp_stk+2)
+	sty	__rc28
 	tya
 	jsr	__mulhi3
 	sta	__rc2
 	stx	__rc3
-	lda	mos8(.LfindnextBAMtracksector_zp_stk+4)
+	lda	__rc30
 	clc
 	adc	__rc2
 	sta	__rc26
-	lda	mos8(.LfindnextBAMtracksector_zp_stk+5)
+	lda	__rc31
 	adc	__rc3
 	sta	__rc27
 	ldx	#0
-; %bb.18:                               ;   in Loop: Header=BB6_1 Depth=1
-	jmp	.LBB6_12
-.LBB6_2:                                ;   in Loop: Header=BB6_12 Depth=2
+; %bb.18:                               ;   in Loop: Header=BB7_1 Depth=1
+	jmp	.LBB7_12
+.LBB7_2:                                ;   in Loop: Header=BB7_12 Depth=2
 	cpx	#16
-	bcs	.LBB6_4
-; %bb.3:                                ;   in Loop: Header=BB6_12 Depth=2
+	bcs	.LBB7_4
+; %bb.3:                                ;   in Loop: Header=BB7_12 Depth=2
 	ldy	#18
 	lda	(__rc26),y
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+1)
-	stx	mos8(.LfindnextBAMtracksector_zp_stk+3)
+	sta	__rc25
+	stx	__rc29
 	txa
 	clc
 	adc	#248
-	bra	.LBB6_9
-.LBB6_4:                                ;   in Loop: Header=BB6_12 Depth=2
+	bra	.LBB7_9
+.LBB7_4:                                ;   in Loop: Header=BB7_12 Depth=2
 	cpx	#24
-	bcs	.LBB6_6
-; %bb.5:                                ;   in Loop: Header=BB6_12 Depth=2
+	bcs	.LBB7_6
+; %bb.5:                                ;   in Loop: Header=BB7_12 Depth=2
 	ldy	#19
 	lda	(__rc26),y
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+1)
-	stx	mos8(.LfindnextBAMtracksector_zp_stk+3)
+	sta	__rc25
+	stx	__rc29
 	txa
 	clc
 	adc	#240
-	bra	.LBB6_9
-.LBB6_6:                                ;   in Loop: Header=BB6_12 Depth=2
+	bra	.LBB7_9
+.LBB7_6:                                ;   in Loop: Header=BB7_12 Depth=2
 	cpx	#32
-	bcs	.LBB6_8
-; %bb.7:                                ;   in Loop: Header=BB6_12 Depth=2
+	bcs	.LBB7_8
+; %bb.7:                                ;   in Loop: Header=BB7_12 Depth=2
 	ldy	#20
 	lda	(__rc26),y
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+1)
-	stx	mos8(.LfindnextBAMtracksector_zp_stk+3)
+	sta	__rc25
+	stx	__rc29
 	txa
 	clc
 	adc	#232
-	bra	.LBB6_9
-.LBB6_8:                                ;   in Loop: Header=BB6_12 Depth=2
+	bra	.LBB7_9
+.LBB7_8:                                ;   in Loop: Header=BB7_12 Depth=2
 	ldy	#21
 	lda	(__rc26),y
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+1)
-	stx	mos8(.LfindnextBAMtracksector_zp_stk+3)
+	sta	__rc25
+	stx	__rc29
 	txa
 	clc
 	adc	#224
-.LBB6_9:                                ;   in Loop: Header=BB6_12 Depth=2
+.LBB7_9:                                ;   in Loop: Header=BB7_12 Depth=2
 	sta	__rc2
-.LBB6_10:                               ;   in Loop: Header=BB6_12 Depth=2
+.LBB7_10:                               ;   in Loop: Header=BB7_12 Depth=2
 	ldx	#0
 	lda	#1
 	jsr	__ashlhi3
-	and	mos8(.LfindnextBAMtracksector_zp_stk+1)
-	bne	.LBB6_16
-; %bb.11:                               ;   in Loop: Header=BB6_12 Depth=2
-	lda	mos8(.LfindnextBAMtracksector_zp_stk+3)
-	ldx	mos8(.LfindnextBAMtracksector_zp_stk+3)
+	and	__rc25
+	bne	.LBB7_16
+; %bb.11:                               ;   in Loop: Header=BB7_12 Depth=2
+	lda	__rc29
+	ldx	__rc29
 	inx
 	cmp	#39
-	bcs	.LBB6_14
-.LBB6_12:                               ;   Parent Loop BB6_1 Depth=1
+	bcs	.LBB7_14
+.LBB7_12:                               ;   Parent Loop BB7_1 Depth=1
                                         ; =>  This Inner Loop Header: Depth=2
 	cpx	#8
-	bcc	.LBB6_13
-; %bb.20:                               ;   in Loop: Header=BB6_12 Depth=2
-	jmp	.LBB6_2
-.LBB6_13:                               ;   in Loop: Header=BB6_12 Depth=2
+	bcc	.LBB7_13
+; %bb.20:                               ;   in Loop: Header=BB7_12 Depth=2
+	jmp	.LBB7_2
+.LBB7_13:                               ;   in Loop: Header=BB7_12 Depth=2
 	stx	__rc2
 	ldy	#17
 	lda	(__rc26),y
-	sta	mos8(.LfindnextBAMtracksector_zp_stk+1)
-	stx	mos8(.LfindnextBAMtracksector_zp_stk+3)
-	bra	.LBB6_10
-.LBB6_14:                               ;   in Loop: Header=BB6_1 Depth=1
-	lda	mos8(.LfindnextBAMtracksector_zp_stk+2)
-	ldy	mos8(.LfindnextBAMtracksector_zp_stk+2)
+	sta	__rc25
+	stx	__rc29
+	bra	.LBB7_10
+.LBB7_14:                               ;   in Loop: Header=BB7_1 Depth=1
+	lda	__rc28
+	ldy	__rc28
 	iny
 	ldx	#0
 	cmp	#79
-	stz	mos8(.LfindnextBAMtracksector_zp_stk+1)
+	stz	__rc25
 	lda	#6
-	bcs	.LBB6_15
-; %bb.22:                               ;   in Loop: Header=BB6_1 Depth=1
-	jmp	.LBB6_1
-.LBB6_15:
+	bcs	.LBB7_15
+; %bb.22:                               ;   in Loop: Header=BB7_1 Depth=1
+	jmp	.LBB7_1
+.LBB7_15:
 	stz	__rc26
 	lda	#255
-	bra	.LBB6_17
-.LBB6_16:
+	bra	.LBB7_17
+.LBB7_16:
 	ldx	mos8(BAMsector.0)
 	stx	__rc2
 	ldx	mos8(BAMsector.0+1)
@@ -4086,13 +4591,13 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	ldx	mos8(BAMsector.1+1)
 	stx	__rc5
 	ldx	#1
-	ldy	mos8(.LfindnextBAMtracksector_zp_stk+2)
-	sty	mos8(.LfindnextBAMtracksector_zp_stk+1)
-	inc	mos8(.LfindnextBAMtracksector_zp_stk+1)
+	ldy	__rc28
+	sty	__rc25
+	inc	__rc25
 	stx	__rc6
-	ldx	mos8(.LfindnextBAMtracksector_zp_stk+3)
+	ldx	__rc29
 	stx	__rc26
-	lda	mos8(.LfindnextBAMtracksector_zp_stk+1)
+	lda	__rc25
 	jsr	BAMSectorUpdate
 	ldx	mos8(BAMsector.0)
 	ldy	mos8(BAMsector.0+1)
@@ -4101,7 +4606,7 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	ldx	#40
 	ldy	#1
 	sty	__rc4
-	lda	mos8(.LfindnextBAMtracksector_zp_stk)
+	lda	__rc24
 	jsr	PutOneSector
 	ldx	mos8(BAMsector.1)
 	ldy	mos8(BAMsector.1+1)
@@ -4110,17 +4615,37 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	ldx	5632
 	ldy	5633
 	sty	__rc4
-	lda	mos8(.LfindnextBAMtracksector_zp_stk)
+	lda	__rc24
 	jsr	PutOneSector
-	lda	mos8(.LfindnextBAMtracksector_zp_stk+1)
-.LBB6_17:
+	lda	__rc25
+.LBB7_17:
 	sta	(__rc20)
 	lda	__rc26
 	sta	(__rc22)
-	ldx	.LfindnextBAMtracksector_sstk+1 ; 1-byte Folded Reload
-	stx	__rc27
-	ldx	.LfindnextBAMtracksector_sstk   ; 1-byte Folded Reload
-	stx	__rc26
+	ldy	#0
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	sta	__rc31
+	iny
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	sta	__rc30
+	iny
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	sta	__rc29
+	iny
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	sta	__rc28
+	iny
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	sta	__rc27
+	iny
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	sta	__rc26
+	iny
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	sta	__rc25
+	iny
+	lda	(__rc0),y                       ; 1-byte Folded Reload
+	sta	__rc24
 	plx
 	stx	__rc23
 	plx
@@ -4129,9 +4654,16 @@ findnextBAMtracksector:                 ; @findnextBAMtracksector
 	stx	__rc21
 	plx
 	stx	__rc20
+	clc
+	lda	__rc0
+	adc	#8
+	sta	__rc0
+	lda	__rc1
+	adc	#0
+	sta	__rc1
 	rts
-.Lfunc_end6:
-	.size	findnextBAMtracksector, .Lfunc_end6-findnextBAMtracksector
+.Lfunc_end7:
+	.size	findnextBAMtracksector, .Lfunc_end7-findnextBAMtracksector
                                         ; -- End function
 	.section	.text.getdirententry,"ax",@progbits
 	.type	getdirententry,@function        ; -- Begin function getdirententry
@@ -4187,7 +4719,7 @@ getdirententry:                         ; @getdirententry
 	ldy	#0
 	tya
 	stz	mos8(.Lgetdirententry_zp_stk+5)
-.LBB7_1:                                ; =>This Inner Loop Header: Depth=1
+.LBB8_1:                                ; =>This Inner Loop Header: Depth=1
 	lsr
 	sty	mos8(.Lgetdirententry_zp_stk+4)
 	sta	__rc3
@@ -4231,11 +4763,11 @@ getdirententry:                         ; @getdirententry
 	lda	__rc11
 	jsr	lcopy
 	ldx	6659
-	beq	.LBB7_10
-; %bb.2:                                ;   in Loop: Header=BB7_1 Depth=1
+	beq	.LBB8_10
+; %bb.2:                                ;   in Loop: Header=BB8_1 Depth=1
 	ldx	6656
-	beq	.LBB7_4
-; %bb.3:                                ;   in Loop: Header=BB7_1 Depth=1
+	beq	.LBB8_4
+; %bb.3:                                ;   in Loop: Header=BB8_1 Depth=1
 	clc
 	lda	mos8(.Lgetdirententry_zp_stk+12) ; 1-byte Folded Reload
 	adc	#8
@@ -4243,13 +4775,13 @@ getdirententry:                         ; @getdirententry
 	lda	mos8(.Lgetdirententry_zp_stk+5)
 	adc	#0
 	sta	__rc3
-	bra	.LBB7_5
-.LBB7_4:                                ;   in Loop: Header=BB7_1 Depth=1
+	bra	.LBB8_5
+.LBB8_4:                                ;   in Loop: Header=BB8_1 Depth=1
 	ldx	mos8(.Lgetdirententry_zp_stk+12) ; 1-byte Folded Reload
 	stx	__rc2
 	ldx	mos8(.Lgetdirententry_zp_stk+5)
 	stx	__rc3
-.LBB7_5:                                ;   in Loop: Header=BB7_1 Depth=1
+.LBB8_5:                                ;   in Loop: Header=BB8_1 Depth=1
 	ldx	mos8(.Lgetdirententry_zp_stk+8)
 	stx	__rc4
 	ldx	mos8(.Lgetdirententry_zp_stk+9)
@@ -4257,20 +4789,20 @@ getdirententry:                         ; @getdirententry
 	ldx	#32
 	ldy	mos8(.Lgetdirententry_zp_stk+4)
 	cpy	mos8(.Lgetdirententry_zp_stk+2)
-	beq	.LBB7_12
-; %bb.6:                                ;   in Loop: Header=BB7_1 Depth=1
+	beq	.LBB8_12
+; %bb.6:                                ;   in Loop: Header=BB8_1 Depth=1
 	iny
 	lda	#0
 	cmp	__rc3
-	bne	.LBB7_8
-; %bb.7:                                ;   in Loop: Header=BB7_1 Depth=1
+	bne	.LBB8_8
+; %bb.7:                                ;   in Loop: Header=BB8_1 Depth=1
 	cpy	__rc2
-	bcc	.LBB7_9
-	bra	.LBB7_10
-.LBB7_8:                                ;   in Loop: Header=BB7_1 Depth=1
+	bcc	.LBB8_9
+	bra	.LBB8_10
+.LBB8_8:                                ;   in Loop: Header=BB8_1 Depth=1
 	cmp	__rc3
-	bcs	.LBB7_10
-.LBB7_9:                                ;   in Loop: Header=BB7_1 Depth=1
+	bcs	.LBB8_10
+.LBB8_9:                                ;   in Loop: Header=BB8_1 Depth=1
 	lda	__rc2
 	sta	mos8(.Lgetdirententry_zp_stk+12) ; 1-byte Folded Spill
 	lda	#0
@@ -4281,22 +4813,22 @@ getdirententry:                         ; @getdirententry
 	ldy	mos8(.Lgetdirententry_zp_stk+10)
 	sty	__rc2
 	ply
-; %bb.13:                               ;   in Loop: Header=BB7_1 Depth=1
-	jmp	.LBB7_1
-.LBB7_10:
+; %bb.13:                               ;   in Loop: Header=BB8_1 Depth=1
+	jmp	.LBB8_1
+.LBB8_10:
 	ldx	#0
 	stx	__rc2
 	ldx	#0
-.LBB7_11:
+.LBB8_11:
 	stx	__rc3
 	rts
-.LBB7_12:
+.LBB8_12:
 	ldx	mos8(.Lgetdirententry_zp_stk)
 	stx	__rc2
 	ldx	mos8(.Lgetdirententry_zp_stk+1)
-	bra	.LBB7_11
-.Lfunc_end7:
-	.size	getdirententry, .Lfunc_end7-getdirententry
+	bra	.LBB8_11
+.Lfunc_end8:
+	.size	getdirententry, .Lfunc_end8-getdirententry
                                         ; -- End function
 	.section	.text.getdirent,"ax",@progbits
 	.type	getdirent,@function             ; -- Begin function getdirent
@@ -4359,27 +4891,27 @@ getdirent:                              ; @getdirent
 	ldx	#0
 	stx	__rc23
 	ldx	#112
-.LBB8_1:                                ; =>This Inner Loop Header: Depth=1
+.LBB9_1:                                ; =>This Inner Loop Header: Depth=1
 	stx	__rc21
 	lda	__rc20
 	jsr	getdirententry
 	ldx	__rc3
 	cpx	__rc23
-	bne	.LBB8_5
-; %bb.2:                                ;   in Loop: Header=BB8_1 Depth=1
+	bne	.LBB9_5
+; %bb.2:                                ;   in Loop: Header=BB9_1 Depth=1
 	ldx	__rc2
 	cpx	__rc22
-	bne	.LBB8_5
-; %bb.3:                                ;   in Loop: Header=BB8_1 Depth=1
+	bne	.LBB9_5
+; %bb.3:                                ;   in Loop: Header=BB9_1 Depth=1
 	ldx	__rc21
 	dex
-	bne	.LBB8_1
+	bne	.LBB9_1
 ; %bb.4:
 	lda	#0
-	bra	.LBB8_6
-.LBB8_5:
+	bra	.LBB9_6
+.LBB9_5:
 	lda	__rc21
-.LBB8_6:
+.LBB9_6:
 	plx
 	stx	__rc23
 	plx
@@ -4389,8 +4921,8 @@ getdirent:                              ; @getdirent
 	plx
 	stx	__rc20
 	rts
-.Lfunc_end8:
-	.size	getdirent, .Lfunc_end8-getdirent
+.Lfunc_end9:
+	.size	getdirent, .Lfunc_end9-getdirent
                                         ; -- End function
 	.section	.text.cputln,"ax",@progbits
 	.type	cputln,@function                ; -- Begin function cputln
@@ -4403,23 +4935,23 @@ cputln:                                 ; @cputln
 	phx
 	ply
 	iny
-	bne	.LBB9_2
+	bne	.LBB10_2
 ; %bb.1:
 	inc
-.LBB9_2:
+.LBB10_2:
 	cmp	#0
-	bne	.LBB9_5
+	bne	.LBB10_5
 ; %bb.3:
 	cpy	__rc4
-	bcs	.LBB9_6
-.LBB9_4:
+	bcs	.LBB10_6
+.LBB10_4:
 	inx
 ; %bb.10:
-	jmp	.LBB9_9
-.LBB9_5:
+	jmp	.LBB10_9
+.LBB10_5:
 	cmp	#0
-	bcc	.LBB9_4
-.LBB9_6:
+	bcc	.LBB10_4
+.LBB10_6:
 	ldx	mos8(g_curScreenW)
 	stx	__rc2
 	stx	mos8(.Lcputln_zp_stk)           ; 1-byte Folded Spill
@@ -4463,10 +4995,10 @@ cputln:                                 ; @cputln
 	lda	mos8(.Lcputln_zp_stk+3)         ; 1-byte Folded Reload
 	sbc	#0
 	ldx	#1
-	bcs	.LBB9_8
+	bcs	.LBB10_8
 ; %bb.7:
 	ldx	#0
-.LBB9_8:
+.LBB10_8:
 	stx	mos8(.Lcputln_zp_stk+5)         ; 1-byte Folded Spill
 	sta	__rc9
 	sta	mos8(.Lcputln_zp_stk+2)         ; 1-byte Folded Spill
@@ -4557,12 +5089,12 @@ cputln:                                 ; @cputln
 	lda	mos8(.Lcputln_zp_stk+1)         ; 1-byte Folded Reload
 	jsr	lfill
 	ldx	mos8(g_curY)
-.LBB9_9:
+.LBB10_9:
 	stz	mos8(g_curX)
 	stx	mos8(g_curY)
 	rts
-.Lfunc_end9:
-	.size	cputln, .Lfunc_end9-cputln
+.Lfunc_end10:
+	.size	cputln, .Lfunc_end10-cputln
                                         ; -- End function
 	.section	.text.csputdec,"ax",@progbits
 	.type	csputdec,@function              ; -- Begin function csputdec
@@ -4578,7 +5110,7 @@ csputdec:                               ; @csputdec
 	stx	mos8(.Lcsputdec_zp_stk+5)
 	stz	mos8(.Lcsputdec_zp_stk+17)
 	ldx	#9
-.LBB10_1:                               ; =>This Inner Loop Header: Depth=1
+.LBB11_1:                               ; =>This Inner Loop Header: Depth=1
 	stx	mos8(.Lcsputdec_zp_stk+6)
 	sta	mos8(.Lcsputdec_zp_stk+3)
 	lda	#mos8(.Lcsputdec_zp_stk+18)
@@ -4602,25 +5134,25 @@ csputdec:                               ; @csputdec
 	sta	mos8(.Lcsputdec_zp_stk+7),y
 	dec	mos8(.Lcsputdec_zp_stk+1)
 	lda	mos8(.Lcsputdec_zp_stk+5)
-	bne	.LBB10_5
-; %bb.2:                                ;   in Loop: Header=BB10_1 Depth=1
+	bne	.LBB11_5
+; %bb.2:                                ;   in Loop: Header=BB11_1 Depth=1
 	lda	mos8(.Lcsputdec_zp_stk+4)
-	bne	.LBB10_6
-; %bb.3:                                ;   in Loop: Header=BB10_1 Depth=1
+	bne	.LBB11_6
+; %bb.3:                                ;   in Loop: Header=BB11_1 Depth=1
 	lda	mos8(.Lcsputdec_zp_stk+3)
-	bne	.LBB10_7
-; %bb.4:                                ;   in Loop: Header=BB10_1 Depth=1
+	bne	.LBB11_7
+; %bb.4:                                ;   in Loop: Header=BB11_1 Depth=1
 	lda	mos8(.Lcsputdec_zp_stk+2)
 	cmp	#10
-	bra	.LBB10_8
-.LBB10_5:                               ;   in Loop: Header=BB10_1 Depth=1
+	bra	.LBB11_8
+.LBB11_5:                               ;   in Loop: Header=BB11_1 Depth=1
 	lda	mos8(.Lcsputdec_zp_stk+5)
-	bra	.LBB10_7
-.LBB10_6:                               ;   in Loop: Header=BB10_1 Depth=1
+	bra	.LBB11_7
+.LBB11_6:                               ;   in Loop: Header=BB11_1 Depth=1
 	lda	mos8(.Lcsputdec_zp_stk+4)
-.LBB10_7:                               ;   in Loop: Header=BB10_1 Depth=1
+.LBB11_7:                               ;   in Loop: Header=BB11_1 Depth=1
 	cmp	#0
-.LBB10_8:                               ;   in Loop: Header=BB10_1 Depth=1
+.LBB11_8:                               ;   in Loop: Header=BB11_1 Depth=1
 	ldy	__rc4
 	txa
 	ldx	__rc2
@@ -4628,11 +5160,11 @@ csputdec:                               ; @csputdec
 	ldx	__rc3
 	stx	mos8(.Lcsputdec_zp_stk+5)
 	ldx	mos8(.Lcsputdec_zp_stk+1)
-	bcs	.LBB10_1
+	bcs	.LBB11_1
 ; %bb.9:
 	stz	__rc3
 	txa
-	beq	.LBB10_18
+	beq	.LBB11_18
 ; %bb.10:
 	sec
 	lda	#10
@@ -4640,37 +5172,37 @@ csputdec:                               ; @csputdec
 	sta	__rc3
 	lda	#0
 	sbc	#0
-.LBB10_11:                              ; =>This Inner Loop Header: Depth=1
+.LBB11_11:                              ; =>This Inner Loop Header: Depth=1
 	stx	__rc2
 	ldy	__rc3
 	cpy	__rc2
 	tay
 	sbc	#0
-	bvc	.LBB10_13
-; %bb.12:                               ;   in Loop: Header=BB10_11 Depth=1
+	bvc	.LBB11_13
+; %bb.12:                               ;   in Loop: Header=BB11_11 Depth=1
 	eor	#128
-.LBB10_13:                              ;   in Loop: Header=BB10_11 Depth=1
+.LBB11_13:                              ;   in Loop: Header=BB11_11 Depth=1
 	cmp	#0
-	bpl	.LBB10_16
-; %bb.14:                               ;   in Loop: Header=BB10_11 Depth=1
+	bpl	.LBB11_16
+; %bb.14:                               ;   in Loop: Header=BB11_11 Depth=1
 	lda	#32
 	sta	mos8(.Lcsputdec_zp_stk+7),x
 	dex
 	tya
 	cpx	#0
-	bne	.LBB10_11
+	bne	.LBB11_11
 ; %bb.15:
 	ldx	#0
-.LBB10_16:
+.LBB11_16:
 	stz	__rc3
 	inx
-	bne	.LBB10_19
+	bne	.LBB11_19
 ; %bb.17:
 	inc	__rc3
-	bra	.LBB10_19
-.LBB10_18:
+	bra	.LBB11_19
+.LBB11_18:
 	ldx	#1
-.LBB10_19:
+.LBB11_19:
 	stx	__rc2
 	lda	#mos8(.Lcsputdec_zp_stk+7)
 	clc
@@ -4682,8 +5214,8 @@ csputdec:                               ; @csputdec
 	lda	mos8(g_curX)
 	ldx	mos8(g_curY)
 	jmp	cputsxy
-.Lfunc_end10:
-	.size	csputdec, .Lfunc_end10-csputdec
+.Lfunc_end11:
+	.size	csputdec, .Lfunc_end11-csputdec
                                         ; -- End function
 	.section	.text.clrhome,"ax",@progbits
 	.type	clrhome,@function               ; -- Begin function clrhome
@@ -4767,87 +5299,13 @@ clrhome:                                ; @clrhome
 	stz	mos8(g_curX)
 	stz	mos8(g_curY)
 	rts
-.Lfunc_end11:
-	.size	clrhome, .Lfunc_end11-clrhome
+.Lfunc_end12:
+	.size	clrhome, .Lfunc_end12-clrhome
                                         ; -- End function
 	.section	.text.msprintf,"ax",@progbits
 	.type	msprintf,@function              ; -- Begin function msprintf
 msprintf:                               ; @msprintf
 ; %bb.0:
-	ldx	__rc2
-	stx	__rc4
-	ldx	__rc3
-	stx	__rc5
-	ldx	#52
-	stx	__rc2
-	ldx	#3
-	stx	__rc3
-	ldx	#52
-	stx	__rc6
-	ldx	#3
-	stx	__rc7
-	bra	.LBB12_8
-.LBB12_1:                               ;   in Loop: Header=BB12_8 Depth=1
-	cmp	#96
-	bcc	.LBB12_3
-; %bb.2:                                ;   in Loop: Header=BB12_8 Depth=1
-	clc
-	adc	#160
-	bra	.LBB12_5
-.LBB12_3:                               ;   in Loop: Header=BB12_8 Depth=1
-	clc
-	tay
-	adc	#165
-	tax
-	tya
-	cpx	#5
-	bcs	.LBB12_5
-; %bb.4:                                ;   in Loop: Header=BB12_8 Depth=1
-	lda	.Lswitch.table.asciitoscreencode_s,x
-.LBB12_5:                               ;   in Loop: Header=BB12_8 Depth=1
-	sta	(__rc6)
-	inc	__rc6
-	bne	.LBB12_7
-; %bb.6:                                ;   in Loop: Header=BB12_8 Depth=1
-	inc	__rc7
-.LBB12_7:                               ;   in Loop: Header=BB12_8 Depth=1
-	tax
-	beq	.LBB12_12
-.LBB12_8:                               ; =>This Inner Loop Header: Depth=1
-	lda	(__rc4)
-	inc	__rc4
-	bne	.LBB12_10
-; %bb.9:                                ;   in Loop: Header=BB12_8 Depth=1
-	inc	__rc5
-.LBB12_10:                              ;   in Loop: Header=BB12_8 Depth=1
-	cmp	#192
-	bcc	.LBB12_1
-; %bb.11:                               ;   in Loop: Header=BB12_8 Depth=1
-	eor	#128
-	bra	.LBB12_5
-.LBB12_12:
-	lda	mos8(g_curX)
-	ldx	mos8(g_curY)
-	jmp	cputsxy
-.Lfunc_end12:
-	.size	msprintf, .Lfunc_end12-msprintf
-                                        ; -- End function
-	.section	.text.mprintf,"ax",@progbits
-	.type	mprintf,@function               ; -- Begin function mprintf
-mprintf:                                ; @mprintf
-; %bb.0:
-	ldy	__rc21
-	phy
-	ldy	__rc22
-	phy
-	ldy	__rc23
-	phy
-	sta	mos8(.Lmprintf_zp_stk)
-	stx	__rc21
-	ldx	__rc4
-	stx	__rc22
-	ldx	__rc5
-	stx	__rc23
 	ldx	__rc2
 	stx	__rc4
 	ldx	__rc3
@@ -4902,6 +5360,80 @@ mprintf:                                ; @mprintf
 .LBB13_12:
 	lda	mos8(g_curX)
 	ldx	mos8(g_curY)
+	jmp	cputsxy
+.Lfunc_end13:
+	.size	msprintf, .Lfunc_end13-msprintf
+                                        ; -- End function
+	.section	.text.mprintf,"ax",@progbits
+	.type	mprintf,@function               ; -- Begin function mprintf
+mprintf:                                ; @mprintf
+; %bb.0:
+	ldy	__rc21
+	phy
+	ldy	__rc22
+	phy
+	ldy	__rc23
+	phy
+	sta	mos8(.Lmprintf_zp_stk)
+	stx	__rc21
+	ldx	__rc4
+	stx	__rc22
+	ldx	__rc5
+	stx	__rc23
+	ldx	__rc2
+	stx	__rc4
+	ldx	__rc3
+	stx	__rc5
+	ldx	#52
+	stx	__rc2
+	ldx	#3
+	stx	__rc3
+	ldx	#52
+	stx	__rc6
+	ldx	#3
+	stx	__rc7
+	bra	.LBB14_8
+.LBB14_1:                               ;   in Loop: Header=BB14_8 Depth=1
+	cmp	#96
+	bcc	.LBB14_3
+; %bb.2:                                ;   in Loop: Header=BB14_8 Depth=1
+	clc
+	adc	#160
+	bra	.LBB14_5
+.LBB14_3:                               ;   in Loop: Header=BB14_8 Depth=1
+	clc
+	tay
+	adc	#165
+	tax
+	tya
+	cpx	#5
+	bcs	.LBB14_5
+; %bb.4:                                ;   in Loop: Header=BB14_8 Depth=1
+	lda	.Lswitch.table.asciitoscreencode_s,x
+.LBB14_5:                               ;   in Loop: Header=BB14_8 Depth=1
+	sta	(__rc6)
+	inc	__rc6
+	bne	.LBB14_7
+; %bb.6:                                ;   in Loop: Header=BB14_8 Depth=1
+	inc	__rc7
+.LBB14_7:                               ;   in Loop: Header=BB14_8 Depth=1
+	tax
+	beq	.LBB14_12
+.LBB14_8:                               ; =>This Inner Loop Header: Depth=1
+	lda	(__rc4)
+	inc	__rc4
+	bne	.LBB14_10
+; %bb.9:                                ;   in Loop: Header=BB14_8 Depth=1
+	inc	__rc5
+.LBB14_10:                              ;   in Loop: Header=BB14_8 Depth=1
+	cmp	#192
+	bcc	.LBB14_1
+; %bb.11:                               ;   in Loop: Header=BB14_8 Depth=1
+	eor	#128
+	bra	.LBB14_5
+.LBB14_12:
+	lda	mos8(g_curX)
+	ldx	mos8(g_curY)
 	jsr	cputsxy
 	stz	__rc4
 	ldx	__rc22
@@ -4918,8 +5450,8 @@ mprintf:                                ; @mprintf
 	plx
 	stx	__rc21
 	rts
-.Lfunc_end13:
-	.size	mprintf, .Lfunc_end13-mprintf
+.Lfunc_end14:
+	.size	mprintf, .Lfunc_end14-mprintf
                                         ; -- End function
 	.section	.text.mcputsxy,"ax",@progbits
 	.type	mcputsxy,@function              ; -- Begin function mcputsxy
@@ -4938,50 +5470,50 @@ mcputsxy:                               ; @mcputsxy
 	sty	__rc6
 	ldy	#3
 	sty	__rc7
-	bra	.LBB14_8
-.LBB14_1:                               ;   in Loop: Header=BB14_8 Depth=1
+	bra	.LBB15_8
+.LBB15_1:                               ;   in Loop: Header=BB15_8 Depth=1
 	cmp	#96
-	bcc	.LBB14_3
-; %bb.2:                                ;   in Loop: Header=BB14_8 Depth=1
+	bcc	.LBB15_3
+; %bb.2:                                ;   in Loop: Header=BB15_8 Depth=1
 	clc
 	adc	#160
-	bra	.LBB14_5
-.LBB14_3:                               ;   in Loop: Header=BB14_8 Depth=1
+	bra	.LBB15_5
+.LBB15_3:                               ;   in Loop: Header=BB15_8 Depth=1
 	clc
 	sta	__rc9
 	adc	#165
 	tay
 	lda	__rc9
 	cpy	#5
-	bcs	.LBB14_5
-; %bb.4:                                ;   in Loop: Header=BB14_8 Depth=1
+	bcs	.LBB15_5
+; %bb.4:                                ;   in Loop: Header=BB15_8 Depth=1
 	lda	.Lswitch.table.asciitoscreencode_s,y
-.LBB14_5:                               ;   in Loop: Header=BB14_8 Depth=1
+.LBB15_5:                               ;   in Loop: Header=BB15_8 Depth=1
 	sta	(__rc6)
 	inc	__rc6
-	bne	.LBB14_7
-; %bb.6:                                ;   in Loop: Header=BB14_8 Depth=1
+	bne	.LBB15_7
+; %bb.6:                                ;   in Loop: Header=BB15_8 Depth=1
 	inc	__rc7
-.LBB14_7:                               ;   in Loop: Header=BB14_8 Depth=1
+.LBB15_7:                               ;   in Loop: Header=BB15_8 Depth=1
 	tay
-	beq	.LBB14_12
-.LBB14_8:                               ; =>This Inner Loop Header: Depth=1
+	beq	.LBB15_12
+.LBB15_8:                               ; =>This Inner Loop Header: Depth=1
 	lda	(__rc4)
 	inc	__rc4
-	bne	.LBB14_10
-; %bb.9:                                ;   in Loop: Header=BB14_8 Depth=1
+	bne	.LBB15_10
+; %bb.9:                                ;   in Loop: Header=BB15_8 Depth=1
 	inc	__rc5
-.LBB14_10:                              ;   in Loop: Header=BB14_8 Depth=1
+.LBB15_10:                              ;   in Loop: Header=BB15_8 Depth=1
 	cmp	#192
-	bcc	.LBB14_1
-; %bb.11:                               ;   in Loop: Header=BB14_8 Depth=1
+	bcc	.LBB15_1
+; %bb.11:                               ;   in Loop: Header=BB15_8 Depth=1
 	eor	#128
-	bra	.LBB14_5
-.LBB14_12:
+	bra	.LBB15_5
+.LBB15_12:
 	lda	__rc8
 	jmp	cputsxy
-.Lfunc_end14:
-	.size	mcputsxy, .Lfunc_end14-mcputsxy
+.Lfunc_end15:
+	.size	mcputsxy, .Lfunc_end15-mcputsxy
                                         ; -- End function
 	.section	.text.mcbox,"ax",@progbits
 	.type	mcbox,@function                 ; -- Begin function mcbox
@@ -5041,13 +5573,13 @@ mcbox:                                  ; @mcbox
 	sta	__rc26
 	stx	__rc27
 	cpx	__rc23
-	bcs	.LBB15_1
+	bcs	.LBB16_1
 ; %bb.18:
-	jmp	.LBB15_3
-.LBB15_1:
+	jmp	.LBB16_3
+.LBB16_1:
 	ldx	__rc23
 	stx	__rc21
-.LBB15_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB16_2:                               ; =>This Inner Loop Header: Depth=1
 	lda	mos8(g_curScreenW)
 	ldx	__rc21
 	stx	__rc2
@@ -5118,10 +5650,10 @@ mcbox:                                  ; @mcbox
 	inc	__rc21
 	ldx	__rc27
 	cpx	__rc21
-	bcc	.LBB15_3
-; %bb.20:                               ;   in Loop: Header=BB15_2 Depth=1
-	jmp	.LBB15_2
-.LBB15_3:
+	bcc	.LBB16_3
+; %bb.20:                               ;   in Loop: Header=BB16_2 Depth=1
+	jmp	.LBB16_2
+.LBB16_3:
 	ldx	#112
 	stx	__rc2
 	ldx	__rc23
@@ -5146,11 +5678,11 @@ mcbox:                                  ; @mcbox
 	jsr	cputcxy
 	ldx	__rc26
 	cpx	#2
-	bcc	.LBB15_6
+	bcc	.LBB16_6
 ; %bb.4:
 	ldy	__rc22
 	iny
-.LBB15_5:                               ; =>This Inner Loop Header: Depth=1
+.LBB16_5:                               ; =>This Inner Loop Header: Depth=1
 	ldx	#64
 	stx	__rc2
 	ldx	__rc23
@@ -5165,13 +5697,13 @@ mcbox:                                  ; @mcbox
 	ldy	__rc21
 	iny
 	cpy	__rc24
-	bne	.LBB15_5
-.LBB15_6:
+	bne	.LBB16_5
+.LBB16_6:
 	ldx	__rc23
 	stx	__rc21
 	inc	__rc21
 	ldx	__rc21
-.LBB15_7:                               ; =>This Inner Loop Header: Depth=1
+.LBB16_7:                               ; =>This Inner Loop Header: Depth=1
 	ldy	#93
 	sty	__rc2
 	stx	__rc23
@@ -5185,34 +5717,34 @@ mcbox:                                  ; @mcbox
 	ldx	__rc23
 	inx
 	cpx	__rc27
-	bne	.LBB15_7
+	bne	.LBB16_7
 ; %bb.8:
 	lda	__rc20
-	bne	.LBB15_9
+	bne	.LBB16_9
 ; %bb.22:
-	jmp	.LBB15_17
-.LBB15_9:
+	jmp	.LBB16_17
+.LBB16_9:
 	ldy	__rc27
 	cpy	mos8(g_curScreenH)
-	bcc	.LBB15_10
+	bcc	.LBB16_10
 ; %bb.24:
-	jmp	.LBB15_17
-.LBB15_10:
+	jmp	.LBB16_17
+.LBB16_10:
 	ldx	mos8(g_curScreenW)
 	stx	__rc2
 	ldx	__rc25
 	cpx	__rc2
-	bcc	.LBB15_11
+	bcc	.LBB16_11
 ; %bb.26:
-	jmp	.LBB15_17
-.LBB15_11:
+	jmp	.LBB16_17
+.LBB16_11:
 	stz	__rc3
 	ldx	#0
 	iny
-	bne	.LBB15_13
+	bne	.LBB16_13
 ; %bb.12:
 	inx
-.LBB15_13:
+.LBB16_13:
 	stx	__rc24
 	sty	__rc23
 	tya
@@ -5255,7 +5787,7 @@ mcbox:                                  ; @mcbox
 	ldx	__rc25
 	stx	__rc22
 	inc	__rc22
-.LBB15_14:                              ; =>This Inner Loop Header: Depth=1
+.LBB16_14:                              ; =>This Inner Loop Header: Depth=1
 	lda	mos8(g_curScreenW)
 	ldx	__rc21
 	stx	__rc2
@@ -5281,16 +5813,16 @@ mcbox:                                  ; @mcbox
 	jsr	lpoke
 	inc	__rc21
 	ldx	__rc24
-	bne	.LBB15_16
-; %bb.15:                               ;   in Loop: Header=BB15_14 Depth=1
+	bne	.LBB16_16
+; %bb.15:                               ;   in Loop: Header=BB16_14 Depth=1
 	ldx	__rc23
 	cpx	__rc21
-	bcs	.LBB15_14
-	bra	.LBB15_17
-.LBB15_16:                              ;   in Loop: Header=BB15_14 Depth=1
+	bcs	.LBB16_14
+	bra	.LBB16_17
+.LBB16_16:                              ;   in Loop: Header=BB16_14 Depth=1
 	cpx	#0
-	bcs	.LBB15_14
-.LBB15_17:
+	bcs	.LBB16_14
+.LBB16_17:
 	ldy	#0
 	lda	(__rc0),y                       ; 1-byte Folded Reload
 	sta	__rc29
@@ -5325,8 +5857,8 @@ mcbox:                                  ; @mcbox
 	adc	#0
 	sta	__rc1
 	rts
-.Lfunc_end15:
-	.size	mcbox, .Lfunc_end15-mcbox
+.Lfunc_end16:
+	.size	mcbox, .Lfunc_end16-mcbox
                                         ; -- End function
 	.section	.text.messagebox,"ax",@progbits
 	.type	messagebox,@function            ; -- Begin function messagebox
@@ -5365,46 +5897,46 @@ messagebox:                             ; @messagebox
 	stx	__rc2
 	ldx	#3
 	stx	__rc3
-	bra	.LBB16_8
-.LBB16_1:                               ;   in Loop: Header=BB16_8 Depth=1
+	bra	.LBB17_8
+.LBB17_1:                               ;   in Loop: Header=BB17_8 Depth=1
 	cmp	#96
-	bcc	.LBB16_3
-; %bb.2:                                ;   in Loop: Header=BB16_8 Depth=1
+	bcc	.LBB17_3
+; %bb.2:                                ;   in Loop: Header=BB17_8 Depth=1
 	clc
 	adc	#160
-	bra	.LBB16_5
-.LBB16_3:                               ;   in Loop: Header=BB16_8 Depth=1
+	bra	.LBB17_5
+.LBB17_3:                               ;   in Loop: Header=BB17_8 Depth=1
 	clc
 	tay
 	adc	#165
 	tax
 	tya
 	cpx	#5
-	bcs	.LBB16_5
-; %bb.4:                                ;   in Loop: Header=BB16_8 Depth=1
+	bcs	.LBB17_5
+; %bb.4:                                ;   in Loop: Header=BB17_8 Depth=1
 	lda	.Lswitch.table.asciitoscreencode_s,x
-.LBB16_5:                               ;   in Loop: Header=BB16_8 Depth=1
+.LBB17_5:                               ;   in Loop: Header=BB17_8 Depth=1
 	sta	(__rc2)
 	inc	__rc2
-	bne	.LBB16_7
-; %bb.6:                                ;   in Loop: Header=BB16_8 Depth=1
+	bne	.LBB17_7
+; %bb.6:                                ;   in Loop: Header=BB17_8 Depth=1
 	inc	__rc3
-.LBB16_7:                               ;   in Loop: Header=BB16_8 Depth=1
+.LBB17_7:                               ;   in Loop: Header=BB17_8 Depth=1
 	tax
-	beq	.LBB16_12
-.LBB16_8:                               ; =>This Inner Loop Header: Depth=1
+	beq	.LBB17_12
+.LBB17_8:                               ; =>This Inner Loop Header: Depth=1
 	lda	(__rc22)
 	inc	__rc22
-	bne	.LBB16_10
-; %bb.9:                                ;   in Loop: Header=BB16_8 Depth=1
+	bne	.LBB17_10
+; %bb.9:                                ;   in Loop: Header=BB17_8 Depth=1
 	inc	__rc23
-.LBB16_10:                              ;   in Loop: Header=BB16_8 Depth=1
+.LBB17_10:                              ;   in Loop: Header=BB17_8 Depth=1
 	cmp	#192
-	bcc	.LBB16_1
-; %bb.11:                               ;   in Loop: Header=BB16_8 Depth=1
+	bcc	.LBB17_1
+; %bb.11:                               ;   in Loop: Header=BB17_8 Depth=1
 	eor	#128
-	bra	.LBB16_5
-.LBB16_12:
+	bra	.LBB17_5
+.LBB17_12:
 	lda	mos8(g_curX)
 	ldx	mos8(g_curY)
 	ldy	#52
@@ -5425,16 +5957,16 @@ messagebox:                             ; @messagebox
 	plx
 	stx	__rc20
 	rts
-.Lfunc_end16:
-	.size	messagebox, .Lfunc_end16-messagebox
+.Lfunc_end17:
+	.size	messagebox, .Lfunc_end17-messagebox
                                         ; -- End function
 	.section	.text.escNOP,"ax",@progbits
 	.type	escNOP,@function                ; -- Begin function escNOP
 escNOP:                                 ; @escNOP
 ; %bb.0:
 	rts
-.Lfunc_end17:
-	.size	escNOP, .Lfunc_end17-escNOP
+.Lfunc_end18:
+	.size	escNOP, .Lfunc_end18-escNOP
                                         ; -- End function
 	.section	.text.cputcxy,"ax",@progbits
 	.type	cputcxy,@function               ; -- Begin function cputcxy
@@ -5534,26 +6066,26 @@ cputcxy:                                ; @cputcxy
 	ply
 	dex
 	cpy	#0
-	bne	.LBB18_2
+	bne	.LBB19_2
 ; %bb.1:
 	dec	__rc20
-.LBB18_2:
+.LBB19_2:
 	lda	__rc20
-	bne	.LBB18_5
+	bne	.LBB19_5
 ; %bb.3:
 	ldy	__rc23
 	cpx	__rc22
-	bne	.LBB18_6
+	bne	.LBB19_6
 ; %bb.4:
 	ldx	#0
 	iny
-	bra	.LBB18_7
-.LBB18_5:
+	bra	.LBB19_7
+.LBB19_5:
 	ldy	__rc23
-.LBB18_6:
+.LBB19_6:
 	ldx	__rc22
 	inx
-.LBB18_7:
+.LBB19_7:
 	stx	mos8(g_curX)
 	sty	mos8(g_curY)
 	ldy	#0
@@ -5578,8 +6110,8 @@ cputcxy:                                ; @cputcxy
 	adc	#0
 	sta	__rc1
 	rts
-.Lfunc_end18:
-	.size	cputcxy, .Lfunc_end18-cputcxy
+.Lfunc_end19:
+	.size	cputcxy, .Lfunc_end19-cputcxy
                                         ; -- End function
 	.section	.text.cputsxy,"ax",@progbits
 	.type	cputsxy,@function               ; -- Begin function cputsxy
@@ -5697,8 +6229,8 @@ cputsxy:                                ; @cputsxy
 	sta	mos8(g_curY)
 	stx	mos8(g_curX)
 	rts
-.Lfunc_end19:
-	.size	cputsxy, .Lfunc_end19-cputsxy
+.Lfunc_end20:
+	.size	cputsxy, .Lfunc_end20-cputsxy
                                         ; -- End function
 	.section	.text.lcopy,"ax",@progbits
 	.type	lcopy,@function                 ; -- Begin function lcopy
@@ -5775,8 +6307,8 @@ lcopy:                                  ; @lcopy
 	stx	55041
 	sty	55045
 	rts
-.Lfunc_end20:
-	.size	lcopy, .Lfunc_end20-lcopy
+.Lfunc_end21:
+	.size	lcopy, .Lfunc_end21-lcopy
                                         ; -- End function
 	.section	.text.lfill,"ax",@progbits
 	.type	lfill,@function                 ; -- Begin function lfill
@@ -5840,8 +6372,8 @@ lfill:                                  ; @lfill
 	stx	55041
 	sty	55045
 	rts
-.Lfunc_end21:
-	.size	lfill, .Lfunc_end21-lfill
+.Lfunc_end22:
+	.size	lfill, .Lfunc_end22-lfill
                                         ; -- End function
 	.section	.text.strcpy,"ax",@progbits
 	.type	strcpy,@function                ; -- Begin function strcpy
@@ -5850,7 +6382,7 @@ strcpy:                                 ; @strcpy
 	lda	(__rc4)
 	sta	(__rc2)
 	lda	(__rc4)
-	beq	.LBB22_7
+	beq	.LBB23_7
 ; %bb.1:
 	ldy	#1
 	ldx	__rc2
@@ -5861,54 +6393,54 @@ strcpy:                                 ; @strcpy
 	stx	__rc8
 	ldx	__rc5
 	stx	__rc9
-.LBB22_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB23_2:                               ; =>This Inner Loop Header: Depth=1
 	inc	__rc8
-	bne	.LBB22_4
-; %bb.3:                                ;   in Loop: Header=BB22_2 Depth=1
+	bne	.LBB23_4
+; %bb.3:                                ;   in Loop: Header=BB23_2 Depth=1
 	inc	__rc9
-.LBB22_4:                               ;   in Loop: Header=BB22_2 Depth=1
+.LBB23_4:                               ;   in Loop: Header=BB23_2 Depth=1
 	lda	(__rc4),y
 	sta	(__rc6),y
 	lda	(__rc4),y
 	inc	__rc6
-	bne	.LBB22_6
-; %bb.5:                                ;   in Loop: Header=BB22_2 Depth=1
+	bne	.LBB23_6
+; %bb.5:                                ;   in Loop: Header=BB23_2 Depth=1
 	inc	__rc7
-.LBB22_6:                               ;   in Loop: Header=BB22_2 Depth=1
+.LBB23_6:                               ;   in Loop: Header=BB23_2 Depth=1
 	ldx	__rc8
 	stx	__rc4
 	ldx	__rc9
 	stx	__rc5
 	tax
-	bne	.LBB22_2
-.LBB22_7:
+	bne	.LBB23_2
+.LBB23_7:
 	rts
-.Lfunc_end22:
-	.size	strcpy, .Lfunc_end22-strcpy
+.Lfunc_end23:
+	.size	strcpy, .Lfunc_end23-strcpy
                                         ; -- End function
 	.section	.text.strlen,"ax",@progbits
 	.type	strlen,@function                ; -- Begin function strlen
 strlen:                                 ; @strlen
 ; %bb.0:
 	lda	(__rc2)
-	beq	.LBB23_5
+	beq	.LBB24_5
 ; %bb.1:
 	lda	#0
 	ldy	#1
 	stz	__rc4
 	tax
 	stz	__rc5
-.LBB23_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB24_2:                               ; =>This Inner Loop Header: Depth=1
 	clc
 	adc	__rc2
 	sta	__rc6
 	lda	__rc5
 	adc	__rc3
 	inc	__rc4
-	bne	.LBB23_4
-; %bb.3:                                ;   in Loop: Header=BB23_2 Depth=1
+	bne	.LBB24_4
+; %bb.3:                                ;   in Loop: Header=BB24_2 Depth=1
 	inx
-.LBB23_4:                               ;   in Loop: Header=BB23_2 Depth=1
+.LBB24_4:                               ;   in Loop: Header=BB24_2 Depth=1
 	sta	__rc7
 	lda	(__rc6),y
 	sta	__rc6
@@ -5916,33 +6448,33 @@ strlen:                                 ; @strlen
 	stx	__rc5
 	inc	__rc6
 	dec	__rc6
-	bne	.LBB23_2
-	bra	.LBB23_6
-.LBB23_5:
+	bne	.LBB24_2
+	bra	.LBB24_6
+.LBB24_5:
 	stz	__rc4
 	ldx	#0
-.LBB23_6:
+.LBB24_6:
 	lda	__rc4
 	rts
-.Lfunc_end23:
-	.size	strlen, .Lfunc_end23-strlen
+.Lfunc_end24:
+	.size	strlen, .Lfunc_end24-strlen
                                         ; -- End function
 	.section	.text.__ashlqi3,"ax",@progbits
 	.globl	__ashlqi3                       ; -- Begin function __ashlqi3
 	.type	__ashlqi3,@function
 __ashlqi3:                              ; @__ashlqi3
 ; %bb.0:
-	bra	.LBB24_2
-.LBB24_1:                               ;   in Loop: Header=BB24_2 Depth=1
+	bra	.LBB25_2
+.LBB25_1:                               ;   in Loop: Header=BB25_2 Depth=1
 	dex
 	asl
-.LBB24_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB25_2:                               ; =>This Inner Loop Header: Depth=1
 	cpx	#0
-	bne	.LBB24_1
+	bne	.LBB25_1
 ; %bb.3:
 	rts
-.Lfunc_end24:
-	.size	__ashlqi3, .Lfunc_end24-__ashlqi3
+.Lfunc_end25:
+	.size	__ashlqi3, .Lfunc_end25-__ashlqi3
                                         ; -- End function
 	.section	.text.__ashlhi3,"ax",@progbits
 	.globl	__ashlhi3                       ; -- Begin function __ashlhi3
@@ -5951,20 +6483,20 @@ __ashlhi3:                              ; @__ashlhi3
 ; %bb.0:
 	stx	__rc3
 	ldx	__rc2
-	beq	.LBB25_3
+	beq	.LBB26_3
 ; %bb.1:
 	ldx	__rc2
-.LBB25_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB26_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	asl
 	rol	__rc3
 	cpx	#0
-	bne	.LBB25_2
-.LBB25_3:
+	bne	.LBB26_2
+.LBB26_3:
 	ldx	__rc3
 	rts
-.Lfunc_end25:
-	.size	__ashlhi3, .Lfunc_end25-__ashlhi3
+.Lfunc_end26:
+	.size	__ashlhi3, .Lfunc_end26-__ashlhi3
                                         ; -- End function
 	.section	.text.__ashlsi3,"ax",@progbits
 	.globl	__ashlsi3                       ; -- Begin function __ashlsi3
@@ -5973,22 +6505,22 @@ __ashlsi3:                              ; @__ashlsi3
 ; %bb.0:
 	stx	__rc5
 	ldx	__rc4
-	beq	.LBB26_3
+	beq	.LBB27_3
 ; %bb.1:
 	ldx	__rc4
-.LBB26_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB27_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	asl
 	rol	__rc5
 	rol	__rc2
 	rol	__rc3
 	cpx	#0
-	bne	.LBB26_2
-.LBB26_3:
+	bne	.LBB27_2
+.LBB27_3:
 	ldx	__rc5
 	rts
-.Lfunc_end26:
-	.size	__ashlsi3, .Lfunc_end26-__ashlsi3
+.Lfunc_end27:
+	.size	__ashlsi3, .Lfunc_end27-__ashlsi3
                                         ; -- End function
 	.section	.text.__ashldi3,"ax",@progbits
 	.globl	__ashldi3                       ; -- Begin function __ashldi3
@@ -5997,10 +6529,10 @@ __ashldi3:                              ; @__ashldi3
 ; %bb.0:
 	stx	__rc9
 	ldx	__rc8
-	beq	.LBB27_3
+	beq	.LBB28_3
 ; %bb.1:
 	ldx	__rc8
-.LBB27_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB28_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	asl
 	rol	__rc9
@@ -6011,29 +6543,29 @@ __ashldi3:                              ; @__ashldi3
 	rol	__rc6
 	rol	__rc7
 	cpx	#0
-	bne	.LBB27_2
-.LBB27_3:
+	bne	.LBB28_2
+.LBB28_3:
 	ldx	__rc9
 	rts
-.Lfunc_end27:
-	.size	__ashldi3, .Lfunc_end27-__ashldi3
+.Lfunc_end28:
+	.size	__ashldi3, .Lfunc_end28-__ashldi3
                                         ; -- End function
 	.section	.text.__lshrqi3,"ax",@progbits
 	.globl	__lshrqi3                       ; -- Begin function __lshrqi3
 	.type	__lshrqi3,@function
 __lshrqi3:                              ; @__lshrqi3
 ; %bb.0:
-	bra	.LBB28_2
-.LBB28_1:                               ;   in Loop: Header=BB28_2 Depth=1
+	bra	.LBB29_2
+.LBB29_1:                               ;   in Loop: Header=BB29_2 Depth=1
 	dex
 	lsr
-.LBB28_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB29_2:                               ; =>This Inner Loop Header: Depth=1
 	cpx	#0
-	bne	.LBB28_1
+	bne	.LBB29_1
 ; %bb.3:
 	rts
-.Lfunc_end28:
-	.size	__lshrqi3, .Lfunc_end28-__lshrqi3
+.Lfunc_end29:
+	.size	__lshrqi3, .Lfunc_end29-__lshrqi3
                                         ; -- End function
 	.section	.text.__lshrhi3,"ax",@progbits
 	.globl	__lshrhi3                       ; -- Begin function __lshrhi3
@@ -6042,20 +6574,20 @@ __lshrhi3:                              ; @__lshrhi3
 ; %bb.0:
 	stx	__rc3
 	ldx	__rc2
-	beq	.LBB29_3
+	beq	.LBB30_3
 ; %bb.1:
 	ldx	__rc2
-.LBB29_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB30_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	lsr	__rc3
 	ror
 	cpx	#0
-	bne	.LBB29_2
-.LBB29_3:
+	bne	.LBB30_2
+.LBB30_3:
 	ldx	__rc3
 	rts
-.Lfunc_end29:
-	.size	__lshrhi3, .Lfunc_end29-__lshrhi3
+.Lfunc_end30:
+	.size	__lshrhi3, .Lfunc_end30-__lshrhi3
                                         ; -- End function
 	.section	.text.__lshrsi3,"ax",@progbits
 	.globl	__lshrsi3                       ; -- Begin function __lshrsi3
@@ -6064,22 +6596,22 @@ __lshrsi3:                              ; @__lshrsi3
 ; %bb.0:
 	stx	__rc5
 	ldx	__rc4
-	beq	.LBB30_3
+	beq	.LBB31_3
 ; %bb.1:
 	ldx	__rc4
-.LBB30_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB31_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	lsr	__rc3
 	ror	__rc2
 	ror	__rc5
 	ror
 	cpx	#0
-	bne	.LBB30_2
-.LBB30_3:
+	bne	.LBB31_2
+.LBB31_3:
 	ldx	__rc5
 	rts
-.Lfunc_end30:
-	.size	__lshrsi3, .Lfunc_end30-__lshrsi3
+.Lfunc_end31:
+	.size	__lshrsi3, .Lfunc_end31-__lshrsi3
                                         ; -- End function
 	.section	.text.__lshrdi3,"ax",@progbits
 	.globl	__lshrdi3                       ; -- Begin function __lshrdi3
@@ -6088,10 +6620,10 @@ __lshrdi3:                              ; @__lshrdi3
 ; %bb.0:
 	stx	__rc9
 	ldx	__rc8
-	beq	.LBB31_3
+	beq	.LBB32_3
 ; %bb.1:
 	ldx	__rc8
-.LBB31_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB32_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	lsr	__rc7
 	ror	__rc6
@@ -6102,30 +6634,30 @@ __lshrdi3:                              ; @__lshrdi3
 	ror	__rc9
 	ror
 	cpx	#0
-	bne	.LBB31_2
-.LBB31_3:
+	bne	.LBB32_2
+.LBB32_3:
 	ldx	__rc9
 	rts
-.Lfunc_end31:
-	.size	__lshrdi3, .Lfunc_end31-__lshrdi3
+.Lfunc_end32:
+	.size	__lshrdi3, .Lfunc_end32-__lshrdi3
                                         ; -- End function
 	.section	.text.__ashrqi3,"ax",@progbits
 	.globl	__ashrqi3                       ; -- Begin function __ashrqi3
 	.type	__ashrqi3,@function
 __ashrqi3:                              ; @__ashrqi3
 ; %bb.0:
-	bra	.LBB32_2
-.LBB32_1:                               ;   in Loop: Header=BB32_2 Depth=1
+	bra	.LBB33_2
+.LBB33_1:                               ;   in Loop: Header=BB33_2 Depth=1
 	dex
 	cmp	#128
 	ror
-.LBB32_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB33_2:                               ; =>This Inner Loop Header: Depth=1
 	cpx	#0
-	bne	.LBB32_1
+	bne	.LBB33_1
 ; %bb.3:
 	rts
-.Lfunc_end32:
-	.size	__ashrqi3, .Lfunc_end32-__ashrqi3
+.Lfunc_end33:
+	.size	__ashrqi3, .Lfunc_end33-__ashrqi3
                                         ; -- End function
 	.section	.text.__ashrhi3,"ax",@progbits
 	.globl	__ashrhi3                       ; -- Begin function __ashrhi3
@@ -6135,22 +6667,22 @@ __ashrhi3:                              ; @__ashrhi3
 	sta	__rc3
 	txa
 	ldx	__rc2
-	beq	.LBB33_3
+	beq	.LBB34_3
 ; %bb.1:
 	ldx	__rc2
-.LBB33_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB34_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	cmp	#128
 	ror
 	ror	__rc3
 	cpx	#0
-	bne	.LBB33_2
-.LBB33_3:
+	bne	.LBB34_2
+.LBB34_3:
 	tax
 	lda	__rc3
 	rts
-.Lfunc_end33:
-	.size	__ashrhi3, .Lfunc_end33-__ashrhi3
+.Lfunc_end34:
+	.size	__ashrhi3, .Lfunc_end34-__ashrhi3
                                         ; -- End function
 	.section	.text.__ashrsi3,"ax",@progbits
 	.globl	__ashrsi3                       ; -- Begin function __ashrsi3
@@ -6161,10 +6693,10 @@ __ashrsi3:                              ; @__ashrsi3
 	stx	__rc5
 	lda	__rc3
 	ldx	__rc4
-	beq	.LBB34_3
+	beq	.LBB35_3
 ; %bb.1:
 	ldx	__rc4
-.LBB34_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB35_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	cmp	#128
 	ror
@@ -6172,14 +6704,14 @@ __ashrsi3:                              ; @__ashrsi3
 	ror	__rc5
 	ror	__rc6
 	cpx	#0
-	bne	.LBB34_2
-.LBB34_3:
+	bne	.LBB35_2
+.LBB35_3:
 	sta	__rc3
 	ldx	__rc5
 	lda	__rc6
 	rts
-.Lfunc_end34:
-	.size	__ashrsi3, .Lfunc_end34-__ashrsi3
+.Lfunc_end35:
+	.size	__ashrsi3, .Lfunc_end35-__ashrsi3
                                         ; -- End function
 	.section	.text.__ashrdi3,"ax",@progbits
 	.globl	__ashrdi3                       ; -- Begin function __ashrdi3
@@ -6190,10 +6722,10 @@ __ashrdi3:                              ; @__ashrdi3
 	stx	__rc9
 	lda	__rc7
 	ldx	__rc8
-	beq	.LBB35_3
+	beq	.LBB36_3
 ; %bb.1:
 	ldx	__rc8
-.LBB35_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB36_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	cmp	#128
 	ror
@@ -6205,32 +6737,32 @@ __ashrdi3:                              ; @__ashrdi3
 	ror	__rc9
 	ror	__rc10
 	cpx	#0
-	bne	.LBB35_2
-.LBB35_3:
+	bne	.LBB36_2
+.LBB36_3:
 	sta	__rc7
 	ldx	__rc9
 	lda	__rc10
 	rts
-.Lfunc_end35:
-	.size	__ashrdi3, .Lfunc_end35-__ashrdi3
+.Lfunc_end36:
+	.size	__ashrdi3, .Lfunc_end36-__ashrdi3
                                         ; -- End function
 	.section	.text.__rotlqi3,"ax",@progbits
 	.globl	__rotlqi3                       ; -- Begin function __rotlqi3
 	.type	__rotlqi3,@function
 __rotlqi3:                              ; @__rotlqi3
 ; %bb.0:
-	bra	.LBB36_2
-.LBB36_1:                               ;   in Loop: Header=BB36_2 Depth=1
+	bra	.LBB37_2
+.LBB37_1:                               ;   in Loop: Header=BB37_2 Depth=1
 	dex
 	cmp	#128
 	rol
-.LBB36_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB37_2:                               ; =>This Inner Loop Header: Depth=1
 	cpx	#0
-	bne	.LBB36_1
+	bne	.LBB37_1
 ; %bb.3:
 	rts
-.Lfunc_end36:
-	.size	__rotlqi3, .Lfunc_end36-__rotlqi3
+.Lfunc_end37:
+	.size	__rotlqi3, .Lfunc_end37-__rotlqi3
                                         ; -- End function
 	.section	.text.__rotlhi3,"ax",@progbits
 	.globl	__rotlhi3                       ; -- Begin function __rotlhi3
@@ -6240,22 +6772,22 @@ __rotlhi3:                              ; @__rotlhi3
 	sta	__rc3
 	txa
 	ldx	__rc2
-	beq	.LBB37_3
+	beq	.LBB38_3
 ; %bb.1:
 	ldx	__rc2
-.LBB37_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB38_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	cmp	#128
 	rol	__rc3
 	rol
 	cpx	#0
-	bne	.LBB37_2
-.LBB37_3:
+	bne	.LBB38_2
+.LBB38_3:
 	tax
 	lda	__rc3
 	rts
-.Lfunc_end37:
-	.size	__rotlhi3, .Lfunc_end37-__rotlhi3
+.Lfunc_end38:
+	.size	__rotlhi3, .Lfunc_end38-__rotlhi3
                                         ; -- End function
 	.section	.text.__rotlsi3,"ax",@progbits
 	.globl	__rotlsi3                       ; -- Begin function __rotlsi3
@@ -6266,10 +6798,10 @@ __rotlsi3:                              ; @__rotlsi3
 	stx	__rc5
 	lda	__rc3
 	ldx	__rc4
-	beq	.LBB38_3
+	beq	.LBB39_3
 ; %bb.1:
 	ldx	__rc4
-.LBB38_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB39_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	cmp	#128
 	rol	__rc6
@@ -6277,14 +6809,14 @@ __rotlsi3:                              ; @__rotlsi3
 	rol	__rc2
 	rol
 	cpx	#0
-	bne	.LBB38_2
-.LBB38_3:
+	bne	.LBB39_2
+.LBB39_3:
 	sta	__rc3
 	ldx	__rc5
 	lda	__rc6
 	rts
-.Lfunc_end38:
-	.size	__rotlsi3, .Lfunc_end38-__rotlsi3
+.Lfunc_end39:
+	.size	__rotlsi3, .Lfunc_end39-__rotlsi3
                                         ; -- End function
 	.section	.text.__rotldi3,"ax",@progbits
 	.globl	__rotldi3                       ; -- Begin function __rotldi3
@@ -6295,10 +6827,10 @@ __rotldi3:                              ; @__rotldi3
 	stx	__rc9
 	lda	__rc7
 	ldx	__rc8
-	beq	.LBB39_3
+	beq	.LBB40_3
 ; %bb.1:
 	ldx	__rc8
-.LBB39_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB40_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	cmp	#128
 	rol	__rc10
@@ -6310,33 +6842,33 @@ __rotldi3:                              ; @__rotldi3
 	rol	__rc6
 	rol
 	cpx	#0
-	bne	.LBB39_2
-.LBB39_3:
+	bne	.LBB40_2
+.LBB40_3:
 	sta	__rc7
 	ldx	__rc9
 	lda	__rc10
 	rts
-.Lfunc_end39:
-	.size	__rotldi3, .Lfunc_end39-__rotldi3
+.Lfunc_end40:
+	.size	__rotldi3, .Lfunc_end40-__rotldi3
                                         ; -- End function
 	.section	.text.__rotrqi3,"ax",@progbits
 	.globl	__rotrqi3                       ; -- Begin function __rotrqi3
 	.type	__rotrqi3,@function
 __rotrqi3:                              ; @__rotrqi3
 ; %bb.0:
-	bra	.LBB40_2
-.LBB40_1:                               ;   in Loop: Header=BB40_2 Depth=1
+	bra	.LBB41_2
+.LBB41_1:                               ;   in Loop: Header=BB41_2 Depth=1
 	dex
 	sta	__rc2
 	lsr	__rc2
 	ror
-.LBB40_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB41_2:                               ; =>This Inner Loop Header: Depth=1
 	cpx	#0
-	bne	.LBB40_1
+	bne	.LBB41_1
 ; %bb.3:
 	rts
-.Lfunc_end40:
-	.size	__rotrqi3, .Lfunc_end40-__rotrqi3
+.Lfunc_end41:
+	.size	__rotrqi3, .Lfunc_end41-__rotrqi3
                                         ; -- End function
 	.section	.text.__rotrhi3,"ax",@progbits
 	.globl	__rotrhi3                       ; -- Begin function __rotrhi3
@@ -6345,22 +6877,22 @@ __rotrhi3:                              ; @__rotrhi3
 ; %bb.0:
 	stx	__rc3
 	ldx	__rc2
-	beq	.LBB41_3
+	beq	.LBB42_3
 ; %bb.1:
 	ldx	__rc2
-.LBB41_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB42_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	sta	__rc2
 	lsr	__rc2
 	ror	__rc3
 	ror
 	cpx	#0
-	bne	.LBB41_2
-.LBB41_3:
+	bne	.LBB42_2
+.LBB42_3:
 	ldx	__rc3
 	rts
-.Lfunc_end41:
-	.size	__rotrhi3, .Lfunc_end41-__rotrhi3
+.Lfunc_end42:
+	.size	__rotrhi3, .Lfunc_end42-__rotrhi3
                                         ; -- End function
 	.section	.text.__rotrsi3,"ax",@progbits
 	.globl	__rotrsi3                       ; -- Begin function __rotrsi3
@@ -6369,10 +6901,10 @@ __rotrsi3:                              ; @__rotrsi3
 ; %bb.0:
 	stx	__rc5
 	ldx	__rc4
-	beq	.LBB42_3
+	beq	.LBB43_3
 ; %bb.1:
 	ldx	__rc4
-.LBB42_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB43_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	sta	__rc4
 	lsr	__rc4
@@ -6381,12 +6913,12 @@ __rotrsi3:                              ; @__rotrsi3
 	ror	__rc5
 	ror
 	cpx	#0
-	bne	.LBB42_2
-.LBB42_3:
+	bne	.LBB43_2
+.LBB43_3:
 	ldx	__rc5
 	rts
-.Lfunc_end42:
-	.size	__rotrsi3, .Lfunc_end42-__rotrsi3
+.Lfunc_end43:
+	.size	__rotrsi3, .Lfunc_end43-__rotrsi3
                                         ; -- End function
 	.section	.text.__rotrdi3,"ax",@progbits
 	.globl	__rotrdi3                       ; -- Begin function __rotrdi3
@@ -6395,10 +6927,10 @@ __rotrdi3:                              ; @__rotrdi3
 ; %bb.0:
 	stx	__rc9
 	ldx	__rc8
-	beq	.LBB43_3
+	beq	.LBB44_3
 ; %bb.1:
 	ldx	__rc8
-.LBB43_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB44_2:                               ; =>This Inner Loop Header: Depth=1
 	dex
 	sta	__rc8
 	lsr	__rc8
@@ -6411,12 +6943,12 @@ __rotrdi3:                              ; @__rotrdi3
 	ror	__rc9
 	ror
 	cpx	#0
-	bne	.LBB43_2
-.LBB43_3:
+	bne	.LBB44_2
+.LBB44_3:
 	ldx	__rc9
 	rts
-.Lfunc_end43:
-	.size	__rotrdi3, .Lfunc_end43-__rotrdi3
+.Lfunc_end44:
+	.size	__rotrdi3, .Lfunc_end44-__rotrdi3
                                         ; -- End function
 	.section	.text.__mulqi3,"ax",@progbits
 	.globl	__mulqi3                        ; -- Begin function __mulqi3
@@ -6424,28 +6956,28 @@ __rotrdi3:                              ; @__rotrdi3
 __mulqi3:                               ; @__mulqi3
 ; %bb.0:
 	cpx	#0
-	beq	.LBB44_6
+	beq	.LBB45_6
 ; %bb.1:
 	sta	__rc2
 	stx	__rc3
 	lda	#0
-.LBB44_2:                               ; =>This Inner Loop Header: Depth=1
+.LBB45_2:                               ; =>This Inner Loop Header: Depth=1
 	lsr	__rc3
-	bcc	.LBB44_4
-; %bb.3:                                ;   in Loop: Header=BB44_2 Depth=1
+	bcc	.LBB45_4
+; %bb.3:                                ;   in Loop: Header=BB45_2 Depth=1
 	clc
 	adc	__rc2
-.LBB44_4:                               ;   in Loop: Header=BB44_2 Depth=1
+.LBB45_4:                               ;   in Loop: Header=BB45_2 Depth=1
 	asl	__rc2
 	ldx	__rc3
-	bne	.LBB44_2
+	bne	.LBB45_2
 ; %bb.5:
 	rts
-.LBB44_6:
+.LBB45_6:
 	lda	#0
 	rts
-.Lfunc_end44:
-	.size	__mulqi3, .Lfunc_end44-__mulqi3
+.Lfunc_end45:
+	.size	__mulqi3, .Lfunc_end45-__mulqi3
                                         ; -- End function
 	.section	.text.__mulhi3,"ax",@progbits
 	.globl	__mulhi3                        ; -- Begin function __mulhi3
@@ -6453,20 +6985,20 @@ __mulqi3:                               ; @__mulqi3
 __mulhi3:                               ; @__mulhi3
 ; %bb.0:
 	ldy	__rc3
-	bne	.LBB45_2
+	bne	.LBB46_2
 ; %bb.1:
 	ldy	__rc2
-	beq	.LBB45_7
-.LBB45_2:
+	beq	.LBB46_7
+.LBB46_2:
 	sta	__rc4
 	stx	__rc5
 	ldy	#0
 	tya
-.LBB45_3:                               ; =>This Inner Loop Header: Depth=1
+.LBB46_3:                               ; =>This Inner Loop Header: Depth=1
 	lsr	__rc3
 	ror	__rc2
-	bcc	.LBB45_5
-; %bb.4:                                ;   in Loop: Header=BB45_3 Depth=1
+	bcc	.LBB46_5
+; %bb.4:                                ;   in Loop: Header=BB46_3 Depth=1
 	tax
 	tya
 	clc
@@ -6474,24 +7006,24 @@ __mulhi3:                               ; @__mulhi3
 	tay
 	txa
 	adc	__rc5
-.LBB45_5:                               ;   in Loop: Header=BB45_3 Depth=1
+.LBB46_5:                               ;   in Loop: Header=BB46_3 Depth=1
 	asl	__rc4
 	rol	__rc5
 	ldx	__rc3
-	bne	.LBB45_3
-; %bb.6:                                ;   in Loop: Header=BB45_3 Depth=1
+	bne	.LBB46_3
+; %bb.6:                                ;   in Loop: Header=BB46_3 Depth=1
 	ldx	__rc2
-	bne	.LBB45_3
-	bra	.LBB45_8
-.LBB45_7:
+	bne	.LBB46_3
+	bra	.LBB46_8
+.LBB46_7:
 	ldy	#0
 	tya
-.LBB45_8:
+.LBB46_8:
 	tax
 	tya
 	rts
-.Lfunc_end45:
-	.size	__mulhi3, .Lfunc_end45-__mulhi3
+.Lfunc_end46:
+	.size	__mulhi3, .Lfunc_end46-__mulhi3
                                         ; -- End function
 	.section	.text.__mulsi3,"ax",@progbits
 	.globl	__mulsi3                        ; -- Begin function __mulsi3
@@ -6499,32 +7031,32 @@ __mulhi3:                               ; @__mulhi3
 __mulsi3:                               ; @__mulsi3
 ; %bb.0:
 	ldy	__rc7
-	bne	.LBB46_4
+	bne	.LBB47_4
 ; %bb.1:
 	ldy	__rc6
-	bne	.LBB46_4
+	bne	.LBB47_4
 ; %bb.2:
 	ldy	__rc5
-	bne	.LBB46_4
+	bne	.LBB47_4
 ; %bb.3:
 	ldy	__rc4
-	bne	.LBB46_4
+	bne	.LBB47_4
 ; %bb.13:
-	jmp	.LBB46_12
-.LBB46_4:
+	jmp	.LBB47_12
+.LBB47_4:
 	sta	__rc8
 	stx	__rc9
 	ldy	#0
 	ldx	#0
 	stz	__rc10
 	tya
-.LBB46_5:                               ; =>This Inner Loop Header: Depth=1
+.LBB47_5:                               ; =>This Inner Loop Header: Depth=1
 	lsr	__rc7
 	ror	__rc6
 	ror	__rc5
 	ror	__rc4
-	bcc	.LBB46_7
-; %bb.6:                                ;   in Loop: Header=BB46_5 Depth=1
+	bcc	.LBB47_7
+; %bb.6:                                ;   in Loop: Header=BB47_5 Depth=1
 	sta	__rc11
 	tya
 	clc
@@ -6538,27 +7070,27 @@ __mulsi3:                               ; @__mulsi3
 	sta	__rc10
 	lda	__rc11
 	adc	__rc3
-.LBB46_7:                               ;   in Loop: Header=BB46_5 Depth=1
+.LBB47_7:                               ;   in Loop: Header=BB47_5 Depth=1
 	asl	__rc8
 	rol	__rc9
 	rol	__rc2
 	rol	__rc3
 	inc	__rc7
 	dec	__rc7
-	bne	.LBB46_5
-; %bb.8:                                ;   in Loop: Header=BB46_5 Depth=1
+	bne	.LBB47_5
+; %bb.8:                                ;   in Loop: Header=BB47_5 Depth=1
 	inc	__rc6
 	dec	__rc6
-	bne	.LBB46_5
-; %bb.9:                                ;   in Loop: Header=BB46_5 Depth=1
+	bne	.LBB47_5
+; %bb.9:                                ;   in Loop: Header=BB47_5 Depth=1
 	inc	__rc5
 	dec	__rc5
-	bne	.LBB46_5
-; %bb.10:                               ;   in Loop: Header=BB46_5 Depth=1
+	bne	.LBB47_5
+; %bb.10:                               ;   in Loop: Header=BB47_5 Depth=1
 	inc	__rc4
 	dec	__rc4
-	bne	.LBB46_5
-.LBB46_11:
+	bne	.LBB47_5
+.LBB47_11:
 	phy
 	ldy	__rc10
 	sty	__rc2
@@ -6566,14 +7098,14 @@ __mulsi3:                               ; @__mulsi3
 	sta	__rc3
 	tya
 	rts
-.LBB46_12:
+.LBB47_12:
 	ldy	#0
 	ldx	#0
 	stz	__rc10
 	tya
-	bra	.LBB46_11
-.Lfunc_end46:
-	.size	__mulsi3, .Lfunc_end46-__mulsi3
+	bra	.LBB47_11
+.Lfunc_end47:
+	.size	__mulsi3, .Lfunc_end47-__mulsi3
                                         ; -- End function
 	.section	.text.__muldi3,"ax",@progbits
 	.globl	__muldi3                        ; -- Begin function __muldi3
@@ -6581,31 +7113,31 @@ __mulsi3:                               ; @__mulsi3
 __muldi3:                               ; @__muldi3
 ; %bb.0:
 	ldy	__rc15
-	bne	.LBB47_8
+	bne	.LBB48_8
 ; %bb.1:
 	ldy	__rc14
-	bne	.LBB47_8
+	bne	.LBB48_8
 ; %bb.2:
 	ldy	__rc13
-	bne	.LBB47_8
+	bne	.LBB48_8
 ; %bb.3:
 	ldy	__rc12
-	bne	.LBB47_8
+	bne	.LBB48_8
 ; %bb.4:
 	ldy	__rc11
-	bne	.LBB47_8
+	bne	.LBB48_8
 ; %bb.5:
 	ldy	__rc10
-	bne	.LBB47_8
+	bne	.LBB48_8
 ; %bb.6:
 	ldy	__rc9
-	bne	.LBB47_8
+	bne	.LBB48_8
 ; %bb.7:
 	ldy	__rc8
-	bne	.LBB47_8
+	bne	.LBB48_8
 ; %bb.21:
-	jmp	.LBB47_20
-.LBB47_8:
+	jmp	.LBB48_20
+.LBB48_8:
 	sta	__rc18
 	stx	__rc19
 	ldy	#0
@@ -6616,7 +7148,7 @@ __muldi3:                               ; @__muldi3
 	stz	mos8(.L__muldi3_zp_stk+3)
 	stz	mos8(.L__muldi3_zp_stk+4)
 	tya
-.LBB47_9:                               ; =>This Inner Loop Header: Depth=1
+.LBB48_9:                               ; =>This Inner Loop Header: Depth=1
 	lsr	__rc15
 	ror	__rc14
 	ror	__rc13
@@ -6625,8 +7157,8 @@ __muldi3:                               ; @__muldi3
 	ror	__rc10
 	ror	__rc9
 	ror	__rc8
-	bcc	.LBB47_11
-; %bb.10:                               ;   in Loop: Header=BB47_9 Depth=1
+	bcc	.LBB48_11
+; %bb.10:                               ;   in Loop: Header=BB48_9 Depth=1
 	sta	mos8(.L__muldi3_zp_stk+5)
 	tya
 	clc
@@ -6652,7 +7184,7 @@ __muldi3:                               ; @__muldi3
 	sta	mos8(.L__muldi3_zp_stk+4)
 	lda	mos8(.L__muldi3_zp_stk+5)
 	adc	__rc7
-.LBB47_11:                              ;   in Loop: Header=BB47_9 Depth=1
+.LBB48_11:                              ;   in Loop: Header=BB48_9 Depth=1
 	asl	__rc18
 	rol	__rc19
 	rol	__rc2
@@ -6663,52 +7195,52 @@ __muldi3:                               ; @__muldi3
 	rol	__rc7
 	inc	__rc15
 	dec	__rc15
-	beq	.LBB47_12
-; %bb.23:                               ;   in Loop: Header=BB47_9 Depth=1
-	jmp	.LBB47_9
-.LBB47_12:                              ;   in Loop: Header=BB47_9 Depth=1
+	beq	.LBB48_12
+; %bb.23:                               ;   in Loop: Header=BB48_9 Depth=1
+	jmp	.LBB48_9
+.LBB48_12:                              ;   in Loop: Header=BB48_9 Depth=1
 	inc	__rc14
 	dec	__rc14
-	beq	.LBB47_13
-; %bb.25:                               ;   in Loop: Header=BB47_9 Depth=1
-	jmp	.LBB47_9
-.LBB47_13:                              ;   in Loop: Header=BB47_9 Depth=1
+	beq	.LBB48_13
+; %bb.25:                               ;   in Loop: Header=BB48_9 Depth=1
+	jmp	.LBB48_9
+.LBB48_13:                              ;   in Loop: Header=BB48_9 Depth=1
 	inc	__rc13
 	dec	__rc13
-	beq	.LBB47_14
-; %bb.27:                               ;   in Loop: Header=BB47_9 Depth=1
-	jmp	.LBB47_9
-.LBB47_14:                              ;   in Loop: Header=BB47_9 Depth=1
+	beq	.LBB48_14
+; %bb.27:                               ;   in Loop: Header=BB48_9 Depth=1
+	jmp	.LBB48_9
+.LBB48_14:                              ;   in Loop: Header=BB48_9 Depth=1
 	inc	__rc12
 	dec	__rc12
-	beq	.LBB47_15
-; %bb.29:                               ;   in Loop: Header=BB47_9 Depth=1
-	jmp	.LBB47_9
-.LBB47_15:                              ;   in Loop: Header=BB47_9 Depth=1
+	beq	.LBB48_15
+; %bb.29:                               ;   in Loop: Header=BB48_9 Depth=1
+	jmp	.LBB48_9
+.LBB48_15:                              ;   in Loop: Header=BB48_9 Depth=1
 	inc	__rc11
 	dec	__rc11
-	beq	.LBB47_16
-; %bb.31:                               ;   in Loop: Header=BB47_9 Depth=1
-	jmp	.LBB47_9
-.LBB47_16:                              ;   in Loop: Header=BB47_9 Depth=1
+	beq	.LBB48_16
+; %bb.31:                               ;   in Loop: Header=BB48_9 Depth=1
+	jmp	.LBB48_9
+.LBB48_16:                              ;   in Loop: Header=BB48_9 Depth=1
 	inc	__rc10
 	dec	__rc10
-	beq	.LBB47_17
-; %bb.33:                               ;   in Loop: Header=BB47_9 Depth=1
-	jmp	.LBB47_9
-.LBB47_17:                              ;   in Loop: Header=BB47_9 Depth=1
+	beq	.LBB48_17
+; %bb.33:                               ;   in Loop: Header=BB48_9 Depth=1
+	jmp	.LBB48_9
+.LBB48_17:                              ;   in Loop: Header=BB48_9 Depth=1
 	inc	__rc9
 	dec	__rc9
-	beq	.LBB47_18
-; %bb.35:                               ;   in Loop: Header=BB47_9 Depth=1
-	jmp	.LBB47_9
-.LBB47_18:                              ;   in Loop: Header=BB47_9 Depth=1
+	beq	.LBB48_18
+; %bb.35:                               ;   in Loop: Header=BB48_9 Depth=1
+	jmp	.LBB48_9
+.LBB48_18:                              ;   in Loop: Header=BB48_9 Depth=1
 	inc	__rc8
 	dec	__rc8
-	beq	.LBB47_19
-; %bb.37:                               ;   in Loop: Header=BB47_9 Depth=1
-	jmp	.LBB47_9
-.LBB47_19:
+	beq	.LBB48_19
+; %bb.37:                               ;   in Loop: Header=BB48_9 Depth=1
+	jmp	.LBB48_9
+.LBB48_19:
 	phy
 	ldy	mos8(.L__muldi3_zp_stk)
 	sty	__rc2
@@ -6724,7 +7256,7 @@ __muldi3:                               ; @__muldi3
 	sta	__rc7
 	tya
 	rts
-.LBB47_20:
+.LBB48_20:
 	ldy	#0
 	ldx	#0
 	stz	mos8(.L__muldi3_zp_stk)
@@ -6733,9 +7265,9 @@ __muldi3:                               ; @__muldi3
 	stz	mos8(.L__muldi3_zp_stk+3)
 	stz	mos8(.L__muldi3_zp_stk+4)
 	tya
-	bra	.LBB47_19
-.Lfunc_end47:
-	.size	__muldi3, .Lfunc_end47-__muldi3
+	bra	.LBB48_19
+.Lfunc_end48:
+	.size	__muldi3, .Lfunc_end48-__muldi3
                                         ; -- End function
 	.section	.text.__udivqi3,"ax",@progbits
 	.globl	__udivqi3                       ; -- Begin function __udivqi3
@@ -6745,22 +7277,22 @@ __udivqi3:                              ; @__udivqi3
 	tay
 	lda	#0
 	cpx	#0
-	bne	.LBB48_1
+	bne	.LBB49_1
 ; %bb.15:
-	jmp	.LBB48_14
-.LBB48_1:
+	jmp	.LBB49_14
+.LBB49_1:
 	stx	__rc3
 	cpy	__rc3
-	bcs	.LBB48_2
+	bcs	.LBB49_2
 ; %bb.17:
-	jmp	.LBB48_14
-.LBB48_2:
+	jmp	.LBB49_14
+.LBB49_2:
 	lda	#1
 	ldx	__rc3
-	bpl	.LBB48_3
+	bpl	.LBB49_3
 ; %bb.19:
-	jmp	.LBB48_14
-.LBB48_3:
+	jmp	.LBB49_14
+.LBB49_3:
 	sty	__rc5
 	ldy	#0
 	ldx	#0
@@ -6768,22 +7300,22 @@ __udivqi3:                              ; @__udivqi3
 	lda	__rc3
 	sta	__rc2
 	pla
-.LBB48_4:                               ; =>This Inner Loop Header: Depth=1
+.LBB49_4:                               ; =>This Inner Loop Header: Depth=1
 	asl	__rc2
 	stz	__rc4
 	rol	__rc4
 	cpy	__rc4
-	bne	.LBB48_6
-; %bb.5:                                ;   in Loop: Header=BB48_4 Depth=1
+	bne	.LBB49_6
+; %bb.5:                                ;   in Loop: Header=BB49_4 Depth=1
 	lda	__rc5
 	cmp	__rc2
 	lda	#1
-	bcc	.LBB48_8
-	bra	.LBB48_7
-.LBB48_6:                               ;   in Loop: Header=BB48_4 Depth=1
+	bcc	.LBB49_8
+	bra	.LBB49_7
+.LBB49_6:                               ;   in Loop: Header=BB49_4 Depth=1
 	cpy	__rc4
-	bcc	.LBB48_8
-.LBB48_7:                               ;   in Loop: Header=BB48_4 Depth=1
+	bcc	.LBB49_8
+.LBB49_7:                               ;   in Loop: Header=BB49_4 Depth=1
 	inx
 	phy
 	ldy	__rc2
@@ -6791,28 +7323,28 @@ __udivqi3:                              ; @__udivqi3
 	ply
 	inc	__rc2
 	dec	__rc2
-	bpl	.LBB48_4
-	bra	.LBB48_9
-.LBB48_8:
+	bpl	.LBB49_4
+	bra	.LBB49_9
+.LBB49_8:
 	ldy	__rc3
 	sty	__rc2
-.LBB48_9:
+.LBB49_9:
 	cpx	#0
-	beq	.LBB48_14
+	beq	.LBB49_14
 ; %bb.10:
 	sec
 	lda	__rc5
 	sbc	__rc2
 	sta	__rc3
 	lda	#1
-.LBB48_11:                              ; =>This Inner Loop Header: Depth=1
+.LBB49_11:                              ; =>This Inner Loop Header: Depth=1
 	lsr	__rc2
 	asl
 	tay
 	lda	__rc3
 	cmp	__rc2
-	bcc	.LBB48_13
-; %bb.12:                               ;   in Loop: Header=BB48_11 Depth=1
+	bcc	.LBB49_13
+; %bb.12:                               ;   in Loop: Header=BB49_11 Depth=1
 	tya
 	ora	#1
 	tay
@@ -6820,15 +7352,15 @@ __udivqi3:                              ; @__udivqi3
 	lda	__rc3
 	sbc	__rc2
 	sta	__rc3
-.LBB48_13:                              ;   in Loop: Header=BB48_11 Depth=1
+.LBB49_13:                              ;   in Loop: Header=BB49_11 Depth=1
 	dex
 	tya
 	cpx	#0
-	bne	.LBB48_11
-.LBB48_14:
+	bne	.LBB49_11
+.LBB49_14:
 	rts
-.Lfunc_end48:
-	.size	__udivqi3, .Lfunc_end48-__udivqi3
+.Lfunc_end49:
+	.size	__udivqi3, .Lfunc_end49-__udivqi3
                                         ; -- End function
 	.section	.text.__udivhi3,"ax",@progbits
 	.globl	__udivhi3                       ; -- Begin function __udivhi3
@@ -6837,73 +7369,73 @@ __udivhi3:                              ; @__udivhi3
 ; %bb.0:
 	stz	__rc4
 	ldy	__rc3
-	bne	.LBB49_2
+	bne	.LBB50_2
 ; %bb.1:
 	ldy	__rc2
-	beq	.LBB49_4
-.LBB49_2:
+	beq	.LBB50_4
+.LBB50_2:
 	sta	__rc7
 	txa
 	cpx	__rc3
-	bne	.LBB49_5
+	bne	.LBB50_5
 ; %bb.3:
 	lda	__rc7
 	cmp	__rc2
 	txa
-	bcs	.LBB49_6
-.LBB49_4:
+	bcs	.LBB50_6
+.LBB50_4:
 	ldx	#0
 	stx	mos8(.L__udivhi3_zp_stk)        ; 1-byte Folded Spill
 ; %bb.23:
-	jmp	.LBB49_22
-.LBB49_5:
+	jmp	.LBB50_22
+.LBB50_5:
 	cmp	__rc3
-	bcc	.LBB49_4
-.LBB49_6:
+	bcc	.LBB50_4
+.LBB50_6:
 	ldx	#1
 	stx	mos8(.L__udivhi3_zp_stk)        ; 1-byte Folded Spill
 	ldx	__rc3
-	bpl	.LBB49_7
+	bpl	.LBB50_7
 ; %bb.25:
-	jmp	.LBB49_22
-.LBB49_7:
+	jmp	.LBB50_22
+.LBB50_7:
 	ldx	#0
 	ldy	__rc2
 	sty	__rc5
 	ldy	__rc3
 	sty	__rc6
-.LBB49_8:                               ; =>This Inner Loop Header: Depth=1
+.LBB50_8:                               ; =>This Inner Loop Header: Depth=1
 	asl	__rc5
 	rol	__rc6
 	cmp	__rc6
-	bne	.LBB49_10
-; %bb.9:                                ;   in Loop: Header=BB49_8 Depth=1
+	bne	.LBB50_10
+; %bb.9:                                ;   in Loop: Header=BB50_8 Depth=1
 	ldy	__rc7
 	cpy	__rc5
-	bcc	.LBB49_12
-	bra	.LBB49_11
-.LBB49_10:                              ;   in Loop: Header=BB49_8 Depth=1
+	bcc	.LBB50_12
+	bra	.LBB50_11
+.LBB50_10:                              ;   in Loop: Header=BB50_8 Depth=1
 	cmp	__rc6
-	bcc	.LBB49_12
-.LBB49_11:                              ;   in Loop: Header=BB49_8 Depth=1
+	bcc	.LBB50_12
+.LBB50_11:                              ;   in Loop: Header=BB50_8 Depth=1
 	inx
 	ldy	__rc5
 	sty	__rc2
 	ldy	__rc6
 	sty	__rc3
-	bpl	.LBB49_8
-	bra	.LBB49_13
-.LBB49_12:
+	bpl	.LBB50_8
+	bra	.LBB50_13
+.LBB50_12:
 	ldy	__rc2
 	sty	__rc5
 	ldy	__rc3
 	sty	__rc6
-.LBB49_13:
+.LBB50_13:
 	cpx	#0
-	bne	.LBB49_14
+	bne	.LBB50_14
 ; %bb.27:
-	jmp	.LBB49_22
-.LBB49_14:
+	jmp	.LBB50_22
+.LBB50_14:
 	stz	__rc4
 	ldy	#1
 	sty	mos8(.L__udivhi3_zp_stk)        ; 1-byte Folded Spill
@@ -6914,27 +7446,27 @@ __udivhi3:                              ; @__udivhi3
 	sta	__rc2
 	tya
 	sbc	__rc6
-.LBB49_15:                              ; =>This Inner Loop Header: Depth=1
+.LBB50_15:                              ; =>This Inner Loop Header: Depth=1
 	lsr	__rc6
 	ror	__rc5
 	ldy	mos8(.L__udivhi3_zp_stk)        ; 1-byte Folded Reload
 	sty	__rc3
 	asl	__rc3
 	ldy	#1
-	bcs	.LBB49_17
-; %bb.16:                               ;   in Loop: Header=BB49_15 Depth=1
+	bcs	.LBB50_17
+; %bb.16:                               ;   in Loop: Header=BB50_15 Depth=1
 	ldy	#0
-.LBB49_17:                              ;   in Loop: Header=BB49_15 Depth=1
+.LBB50_17:                              ;   in Loop: Header=BB50_15 Depth=1
 	sty	__rc7
 	ldy	__rc3
 	sty	mos8(.L__udivhi3_zp_stk)        ; 1-byte Folded Spill
 	cmp	__rc6
-	bne	.LBB49_21
-; %bb.18:                               ;   in Loop: Header=BB49_15 Depth=1
+	bne	.LBB50_21
+; %bb.18:                               ;   in Loop: Header=BB50_15 Depth=1
 	ldy	__rc2
 	cpy	__rc5
-	bcc	.LBB49_20
-.LBB49_19:                              ;   in Loop: Header=BB49_15 Depth=1
+	bcc	.LBB50_20
+.LBB50_19:                              ;   in Loop: Header=BB50_15 Depth=1
 	tay
 	lda	mos8(.L__udivhi3_zp_stk)        ; 1-byte Folded Reload
 	ora	#1
@@ -6945,23 +7477,23 @@ __udivhi3:                              ; @__udivhi3
 	sta	__rc2
 	tya
 	sbc	__rc6
-.LBB49_20:                              ;   in Loop: Header=BB49_15 Depth=1
+.LBB50_20:                              ;   in Loop: Header=BB50_15 Depth=1
 	ldy	__rc7
 	cpy	#1
 	rol	__rc4
 	dex
-	bne	.LBB49_15
-	bra	.LBB49_22
-.LBB49_21:                              ;   in Loop: Header=BB49_15 Depth=1
+	bne	.LBB50_15
+	bra	.LBB50_22
+.LBB50_21:                              ;   in Loop: Header=BB50_15 Depth=1
 	cmp	__rc6
-	bcs	.LBB49_19
-	bra	.LBB49_20
-.LBB49_22:
+	bcs	.LBB50_19
+	bra	.LBB50_20
+.LBB50_22:
 	ldx	__rc4
 	lda	mos8(.L__udivhi3_zp_stk)        ; 1-byte Folded Reload
 	rts
-.Lfunc_end49:
-	.size	__udivhi3, .Lfunc_end49-__udivhi3
+.Lfunc_end50:
+	.size	__udivhi3, .Lfunc_end50-__udivhi3
                                         ; -- End function
 	.section	.text.__udivsi3,"ax",@progbits
 	.globl	__udivsi3                       ; -- Begin function __udivsi3
@@ -6970,57 +7502,57 @@ __udivsi3:                              ; @__udivsi3
 ; %bb.0:
 	stz	__rc8
 	ldy	__rc7
-	bne	.LBB50_4
+	bne	.LBB51_4
 ; %bb.1:
 	ldy	__rc6
-	bne	.LBB50_4
+	bne	.LBB51_4
 ; %bb.2:
 	ldy	__rc5
-	bne	.LBB50_4
+	bne	.LBB51_4
 ; %bb.3:
 	ldy	__rc4
-	beq	.LBB50_9
-.LBB50_4:
+	beq	.LBB51_9
+.LBB51_4:
 	stx	__rc14
 	ldx	__rc2
 	stx	__rc15
 	ldx	__rc3
 	stx	__rc18
 	cpx	__rc7
-	bne	.LBB50_8
+	bne	.LBB51_8
 ; %bb.5:
 	ldx	__rc2
 	cpx	__rc6
-	bne	.LBB50_10
+	bne	.LBB51_10
 ; %bb.6:
 	ldx	__rc14
 	cpx	__rc5
-	beq	.LBB50_7
+	beq	.LBB51_7
 ; %bb.45:
-	jmp	.LBB50_38
-.LBB50_7:
+	jmp	.LBB51_38
+.LBB51_7:
 	cmp	__rc4
-	bcc	.LBB50_9
-	bra	.LBB50_11
-.LBB50_8:
+	bcc	.LBB51_9
+	bra	.LBB51_11
+.LBB51_8:
 	cpx	__rc7
-	bcs	.LBB50_11
-.LBB50_9:
+	bcs	.LBB51_11
+.LBB51_9:
 	ldx	#0
 	stx	mos8(.L__udivsi3_zp_stk)        ; 1-byte Folded Spill
 ; %bb.39:
-	jmp	.LBB50_21
-.LBB50_10:
+	jmp	.LBB51_21
+.LBB51_10:
 	cpx	__rc6
-	bcc	.LBB50_9
-.LBB50_11:
+	bcc	.LBB51_9
+.LBB51_11:
 	ldx	#1
 	stx	mos8(.L__udivsi3_zp_stk)        ; 1-byte Folded Spill
 	ldx	__rc7
-	bpl	.LBB50_12
+	bpl	.LBB51_12
 ; %bb.47:
-	jmp	.LBB50_21
-.LBB50_12:
+	jmp	.LBB51_21
+.LBB51_12:
 	sta	__rc13
 	lda	__rc14
 	ldx	#0
@@ -7032,38 +7564,38 @@ __udivsi3:                              ; @__udivsi3
 	sty	__rc11
 	ldy	__rc7
 	sty	__rc12
-.LBB50_13:                              ; =>This Inner Loop Header: Depth=1
+.LBB51_13:                              ; =>This Inner Loop Header: Depth=1
 	asl	__rc9
 	rol	__rc10
 	rol	__rc11
 	rol	__rc12
 	ldy	__rc18
 	cpy	__rc12
-	bne	.LBB50_17
-; %bb.14:                               ;   in Loop: Header=BB50_13 Depth=1
+	bne	.LBB51_17
+; %bb.14:                               ;   in Loop: Header=BB51_13 Depth=1
 	ldy	__rc2
 	cpy	__rc11
-	bne	.LBB50_18
-; %bb.15:                               ;   in Loop: Header=BB50_13 Depth=1
+	bne	.LBB51_18
+; %bb.15:                               ;   in Loop: Header=BB51_13 Depth=1
 	cmp	__rc10
-	bne	.LBB50_19
-; %bb.16:                               ;   in Loop: Header=BB50_13 Depth=1
+	bne	.LBB51_19
+; %bb.16:                               ;   in Loop: Header=BB51_13 Depth=1
 	ldy	__rc13
 	cpy	__rc9
-	bcc	.LBB50_23
-	bra	.LBB50_20
-.LBB50_17:                              ;   in Loop: Header=BB50_13 Depth=1
+	bcc	.LBB51_23
+	bra	.LBB51_20
+.LBB51_17:                              ;   in Loop: Header=BB51_13 Depth=1
 	cpy	__rc12
-	bcc	.LBB50_23
-	bra	.LBB50_20
-.LBB50_18:                              ;   in Loop: Header=BB50_13 Depth=1
+	bcc	.LBB51_23
+	bra	.LBB51_20
+.LBB51_18:                              ;   in Loop: Header=BB51_13 Depth=1
 	cpy	__rc11
-	bcc	.LBB50_23
-	bra	.LBB50_20
-.LBB50_19:                              ;   in Loop: Header=BB50_13 Depth=1
+	bcc	.LBB51_23
+	bra	.LBB51_20
+.LBB51_19:                              ;   in Loop: Header=BB51_13 Depth=1
 	cmp	__rc10
-	bcc	.LBB50_23
-.LBB50_20:                              ;   in Loop: Header=BB50_13 Depth=1
+	bcc	.LBB51_23
+.LBB51_20:                              ;   in Loop: Header=BB51_13 Depth=1
 	inx
 	ldy	__rc9
 	sty	__rc4
@@ -7073,16 +7605,16 @@ __udivsi3:                              ; @__udivsi3
 	sty	__rc6
 	ldy	__rc12
 	sty	__rc7
-	bpl	.LBB50_13
-	bra	.LBB50_24
-.LBB50_21:
+	bpl	.LBB51_13
+	bra	.LBB51_24
+.LBB51_21:
 	stz	__rc2
 	stz	__rc3
-.LBB50_22:
+.LBB51_22:
 	ldx	__rc8
 	lda	mos8(.L__udivsi3_zp_stk)        ; 1-byte Folded Reload
 	rts
-.LBB50_23:
+.LBB51_23:
 	ldy	__rc4
 	sty	__rc9
 	ldy	__rc5
@@ -7091,11 +7623,11 @@ __udivsi3:                              ; @__udivsi3
 	sty	__rc11
 	ldy	__rc7
 	sty	__rc12
-.LBB50_24:
+.LBB51_24:
 	stz	__rc2
 	stz	__rc3
 	txa
-	beq	.LBB50_22
+	beq	.LBB51_22
 ; %bb.25:
 	stz	__rc8
 	sec
@@ -7112,7 +7644,7 @@ __udivsi3:                              ; @__udivsi3
 	sbc	__rc12
 	ldy	#1
 	sty	mos8(.L__udivsi3_zp_stk)        ; 1-byte Folded Spill
-.LBB50_26:                              ; =>This Inner Loop Header: Depth=1
+.LBB51_26:                              ; =>This Inner Loop Header: Depth=1
 	lsr	__rc12
 	ror	__rc11
 	ror	__rc10
@@ -7121,41 +7653,41 @@ __udivsi3:                              ; @__udivsi3
 	sty	__rc6
 	asl	__rc6
 	ldy	#1
-	bcs	.LBB50_28
-; %bb.27:                               ;   in Loop: Header=BB50_26 Depth=1
+	bcs	.LBB51_28
+; %bb.27:                               ;   in Loop: Header=BB51_26 Depth=1
 	ldy	#0
-.LBB50_28:                              ;   in Loop: Header=BB50_26 Depth=1
+.LBB51_28:                              ;   in Loop: Header=BB51_26 Depth=1
 	sty	__rc13
 	ldy	__rc6
 	sty	mos8(.L__udivsi3_zp_stk)        ; 1-byte Folded Spill
 	cmp	__rc12
-	bne	.LBB50_32
-; %bb.29:                               ;   in Loop: Header=BB50_26 Depth=1
+	bne	.LBB51_32
+; %bb.29:                               ;   in Loop: Header=BB51_26 Depth=1
 	sta	__rc6
 	ldy	__rc5
 	lda	__rc7
 	cpy	__rc11
-	bne	.LBB50_34
-; %bb.30:                               ;   in Loop: Header=BB50_26 Depth=1
+	bne	.LBB51_34
+; %bb.30:                               ;   in Loop: Header=BB51_26 Depth=1
 	cmp	__rc10
-	bne	.LBB50_37
-; %bb.31:                               ;   in Loop: Header=BB50_26 Depth=1
+	bne	.LBB51_37
+; %bb.31:                               ;   in Loop: Header=BB51_26 Depth=1
 	ldy	__rc4
 	cpy	__rc9
-	bcc	.LBB50_33
-	bra	.LBB50_35
-.LBB50_32:                              ;   in Loop: Header=BB50_26 Depth=1
+	bcc	.LBB51_33
+	bra	.LBB51_35
+.LBB51_32:                              ;   in Loop: Header=BB51_26 Depth=1
 	sta	__rc6
 	cmp	__rc12
 	lda	__rc7
-	bcs	.LBB50_35
-.LBB50_33:                              ;   in Loop: Header=BB50_26 Depth=1
+	bcs	.LBB51_35
+.LBB51_33:                              ;   in Loop: Header=BB51_26 Depth=1
 	lda	__rc6
-	bra	.LBB50_36
-.LBB50_34:                              ;   in Loop: Header=BB50_26 Depth=1
+	bra	.LBB51_36
+.LBB51_34:                              ;   in Loop: Header=BB51_26 Depth=1
 	cpy	__rc11
-	bcc	.LBB50_33
-.LBB50_35:                              ;   in Loop: Header=BB50_26 Depth=1
+	bcc	.LBB51_33
+.LBB51_35:                              ;   in Loop: Header=BB51_26 Depth=1
 	tay
 	sec
 	lda	__rc4
@@ -7174,31 +7706,31 @@ __udivsi3:                              ; @__udivsi3
 	ora	#1
 	sta	mos8(.L__udivsi3_zp_stk)        ; 1-byte Folded Spill
 	tya
-.LBB50_36:                              ;   in Loop: Header=BB50_26 Depth=1
+.LBB51_36:                              ;   in Loop: Header=BB51_26 Depth=1
 	ldy	__rc13
 	cpy	#1
 	rol	__rc8
 	rol	__rc2
 	rol	__rc3
 	dex
-	beq	.LBB50_41
-; %bb.49:                               ;   in Loop: Header=BB50_26 Depth=1
-	jmp	.LBB50_26
-.LBB50_41:
-	jmp	.LBB50_22
-.LBB50_37:                              ;   in Loop: Header=BB50_26 Depth=1
+	beq	.LBB51_41
+; %bb.49:                               ;   in Loop: Header=BB51_26 Depth=1
+	jmp	.LBB51_26
+.LBB51_41:
+	jmp	.LBB51_22
+.LBB51_37:                              ;   in Loop: Header=BB51_26 Depth=1
 	cmp	__rc10
-	bcc	.LBB50_33
-	bra	.LBB50_35
-.LBB50_38:
+	bcc	.LBB51_33
+	bra	.LBB51_35
+.LBB51_38:
 	cpx	__rc5
-	bcs	.LBB50_43
+	bcs	.LBB51_43
 ; %bb.51:
-	jmp	.LBB50_9
-.LBB50_43:
-	jmp	.LBB50_11
-.Lfunc_end50:
-	.size	__udivsi3, .Lfunc_end50-__udivsi3
+	jmp	.LBB51_9
+.LBB51_43:
+	jmp	.LBB51_11
+.Lfunc_end51:
+	.size	__udivsi3, .Lfunc_end51-__udivsi3
                                         ; -- End function
 	.section	.text.__udivdi3,"ax",@progbits
 	.globl	__udivdi3                       ; -- Begin function __udivdi3
@@ -7216,91 +7748,91 @@ __udivdi3:                              ; @__udivdi3
 	stx	mos8(.L__udivdi3_zp_stk+8)      ; 1-byte Folded Spill
 	stz	__rc18
 	ldx	__rc15
-	bne	.LBB51_8
+	bne	.LBB52_8
 ; %bb.1:
 	ldx	__rc14
-	bne	.LBB51_8
+	bne	.LBB52_8
 ; %bb.2:
 	ldx	__rc13
-	bne	.LBB51_8
+	bne	.LBB52_8
 ; %bb.3:
 	ldx	__rc12
-	bne	.LBB51_8
+	bne	.LBB52_8
 ; %bb.4:
 	ldx	__rc11
-	bne	.LBB51_8
+	bne	.LBB52_8
 ; %bb.5:
 	ldx	__rc10
-	bne	.LBB51_8
+	bne	.LBB52_8
 ; %bb.6:
 	ldx	__rc9
-	bne	.LBB51_8
+	bne	.LBB52_8
 ; %bb.7:
 	ldx	__rc8
-	beq	.LBB51_17
-.LBB51_8:
+	beq	.LBB52_17
+.LBB52_8:
 	ldx	__rc6
 	stx	mos8(.L__udivdi3_zp_stk+7)
 	ldx	__rc7
 	stx	mos8(.L__udivdi3_zp_stk+13)     ; 1-byte Folded Spill
 	cpx	__rc15
-	bne	.LBB51_16
+	bne	.LBB52_16
 ; %bb.9:
 	ldx	__rc6
 	cpx	__rc14
-	bne	.LBB51_18
+	bne	.LBB52_18
 ; %bb.10:
 	ldx	mos8(.L__udivdi3_zp_stk+8)      ; 1-byte Folded Reload
 	cpx	__rc13
-	beq	.LBB51_11
+	beq	.LBB52_11
 ; %bb.90:
-	jmp	.LBB51_31
-.LBB51_11:
+	jmp	.LBB52_31
+.LBB52_11:
 	ldx	mos8(.L__udivdi3_zp_stk+9)      ; 1-byte Folded Reload
 	cpx	__rc12
-	beq	.LBB51_12
+	beq	.LBB52_12
 ; %bb.92:
-	jmp	.LBB51_32
-.LBB51_12:
+	jmp	.LBB52_32
+.LBB52_12:
 	ldx	mos8(.L__udivdi3_zp_stk+10)     ; 1-byte Folded Reload
 	cpx	__rc11
-	beq	.LBB51_13
+	beq	.LBB52_13
 ; %bb.94:
-	jmp	.LBB51_38
-.LBB51_13:
+	jmp	.LBB52_38
+.LBB52_13:
 	ldx	mos8(.L__udivdi3_zp_stk+11)     ; 1-byte Folded Reload
 	cpx	__rc10
-	beq	.LBB51_14
+	beq	.LBB52_14
 ; %bb.96:
-	jmp	.LBB51_40
-.LBB51_14:
+	jmp	.LBB52_40
+.LBB52_14:
 	ldx	mos8(.L__udivdi3_zp_stk+12)     ; 1-byte Folded Reload
 	cpx	__rc9
-	beq	.LBB51_15
+	beq	.LBB52_15
 ; %bb.98:
-	jmp	.LBB51_42
-.LBB51_15:
+	jmp	.LBB52_42
+.LBB52_15:
 	cmp	__rc8
-	bcc	.LBB51_17
-	bra	.LBB51_19
-.LBB51_16:
+	bcc	.LBB52_17
+	bra	.LBB52_19
+.LBB52_16:
 	cpx	__rc15
-	bcs	.LBB51_19
-.LBB51_17:
+	bcs	.LBB52_19
+.LBB52_17:
 	lda	#0
 ; %bb.66:
-	jmp	.LBB51_29
-.LBB51_18:
+	jmp	.LBB52_29
+.LBB52_18:
 	cpx	__rc14
-	bcc	.LBB51_17
-.LBB51_19:
+	bcc	.LBB52_17
+.LBB52_19:
 	sta	mos8(.L__udivdi3_zp_stk+14)     ; 1-byte Folded Spill
 	lda	#1
 	ldx	__rc15
-	bpl	.LBB51_20
+	bpl	.LBB52_20
 ; %bb.100:
-	jmp	.LBB51_29
-.LBB51_20:
+	jmp	.LBB52_29
+.LBB52_20:
 	ldx	#0
 	ldy	__rc8
 	sty	__rc19
@@ -7318,7 +7850,7 @@ __udivdi3:                              ; @__udivdi3
 	sty	mos8(.L__udivdi3_zp_stk+5)
 	ldy	__rc15
 	sty	mos8(.L__udivdi3_zp_stk+6)
-.LBB51_21:                              ; =>This Inner Loop Header: Depth=1
+.LBB52_21:                              ; =>This Inner Loop Header: Depth=1
 	asl	__rc19
 	rol	mos8(.L__udivdi3_zp_stk)
 	rol	mos8(.L__udivdi3_zp_stk+1)
@@ -7329,39 +7861,39 @@ __udivdi3:                              ; @__udivdi3
 	rol	mos8(.L__udivdi3_zp_stk+6)
 	ldy	mos8(.L__udivdi3_zp_stk+13)     ; 1-byte Folded Reload
 	cpy	mos8(.L__udivdi3_zp_stk+6)
-	bne	.LBB51_25
-; %bb.22:                               ;   in Loop: Header=BB51_21 Depth=1
+	bne	.LBB52_25
+; %bb.22:                               ;   in Loop: Header=BB52_21 Depth=1
 	ldy	__rc6
 	cpy	mos8(.L__udivdi3_zp_stk+5)
-	bne	.LBB51_26
-; %bb.23:                               ;   in Loop: Header=BB51_21 Depth=1
+	bne	.LBB52_26
+; %bb.23:                               ;   in Loop: Header=BB52_21 Depth=1
 	ldy	mos8(.L__udivdi3_zp_stk+8)      ; 1-byte Folded Reload
 	cpy	mos8(.L__udivdi3_zp_stk+4)
-	bne	.LBB51_27
-; %bb.24:                               ;   in Loop: Header=BB51_21 Depth=1
+	bne	.LBB52_27
+; %bb.24:                               ;   in Loop: Header=BB52_21 Depth=1
 	ldy	mos8(.L__udivdi3_zp_stk+9)      ; 1-byte Folded Reload
 	cpy	mos8(.L__udivdi3_zp_stk+3)
-	bne	.LBB51_102
-; %bb.150:                              ;   in Loop: Header=BB51_21 Depth=1
-	jmp	.LBB51_33
-.LBB51_102:                             ;   in Loop: Header=BB51_21 Depth=1
-	jmp	.LBB51_37
-.LBB51_25:                              ;   in Loop: Header=BB51_21 Depth=1
+	bne	.LBB52_102
+; %bb.150:                              ;   in Loop: Header=BB52_21 Depth=1
+	jmp	.LBB52_33
+.LBB52_102:                             ;   in Loop: Header=BB52_21 Depth=1
+	jmp	.LBB52_37
+.LBB52_25:                              ;   in Loop: Header=BB52_21 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk+6)
-	bcs	.LBB51_28
+	bcs	.LBB52_28
 ; %bb.104:
-	jmp	.LBB51_44
-.LBB51_26:                              ;   in Loop: Header=BB51_21 Depth=1
+	jmp	.LBB52_44
+.LBB52_26:                              ;   in Loop: Header=BB52_21 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk+5)
-	bcs	.LBB51_28
+	bcs	.LBB52_28
 ; %bb.106:
-	jmp	.LBB51_44
-.LBB51_27:                              ;   in Loop: Header=BB51_21 Depth=1
+	jmp	.LBB52_44
+.LBB52_27:                              ;   in Loop: Header=BB52_21 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk+4)
-	bcs	.LBB51_28
+	bcs	.LBB52_28
 ; %bb.108:
-	jmp	.LBB51_44
-.LBB51_28:                              ;   in Loop: Header=BB51_21 Depth=1
+	jmp	.LBB52_44
+.LBB52_28:                              ;   in Loop: Header=BB52_21 Depth=1
 	inx
 	ldy	__rc19
 	sty	__rc8
@@ -7379,95 +7911,95 @@ __udivdi3:                              ; @__udivdi3
 	sty	__rc14
 	ldy	mos8(.L__udivdi3_zp_stk+6)
 	sty	__rc15
-	bmi	.LBB51_68
-; %bb.110:                              ;   in Loop: Header=BB51_21 Depth=1
-	jmp	.LBB51_21
-.LBB51_68:
-	jmp	.LBB51_45
-.LBB51_29:
+	bmi	.LBB52_68
+; %bb.110:                              ;   in Loop: Header=BB52_21 Depth=1
+	jmp	.LBB52_21
+.LBB52_68:
+	jmp	.LBB52_45
+.LBB52_29:
 	stz	__rc2
 	stz	__rc3
 	stz	__rc4
 	stz	__rc5
 	stz	__rc6
 	stz	__rc7
-.LBB51_30:
+.LBB52_30:
 	ldx	__rc18
 	rts
-.LBB51_31:
+.LBB52_31:
 	cpx	__rc13
-	bcs	.LBB51_70
+	bcs	.LBB52_70
 ; %bb.112:
-	jmp	.LBB51_17
-.LBB51_70:
-	jmp	.LBB51_19
-.LBB51_32:
+	jmp	.LBB52_17
+.LBB52_70:
+	jmp	.LBB52_19
+.LBB52_32:
 	cpx	__rc12
-	bcs	.LBB51_72
+	bcs	.LBB52_72
 ; %bb.114:
-	jmp	.LBB51_17
-.LBB51_72:
-	jmp	.LBB51_19
-.LBB51_33:                              ;   in Loop: Header=BB51_21 Depth=1
+	jmp	.LBB52_17
+.LBB52_72:
+	jmp	.LBB52_19
+.LBB52_33:                              ;   in Loop: Header=BB52_21 Depth=1
 	ldy	mos8(.L__udivdi3_zp_stk+10)     ; 1-byte Folded Reload
 	cpy	mos8(.L__udivdi3_zp_stk+2)
-	bne	.LBB51_39
-; %bb.34:                               ;   in Loop: Header=BB51_21 Depth=1
+	bne	.LBB52_39
+; %bb.34:                               ;   in Loop: Header=BB52_21 Depth=1
 	ldy	mos8(.L__udivdi3_zp_stk+11)     ; 1-byte Folded Reload
 	cpy	mos8(.L__udivdi3_zp_stk+1)
-	bne	.LBB51_41
-; %bb.35:                               ;   in Loop: Header=BB51_21 Depth=1
+	bne	.LBB52_41
+; %bb.35:                               ;   in Loop: Header=BB52_21 Depth=1
 	ldy	mos8(.L__udivdi3_zp_stk+12)     ; 1-byte Folded Reload
 	cpy	mos8(.L__udivdi3_zp_stk)
-	bne	.LBB51_43
-; %bb.36:                               ;   in Loop: Header=BB51_21 Depth=1
+	bne	.LBB52_43
+; %bb.36:                               ;   in Loop: Header=BB52_21 Depth=1
 	ldy	mos8(.L__udivdi3_zp_stk+14)     ; 1-byte Folded Reload
 	cpy	__rc19
-	bcc	.LBB51_44
-; %bb.74:                               ;   in Loop: Header=BB51_21 Depth=1
-	jmp	.LBB51_28
-.LBB51_37:                              ;   in Loop: Header=BB51_21 Depth=1
+	bcc	.LBB52_44
+; %bb.74:                               ;   in Loop: Header=BB52_21 Depth=1
+	jmp	.LBB52_28
+.LBB52_37:                              ;   in Loop: Header=BB52_21 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk+3)
-	bcc	.LBB51_44
-; %bb.76:                               ;   in Loop: Header=BB51_21 Depth=1
-	jmp	.LBB51_28
-.LBB51_38:
+	bcc	.LBB52_44
+; %bb.76:                               ;   in Loop: Header=BB52_21 Depth=1
+	jmp	.LBB52_28
+.LBB52_38:
 	cpx	__rc11
-	bcs	.LBB51_78
+	bcs	.LBB52_78
 ; %bb.116:
-	jmp	.LBB51_17
-.LBB51_78:
-	jmp	.LBB51_19
-.LBB51_39:                              ;   in Loop: Header=BB51_21 Depth=1
+	jmp	.LBB52_17
+.LBB52_78:
+	jmp	.LBB52_19
+.LBB52_39:                              ;   in Loop: Header=BB52_21 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk+2)
-	bcc	.LBB51_44
-; %bb.80:                               ;   in Loop: Header=BB51_21 Depth=1
-	jmp	.LBB51_28
-.LBB51_40:
+	bcc	.LBB52_44
+; %bb.80:                               ;   in Loop: Header=BB52_21 Depth=1
+	jmp	.LBB52_28
+.LBB52_40:
 	cpx	__rc10
-	bcs	.LBB51_82
+	bcs	.LBB52_82
 ; %bb.118:
-	jmp	.LBB51_17
-.LBB51_82:
-	jmp	.LBB51_19
-.LBB51_41:                              ;   in Loop: Header=BB51_21 Depth=1
+	jmp	.LBB52_17
+.LBB52_82:
+	jmp	.LBB52_19
+.LBB52_41:                              ;   in Loop: Header=BB52_21 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk+1)
-	bcc	.LBB51_44
-; %bb.84:                               ;   in Loop: Header=BB51_21 Depth=1
-	jmp	.LBB51_28
-.LBB51_42:
+	bcc	.LBB52_44
+; %bb.84:                               ;   in Loop: Header=BB52_21 Depth=1
+	jmp	.LBB52_28
+.LBB52_42:
 	cpx	__rc9
-	bcs	.LBB51_86
+	bcs	.LBB52_86
 ; %bb.120:
-	jmp	.LBB51_17
-.LBB51_86:
-	jmp	.LBB51_19
-.LBB51_43:                              ;   in Loop: Header=BB51_21 Depth=1
+	jmp	.LBB52_17
+.LBB52_86:
+	jmp	.LBB52_19
+.LBB52_43:                              ;   in Loop: Header=BB52_21 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk)
-	bcc	.LBB51_44
-; %bb.122:                              ;   in Loop: Header=BB51_21 Depth=1
-	jmp	.LBB51_28
-.LBB51_44:
+	bcc	.LBB52_44
+; %bb.122:                              ;   in Loop: Header=BB52_21 Depth=1
+	jmp	.LBB52_28
+.LBB52_44:
 	ldy	__rc8
 	sty	__rc19
 	ldy	__rc9
@@ -7484,7 +8016,7 @@ __udivdi3:                              ; @__udivdi3
 	sty	mos8(.L__udivdi3_zp_stk+5)
 	ldy	__rc15
 	sty	mos8(.L__udivdi3_zp_stk+6)
-.LBB51_45:
+.LBB52_45:
 	stz	__rc2
 	stz	__rc3
 	stz	__rc4
@@ -7492,10 +8024,10 @@ __udivdi3:                              ; @__udivdi3
 	stz	__rc6
 	stz	__rc7
 	cpx	#0
-	bne	.LBB51_46
+	bne	.LBB52_46
 ; %bb.124:
-	jmp	.LBB51_30
-.LBB51_46:
+	jmp	.LBB52_30
+.LBB52_46:
 	stz	__rc18
 	sec
 	ldy	mos8(.L__udivdi3_zp_stk+14)     ; 1-byte Folded Reload
@@ -7531,7 +8063,7 @@ __udivdi3:                              ; @__udivdi3
 	sta	__rc15
 	lda	#1
 	stz	__rc2
-.LBB51_47:                              ; =>This Inner Loop Header: Depth=1
+.LBB52_47:                              ; =>This Inner Loop Header: Depth=1
 	lsr	mos8(.L__udivdi3_zp_stk+6)
 	ror	mos8(.L__udivdi3_zp_stk+5)
 	ror	mos8(.L__udivdi3_zp_stk+4)
@@ -7542,59 +8074,59 @@ __udivdi3:                              ; @__udivdi3
 	ror	__rc19
 	asl
 	ldy	#1
-	bcs	.LBB51_49
-; %bb.48:                               ;   in Loop: Header=BB51_47 Depth=1
+	bcs	.LBB52_49
+; %bb.48:                               ;   in Loop: Header=BB52_47 Depth=1
 	ldy	#0
-.LBB51_49:                              ;   in Loop: Header=BB51_47 Depth=1
+.LBB52_49:                              ;   in Loop: Header=BB52_47 Depth=1
 	sty	mos8(.L__udivdi3_zp_stk+7)
 	ldy	__rc15
 	cpy	mos8(.L__udivdi3_zp_stk+6)
-	bne	.LBB51_57
-; %bb.50:                               ;   in Loop: Header=BB51_47 Depth=1
+	bne	.LBB52_57
+; %bb.50:                               ;   in Loop: Header=BB52_47 Depth=1
 	ldy	__rc14
 	cpy	mos8(.L__udivdi3_zp_stk+5)
-	beq	.LBB51_51
-; %bb.126:                              ;   in Loop: Header=BB51_47 Depth=1
-	jmp	.LBB51_60
-.LBB51_51:                              ;   in Loop: Header=BB51_47 Depth=1
+	beq	.LBB52_51
+; %bb.126:                              ;   in Loop: Header=BB52_47 Depth=1
+	jmp	.LBB52_60
+.LBB52_51:                              ;   in Loop: Header=BB52_47 Depth=1
 	ldy	__rc13
 	cpy	mos8(.L__udivdi3_zp_stk+4)
-	beq	.LBB51_52
-; %bb.128:                              ;   in Loop: Header=BB51_47 Depth=1
-	jmp	.LBB51_61
-.LBB51_52:                              ;   in Loop: Header=BB51_47 Depth=1
+	beq	.LBB52_52
+; %bb.128:                              ;   in Loop: Header=BB52_47 Depth=1
+	jmp	.LBB52_61
+.LBB52_52:                              ;   in Loop: Header=BB52_47 Depth=1
 	ldy	__rc12
 	cpy	mos8(.L__udivdi3_zp_stk+3)
-	beq	.LBB51_53
-; %bb.130:                              ;   in Loop: Header=BB51_47 Depth=1
-	jmp	.LBB51_62
-.LBB51_53:                              ;   in Loop: Header=BB51_47 Depth=1
+	beq	.LBB52_53
+; %bb.130:                              ;   in Loop: Header=BB52_47 Depth=1
+	jmp	.LBB52_62
+.LBB52_53:                              ;   in Loop: Header=BB52_47 Depth=1
 	ldy	__rc11
 	cpy	mos8(.L__udivdi3_zp_stk+2)
-	beq	.LBB51_54
-; %bb.132:                              ;   in Loop: Header=BB51_47 Depth=1
-	jmp	.LBB51_63
-.LBB51_54:                              ;   in Loop: Header=BB51_47 Depth=1
+	beq	.LBB52_54
+; %bb.132:                              ;   in Loop: Header=BB52_47 Depth=1
+	jmp	.LBB52_63
+.LBB52_54:                              ;   in Loop: Header=BB52_47 Depth=1
 	ldy	__rc10
 	cpy	mos8(.L__udivdi3_zp_stk+1)
-	beq	.LBB51_55
-; %bb.134:                              ;   in Loop: Header=BB51_47 Depth=1
-	jmp	.LBB51_64
-.LBB51_55:                              ;   in Loop: Header=BB51_47 Depth=1
+	beq	.LBB52_55
+; %bb.134:                              ;   in Loop: Header=BB52_47 Depth=1
+	jmp	.LBB52_64
+.LBB52_55:                              ;   in Loop: Header=BB52_47 Depth=1
 	ldy	__rc9
 	cpy	mos8(.L__udivdi3_zp_stk)
-	beq	.LBB51_56
-; %bb.136:                              ;   in Loop: Header=BB51_47 Depth=1
-	jmp	.LBB51_65
-.LBB51_56:                              ;   in Loop: Header=BB51_47 Depth=1
+	beq	.LBB52_56
+; %bb.136:                              ;   in Loop: Header=BB52_47 Depth=1
+	jmp	.LBB52_65
+.LBB52_56:                              ;   in Loop: Header=BB52_47 Depth=1
 	ldy	__rc8
 	cpy	__rc19
-	bcs	.LBB51_58
-	bra	.LBB51_59
-.LBB51_57:                              ;   in Loop: Header=BB51_47 Depth=1
+	bcs	.LBB52_58
+	bra	.LBB52_59
+.LBB52_57:                              ;   in Loop: Header=BB52_47 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk+6)
-	bcc	.LBB51_59
-.LBB51_58:                              ;   in Loop: Header=BB51_47 Depth=1
+	bcc	.LBB52_59
+.LBB52_58:                              ;   in Loop: Header=BB52_47 Depth=1
 	tay
 	sec
 	lda	__rc8
@@ -7623,7 +8155,7 @@ __udivdi3:                              ; @__udivdi3
 	sta	__rc15
 	tya
 	ora	#1
-.LBB51_59:                              ;   in Loop: Header=BB51_47 Depth=1
+.LBB52_59:                              ;   in Loop: Header=BB52_47 Depth=1
 	ldy	mos8(.L__udivdi3_zp_stk+7)
 	cpy	#1
 	rol	__rc18
@@ -7634,42 +8166,42 @@ __udivdi3:                              ; @__udivdi3
 	rol	__rc6
 	rol	__rc7
 	dex
-	beq	.LBB51_88
-; %bb.138:                              ;   in Loop: Header=BB51_47 Depth=1
-	jmp	.LBB51_47
-.LBB51_88:
-	jmp	.LBB51_30
-.LBB51_60:                              ;   in Loop: Header=BB51_47 Depth=1
+	beq	.LBB52_88
+; %bb.138:                              ;   in Loop: Header=BB52_47 Depth=1
+	jmp	.LBB52_47
+.LBB52_88:
+	jmp	.LBB52_30
+.LBB52_60:                              ;   in Loop: Header=BB52_47 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk+5)
-	bcs	.LBB51_58
-	bra	.LBB51_59
-.LBB51_61:                              ;   in Loop: Header=BB51_47 Depth=1
+	bcs	.LBB52_58
+	bra	.LBB52_59
+.LBB52_61:                              ;   in Loop: Header=BB52_47 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk+4)
-	bcc	.LBB51_59
-; %bb.140:                              ;   in Loop: Header=BB51_47 Depth=1
-	jmp	.LBB51_58
-.LBB51_62:                              ;   in Loop: Header=BB51_47 Depth=1
+	bcc	.LBB52_59
+; %bb.140:                              ;   in Loop: Header=BB52_47 Depth=1
+	jmp	.LBB52_58
+.LBB52_62:                              ;   in Loop: Header=BB52_47 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk+3)
-	bcc	.LBB51_59
-; %bb.142:                              ;   in Loop: Header=BB51_47 Depth=1
-	jmp	.LBB51_58
-.LBB51_63:                              ;   in Loop: Header=BB51_47 Depth=1
+	bcc	.LBB52_59
+; %bb.142:                              ;   in Loop: Header=BB52_47 Depth=1
+	jmp	.LBB52_58
+.LBB52_63:                              ;   in Loop: Header=BB52_47 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk+2)
-	bcc	.LBB51_59
-; %bb.144:                              ;   in Loop: Header=BB51_47 Depth=1
-	jmp	.LBB51_58
-.LBB51_64:                              ;   in Loop: Header=BB51_47 Depth=1
+	bcc	.LBB52_59
+; %bb.144:                              ;   in Loop: Header=BB52_47 Depth=1
+	jmp	.LBB52_58
+.LBB52_64:                              ;   in Loop: Header=BB52_47 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk+1)
-	bcc	.LBB51_59
-; %bb.146:                              ;   in Loop: Header=BB51_47 Depth=1
-	jmp	.LBB51_58
-.LBB51_65:                              ;   in Loop: Header=BB51_47 Depth=1
+	bcc	.LBB52_59
+; %bb.146:                              ;   in Loop: Header=BB52_47 Depth=1
+	jmp	.LBB52_58
+.LBB52_65:                              ;   in Loop: Header=BB52_47 Depth=1
 	cpy	mos8(.L__udivdi3_zp_stk)
-	bcc	.LBB51_59
-; %bb.148:                              ;   in Loop: Header=BB51_47 Depth=1
-	jmp	.LBB51_58
-.Lfunc_end51:
-	.size	__udivdi3, .Lfunc_end51-__udivdi3
+	bcc	.LBB52_59
+; %bb.148:                              ;   in Loop: Header=BB52_47 Depth=1
+	jmp	.LBB52_58
+.Lfunc_end52:
+	.size	__udivdi3, .Lfunc_end52-__udivdi3
                                         ; -- End function
 	.section	.text.__umodqi3,"ax",@progbits
 	.globl	__umodqi3                       ; -- Begin function __umodqi3
@@ -7677,16 +8209,16 @@ __udivdi3:                              ; @__udivdi3
 __umodqi3:                              ; @__umodqi3
 ; %bb.0:
 	cpx	#0
-	bne	.LBB52_1
+	bne	.LBB53_1
 ; %bb.15:
-	jmp	.LBB52_13
-.LBB52_1:
+	jmp	.LBB53_13
+.LBB53_1:
 	stx	__rc3
 	cmp	__rc3
-	bcc	.LBB52_13
+	bcc	.LBB53_13
 ; %bb.2:
 	ldx	__rc3
-	bmi	.LBB52_14
+	bmi	.LBB53_14
 ; %bb.3:
 	ldy	#0
 	ldx	#0
@@ -7694,20 +8226,20 @@ __umodqi3:                              ; @__umodqi3
 	lda	__rc3
 	sta	__rc2
 	pla
-.LBB52_4:                               ; =>This Inner Loop Header: Depth=1
+.LBB53_4:                               ; =>This Inner Loop Header: Depth=1
 	asl	__rc2
 	stz	__rc4
 	rol	__rc4
 	cpy	__rc4
-	bne	.LBB52_6
-; %bb.5:                                ;   in Loop: Header=BB52_4 Depth=1
+	bne	.LBB53_6
+; %bb.5:                                ;   in Loop: Header=BB53_4 Depth=1
 	cmp	__rc2
-	bcc	.LBB52_8
-	bra	.LBB52_7
-.LBB52_6:                               ;   in Loop: Header=BB52_4 Depth=1
+	bcc	.LBB53_8
+	bra	.LBB53_7
+.LBB53_6:                               ;   in Loop: Header=BB53_4 Depth=1
 	cpy	__rc4
-	bcc	.LBB52_8
-.LBB52_7:                               ;   in Loop: Header=BB52_4 Depth=1
+	bcc	.LBB53_8
+.LBB53_7:                               ;   in Loop: Header=BB53_4 Depth=1
 	inx
 	phy
 	ldy	__rc2
@@ -7715,34 +8247,34 @@ __umodqi3:                              ; @__umodqi3
 	ply
 	inc	__rc2
 	dec	__rc2
-	bpl	.LBB52_4
-	bra	.LBB52_9
-.LBB52_8:
+	bpl	.LBB53_4
+	bra	.LBB53_9
+.LBB53_8:
 	ldy	__rc3
 	sty	__rc2
-.LBB52_9:
+.LBB53_9:
 	sec
 	sbc	__rc2
 	cpx	#0
-	beq	.LBB52_13
-.LBB52_10:                              ; =>This Inner Loop Header: Depth=1
+	beq	.LBB53_13
+.LBB53_10:                              ; =>This Inner Loop Header: Depth=1
 	lsr	__rc2
 	cmp	__rc2
-	bcc	.LBB52_12
-; %bb.11:                               ;   in Loop: Header=BB52_10 Depth=1
+	bcc	.LBB53_12
+; %bb.11:                               ;   in Loop: Header=BB53_10 Depth=1
 	sec
 	sbc	__rc2
-.LBB52_12:                              ;   in Loop: Header=BB52_10 Depth=1
+.LBB53_12:                              ;   in Loop: Header=BB53_10 Depth=1
 	dex
-	bne	.LBB52_10
-.LBB52_13:
+	bne	.LBB53_10
+.LBB53_13:
 	rts
-.LBB52_14:
+.LBB53_14:
 	sec
 	sbc	__rc3
 	rts
-.Lfunc_end52:
-	.size	__umodqi3, .Lfunc_end52-__umodqi3
+.Lfunc_end53:
+	.size	__umodqi3, .Lfunc_end53-__umodqi3
                                         ; -- End function
 	.section	.text.__umodhi3,"ax",@progbits
 	.globl	__umodhi3                       ; -- Begin function __umodhi3
@@ -7752,32 +8284,32 @@ __umodhi3:                              ; @__umodhi3
 	tay
 	txa
 	ldx	__rc3
-	bne	.LBB53_2
+	bne	.LBB54_2
 ; %bb.1:
 	ldx	__rc2
-	bne	.LBB53_2
+	bne	.LBB54_2
 ; %bb.22:
-	jmp	.LBB53_19
-.LBB53_2:
+	jmp	.LBB54_19
+.LBB54_2:
 	cmp	__rc3
-	bne	.LBB53_4
+	bne	.LBB54_4
 ; %bb.3:
 	cpy	__rc2
-	bcs	.LBB53_5
+	bcs	.LBB54_5
 ; %bb.20:
-	jmp	.LBB53_19
-.LBB53_4:
+	jmp	.LBB54_19
+.LBB54_4:
 	cmp	__rc3
-	bcs	.LBB53_5
+	bcs	.LBB54_5
 ; %bb.24:
-	jmp	.LBB53_19
-.LBB53_5:
+	jmp	.LBB54_19
+.LBB54_5:
 	sta	__rc6
 	ldx	__rc3
-	bpl	.LBB53_6
+	bpl	.LBB54_6
 ; %bb.26:
-	jmp	.LBB53_18
-.LBB53_6:
+	jmp	.LBB54_18
+.LBB54_6:
 	ldx	#0
 	phy
 	ldy	__rc2
@@ -7785,20 +8317,20 @@ __umodhi3:                              ; @__umodhi3
 	ldy	__rc3
 	sty	__rc5
 	ply
-.LBB53_7:                               ; =>This Inner Loop Header: Depth=1
+.LBB54_7:                               ; =>This Inner Loop Header: Depth=1
 	asl	__rc4
 	rol	__rc5
 	cmp	__rc5
-	bne	.LBB53_9
-; %bb.8:                                ;   in Loop: Header=BB53_7 Depth=1
+	bne	.LBB54_9
+; %bb.8:                                ;   in Loop: Header=BB54_7 Depth=1
 	cpy	__rc4
 	lda	__rc6
-	bcc	.LBB53_11
-	bra	.LBB53_10
-.LBB53_9:                               ;   in Loop: Header=BB53_7 Depth=1
+	bcc	.LBB54_11
+	bra	.LBB54_10
+.LBB54_9:                               ;   in Loop: Header=BB54_7 Depth=1
 	cmp	__rc5
-	bcc	.LBB53_11
-.LBB53_10:                              ;   in Loop: Header=BB53_7 Depth=1
+	bcc	.LBB54_11
+.LBB54_10:                              ;   in Loop: Header=BB54_7 Depth=1
 	inx
 	phy
 	ldy	__rc4
@@ -7808,14 +8340,14 @@ __umodhi3:                              ; @__umodhi3
 	ply
 	inc	__rc5
 	dec	__rc5
-	bpl	.LBB53_7
-	bra	.LBB53_12
-.LBB53_11:
+	bpl	.LBB54_7
+	bra	.LBB54_12
+.LBB54_11:
 	lda	__rc2
 	sta	__rc4
 	lda	__rc3
 	sta	__rc5
-.LBB53_12:
+.LBB54_12:
 	sec
 	tya
 	sbc	__rc4
@@ -7823,17 +8355,17 @@ __umodhi3:                              ; @__umodhi3
 	lda	__rc6
 	sbc	__rc5
 	cpx	#0
-	beq	.LBB53_19
-.LBB53_13:                              ; =>This Inner Loop Header: Depth=1
+	beq	.LBB54_19
+.LBB54_13:                              ; =>This Inner Loop Header: Depth=1
 	lsr	__rc5
 	ror	__rc4
 	cmp	__rc5
-	bne	.LBB53_17
-; %bb.14:                               ;   in Loop: Header=BB53_13 Depth=1
+	bne	.LBB54_17
+; %bb.14:                               ;   in Loop: Header=BB54_13 Depth=1
 	sta	__rc2
 	cpy	__rc4
-	bcc	.LBB53_16
-.LBB53_15:                              ;   in Loop: Header=BB53_13 Depth=1
+	bcc	.LBB54_16
+.LBB54_15:                              ;   in Loop: Header=BB54_13 Depth=1
 	sta	__rc2
 	sec
 	tya
@@ -7841,27 +8373,27 @@ __umodhi3:                              ; @__umodhi3
 	tay
 	lda	__rc2
 	sbc	__rc5
-.LBB53_16:                              ;   in Loop: Header=BB53_13 Depth=1
+.LBB54_16:                              ;   in Loop: Header=BB54_13 Depth=1
 	dex
-	bne	.LBB53_13
-	bra	.LBB53_19
-.LBB53_17:                              ;   in Loop: Header=BB53_13 Depth=1
+	bne	.LBB54_13
+	bra	.LBB54_19
+.LBB54_17:                              ;   in Loop: Header=BB54_13 Depth=1
 	cmp	__rc5
-	bcs	.LBB53_15
-	bra	.LBB53_16
-.LBB53_18:
+	bcs	.LBB54_15
+	bra	.LBB54_16
+.LBB54_18:
 	sec
 	tya
 	sbc	__rc2
 	tay
 	lda	__rc6
 	sbc	__rc3
-.LBB53_19:
+.LBB54_19:
 	tax
 	tya
 	rts
-.Lfunc_end53:
-	.size	__umodhi3, .Lfunc_end53-__umodhi3
+.Lfunc_end54:
+	.size	__umodhi3, .Lfunc_end54-__umodhi3
                                         ; -- End function
 	.section	.text.__umodsi3,"ax",@progbits
 	.globl	__umodsi3                       ; -- Begin function __umodsi3
@@ -7872,57 +8404,57 @@ __umodsi3:                              ; @__umodsi3
 	stx	__rc10
 	lda	__rc2
 	ldx	__rc7
-	bne	.LBB54_4
+	bne	.LBB55_4
 ; %bb.1:
 	ldx	__rc6
-	bne	.LBB54_4
+	bne	.LBB55_4
 ; %bb.2:
 	ldx	__rc5
-	bne	.LBB54_4
+	bne	.LBB55_4
 ; %bb.3:
 	ldx	__rc4
-	bne	.LBB54_4
+	bne	.LBB55_4
 ; %bb.42:
-	jmp	.LBB54_35
-.LBB54_4:
+	jmp	.LBB55_35
+.LBB55_4:
 	ldx	__rc3
 	cpx	__rc7
-	bne	.LBB54_8
+	bne	.LBB55_8
 ; %bb.5:
 	cmp	__rc6
-	bne	.LBB54_9
+	bne	.LBB55_9
 ; %bb.6:
 	ldx	__rc10
 	cpx	__rc5
-	bne	.LBB54_10
+	bne	.LBB55_10
 ; %bb.7:
 	ldx	__rc12
 	cpx	__rc4
-	bcs	.LBB54_11
+	bcs	.LBB55_11
 ; %bb.36:
-	jmp	.LBB54_35
-.LBB54_8:
+	jmp	.LBB55_35
+.LBB55_8:
 	cpx	__rc7
-	bcs	.LBB54_11
+	bcs	.LBB55_11
 ; %bb.38:
-	jmp	.LBB54_35
-.LBB54_9:
+	jmp	.LBB55_35
+.LBB55_9:
 	cmp	__rc6
-	bcs	.LBB54_11
+	bcs	.LBB55_11
 ; %bb.40:
-	jmp	.LBB54_35
-.LBB54_10:
+	jmp	.LBB55_35
+.LBB55_10:
 	ldx	__rc10
 	cpx	__rc5
-	bcs	.LBB54_11
+	bcs	.LBB55_11
 ; %bb.44:
-	jmp	.LBB54_35
-.LBB54_11:
+	jmp	.LBB55_35
+.LBB55_11:
 	ldx	__rc7
-	bpl	.LBB54_12
+	bpl	.LBB55_12
 ; %bb.46:
-	jmp	.LBB54_33
-.LBB54_12:
+	jmp	.LBB55_33
+.LBB55_12:
 	ldx	#0
 	ldy	__rc4
 	sty	__rc2
@@ -7932,41 +8464,41 @@ __umodsi3:                              ; @__umodsi3
 	sty	__rc8
 	ldy	__rc7
 	sty	__rc9
-.LBB54_13:                              ; =>This Inner Loop Header: Depth=1
+.LBB55_13:                              ; =>This Inner Loop Header: Depth=1
 	asl	__rc2
 	rol	__rc11
 	rol	__rc8
 	rol	__rc9
 	ldy	__rc3
 	cpy	__rc9
-	bne	.LBB54_17
-; %bb.14:                               ;   in Loop: Header=BB54_13 Depth=1
+	bne	.LBB55_17
+; %bb.14:                               ;   in Loop: Header=BB55_13 Depth=1
 	cmp	__rc8
-	bne	.LBB54_18
-; %bb.15:                               ;   in Loop: Header=BB54_13 Depth=1
+	bne	.LBB55_18
+; %bb.15:                               ;   in Loop: Header=BB55_13 Depth=1
 	ldy	__rc10
 	cpy	__rc11
-	bne	.LBB54_19
-; %bb.16:                               ;   in Loop: Header=BB54_13 Depth=1
+	bne	.LBB55_19
+; %bb.16:                               ;   in Loop: Header=BB55_13 Depth=1
 	tay
 	lda	__rc12
 	cmp	__rc2
 	tya
-	bcc	.LBB54_21
-	bra	.LBB54_20
-.LBB54_17:                              ;   in Loop: Header=BB54_13 Depth=1
+	bcc	.LBB55_21
+	bra	.LBB55_20
+.LBB55_17:                              ;   in Loop: Header=BB55_13 Depth=1
 	cpy	__rc9
-	bcc	.LBB54_21
-	bra	.LBB54_20
-.LBB54_18:                              ;   in Loop: Header=BB54_13 Depth=1
+	bcc	.LBB55_21
+	bra	.LBB55_20
+.LBB55_18:                              ;   in Loop: Header=BB55_13 Depth=1
 	cmp	__rc8
-	bcc	.LBB54_21
-	bra	.LBB54_20
-.LBB54_19:                              ;   in Loop: Header=BB54_13 Depth=1
+	bcc	.LBB55_21
+	bra	.LBB55_20
+.LBB55_19:                              ;   in Loop: Header=BB55_13 Depth=1
 	ldy	__rc10
 	cpy	__rc11
-	bcc	.LBB54_21
-.LBB54_20:                              ;   in Loop: Header=BB54_13 Depth=1
+	bcc	.LBB55_21
+.LBB55_20:                              ;   in Loop: Header=BB55_13 Depth=1
 	inx
 	ldy	__rc2
 	sty	__rc4
@@ -7976,9 +8508,9 @@ __umodsi3:                              ; @__umodsi3
 	sty	__rc6
 	ldy	__rc9
 	sty	__rc7
-	bpl	.LBB54_13
-	bra	.LBB54_22
-.LBB54_21:
+	bpl	.LBB55_13
+	bra	.LBB55_22
+.LBB55_21:
 	ldy	__rc4
 	sty	__rc2
 	ldy	__rc5
@@ -7987,7 +8519,7 @@ __umodsi3:                              ; @__umodsi3
 	sty	__rc8
 	ldy	__rc7
 	sty	__rc9
-.LBB54_22:
+.LBB55_22:
 	sec
 	tay
 	lda	__rc12
@@ -8003,37 +8535,37 @@ __umodsi3:                              ; @__umodsi3
 	sbc	__rc9
 	sta	__rc3
 	txa
-	bne	.LBB54_23
+	bne	.LBB55_23
 ; %bb.48:
-	jmp	.LBB54_34
-.LBB54_23:
+	jmp	.LBB55_34
+.LBB55_23:
 	tya
-.LBB54_24:                              ; =>This Inner Loop Header: Depth=1
+.LBB55_24:                              ; =>This Inner Loop Header: Depth=1
 	lsr	__rc9
 	ror	__rc8
 	ror	__rc11
 	ror	__rc2
 	ldy	__rc3
 	cpy	__rc9
-	bne	.LBB54_28
-; %bb.25:                               ;   in Loop: Header=BB54_24 Depth=1
+	bne	.LBB55_28
+; %bb.25:                               ;   in Loop: Header=BB55_24 Depth=1
 	cmp	__rc8
-	bne	.LBB54_31
-; %bb.26:                               ;   in Loop: Header=BB54_24 Depth=1
+	bne	.LBB55_31
+; %bb.26:                               ;   in Loop: Header=BB55_24 Depth=1
 	ldy	__rc10
 	cpy	__rc11
-	bne	.LBB54_32
-; %bb.27:                               ;   in Loop: Header=BB54_24 Depth=1
+	bne	.LBB55_32
+; %bb.27:                               ;   in Loop: Header=BB55_24 Depth=1
 	tay
 	lda	__rc12
 	cmp	__rc2
 	tya
-	bcs	.LBB54_29
-	bra	.LBB54_30
-.LBB54_28:                              ;   in Loop: Header=BB54_24 Depth=1
+	bcs	.LBB55_29
+	bra	.LBB55_30
+.LBB55_28:                              ;   in Loop: Header=BB55_24 Depth=1
 	cpy	__rc9
-	bcc	.LBB54_30
-.LBB54_29:                              ;   in Loop: Header=BB54_24 Depth=1
+	bcc	.LBB55_30
+.LBB55_29:                              ;   in Loop: Header=BB55_24 Depth=1
 	tay
 	sec
 	lda	__rc12
@@ -8049,20 +8581,20 @@ __umodsi3:                              ; @__umodsi3
 	sbc	__rc9
 	sta	__rc3
 	tya
-.LBB54_30:                              ;   in Loop: Header=BB54_24 Depth=1
+.LBB55_30:                              ;   in Loop: Header=BB55_24 Depth=1
 	dex
-	bne	.LBB54_24
-	bra	.LBB54_35
-.LBB54_31:                              ;   in Loop: Header=BB54_24 Depth=1
+	bne	.LBB55_24
+	bra	.LBB55_35
+.LBB55_31:                              ;   in Loop: Header=BB55_24 Depth=1
 	cmp	__rc8
-	bcs	.LBB54_29
-	bra	.LBB54_30
-.LBB54_32:                              ;   in Loop: Header=BB54_24 Depth=1
+	bcs	.LBB55_29
+	bra	.LBB55_30
+.LBB55_32:                              ;   in Loop: Header=BB55_24 Depth=1
 	ldy	__rc10
 	cpy	__rc11
-	bcs	.LBB54_29
-	bra	.LBB54_30
-.LBB54_33:
+	bcs	.LBB55_29
+	bra	.LBB55_30
+.LBB55_33:
 	sec
 	tay
 	lda	__rc12
@@ -8078,16 +8610,16 @@ __umodsi3:                              ; @__umodsi3
 	sbc	__rc7
 	sta	__rc3
 	txa
-	bra	.LBB54_35
-.LBB54_34:
+	bra	.LBB55_35
+.LBB55_34:
 	tya
-.LBB54_35:
+.LBB55_35:
 	sta	__rc2
 	ldx	__rc10
 	lda	__rc12
 	rts
-.Lfunc_end54:
-	.size	__umodsi3, .Lfunc_end54-__umodsi3
+.Lfunc_end55:
+	.size	__umodsi3, .Lfunc_end55-__umodsi3
                                         ; -- End function
 	.section	.text.__umoddi3,"ax",@progbits
 	.globl	__umoddi3                       ; -- Begin function __umoddi3
@@ -8098,105 +8630,105 @@ __umoddi3:                              ; @__umoddi3
 	stx	mos8(.L__umoddi3_zp_stk+2)
 	lda	__rc7
 	ldx	__rc15
-	bne	.LBB55_8
+	bne	.LBB56_8
 ; %bb.1:
 	ldx	__rc14
-	bne	.LBB55_8
+	bne	.LBB56_8
 ; %bb.2:
 	ldx	__rc13
-	bne	.LBB55_8
+	bne	.LBB56_8
 ; %bb.3:
 	ldx	__rc12
-	bne	.LBB55_8
+	bne	.LBB56_8
 ; %bb.4:
 	ldx	__rc11
-	bne	.LBB55_8
+	bne	.LBB56_8
 ; %bb.5:
 	ldx	__rc10
-	bne	.LBB55_8
+	bne	.LBB56_8
 ; %bb.6:
 	ldx	__rc9
-	bne	.LBB55_8
+	bne	.LBB56_8
 ; %bb.7:
 	ldx	__rc8
-	bne	.LBB55_8
+	bne	.LBB56_8
 ; %bb.90:
-	jmp	.LBB55_61
-.LBB55_8:
+	jmp	.LBB56_61
+.LBB56_8:
 	cmp	__rc15
-	bne	.LBB55_16
+	bne	.LBB56_16
 ; %bb.9:
 	ldx	__rc6
 	cpx	__rc14
-	bne	.LBB55_17
+	bne	.LBB56_17
 ; %bb.10:
 	ldx	__rc5
 	cpx	__rc13
-	bne	.LBB55_18
+	bne	.LBB56_18
 ; %bb.11:
 	ldx	__rc4
 	cpx	__rc12
-	bne	.LBB55_19
+	bne	.LBB56_19
 ; %bb.12:
 	ldx	__rc3
 	cpx	__rc11
-	bne	.LBB55_20
+	bne	.LBB56_20
 ; %bb.13:
 	ldx	__rc2
 	cpx	__rc10
-	bne	.LBB55_21
+	bne	.LBB56_21
 ; %bb.14:
 	ldx	mos8(.L__umoddi3_zp_stk+2)
 	cpx	__rc9
-	bne	.LBB55_22
+	bne	.LBB56_22
 ; %bb.15:
 	ldx	mos8(.L__umoddi3_zp_stk+1)
 	cpx	__rc8
-	bcs	.LBB55_23
+	bcs	.LBB56_23
 ; %bb.62:
-	jmp	.LBB55_61
-.LBB55_16:
+	jmp	.LBB56_61
+.LBB56_16:
 	cmp	__rc15
-	bcs	.LBB55_23
+	bcs	.LBB56_23
 ; %bb.64:
-	jmp	.LBB55_61
-.LBB55_17:
+	jmp	.LBB56_61
+.LBB56_17:
 	cpx	__rc14
-	bcs	.LBB55_23
+	bcs	.LBB56_23
 ; %bb.66:
-	jmp	.LBB55_61
-.LBB55_18:
+	jmp	.LBB56_61
+.LBB56_18:
 	cpx	__rc13
-	bcs	.LBB55_23
+	bcs	.LBB56_23
 ; %bb.68:
-	jmp	.LBB55_61
-.LBB55_19:
+	jmp	.LBB56_61
+.LBB56_19:
 	cpx	__rc12
-	bcs	.LBB55_23
+	bcs	.LBB56_23
 ; %bb.70:
-	jmp	.LBB55_61
-.LBB55_20:
+	jmp	.LBB56_61
+.LBB56_20:
 	cpx	__rc11
-	bcs	.LBB55_23
+	bcs	.LBB56_23
 ; %bb.72:
-	jmp	.LBB55_61
-.LBB55_21:
+	jmp	.LBB56_61
+.LBB56_21:
 	cpx	__rc10
-	bcs	.LBB55_23
+	bcs	.LBB56_23
 ; %bb.74:
-	jmp	.LBB55_61
-.LBB55_22:
+	jmp	.LBB56_61
+.LBB56_22:
 	ldx	mos8(.L__umoddi3_zp_stk+2)
 	cpx	__rc9
-	bcs	.LBB55_23
+	bcs	.LBB56_23
 ; %bb.92:
-	jmp	.LBB55_61
-.LBB55_23:
+	jmp	.LBB56_61
+.LBB56_23:
 	ldx	__rc15
-	bpl	.LBB55_24
+	bpl	.LBB56_24
 ; %bb.94:
-	jmp	.LBB55_33
-.LBB55_24:
+	jmp	.LBB56_33
+.LBB56_24:
 	ldx	#0
 	ldy	__rc8
 	sty	mos8(.L__umoddi3_zp_stk+6)
@@ -8214,7 +8746,7 @@ __umoddi3:                              ; @__umoddi3
 	sty	__rc18
 	ldy	__rc15
 	sty	__rc19
-.LBB55_25:                              ; =>This Inner Loop Header: Depth=1
+.LBB56_25:                              ; =>This Inner Loop Header: Depth=1
 	asl	mos8(.L__umoddi3_zp_stk+6)
 	rol	mos8(.L__umoddi3_zp_stk+5)
 	rol	mos8(.L__umoddi3_zp_stk+4)
@@ -8224,39 +8756,39 @@ __umoddi3:                              ; @__umoddi3
 	rol	__rc18
 	rol	__rc19
 	cmp	__rc19
-	bne	.LBB55_29
-; %bb.26:                               ;   in Loop: Header=BB55_25 Depth=1
+	bne	.LBB56_29
+; %bb.26:                               ;   in Loop: Header=BB56_25 Depth=1
 	ldy	__rc6
 	cpy	__rc18
-	bne	.LBB55_30
-; %bb.27:                               ;   in Loop: Header=BB55_25 Depth=1
+	bne	.LBB56_30
+; %bb.27:                               ;   in Loop: Header=BB56_25 Depth=1
 	ldy	__rc5
 	cpy	__rc7
-	bne	.LBB55_31
-; %bb.28:                               ;   in Loop: Header=BB55_25 Depth=1
+	bne	.LBB56_31
+; %bb.28:                               ;   in Loop: Header=BB56_25 Depth=1
 	ldy	__rc4
 	cpy	mos8(.L__umoddi3_zp_stk)
-	beq	.LBB55_76
-; %bb.96:                               ;   in Loop: Header=BB55_25 Depth=1
-	jmp	.LBB55_38
-.LBB55_76:                              ;   in Loop: Header=BB55_25 Depth=1
-	jmp	.LBB55_34
-.LBB55_29:                              ;   in Loop: Header=BB55_25 Depth=1
+	beq	.LBB56_76
+; %bb.96:                               ;   in Loop: Header=BB56_25 Depth=1
+	jmp	.LBB56_38
+.LBB56_76:                              ;   in Loop: Header=BB56_25 Depth=1
+	jmp	.LBB56_34
+.LBB56_29:                              ;   in Loop: Header=BB56_25 Depth=1
 	cmp	__rc19
-	bcs	.LBB55_32
+	bcs	.LBB56_32
 ; %bb.98:
-	jmp	.LBB55_42
-.LBB55_30:                              ;   in Loop: Header=BB55_25 Depth=1
+	jmp	.LBB56_42
+.LBB56_30:                              ;   in Loop: Header=BB56_25 Depth=1
 	cpy	__rc18
-	bcs	.LBB55_32
+	bcs	.LBB56_32
 ; %bb.100:
-	jmp	.LBB55_42
-.LBB55_31:                              ;   in Loop: Header=BB55_25 Depth=1
+	jmp	.LBB56_42
+.LBB56_31:                              ;   in Loop: Header=BB56_25 Depth=1
 	cpy	__rc7
-	bcs	.LBB55_32
+	bcs	.LBB56_32
 ; %bb.102:
-	jmp	.LBB55_42
-.LBB55_32:                              ;   in Loop: Header=BB55_25 Depth=1
+	jmp	.LBB56_42
+.LBB56_32:                              ;   in Loop: Header=BB56_25 Depth=1
 	inx
 	ldy	mos8(.L__umoddi3_zp_stk+6)
 	sty	__rc8
@@ -8274,12 +8806,12 @@ __umoddi3:                              ; @__umoddi3
 	sty	__rc14
 	ldy	__rc19
 	sty	__rc15
-	bmi	.LBB55_78
-; %bb.104:                              ;   in Loop: Header=BB55_25 Depth=1
-	jmp	.LBB55_25
-.LBB55_78:
-	jmp	.LBB55_43
-.LBB55_33:
+	bmi	.LBB56_78
+; %bb.104:                              ;   in Loop: Header=BB56_25 Depth=1
+	jmp	.LBB56_25
+.LBB56_78:
+	jmp	.LBB56_43
+.LBB56_33:
 	sec
 	tay
 	lda	mos8(.L__umoddi3_zp_stk+1)
@@ -8306,20 +8838,20 @@ __umoddi3:                              ; @__umoddi3
 	tya
 	sbc	__rc15
 ; %bb.80:
-	jmp	.LBB55_61
-.LBB55_34:                              ;   in Loop: Header=BB55_25 Depth=1
+	jmp	.LBB56_61
+.LBB56_34:                              ;   in Loop: Header=BB56_25 Depth=1
 	ldy	__rc3
 	cpy	mos8(.L__umoddi3_zp_stk+3)
-	bne	.LBB55_39
-; %bb.35:                               ;   in Loop: Header=BB55_25 Depth=1
+	bne	.LBB56_39
+; %bb.35:                               ;   in Loop: Header=BB56_25 Depth=1
 	ldy	__rc2
 	cpy	mos8(.L__umoddi3_zp_stk+4)
-	bne	.LBB55_40
-; %bb.36:                               ;   in Loop: Header=BB55_25 Depth=1
+	bne	.LBB56_40
+; %bb.36:                               ;   in Loop: Header=BB56_25 Depth=1
 	ldy	mos8(.L__umoddi3_zp_stk+2)
 	cpy	mos8(.L__umoddi3_zp_stk+5)
-	bne	.LBB55_41
-; %bb.37:                               ;   in Loop: Header=BB55_25 Depth=1
+	bne	.LBB56_41
+; %bb.37:                               ;   in Loop: Header=BB56_25 Depth=1
 	tay
 	lda	mos8(.L__umoddi3_zp_stk+2)
 	sta	mos8(.L__umoddi3_zp_stk+7)      ; 1-byte Folded Spill
@@ -8328,31 +8860,31 @@ __umoddi3:                              ; @__umoddi3
 	lda	mos8(.L__umoddi3_zp_stk+7)      ; 1-byte Folded Reload
 	sta	mos8(.L__umoddi3_zp_stk+2)
 	tya
-	bcc	.LBB55_42
-; %bb.82:                               ;   in Loop: Header=BB55_25 Depth=1
-	jmp	.LBB55_32
-.LBB55_38:                              ;   in Loop: Header=BB55_25 Depth=1
+	bcc	.LBB56_42
+; %bb.82:                               ;   in Loop: Header=BB56_25 Depth=1
+	jmp	.LBB56_32
+.LBB56_38:                              ;   in Loop: Header=BB56_25 Depth=1
 	cpy	mos8(.L__umoddi3_zp_stk)
-	bcc	.LBB55_42
-; %bb.84:                               ;   in Loop: Header=BB55_25 Depth=1
-	jmp	.LBB55_32
-.LBB55_39:                              ;   in Loop: Header=BB55_25 Depth=1
+	bcc	.LBB56_42
+; %bb.84:                               ;   in Loop: Header=BB56_25 Depth=1
+	jmp	.LBB56_32
+.LBB56_39:                              ;   in Loop: Header=BB56_25 Depth=1
 	cpy	mos8(.L__umoddi3_zp_stk+3)
-	bcc	.LBB55_42
-; %bb.86:                               ;   in Loop: Header=BB55_25 Depth=1
-	jmp	.LBB55_32
-.LBB55_40:                              ;   in Loop: Header=BB55_25 Depth=1
+	bcc	.LBB56_42
+; %bb.86:                               ;   in Loop: Header=BB56_25 Depth=1
+	jmp	.LBB56_32
+.LBB56_40:                              ;   in Loop: Header=BB56_25 Depth=1
 	cpy	mos8(.L__umoddi3_zp_stk+4)
-	bcc	.LBB55_42
-; %bb.88:                               ;   in Loop: Header=BB55_25 Depth=1
-	jmp	.LBB55_32
-.LBB55_41:                              ;   in Loop: Header=BB55_25 Depth=1
+	bcc	.LBB56_42
+; %bb.88:                               ;   in Loop: Header=BB56_25 Depth=1
+	jmp	.LBB56_32
+.LBB56_41:                              ;   in Loop: Header=BB56_25 Depth=1
 	ldy	mos8(.L__umoddi3_zp_stk+2)
 	cpy	mos8(.L__umoddi3_zp_stk+5)
-	bcc	.LBB55_42
-; %bb.106:                              ;   in Loop: Header=BB55_25 Depth=1
-	jmp	.LBB55_32
-.LBB55_42:
+	bcc	.LBB56_42
+; %bb.106:                              ;   in Loop: Header=BB56_25 Depth=1
+	jmp	.LBB56_32
+.LBB56_42:
 	ldy	__rc8
 	sty	mos8(.L__umoddi3_zp_stk+6)
 	ldy	__rc9
@@ -8369,7 +8901,7 @@ __umoddi3:                              ; @__umoddi3
 	sty	__rc18
 	ldy	__rc15
 	sty	__rc19
-.LBB55_43:
+.LBB56_43:
 	sec
 	tay
 	lda	mos8(.L__umoddi3_zp_stk+1)
@@ -8396,10 +8928,10 @@ __umoddi3:                              ; @__umoddi3
 	tya
 	sbc	__rc19
 	cpx	#0
-	bne	.LBB55_44
+	bne	.LBB56_44
 ; %bb.108:
-	jmp	.LBB55_61
-.LBB55_44:                              ; =>This Inner Loop Header: Depth=1
+	jmp	.LBB56_61
+.LBB56_44:                              ; =>This Inner Loop Header: Depth=1
 	lsr	__rc19
 	ror	__rc18
 	ror	__rc7
@@ -8409,54 +8941,54 @@ __umoddi3:                              ; @__umoddi3
 	ror	mos8(.L__umoddi3_zp_stk+5)
 	ror	mos8(.L__umoddi3_zp_stk+6)
 	cmp	__rc19
-	bne	.LBB55_52
-; %bb.45:                               ;   in Loop: Header=BB55_44 Depth=1
+	bne	.LBB56_52
+; %bb.45:                               ;   in Loop: Header=BB56_44 Depth=1
 	ldy	__rc6
 	cpy	__rc18
-	beq	.LBB55_46
-; %bb.110:                              ;   in Loop: Header=BB55_44 Depth=1
-	jmp	.LBB55_55
-.LBB55_46:                              ;   in Loop: Header=BB55_44 Depth=1
+	beq	.LBB56_46
+; %bb.110:                              ;   in Loop: Header=BB56_44 Depth=1
+	jmp	.LBB56_55
+.LBB56_46:                              ;   in Loop: Header=BB56_44 Depth=1
 	ldy	__rc5
 	cpy	__rc7
-	beq	.LBB55_47
-; %bb.112:                              ;   in Loop: Header=BB55_44 Depth=1
-	jmp	.LBB55_56
-.LBB55_47:                              ;   in Loop: Header=BB55_44 Depth=1
+	beq	.LBB56_47
+; %bb.112:                              ;   in Loop: Header=BB56_44 Depth=1
+	jmp	.LBB56_56
+.LBB56_47:                              ;   in Loop: Header=BB56_44 Depth=1
 	ldy	__rc4
 	cpy	mos8(.L__umoddi3_zp_stk)
-	beq	.LBB55_48
-; %bb.114:                              ;   in Loop: Header=BB55_44 Depth=1
-	jmp	.LBB55_57
-.LBB55_48:                              ;   in Loop: Header=BB55_44 Depth=1
+	beq	.LBB56_48
+; %bb.114:                              ;   in Loop: Header=BB56_44 Depth=1
+	jmp	.LBB56_57
+.LBB56_48:                              ;   in Loop: Header=BB56_44 Depth=1
 	ldy	__rc3
 	cpy	mos8(.L__umoddi3_zp_stk+3)
-	beq	.LBB55_49
-; %bb.116:                              ;   in Loop: Header=BB55_44 Depth=1
-	jmp	.LBB55_58
-.LBB55_49:                              ;   in Loop: Header=BB55_44 Depth=1
+	beq	.LBB56_49
+; %bb.116:                              ;   in Loop: Header=BB56_44 Depth=1
+	jmp	.LBB56_58
+.LBB56_49:                              ;   in Loop: Header=BB56_44 Depth=1
 	ldy	__rc2
 	cpy	mos8(.L__umoddi3_zp_stk+4)
-	beq	.LBB55_50
-; %bb.118:                              ;   in Loop: Header=BB55_44 Depth=1
-	jmp	.LBB55_59
-.LBB55_50:                              ;   in Loop: Header=BB55_44 Depth=1
+	beq	.LBB56_50
+; %bb.118:                              ;   in Loop: Header=BB56_44 Depth=1
+	jmp	.LBB56_59
+.LBB56_50:                              ;   in Loop: Header=BB56_44 Depth=1
 	ldy	mos8(.L__umoddi3_zp_stk+2)
 	cpy	mos8(.L__umoddi3_zp_stk+5)
-	beq	.LBB55_51
-; %bb.120:                              ;   in Loop: Header=BB55_44 Depth=1
-	jmp	.LBB55_60
-.LBB55_51:                              ;   in Loop: Header=BB55_44 Depth=1
+	beq	.LBB56_51
+; %bb.120:                              ;   in Loop: Header=BB56_44 Depth=1
+	jmp	.LBB56_60
+.LBB56_51:                              ;   in Loop: Header=BB56_44 Depth=1
 	tay
 	lda	mos8(.L__umoddi3_zp_stk+1)
 	cmp	mos8(.L__umoddi3_zp_stk+6)
 	tya
-	bcs	.LBB55_53
-	bra	.LBB55_54
-.LBB55_52:                              ;   in Loop: Header=BB55_44 Depth=1
+	bcs	.LBB56_53
+	bra	.LBB56_54
+.LBB56_52:                              ;   in Loop: Header=BB56_44 Depth=1
 	cmp	__rc19
-	bcc	.LBB55_54
-.LBB55_53:                              ;   in Loop: Header=BB55_44 Depth=1
+	bcc	.LBB56_54
+.LBB56_53:                              ;   in Loop: Header=BB56_44 Depth=1
 	tay
 	sec
 	lda	mos8(.L__umoddi3_zp_stk+1)
@@ -8482,44 +9014,44 @@ __umoddi3:                              ; @__umoddi3
 	sta	__rc6
 	tya
 	sbc	__rc19
-.LBB55_54:                              ;   in Loop: Header=BB55_44 Depth=1
+.LBB56_54:                              ;   in Loop: Header=BB56_44 Depth=1
 	dex
-	beq	.LBB55_61
-; %bb.122:                              ;   in Loop: Header=BB55_44 Depth=1
-	jmp	.LBB55_44
-.LBB55_55:                              ;   in Loop: Header=BB55_44 Depth=1
+	beq	.LBB56_61
+; %bb.122:                              ;   in Loop: Header=BB56_44 Depth=1
+	jmp	.LBB56_44
+.LBB56_55:                              ;   in Loop: Header=BB56_44 Depth=1
 	cpy	__rc18
-	bcs	.LBB55_53
-	bra	.LBB55_54
-.LBB55_56:                              ;   in Loop: Header=BB55_44 Depth=1
+	bcs	.LBB56_53
+	bra	.LBB56_54
+.LBB56_56:                              ;   in Loop: Header=BB56_44 Depth=1
 	cpy	__rc7
-	bcs	.LBB55_53
-	bra	.LBB55_54
-.LBB55_57:                              ;   in Loop: Header=BB55_44 Depth=1
+	bcs	.LBB56_53
+	bra	.LBB56_54
+.LBB56_57:                              ;   in Loop: Header=BB56_44 Depth=1
 	cpy	mos8(.L__umoddi3_zp_stk)
-	bcs	.LBB55_53
-	bra	.LBB55_54
-.LBB55_58:                              ;   in Loop: Header=BB55_44 Depth=1
+	bcs	.LBB56_53
+	bra	.LBB56_54
+.LBB56_58:                              ;   in Loop: Header=BB56_44 Depth=1
 	cpy	mos8(.L__umoddi3_zp_stk+3)
-	bcs	.LBB55_53
-	bra	.LBB55_54
-.LBB55_59:                              ;   in Loop: Header=BB55_44 Depth=1
+	bcs	.LBB56_53
+	bra	.LBB56_54
+.LBB56_59:                              ;   in Loop: Header=BB56_44 Depth=1
 	cpy	mos8(.L__umoddi3_zp_stk+4)
-	bcs	.LBB55_53
-	bra	.LBB55_54
-.LBB55_60:                              ;   in Loop: Header=BB55_44 Depth=1
+	bcs	.LBB56_53
+	bra	.LBB56_54
+.LBB56_60:                              ;   in Loop: Header=BB56_44 Depth=1
 	ldy	mos8(.L__umoddi3_zp_stk+2)
 	cpy	mos8(.L__umoddi3_zp_stk+5)
-	bcc	.LBB55_54
-; %bb.124:                              ;   in Loop: Header=BB55_44 Depth=1
-	jmp	.LBB55_53
-.LBB55_61:
+	bcc	.LBB56_54
+; %bb.124:                              ;   in Loop: Header=BB56_44 Depth=1
+	jmp	.LBB56_53
+.LBB56_61:
 	sta	__rc7
 	ldx	mos8(.L__umoddi3_zp_stk+2)
 	lda	mos8(.L__umoddi3_zp_stk+1)
 	rts
-.Lfunc_end55:
-	.size	__umoddi3, .Lfunc_end55-__umoddi3
+.Lfunc_end56:
+	.size	__umoddi3, .Lfunc_end56-__umoddi3
                                         ; -- End function
 	.section	.text.__udivmodqi4,"ax",@progbits
 	.globl	__udivmodqi4                    ; -- Begin function __udivmodqi4
@@ -8529,67 +9061,67 @@ __udivmodqi4:                           ; @__udivmodqi4
 	tay
 	lda	#0
 	cpx	#0
-	beq	.LBB56_8
+	beq	.LBB57_8
 ; %bb.1:
 	stx	__rc5
 	sty	__rc7
 	cpy	__rc5
-	bcs	.LBB56_2
+	bcs	.LBB57_2
 ; %bb.18:
-	jmp	.LBB56_17
-.LBB56_2:
+	jmp	.LBB57_17
+.LBB57_2:
 	lda	__rc5
-	bpl	.LBB56_3
+	bpl	.LBB57_3
 ; %bb.20:
-	jmp	.LBB56_15
-.LBB56_3:
+	jmp	.LBB57_15
+.LBB57_3:
 	ldy	#0
 	ldx	#0
 	lda	__rc5
 	sta	__rc4
-.LBB56_4:                               ; =>This Inner Loop Header: Depth=1
+.LBB57_4:                               ; =>This Inner Loop Header: Depth=1
 	asl	__rc4
 	stz	__rc6
 	rol	__rc6
 	cpy	__rc6
-	bne	.LBB56_6
-; %bb.5:                                ;   in Loop: Header=BB56_4 Depth=1
+	bne	.LBB57_6
+; %bb.5:                                ;   in Loop: Header=BB57_4 Depth=1
 	lda	__rc7
 	cmp	__rc4
-	bcc	.LBB56_9
-	bra	.LBB56_7
-.LBB56_6:                               ;   in Loop: Header=BB56_4 Depth=1
+	bcc	.LBB57_9
+	bra	.LBB57_7
+.LBB57_6:                               ;   in Loop: Header=BB57_4 Depth=1
 	cpy	__rc6
-	bcc	.LBB56_9
-.LBB56_7:                               ;   in Loop: Header=BB56_4 Depth=1
+	bcc	.LBB57_9
+.LBB57_7:                               ;   in Loop: Header=BB57_4 Depth=1
 	inx
 	lda	__rc4
 	sta	__rc5
-	bpl	.LBB56_4
-	bra	.LBB56_10
-.LBB56_8:
+	bpl	.LBB57_4
+	bra	.LBB57_10
+.LBB57_8:
 	sty	__rc7
-	bra	.LBB56_17
-.LBB56_9:
+	bra	.LBB57_17
+.LBB57_9:
 	ldy	__rc5
 	sty	__rc4
-.LBB56_10:
+.LBB57_10:
 	sec
 	lda	__rc7
 	sbc	__rc4
 	sta	__rc7
 	txa
-	beq	.LBB56_16
+	beq	.LBB57_16
 ; %bb.11:
 	lda	#1
-.LBB56_12:                              ; =>This Inner Loop Header: Depth=1
+.LBB57_12:                              ; =>This Inner Loop Header: Depth=1
 	lsr	__rc4
 	asl
 	tay
 	lda	__rc7
 	cmp	__rc4
-	bcc	.LBB56_14
-; %bb.13:                               ;   in Loop: Header=BB56_12 Depth=1
+	bcc	.LBB57_14
+; %bb.13:                               ;   in Loop: Header=BB57_12 Depth=1
 	sta	__rc5
 	tya
 	ora	#1
@@ -8598,27 +9130,27 @@ __udivmodqi4:                           ; @__udivmodqi4
 	lda	__rc5
 	sbc	__rc4
 	sta	__rc7
-.LBB56_14:                              ;   in Loop: Header=BB56_12 Depth=1
+.LBB57_14:                              ;   in Loop: Header=BB57_12 Depth=1
 	dex
 	tya
 	cpx	#0
-	bne	.LBB56_12
-	bra	.LBB56_17
-.LBB56_15:
+	bne	.LBB57_12
+	bra	.LBB57_17
+.LBB57_15:
 	sec
 	tya
 	sbc	__rc5
 	sta	__rc7
-.LBB56_16:
+.LBB57_16:
 	lda	#1
-.LBB56_17:
+.LBB57_17:
 	tax
 	lda	__rc7
 	sta	(__rc2)
 	txa
 	rts
-.Lfunc_end56:
-	.size	__udivmodqi4, .Lfunc_end56-__udivmodqi4
+.Lfunc_end57:
+	.size	__udivmodqi4, .Lfunc_end57-__udivmodqi4
                                         ; -- End function
 	.section	.text.__udivmodhi4,"ax",@progbits
 	.globl	__udivmodhi4                    ; -- Begin function __udivmodhi4
@@ -8629,31 +9161,31 @@ __udivmodhi4:                           ; @__udivmodhi4
 	txa
 	stz	__rc6
 	ldx	__rc3
-	bne	.LBB57_2
+	bne	.LBB58_2
 ; %bb.1:
 	ldx	__rc2
-	beq	.LBB57_4
-.LBB57_2:
+	beq	.LBB58_4
+.LBB58_2:
 	cmp	__rc3
-	bne	.LBB57_5
+	bne	.LBB58_5
 ; %bb.3:
 	ldx	__rc9
 	cpx	__rc2
-	bcs	.LBB57_6
-.LBB57_4:
+	bcs	.LBB58_6
+.LBB58_4:
 	ldx	#0
 ; %bb.26:
-	jmp	.LBB57_24
-.LBB57_5:
+	jmp	.LBB58_24
+.LBB58_5:
 	cmp	__rc3
-	bcc	.LBB57_4
-.LBB57_6:
+	bcc	.LBB58_4
+.LBB58_6:
 	tay
 	ldx	__rc3
-	bpl	.LBB57_7
+	bpl	.LBB58_7
 ; %bb.28:
-	jmp	.LBB57_22
-.LBB57_7:
+	jmp	.LBB58_22
+.LBB58_7:
 	ldx	#0
 	phy
 	ldy	__rc2
@@ -8661,21 +9193,21 @@ __udivmodhi4:                           ; @__udivmodhi4
 	ldy	__rc3
 	sty	__rc8
 	ply
-.LBB57_8:                               ; =>This Inner Loop Header: Depth=1
+.LBB58_8:                               ; =>This Inner Loop Header: Depth=1
 	asl	__rc7
 	rol	__rc8
 	cmp	__rc8
-	bne	.LBB57_10
-; %bb.9:                                ;   in Loop: Header=BB57_8 Depth=1
+	bne	.LBB58_10
+; %bb.9:                                ;   in Loop: Header=BB58_8 Depth=1
 	lda	__rc9
 	cmp	__rc7
 	tya
-	bcs	.LBB57_11
-	bra	.LBB57_12
-.LBB57_10:                              ;   in Loop: Header=BB57_8 Depth=1
+	bcs	.LBB58_11
+	bra	.LBB58_12
+.LBB58_10:                              ;   in Loop: Header=BB58_8 Depth=1
 	cmp	__rc8
-	bcc	.LBB57_12
-.LBB57_11:                              ;   in Loop: Header=BB57_8 Depth=1
+	bcc	.LBB58_12
+.LBB58_11:                              ;   in Loop: Header=BB58_8 Depth=1
 	inx
 	phy
 	ldy	__rc7
@@ -8685,14 +9217,14 @@ __udivmodhi4:                           ; @__udivmodhi4
 	ply
 	inc	__rc8
 	dec	__rc8
-	bpl	.LBB57_8
-	bra	.LBB57_13
-.LBB57_12:
+	bpl	.LBB58_8
+	bra	.LBB58_13
+.LBB58_12:
 	lda	__rc2
 	sta	__rc7
 	lda	__rc3
 	sta	__rc8
-.LBB57_13:
+.LBB58_13:
 	sec
 	lda	__rc9
 	sbc	__rc7
@@ -8700,34 +9232,34 @@ __udivmodhi4:                           ; @__udivmodhi4
 	tya
 	sbc	__rc8
 	cpx	#0
-	bne	.LBB57_14
+	bne	.LBB58_14
 ; %bb.30:
-	jmp	.LBB57_23
-.LBB57_14:
+	jmp	.LBB58_23
+.LBB58_14:
 	stz	__rc6
 	ldy	#1
 	sty	mos8(.L__udivmodhi4_zp_stk)     ; 1-byte Folded Spill
-.LBB57_15:                              ; =>This Inner Loop Header: Depth=1
+.LBB58_15:                              ; =>This Inner Loop Header: Depth=1
 	lsr	__rc8
 	ror	__rc7
 	ldy	mos8(.L__udivmodhi4_zp_stk)     ; 1-byte Folded Reload
 	sty	__rc2
 	asl	__rc2
 	ldy	#1
-	bcs	.LBB57_17
-; %bb.16:                               ;   in Loop: Header=BB57_15 Depth=1
+	bcs	.LBB58_17
+; %bb.16:                               ;   in Loop: Header=BB58_15 Depth=1
 	ldy	#0
-.LBB57_17:                              ;   in Loop: Header=BB57_15 Depth=1
+.LBB58_17:                              ;   in Loop: Header=BB58_15 Depth=1
 	sty	__rc3
 	ldy	__rc2
 	sty	mos8(.L__udivmodhi4_zp_stk)     ; 1-byte Folded Spill
 	cmp	__rc8
-	bne	.LBB57_21
-; %bb.18:                               ;   in Loop: Header=BB57_15 Depth=1
+	bne	.LBB58_21
+; %bb.18:                               ;   in Loop: Header=BB58_15 Depth=1
 	ldy	__rc9
 	cpy	__rc7
-	bcc	.LBB57_20
-.LBB57_19:                              ;   in Loop: Header=BB57_15 Depth=1
+	bcc	.LBB58_20
+.LBB58_19:                              ;   in Loop: Header=BB58_15 Depth=1
 	tay
 	lda	mos8(.L__udivmodhi4_zp_stk)     ; 1-byte Folded Reload
 	ora	#1
@@ -8738,29 +9270,29 @@ __udivmodhi4:                           ; @__udivmodhi4
 	sta	__rc9
 	tya
 	sbc	__rc8
-.LBB57_20:                              ;   in Loop: Header=BB57_15 Depth=1
+.LBB58_20:                              ;   in Loop: Header=BB58_15 Depth=1
 	ldy	__rc3
 	cpy	#1
 	rol	__rc6
 	dex
-	bne	.LBB57_15
-	bra	.LBB57_25
-.LBB57_21:                              ;   in Loop: Header=BB57_15 Depth=1
+	bne	.LBB58_15
+	bra	.LBB58_25
+.LBB58_21:                              ;   in Loop: Header=BB58_15 Depth=1
 	cmp	__rc8
-	bcs	.LBB57_19
-	bra	.LBB57_20
-.LBB57_22:
+	bcs	.LBB58_19
+	bra	.LBB58_20
+.LBB58_22:
 	sec
 	lda	__rc9
 	sbc	__rc2
 	sta	__rc9
 	tya
 	sbc	__rc3
-.LBB57_23:
+.LBB58_23:
 	ldx	#1
-.LBB57_24:
+.LBB58_24:
 	stx	mos8(.L__udivmodhi4_zp_stk)     ; 1-byte Folded Spill
-.LBB57_25:
+.LBB58_25:
 	tax
 	lda	__rc9
 	sta	(__rc4)
@@ -8770,8 +9302,8 @@ __udivmodhi4:                           ; @__udivmodhi4
 	ldx	__rc6
 	lda	mos8(.L__udivmodhi4_zp_stk)     ; 1-byte Folded Reload
 	rts
-.Lfunc_end57:
-	.size	__udivmodhi4, .Lfunc_end57-__udivmodhi4
+.Lfunc_end58:
+	.size	__udivmodhi4, .Lfunc_end58-__udivmodhi4
                                         ; -- End function
 	.section	.text.__divqi3,"ax",@progbits
 	.globl	__divqi3                        ; -- Begin function __divqi3
@@ -8782,50 +9314,50 @@ __divqi3:                               ; @__divqi3
 	stx	__rc2
 	sta	mos8(.L__divqi3_zp_stk+2)       ; 1-byte Folded Spill
 	tax
-	bpl	.LBB58_3
+	bpl	.LBB59_3
 ; %bb.1:
 	ldx	#128
 	stx	mos8(.L__divqi3_zp_stk+2)       ; 1-byte Folded Spill
 	tax
 	cpx	#128
-	beq	.LBB58_3
+	beq	.LBB59_3
 ; %bb.2:
 	lda	#0
 	sec
 	sbc	mos8(.L__divqi3_zp_stk)
 	sta	mos8(.L__divqi3_zp_stk+2)       ; 1-byte Folded Spill
-.LBB58_3:
+.LBB59_3:
 	ldy	__rc2
 	ldx	__rc2
 	sty	mos8(.L__divqi3_zp_stk+1)
 	tya
-	bpl	.LBB58_6
+	bpl	.LBB59_6
 ; %bb.4:
 	ldx	#128
 	cpy	#128
-	beq	.LBB58_6
+	beq	.LBB59_6
 ; %bb.5:
 	sec
 	lda	#0
 	sbc	mos8(.L__divqi3_zp_stk+1)
 	tax
-.LBB58_6:
+.LBB59_6:
 	lda	mos8(.L__divqi3_zp_stk+2)       ; 1-byte Folded Reload
 	jsr	__udivqi3
 	sta	__rc2
 	lda	mos8(.L__divqi3_zp_stk+1)
 	eor	mos8(.L__divqi3_zp_stk)
-	bpl	.LBB58_8
+	bpl	.LBB59_8
 ; %bb.7:
 	lda	#0
 	sec
 	sbc	__rc2
 	sta	__rc2
-.LBB58_8:
+.LBB59_8:
 	lda	__rc2
 	rts
-.Lfunc_end58:
-	.size	__divqi3, .Lfunc_end58-__divqi3
+.Lfunc_end59:
+	.size	__divqi3, .Lfunc_end59-__divqi3
                                         ; -- End function
 	.section	.text.__divhi3,"ax",@progbits
 	.globl	__divhi3                        ; -- Begin function __divhi3
@@ -8836,20 +9368,20 @@ __divhi3:                               ; @__divhi3
 	stx	mos8(.L__divhi3_zp_stk)
 	ldy	__rc3
 	txa
-	bmi	.LBB59_2
+	bmi	.LBB60_2
 ; %bb.1:
-	bra	.LBB59_6
-.LBB59_2:
+	bra	.LBB60_6
+.LBB60_2:
 	cpx	#128
-	bne	.LBB59_5
+	bne	.LBB60_5
 ; %bb.3:
 	lda	__rc4
-	bne	.LBB59_5
+	bne	.LBB60_5
 ; %bb.4:
 	stz	__rc4
 	ldx	#128
-	bra	.LBB59_6
-.LBB59_5:
+	bra	.LBB60_6
+.LBB60_5:
 	sec
 	lda	#0
 	sbc	__rc4
@@ -8857,25 +9389,25 @@ __divhi3:                               ; @__divhi3
 	lda	#0
 	sbc	mos8(.L__divhi3_zp_stk)
 	tax
-.LBB59_6:
+.LBB60_6:
 	tya
-	bmi	.LBB59_8
+	bmi	.LBB60_8
 ; %bb.7:
 	tya
 	sty	mos8(.L__divhi3_zp_stk+1)
-	bra	.LBB59_12
-.LBB59_8:
+	bra	.LBB60_12
+.LBB60_8:
 	cpy	#128
-	bne	.LBB59_11
+	bne	.LBB60_11
 ; %bb.9:
 	lda	__rc2
-	bne	.LBB59_11
+	bne	.LBB60_11
 ; %bb.10:
 	stz	__rc2
 	sty	mos8(.L__divhi3_zp_stk+1)
 	lda	#128
-	bra	.LBB59_12
-.LBB59_11:
+	bra	.LBB60_12
+.LBB60_11:
 	sec
 	lda	#0
 	sbc	__rc2
@@ -8883,7 +9415,7 @@ __divhi3:                               ; @__divhi3
 	lda	#0
 	sty	mos8(.L__divhi3_zp_stk+1)
 	sbc	__rc3
-.LBB59_12:
+.LBB60_12:
 	sta	__rc3
 	lda	__rc4
 	jsr	__udivhi3
@@ -8891,7 +9423,7 @@ __divhi3:                               ; @__divhi3
 	stx	__rc2
 	lda	mos8(.L__divhi3_zp_stk+1)
 	eor	mos8(.L__divhi3_zp_stk)
-	bpl	.LBB59_14
+	bpl	.LBB60_14
 ; %bb.13:
 	sec
 	lda	#0
@@ -8900,12 +9432,12 @@ __divhi3:                               ; @__divhi3
 	lda	#0
 	sbc	__rc2
 	sta	__rc2
-.LBB59_14:
+.LBB60_14:
 	ldx	__rc2
 	lda	__rc3
 	rts
-.Lfunc_end59:
-	.size	__divhi3, .Lfunc_end59-__divhi3
+.Lfunc_end60:
+	.size	__divhi3, .Lfunc_end60-__divhi3
                                         ; -- End function
 	.section	.text.__divsi3,"ax",@progbits
 	.globl	__divsi3                        ; -- Begin function __divsi3
@@ -8919,30 +9451,30 @@ __divsi3:                               ; @__divsi3
 	ldx	__rc7
 	stx	mos8(.L__divsi3_zp_stk)
 	lda	__rc3
-	bmi	.LBB60_2
+	bmi	.LBB61_2
 ; %bb.1:
 	ldy	__rc3
-	bra	.LBB60_8
-.LBB60_2:
+	bra	.LBB61_8
+.LBB61_2:
 	ldx	__rc3
 	cpx	#128
-	bne	.LBB60_7
+	bne	.LBB61_7
 ; %bb.3:
 	lda	__rc2
-	bne	.LBB60_7
+	bne	.LBB61_7
 ; %bb.4:
 	lda	__rc8
-	bne	.LBB60_7
+	bne	.LBB61_7
 ; %bb.5:
 	lda	__rc9
-	bne	.LBB60_7
+	bne	.LBB61_7
 ; %bb.6:
 	stz	__rc9
 	ldy	#128
 	stz	__rc8
 	stz	__rc2
-	bra	.LBB60_8
-.LBB60_7:
+	bra	.LBB61_8
+.LBB61_7:
 	sec
 	lda	#0
 	sbc	__rc9
@@ -8956,32 +9488,32 @@ __divsi3:                               ; @__divsi3
 	lda	#0
 	sbc	mos8(.L__divsi3_zp_stk+1)
 	tay
-.LBB60_8:
+.LBB61_8:
 	lda	mos8(.L__divsi3_zp_stk)
-	bmi	.LBB60_10
+	bmi	.LBB61_10
 ; %bb.9:
 	lda	__rc7
-	bra	.LBB60_16
-.LBB60_10:
+	bra	.LBB61_16
+.LBB61_10:
 	ldx	__rc7
 	cpx	#128
-	bne	.LBB60_15
+	bne	.LBB61_15
 ; %bb.11:
 	lda	__rc6
-	bne	.LBB60_15
+	bne	.LBB61_15
 ; %bb.12:
 	lda	__rc5
-	bne	.LBB60_15
+	bne	.LBB61_15
 ; %bb.13:
 	lda	__rc4
-	bne	.LBB60_15
+	bne	.LBB61_15
 ; %bb.14:
 	stz	__rc4
 	lda	#128
 	stz	__rc5
 	stz	__rc6
-	bra	.LBB60_16
-.LBB60_15:
+	bra	.LBB61_16
+.LBB61_15:
 	sec
 	lda	#0
 	sbc	__rc4
@@ -8994,7 +9526,7 @@ __divsi3:                               ; @__divsi3
 	sta	__rc6
 	lda	#0
 	sbc	mos8(.L__divsi3_zp_stk)
-.LBB60_16:
+.LBB61_16:
 	sty	__rc3
 	sta	__rc7
 	ldx	__rc8
@@ -9013,12 +9545,12 @@ __divsi3:                               ; @__divsi3
 	rol	__rc6
 	rol	__rc7
 	cmp	__rc7
-	bne	.LBB60_18
+	bne	.LBB61_18
 ; %bb.17:
 	ldx	__rc8
 	cpx	__rc6
-	beq	.LBB60_19
-.LBB60_18:
+	beq	.LBB61_19
+.LBB61_18:
 	sec
 	lda	#0
 	sbc	__rc5
@@ -9032,12 +9564,12 @@ __divsi3:                               ; @__divsi3
 	lda	#0
 	sbc	__rc3
 	sta	__rc3
-.LBB60_19:
+.LBB61_19:
 	ldx	__rc4
 	lda	__rc5
 	rts
-.Lfunc_end60:
-	.size	__divsi3, .Lfunc_end60-__divsi3
+.Lfunc_end61:
+	.size	__divsi3, .Lfunc_end61-__divsi3
                                         ; -- End function
 	.section	.text.__divdi3,"ax",@progbits
 	.globl	__divdi3                        ; -- Begin function __divdi3
@@ -9051,36 +9583,36 @@ __divdi3:                               ; @__divdi3
 	ldx	__rc15
 	stx	mos8(.L__divdi3_zp_stk)
 	lda	__rc7
-	bmi	.LBB61_2
+	bmi	.LBB62_2
 ; %bb.1:
 	ldy	__rc7
 ; %bb.28:
-	jmp	.LBB61_12
-.LBB61_2:
+	jmp	.LBB62_12
+.LBB62_2:
 	ldx	__rc7
 	cpx	#128
-	bne	.LBB61_11
+	bne	.LBB62_11
 ; %bb.3:
 	lda	__rc6
-	bne	.LBB61_11
+	bne	.LBB62_11
 ; %bb.4:
 	lda	__rc5
-	bne	.LBB61_11
+	bne	.LBB62_11
 ; %bb.5:
 	lda	__rc4
-	bne	.LBB61_11
+	bne	.LBB62_11
 ; %bb.6:
 	lda	__rc3
-	bne	.LBB61_11
+	bne	.LBB62_11
 ; %bb.7:
 	lda	__rc2
-	bne	.LBB61_11
+	bne	.LBB62_11
 ; %bb.8:
 	lda	__rc18
-	bne	.LBB61_11
+	bne	.LBB62_11
 ; %bb.9:
 	lda	__rc19
-	bne	.LBB61_11
+	bne	.LBB62_11
 ; %bb.10:
 	stz	__rc19
 	ldy	#128
@@ -9090,8 +9622,8 @@ __divdi3:                               ; @__divdi3
 	stz	__rc4
 	stz	__rc5
 	stz	__rc6
-	bra	.LBB61_12
-.LBB61_11:
+	bra	.LBB62_12
+.LBB62_11:
 	sec
 	lda	#0
 	sbc	__rc19
@@ -9117,38 +9649,38 @@ __divdi3:                               ; @__divdi3
 	lda	#0
 	sbc	mos8(.L__divdi3_zp_stk+1)
 	tay
-.LBB61_12:
+.LBB62_12:
 	lda	mos8(.L__divdi3_zp_stk)
-	bmi	.LBB61_14
+	bmi	.LBB62_14
 ; %bb.13:
 	lda	__rc15
 ; %bb.30:
-	jmp	.LBB61_24
-.LBB61_14:
+	jmp	.LBB62_24
+.LBB62_14:
 	ldx	__rc15
 	cpx	#128
-	bne	.LBB61_23
+	bne	.LBB62_23
 ; %bb.15:
 	lda	__rc14
-	bne	.LBB61_23
+	bne	.LBB62_23
 ; %bb.16:
 	lda	__rc13
-	bne	.LBB61_23
+	bne	.LBB62_23
 ; %bb.17:
 	lda	__rc12
-	bne	.LBB61_23
+	bne	.LBB62_23
 ; %bb.18:
 	lda	__rc11
-	bne	.LBB61_23
+	bne	.LBB62_23
 ; %bb.19:
 	lda	__rc10
-	bne	.LBB61_23
+	bne	.LBB62_23
 ; %bb.20:
 	lda	__rc9
-	bne	.LBB61_23
+	bne	.LBB62_23
 ; %bb.21:
 	lda	__rc8
-	bne	.LBB61_23
+	bne	.LBB62_23
 ; %bb.22:
 	stz	__rc8
 	lda	#128
@@ -9158,8 +9690,8 @@ __divdi3:                               ; @__divdi3
 	stz	__rc12
 	stz	__rc13
 	stz	__rc14
-	bra	.LBB61_24
-.LBB61_23:
+	bra	.LBB62_24
+.LBB62_23:
 	sec
 	lda	#0
 	sbc	__rc8
@@ -9184,7 +9716,7 @@ __divdi3:                               ; @__divdi3
 	sta	__rc14
 	lda	#0
 	sbc	mos8(.L__divdi3_zp_stk)
-.LBB61_24:
+.LBB62_24:
 	sty	__rc7
 	sta	__rc15
 	ldx	__rc18
@@ -9203,12 +9735,12 @@ __divdi3:                               ; @__divdi3
 	rol	__rc10
 	rol	__rc11
 	cmp	__rc11
-	bne	.LBB61_26
+	bne	.LBB62_26
 ; %bb.25:
 	ldx	__rc12
 	cpx	__rc10
-	beq	.LBB61_27
-.LBB61_26:
+	beq	.LBB62_27
+.LBB62_26:
 	sec
 	lda	#0
 	sbc	__rc9
@@ -9234,12 +9766,12 @@ __divdi3:                               ; @__divdi3
 	lda	#0
 	sbc	__rc7
 	sta	__rc7
-.LBB61_27:
+.LBB62_27:
 	ldx	__rc8
 	lda	__rc9
 	rts
-.Lfunc_end61:
-	.size	__divdi3, .Lfunc_end61-__divdi3
+.Lfunc_end62:
+	.size	__divdi3, .Lfunc_end62-__divdi3
                                         ; -- End function
 	.section	.text.__modqi3,"ax",@progbits
 	.globl	__modqi3                        ; -- Begin function __modqi3
@@ -9249,48 +9781,48 @@ __modqi3:                               ; @__modqi3
 	sta	mos8(.L__modqi3_zp_stk)
 	stx	__rc2
 	tax
-	bpl	.LBB62_3
+	bpl	.LBB63_3
 ; %bb.1:
 	lda	#128
 	ldx	mos8(.L__modqi3_zp_stk)
 	cpx	#128
-	beq	.LBB62_3
+	beq	.LBB63_3
 ; %bb.2:
 	lda	#0
 	sec
 	sbc	mos8(.L__modqi3_zp_stk)
-.LBB62_3:
+.LBB63_3:
 	tay
 	lda	__rc2
-	bmi	.LBB62_5
+	bmi	.LBB63_5
 ; %bb.4:
 	lda	__rc2
-	bra	.LBB62_7
-.LBB62_5:
+	bra	.LBB63_7
+.LBB63_5:
 	lda	#128
 	ldx	__rc2
 	cpx	#128
-	beq	.LBB62_7
+	beq	.LBB63_7
 ; %bb.6:
 	lda	#0
 	sec
 	sbc	__rc2
-.LBB62_7:
+.LBB63_7:
 	tax
 	tya
 	jsr	__umodqi3
 	sta	__rc2
 	ldx	mos8(.L__modqi3_zp_stk)
-	bmi	.LBB62_9
+	bmi	.LBB63_9
 ; %bb.8:
 	rts
-.LBB62_9:
+.LBB63_9:
 	lda	#0
 	sec
 	sbc	__rc2
 	rts
-.Lfunc_end62:
-	.size	__modqi3, .Lfunc_end62-__modqi3
+.Lfunc_end63:
+	.size	__modqi3, .Lfunc_end63-__modqi3
                                         ; -- End function
 	.section	.text.__modhi3,"ax",@progbits
 	.globl	__modhi3                        ; -- Begin function __modhi3
@@ -9300,43 +9832,43 @@ __modhi3:                               ; @__modhi3
 	sta	__rc4
 	stx	mos8(.L__modhi3_zp_stk)
 	txa
-	bmi	.LBB63_2
+	bmi	.LBB64_2
 ; %bb.1:
 	txa
-	bra	.LBB63_6
-.LBB63_2:
+	bra	.LBB64_6
+.LBB64_2:
 	cpx	#128
-	bne	.LBB63_5
+	bne	.LBB64_5
 ; %bb.3:
 	lda	__rc4
-	bne	.LBB63_5
+	bne	.LBB64_5
 ; %bb.4:
 	stz	__rc4
 	lda	#128
-	bra	.LBB63_6
-.LBB63_5:
+	bra	.LBB64_6
+.LBB64_5:
 	sec
 	lda	#0
 	sbc	__rc4
 	sta	__rc4
 	lda	#0
 	sbc	mos8(.L__modhi3_zp_stk)
-.LBB63_6:
+.LBB64_6:
 	ldx	__rc3
-	bpl	.LBB63_11
+	bpl	.LBB64_11
 ; %bb.7:
 	ldx	__rc3
 	cpx	#128
-	bne	.LBB63_10
+	bne	.LBB64_10
 ; %bb.8:
 	ldx	__rc2
-	bne	.LBB63_10
+	bne	.LBB64_10
 ; %bb.9:
 	stz	__rc2
 	ldx	#128
 	stx	__rc3
-	bra	.LBB63_11
-.LBB63_10:
+	bra	.LBB64_11
+.LBB64_10:
 	tax
 	sec
 	lda	#0
@@ -9346,14 +9878,14 @@ __modhi3:                               ; @__modhi3
 	sbc	__rc3
 	sta	__rc3
 	txa
-.LBB63_11:
+.LBB64_11:
 	tax
 	lda	__rc4
 	jsr	__umodhi3
 	sta	__rc3
 	stx	__rc2
 	lda	mos8(.L__modhi3_zp_stk)
-	bpl	.LBB63_13
+	bpl	.LBB64_13
 ; %bb.12:
 	sec
 	lda	#0
@@ -9362,12 +9894,12 @@ __modhi3:                               ; @__modhi3
 	lda	#0
 	sbc	__rc2
 	sta	__rc2
-.LBB63_13:
+.LBB64_13:
 	ldx	__rc2
 	lda	__rc3
 	rts
-.Lfunc_end63:
-	.size	__modhi3, .Lfunc_end63-__modhi3
+.Lfunc_end64:
+	.size	__modhi3, .Lfunc_end64-__modhi3
                                         ; -- End function
 	.section	.text.__modsi3,"ax",@progbits
 	.globl	__modsi3                        ; -- Begin function __modsi3
@@ -9378,30 +9910,30 @@ __modsi3:                               ; @__modsi3
 	stx	__rc8
 	ldx	__rc3
 	stx	mos8(.L__modsi3_zp_stk)
-	bmi	.LBB64_2
+	bmi	.LBB65_2
 ; %bb.1:
 	lda	__rc3
-	bra	.LBB64_8
-.LBB64_2:
+	bra	.LBB65_8
+.LBB65_2:
 	ldx	__rc3
 	cpx	#128
-	bne	.LBB64_7
+	bne	.LBB65_7
 ; %bb.3:
 	lda	__rc2
-	bne	.LBB64_7
+	bne	.LBB65_7
 ; %bb.4:
 	lda	__rc8
-	bne	.LBB64_7
+	bne	.LBB65_7
 ; %bb.5:
 	lda	__rc9
-	bne	.LBB64_7
+	bne	.LBB65_7
 ; %bb.6:
 	stz	__rc9
 	lda	#128
 	stz	__rc8
 	stz	__rc2
-	bra	.LBB64_8
-.LBB64_7:
+	bra	.LBB65_8
+.LBB65_7:
 	sec
 	lda	#0
 	sbc	__rc9
@@ -9414,30 +9946,30 @@ __modsi3:                               ; @__modsi3
 	sta	__rc2
 	lda	#0
 	sbc	mos8(.L__modsi3_zp_stk)
-.LBB64_8:
+.LBB65_8:
 	ldx	__rc7
-	bpl	.LBB64_15
+	bpl	.LBB65_15
 ; %bb.9:
 	ldx	__rc7
 	cpx	#128
-	bne	.LBB64_14
+	bne	.LBB65_14
 ; %bb.10:
 	ldx	__rc6
-	bne	.LBB64_14
+	bne	.LBB65_14
 ; %bb.11:
 	ldx	__rc5
-	bne	.LBB64_14
+	bne	.LBB65_14
 ; %bb.12:
 	ldx	__rc4
-	bne	.LBB64_14
+	bne	.LBB65_14
 ; %bb.13:
 	stz	__rc4
 	ldx	#128
 	stz	__rc5
 	stz	__rc6
 	stx	__rc7
-	bra	.LBB64_15
-.LBB64_14:
+	bra	.LBB65_15
+.LBB65_14:
 	tax
 	sec
 	lda	#0
@@ -9453,7 +9985,7 @@ __modsi3:                               ; @__modsi3
 	sbc	__rc7
 	sta	__rc7
 	txa
-.LBB64_15:
+.LBB65_15:
 	sta	__rc3
 	ldx	__rc8
 	lda	__rc9
@@ -9461,7 +9993,7 @@ __modsi3:                               ; @__modsi3
 	sta	__rc5
 	stx	__rc4
 	lda	mos8(.L__modsi3_zp_stk)
-	bpl	.LBB64_17
+	bpl	.LBB65_17
 ; %bb.16:
 	sec
 	lda	#0
@@ -9476,12 +10008,12 @@ __modsi3:                               ; @__modsi3
 	lda	#0
 	sbc	__rc3
 	sta	__rc3
-.LBB64_17:
+.LBB65_17:
 	ldx	__rc4
 	lda	__rc5
 	rts
-.Lfunc_end64:
-	.size	__modsi3, .Lfunc_end64-__modsi3
+.Lfunc_end65:
+	.size	__modsi3, .Lfunc_end65-__modsi3
                                         ; -- End function
 	.section	.text.__moddi3,"ax",@progbits
 	.globl	__moddi3                        ; -- Begin function __moddi3
@@ -9492,36 +10024,36 @@ __moddi3:                               ; @__moddi3
 	stx	__rc18
 	ldx	__rc7
 	stx	mos8(.L__moddi3_zp_stk)
-	bmi	.LBB65_2
+	bmi	.LBB66_2
 ; %bb.1:
 	lda	__rc7
 ; %bb.26:
-	jmp	.LBB65_12
-.LBB65_2:
+	jmp	.LBB66_12
+.LBB66_2:
 	ldx	__rc7
 	cpx	#128
-	bne	.LBB65_11
+	bne	.LBB66_11
 ; %bb.3:
 	lda	__rc6
-	bne	.LBB65_11
+	bne	.LBB66_11
 ; %bb.4:
 	lda	__rc5
-	bne	.LBB65_11
+	bne	.LBB66_11
 ; %bb.5:
 	lda	__rc4
-	bne	.LBB65_11
+	bne	.LBB66_11
 ; %bb.6:
 	lda	__rc3
-	bne	.LBB65_11
+	bne	.LBB66_11
 ; %bb.7:
 	lda	__rc2
-	bne	.LBB65_11
+	bne	.LBB66_11
 ; %bb.8:
 	lda	__rc18
-	bne	.LBB65_11
+	bne	.LBB66_11
 ; %bb.9:
 	lda	__rc19
-	bne	.LBB65_11
+	bne	.LBB66_11
 ; %bb.10:
 	stz	__rc19
 	lda	#128
@@ -9531,8 +10063,8 @@ __moddi3:                               ; @__moddi3
 	stz	__rc4
 	stz	__rc5
 	stz	__rc6
-	bra	.LBB65_12
-.LBB65_11:
+	bra	.LBB66_12
+.LBB66_11:
 	sec
 	lda	#0
 	sbc	__rc19
@@ -9557,36 +10089,36 @@ __moddi3:                               ; @__moddi3
 	sta	__rc6
 	lda	#0
 	sbc	mos8(.L__moddi3_zp_stk)
-.LBB65_12:
+.LBB66_12:
 	ldx	__rc15
-	bmi	.LBB65_13
+	bmi	.LBB66_13
 ; %bb.28:
-	jmp	.LBB65_23
-.LBB65_13:
+	jmp	.LBB66_23
+.LBB66_13:
 	ldx	__rc15
 	cpx	#128
-	bne	.LBB65_22
+	bne	.LBB66_22
 ; %bb.14:
 	ldx	__rc14
-	bne	.LBB65_22
+	bne	.LBB66_22
 ; %bb.15:
 	ldx	__rc13
-	bne	.LBB65_22
+	bne	.LBB66_22
 ; %bb.16:
 	ldx	__rc12
-	bne	.LBB65_22
+	bne	.LBB66_22
 ; %bb.17:
 	ldx	__rc11
-	bne	.LBB65_22
+	bne	.LBB66_22
 ; %bb.18:
 	ldx	__rc10
-	bne	.LBB65_22
+	bne	.LBB66_22
 ; %bb.19:
 	ldx	__rc9
-	bne	.LBB65_22
+	bne	.LBB66_22
 ; %bb.20:
 	ldx	__rc8
-	bne	.LBB65_22
+	bne	.LBB66_22
 ; %bb.21:
 	stz	__rc8
 	ldx	#128
@@ -9597,8 +10129,8 @@ __moddi3:                               ; @__moddi3
 	stz	__rc13
 	stz	__rc14
 	stx	__rc15
-	bra	.LBB65_23
-.LBB65_22:
+	bra	.LBB66_23
+.LBB66_22:
 	tax
 	sec
 	lda	#0
@@ -9626,7 +10158,7 @@ __moddi3:                               ; @__moddi3
 	sbc	__rc15
 	sta	__rc15
 	txa
-.LBB65_23:
+.LBB66_23:
 	sta	__rc7
 	ldx	__rc18
 	lda	__rc19
@@ -9634,7 +10166,7 @@ __moddi3:                               ; @__moddi3
 	sta	__rc9
 	stx	__rc8
 	lda	mos8(.L__moddi3_zp_stk)
-	bpl	.LBB65_25
+	bpl	.LBB66_25
 ; %bb.24:
 	sec
 	lda	#0
@@ -9661,12 +10193,12 @@ __moddi3:                               ; @__moddi3
 	lda	#0
 	sbc	__rc7
 	sta	__rc7
-.LBB65_25:
+.LBB66_25:
 	ldx	__rc8
 	lda	__rc9
 	rts
-.Lfunc_end65:
-	.size	__moddi3, .Lfunc_end65-__moddi3
+.Lfunc_end66:
+	.size	__moddi3, .Lfunc_end66-__moddi3
                                         ; -- End function
 	.section	.text.__divmodqi4,"ax",@progbits
 	.globl	__divmodqi4                     ; -- Begin function __divmodqi4
@@ -9677,83 +10209,83 @@ __divmodqi4:                            ; @__divmodqi4
 	stx	__rc8
 	sta	mos8(.L__divmodqi4_zp_stk)      ; 1-byte Folded Spill
 	tax
-	bpl	.LBB66_3
+	bpl	.LBB67_3
 ; %bb.1:
 	ldx	#128
 	stx	mos8(.L__divmodqi4_zp_stk)      ; 1-byte Folded Spill
 	tax
 	cpx	#128
-	beq	.LBB66_3
+	beq	.LBB67_3
 ; %bb.2:
 	sec
 	lda	#0
 	sbc	__rc4
 	sta	mos8(.L__divmodqi4_zp_stk)      ; 1-byte Folded Spill
-.LBB66_3:
+.LBB67_3:
 	ldy	#1
 	stz	__rc6
 	lda	__rc8
-	bmi	.LBB66_6
+	bmi	.LBB67_6
 ; %bb.4:
 	ldx	__rc8
 	stx	__rc5
-	bne	.LBB66_10
+	bne	.LBB67_10
 ; %bb.5:
 	ldx	mos8(.L__divmodqi4_zp_stk)      ; 1-byte Folded Reload
-	bra	.LBB66_11
-.LBB66_6:
+	bra	.LBB67_11
+.LBB67_6:
 	ldx	__rc8
 	cpx	#128
-	bne	.LBB66_9
+	bne	.LBB67_9
 ; %bb.7:
 	lda	#1
 	ldy	mos8(.L__divmodqi4_zp_stk)      ; 1-byte Folded Reload
 	sty	__rc7
-	bmi	.LBB66_8
+	bmi	.LBB67_8
 ; %bb.34:
-	jmp	.LBB66_24
-.LBB66_8:
+	jmp	.LBB67_24
+.LBB67_8:
 	stz	__rc7
 	sta	__rc6
 ; %bb.30:
-	jmp	.LBB66_24
-.LBB66_9:
+	jmp	.LBB67_24
+.LBB67_9:
 	lda	#0
 	sec
 	stx	__rc5
 	sbc	__rc5
 	sta	__rc5
-.LBB66_10:
+.LBB67_10:
 	ldx	mos8(.L__divmodqi4_zp_stk)      ; 1-byte Folded Reload
 	cpx	__rc5
-	bcs	.LBB66_12
-.LBB66_11:
+	bcs	.LBB67_12
+.LBB67_11:
 	stx	__rc7
 ; %bb.32:
-	jmp	.LBB66_24
-.LBB66_12:
+	jmp	.LBB67_24
+.LBB67_12:
 	lda	#0
 	tax
 	phy
 	ldy	__rc5
 	sty	__rc6
 	ply
-.LBB66_13:                              ; =>This Inner Loop Header: Depth=1
+.LBB67_13:                              ; =>This Inner Loop Header: Depth=1
 	asl	__rc6
 	stz	__rc7
 	rol	__rc7
 	cmp	__rc7
-	bne	.LBB66_15
-; %bb.14:                               ;   in Loop: Header=BB66_13 Depth=1
+	bne	.LBB67_15
+; %bb.14:                               ;   in Loop: Header=BB67_13 Depth=1
 	ldy	mos8(.L__divmodqi4_zp_stk)      ; 1-byte Folded Reload
 	cpy	__rc6
 	ldy	#1
-	bcc	.LBB66_18
-	bra	.LBB66_16
-.LBB66_15:                              ;   in Loop: Header=BB66_13 Depth=1
+	bcc	.LBB67_18
+	bra	.LBB67_16
+.LBB67_15:                              ;   in Loop: Header=BB67_13 Depth=1
 	cmp	__rc7
-	bcc	.LBB66_18
-.LBB66_16:                              ;   in Loop: Header=BB66_13 Depth=1
+	bcc	.LBB67_18
+.LBB67_16:                              ;   in Loop: Header=BB67_13 Depth=1
 	inx
 	phy
 	ldy	__rc6
@@ -9761,26 +10293,26 @@ __divmodqi4:                            ; @__divmodqi4
 	ply
 	inc	__rc6
 	dec	__rc6
-	bpl	.LBB66_13
+	bpl	.LBB67_13
 ; %bb.17:
 	lda	#128
 	sta	__rc5
-.LBB66_18:
+.LBB67_18:
 	lda	mos8(.L__divmodqi4_zp_stk)      ; 1-byte Folded Reload
 	sec
 	sbc	__rc5
 	cpx	#0
-	beq	.LBB66_23
+	beq	.LBB67_23
 ; %bb.19:
 	sta	__rc9
 	lda	#1
-.LBB66_20:                              ; =>This Inner Loop Header: Depth=1
+.LBB67_20:                              ; =>This Inner Loop Header: Depth=1
 	lsr	__rc5
 	asl
 	ldy	__rc9
 	cpy	__rc5
-	bcc	.LBB66_22
-; %bb.21:                               ;   in Loop: Header=BB66_20 Depth=1
+	bcc	.LBB67_22
+; %bb.21:                               ;   in Loop: Header=BB67_20 Depth=1
 	ora	#1
 	sec
 	tay
@@ -9788,42 +10320,42 @@ __divmodqi4:                            ; @__divmodqi4
 	sbc	__rc5
 	sta	__rc9
 	tya
-.LBB66_22:                              ;   in Loop: Header=BB66_20 Depth=1
+.LBB67_22:                              ;   in Loop: Header=BB67_20 Depth=1
 	dex
 	ldy	__rc9
 	sty	__rc7
 	sta	__rc6
 	cpx	#0
-	bne	.LBB66_20
-	bra	.LBB66_24
-.LBB66_23:
+	bne	.LBB67_20
+	bra	.LBB67_24
+.LBB67_23:
 	sta	__rc7
 	sty	__rc6
-.LBB66_24:
+.LBB67_24:
 	lda	__rc4
-	bmi	.LBB66_26
+	bmi	.LBB67_26
 ; %bb.25:
 	lda	__rc7
-	bra	.LBB66_27
-.LBB66_26:
+	bra	.LBB67_27
+.LBB67_26:
 	lda	#0
 	sec
 	sbc	__rc7
-.LBB66_27:
+.LBB67_27:
 	sta	(__rc2)
 	lda	__rc8
 	eor	__rc4
-	bpl	.LBB66_29
+	bpl	.LBB67_29
 ; %bb.28:
 	lda	#0
 	sec
 	sbc	__rc6
 	sta	__rc6
-.LBB66_29:
+.LBB67_29:
 	lda	__rc6
 	rts
-.Lfunc_end66:
-	.size	__divmodqi4, .Lfunc_end66-__divmodqi4
+.Lfunc_end67:
+	.size	__divmodqi4, .Lfunc_end67-__divmodqi4
                                         ; -- End function
 	.section	.text.__divmodhi4,"ax",@progbits
 	.globl	__divmodhi4                     ; -- Begin function __divmodhi4
@@ -9834,21 +10366,21 @@ __divmodhi4:                            ; @__divmodhi4
 	stx	__rc6
 	ldy	__rc3
 	cpx	#0
-	bmi	.LBB67_2
-.LBB67_1:
+	bmi	.LBB68_2
+.LBB68_1:
 	stx	mos8(.L__divmodhi4_zp_stk)      ; 1-byte Folded Spill
-	bra	.LBB67_6
-.LBB67_2:
+	bra	.LBB68_6
+.LBB68_2:
 	cpx	#128
-	bne	.LBB67_5
+	bne	.LBB68_5
 ; %bb.3:
 	lda	__rc7
-	bne	.LBB67_5
+	bne	.LBB68_5
 ; %bb.4:
 	lda	#0
 	ldx	#128
-	bra	.LBB67_1
-.LBB67_5:
+	bra	.LBB68_1
+.LBB68_5:
 	sec
 	lda	#0
 	sbc	__rc7
@@ -9857,40 +10389,40 @@ __divmodhi4:                            ; @__divmodhi4
 	sbc	__rc6
 	sta	mos8(.L__divmodhi4_zp_stk)      ; 1-byte Folded Spill
 	txa
-.LBB67_6:
+.LBB68_6:
 	ldx	#1
 	stz	__rc3
 	sty	__rc12
 	sta	__rc10
 	cpy	#0
-	bmi	.LBB67_10
+	bmi	.LBB68_10
 ; %bb.7:
 	sty	__rc7
 	tya
-	bne	.LBB67_15
+	bne	.LBB68_15
 ; %bb.8:
 	lda	__rc2
-	bne	.LBB67_15
+	bne	.LBB68_15
 ; %bb.9:
 	ldx	mos8(.L__divmodhi4_zp_stk)      ; 1-byte Folded Reload
 	stx	__rc11
-	bra	.LBB67_18
-.LBB67_10:
+	bra	.LBB68_18
+.LBB68_10:
 	cpy	#128
-	bne	.LBB67_14
+	bne	.LBB68_14
 ; %bb.11:
 	ldy	__rc2
-	bne	.LBB67_14
+	bne	.LBB68_14
 ; %bb.12:
 	ldy	mos8(.L__divmodhi4_zp_stk)      ; 1-byte Folded Reload
-	bpl	.LBB67_13
+	bpl	.LBB68_13
 ; %bb.48:
-	jmp	.LBB67_45
-.LBB67_13:
+	jmp	.LBB68_45
+.LBB68_13:
 	sta	__rc10
 	sty	__rc11
-	bra	.LBB67_18
-.LBB67_14:
+	bra	.LBB68_18
+.LBB68_14:
 	sec
 	lda	#0
 	sbc	__rc2
@@ -9898,58 +10430,58 @@ __divmodhi4:                            ; @__divmodhi4
 	lda	#0
 	sbc	__rc12
 	sta	__rc7
-.LBB67_15:
+.LBB68_15:
 	lda	mos8(.L__divmodhi4_zp_stk)      ; 1-byte Folded Reload
 	cmp	__rc7
-	bne	.LBB67_19
+	bne	.LBB68_19
 ; %bb.16:
 	ldx	__rc10
 	cpx	__rc2
-	bcs	.LBB67_20
-.LBB67_17:
+	bcs	.LBB68_20
+.LBB68_17:
 	sta	__rc11
-.LBB67_18:
+.LBB68_18:
 	stz	__rc9
 ; %bb.46:
-	jmp	.LBB67_39
-.LBB67_19:
+	jmp	.LBB68_39
+.LBB68_19:
 	cmp	__rc7
-	bcc	.LBB67_17
-.LBB67_20:
+	bcc	.LBB68_17
+.LBB68_20:
 	ldx	#0
 	ldy	__rc2
 	sty	__rc8
 	ldy	__rc7
 	sty	__rc9
-.LBB67_21:                              ; =>This Inner Loop Header: Depth=1
+.LBB68_21:                              ; =>This Inner Loop Header: Depth=1
 	asl	__rc8
 	rol	__rc9
 	cmp	__rc9
-	bne	.LBB67_23
-; %bb.22:                               ;   in Loop: Header=BB67_21 Depth=1
+	bne	.LBB68_23
+; %bb.22:                               ;   in Loop: Header=BB68_21 Depth=1
 	ldy	__rc10
 	cpy	__rc8
-	bcs	.LBB67_24
-	bra	.LBB67_26
-.LBB67_23:                              ;   in Loop: Header=BB67_21 Depth=1
+	bcs	.LBB68_24
+	bra	.LBB68_26
+.LBB68_23:                              ;   in Loop: Header=BB68_21 Depth=1
 	cmp	__rc9
-	bcc	.LBB67_26
-.LBB67_24:                              ;   in Loop: Header=BB67_21 Depth=1
+	bcc	.LBB68_26
+.LBB68_24:                              ;   in Loop: Header=BB68_21 Depth=1
 	inx
 	ldy	__rc8
 	sty	__rc2
 	ldy	__rc9
 	sty	__rc7
-	bpl	.LBB67_21
+	bpl	.LBB68_21
 ; %bb.25:
 	stz	__rc2
 	lda	#128
 	sta	__rc7
 	ldy	mos8(.L__divmodhi4_zp_stk)      ; 1-byte Folded Reload
-	bra	.LBB67_27
-.LBB67_26:
+	bra	.LBB68_27
+.LBB68_26:
 	tay
-.LBB67_27:
+.LBB68_27:
 	sec
 	lda	__rc10
 	sbc	__rc2
@@ -9957,20 +10489,20 @@ __divmodhi4:                            ; @__divmodhi4
 	tya
 	sbc	__rc7
 	cpx	#0
-	bne	.LBB67_28
+	bne	.LBB68_28
 ; %bb.50:
-	jmp	.LBB67_37
-.LBB67_28:
+	jmp	.LBB68_37
+.LBB68_28:
 	stz	__rc8
 	ldy	#1
 	sty	mos8(.L__divmodhi4_zp_stk)      ; 1-byte Folded Spill
-	bra	.LBB67_32
-.LBB67_29:                              ;   in Loop: Header=BB67_32 Depth=1
+	bra	.LBB68_32
+.LBB68_29:                              ;   in Loop: Header=BB68_32 Depth=1
 	tay
 	cmp	__rc7
 	lda	__rc10
-	bcc	.LBB67_36
-.LBB67_30:                              ;   in Loop: Header=BB67_32 Depth=1
+	bcc	.LBB68_36
+.LBB68_30:                              ;   in Loop: Header=BB68_32 Depth=1
 	lda	__rc3
 	ora	#1
 	sta	mos8(.L__divmodhi4_zp_stk)      ; 1-byte Folded Spill
@@ -9980,7 +10512,7 @@ __divmodhi4:                            ; @__divmodhi4
 	sta	__rc10
 	tya
 	sbc	__rc7
-.LBB67_31:                              ;   in Loop: Header=BB67_32 Depth=1
+.LBB68_31:                              ;   in Loop: Header=BB68_32 Depth=1
 	ldy	__rc9
 	cpy	#1
 	rol	__rc8
@@ -9993,44 +10525,44 @@ __divmodhi4:                            ; @__divmodhi4
 	ldy	__rc8
 	sty	__rc3
 	cpx	#0
-	beq	.LBB67_39
-.LBB67_32:                              ; =>This Inner Loop Header: Depth=1
+	beq	.LBB68_39
+.LBB68_32:                              ; =>This Inner Loop Header: Depth=1
 	lsr	__rc7
 	ror	__rc2
 	ldy	mos8(.L__divmodhi4_zp_stk)      ; 1-byte Folded Reload
 	sty	__rc3
 	asl	__rc3
 	ldy	#1
-	bcs	.LBB67_34
-; %bb.33:                               ;   in Loop: Header=BB67_32 Depth=1
+	bcs	.LBB68_34
+; %bb.33:                               ;   in Loop: Header=BB68_32 Depth=1
 	ldy	#0
-.LBB67_34:                              ;   in Loop: Header=BB67_32 Depth=1
+.LBB68_34:                              ;   in Loop: Header=BB68_32 Depth=1
 	sty	__rc9
 	cmp	__rc7
-	bne	.LBB67_29
-; %bb.35:                               ;   in Loop: Header=BB67_32 Depth=1
+	bne	.LBB68_29
+; %bb.35:                               ;   in Loop: Header=BB68_32 Depth=1
 	tay
 	lda	__rc10
 	cmp	__rc2
-	bcs	.LBB67_30
-.LBB67_36:                              ;   in Loop: Header=BB67_32 Depth=1
+	bcs	.LBB68_30
+.LBB68_36:                              ;   in Loop: Header=BB68_32 Depth=1
 	sta	__rc10
 	tya
 	ldy	__rc3
 	sty	mos8(.L__divmodhi4_zp_stk)      ; 1-byte Folded Spill
-	bra	.LBB67_31
-.LBB67_37:
+	bra	.LBB68_31
+.LBB68_37:
 	sta	__rc11
 	ldx	#1
-.LBB67_38:
+.LBB68_38:
 	stx	__rc9
-.LBB67_39:
+.LBB68_39:
 	lda	__rc6
-	bmi	.LBB67_41
+	bmi	.LBB68_41
 ; %bb.40:
 	lda	__rc10
-	bra	.LBB67_42
-.LBB67_41:
+	bra	.LBB68_42
+.LBB68_41:
 	sec
 	lda	#0
 	sbc	__rc10
@@ -10039,7 +10571,7 @@ __divmodhi4:                            ; @__divmodhi4
 	sbc	__rc11
 	sta	__rc11
 	txa
-.LBB67_42:
+.LBB68_42:
 	sta	(__rc4)
 	lda	__rc12
 	eor	__rc6
@@ -10048,7 +10580,7 @@ __divmodhi4:                            ; @__divmodhi4
 	lda	__rc11
 	sta	(__rc4),y
 	txa
-	bpl	.LBB67_44
+	bpl	.LBB68_44
 ; %bb.43:
 	sec
 	lda	#0
@@ -10057,16 +10589,16 @@ __divmodhi4:                            ; @__divmodhi4
 	lda	#0
 	sbc	__rc3
 	sta	__rc3
-.LBB67_44:
+.LBB68_44:
 	ldx	__rc3
 	lda	__rc9
 	rts
-.LBB67_45:
+.LBB68_45:
 	stz	__rc10
 	stz	__rc11
-	bra	.LBB67_38
-.Lfunc_end67:
-	.size	__divmodhi4, .Lfunc_end67-__divmodhi4
+	bra	.LBB68_38
+.Lfunc_end68:
+	.size	__divmodhi4, .Lfunc_end68-__divmodhi4
                                         ; -- End function
 	.section	.text.memcpy,"ax",@progbits
 	.weak	memcpy                          ; -- Begin function memcpy
@@ -10075,44 +10607,44 @@ memcpy:                                 ; @memcpy
 ; %bb.0:
 	tay
 	txa
-	bne	.LBB68_2
+	bne	.LBB69_2
 ; %bb.1:
 	tya
-	beq	.LBB68_11
-.LBB68_2:
+	beq	.LBB69_11
+.LBB69_2:
 	lda	__rc2
 	sta	__rc6
 	lda	__rc3
 	sta	__rc7
-.LBB68_3:                               ; =>This Inner Loop Header: Depth=1
+.LBB69_3:                               ; =>This Inner Loop Header: Depth=1
 	lda	(__rc4)
 	sta	(__rc6)
 	inc	__rc6
-	bne	.LBB68_5
-; %bb.4:                                ;   in Loop: Header=BB68_3 Depth=1
+	bne	.LBB69_5
+; %bb.4:                                ;   in Loop: Header=BB69_3 Depth=1
 	inc	__rc7
-.LBB68_5:                               ;   in Loop: Header=BB68_3 Depth=1
+.LBB69_5:                               ;   in Loop: Header=BB69_3 Depth=1
 	inc	__rc4
-	bne	.LBB68_7
-; %bb.6:                                ;   in Loop: Header=BB68_3 Depth=1
+	bne	.LBB69_7
+; %bb.6:                                ;   in Loop: Header=BB69_3 Depth=1
 	inc	__rc5
-.LBB68_7:                               ;   in Loop: Header=BB68_3 Depth=1
+.LBB69_7:                               ;   in Loop: Header=BB69_3 Depth=1
 	tya
 	dey
 	cmp	#0
-	bne	.LBB68_9
-; %bb.8:                                ;   in Loop: Header=BB68_3 Depth=1
+	bne	.LBB69_9
+; %bb.8:                                ;   in Loop: Header=BB69_3 Depth=1
 	dex
-.LBB68_9:                               ;   in Loop: Header=BB68_3 Depth=1
+.LBB69_9:                               ;   in Loop: Header=BB69_3 Depth=1
 	txa
-	bne	.LBB68_3
-; %bb.10:                               ;   in Loop: Header=BB68_3 Depth=1
+	bne	.LBB69_3
+; %bb.10:                               ;   in Loop: Header=BB69_3 Depth=1
 	tya
-	bne	.LBB68_3
-.LBB68_11:
+	bne	.LBB69_3
+.LBB69_11:
 	rts
-.Lfunc_end68:
-	.size	memcpy, .Lfunc_end68-memcpy
+.Lfunc_end69:
+	.size	memcpy, .Lfunc_end69-memcpy
                                         ; -- End function
 	.section	.text.memset,"ax",@progbits
 	.weak	memset                          ; -- Begin function memset
@@ -10138,40 +10670,40 @@ memset:                                 ; @memset
 	ldx	mos8(.Lmemset_zp_stk+1)         ; 1-byte Folded Reload
 	stx	__rc3
 	rts
-.Lfunc_end69:
-	.size	memset, .Lfunc_end69-memset
+.Lfunc_end70:
+	.size	memset, .Lfunc_end70-memset
                                         ; -- End function
 	.section	.text.__memset,"ax",@progbits
 	.weak	__memset                        ; -- Begin function __memset
 	.type	__memset,@function
 __memset:                               ; @__memset
 ; %bb.0:
-	bra	.LBB70_4
-.LBB70_1:                               ;   in Loop: Header=BB70_4 Depth=1
+	bra	.LBB71_4
+.LBB71_1:                               ;   in Loop: Header=BB71_4 Depth=1
 	sta	(__rc2)
 	inc	__rc2
-	bne	.LBB70_3
-; %bb.2:                                ;   in Loop: Header=BB70_4 Depth=1
+	bne	.LBB71_3
+; %bb.2:                                ;   in Loop: Header=BB71_4 Depth=1
 	inc	__rc3
-.LBB70_3:                               ;   in Loop: Header=BB70_4 Depth=1
+.LBB71_3:                               ;   in Loop: Header=BB71_4 Depth=1
 	phx
 	ply
 	dex
 	cpy	#0
-	beq	.LBB70_7
-.LBB70_4:                               ; =>This Inner Loop Header: Depth=1
+	beq	.LBB71_7
+.LBB71_4:                               ; =>This Inner Loop Header: Depth=1
 	ldy	__rc4
-	bne	.LBB70_1
-; %bb.5:                                ;   in Loop: Header=BB70_4 Depth=1
+	bne	.LBB71_1
+; %bb.5:                                ;   in Loop: Header=BB71_4 Depth=1
 	cpx	#0
-	bne	.LBB70_1
+	bne	.LBB71_1
 ; %bb.6:
 	rts
-.LBB70_7:                               ;   in Loop: Header=BB70_4 Depth=1
+.LBB71_7:                               ;   in Loop: Header=BB71_4 Depth=1
 	dec	__rc4
-	jmp	.LBB70_4
-.Lfunc_end70:
-	.size	__memset, .Lfunc_end70-__memset
+	jmp	.LBB71_4
+.Lfunc_end71:
+	.size	__memset, .Lfunc_end71-__memset
                                         ; -- End function
 	.section	.text.memmove,"ax",@progbits
 	.weak	memmove                         ; -- Begin function memmove
@@ -10182,22 +10714,22 @@ memmove:                                ; @memmove
 	stx	__rc7
 	ldx	__rc5
 	cpx	__rc3
-	beq	.LBB71_1
+	beq	.LBB72_1
 ; %bb.15:
-	jmp	.LBB71_13
-.LBB71_1:
+	jmp	.LBB72_13
+.LBB72_1:
 	ldx	__rc4
 	cpx	__rc2
-	bcc	.LBB71_2
+	bcc	.LBB72_2
 ; %bb.17:
-	jmp	.LBB71_14
-.LBB71_2:
+	jmp	.LBB72_14
+.LBB72_2:
 	lda	__rc7
-	bne	.LBB71_4
+	bne	.LBB72_4
 ; %bb.3:
 	lda	__rc6
-	beq	.LBB71_12
-.LBB71_4:                               ; =>This Inner Loop Header: Depth=1
+	beq	.LBB72_12
+.LBB72_4:                               ; =>This Inner Loop Header: Depth=1
 	lda	__rc4
 	clc
 	adc	__rc6
@@ -10208,10 +10740,10 @@ memmove:                                ; @memmove
 	ldx	__rc8
 	dec	__rc8
 	cpx	#0
-	bne	.LBB71_6
-; %bb.5:                                ;   in Loop: Header=BB71_4 Depth=1
+	bne	.LBB72_6
+; %bb.5:                                ;   in Loop: Header=BB72_4 Depth=1
 	dec	__rc9
-.LBB71_6:                               ;   in Loop: Header=BB71_4 Depth=1
+.LBB72_6:                               ;   in Loop: Header=BB72_4 Depth=1
 	lda	__rc2
 	clc
 	adc	__rc6
@@ -10222,10 +10754,10 @@ memmove:                                ; @memmove
 	ldx	__rc10
 	dec	__rc10
 	cpx	#0
-	bne	.LBB71_8
-; %bb.7:                                ;   in Loop: Header=BB71_4 Depth=1
+	bne	.LBB72_8
+; %bb.7:                                ;   in Loop: Header=BB72_4 Depth=1
 	dec	__rc11
-.LBB71_8:                               ;   in Loop: Header=BB71_4 Depth=1
+.LBB72_8:                               ;   in Loop: Header=BB72_4 Depth=1
 	lda	(__rc8)
 	sta	(__rc10)
 	ldx	__rc7
@@ -10233,25 +10765,25 @@ memmove:                                ; @memmove
 	tya
 	dey
 	cmp	#0
-	bne	.LBB71_10
-; %bb.9:                                ;   in Loop: Header=BB71_4 Depth=1
+	bne	.LBB72_10
+; %bb.9:                                ;   in Loop: Header=BB72_4 Depth=1
 	dex
-.LBB71_10:                              ;   in Loop: Header=BB71_4 Depth=1
+.LBB72_10:                              ;   in Loop: Header=BB72_4 Depth=1
 	sty	__rc6
 	stx	__rc7
 	txa
-	bne	.LBB71_4
-; %bb.11:                               ;   in Loop: Header=BB71_4 Depth=1
+	bne	.LBB72_4
+; %bb.11:                               ;   in Loop: Header=BB72_4 Depth=1
 	tya
-	bne	.LBB71_4
-.LBB71_12:
+	bne	.LBB72_4
+.LBB72_12:
 	rts
-.LBB71_13:
+.LBB72_13:
 	cpx	__rc3
-	bcs	.LBB71_14
+	bcs	.LBB72_14
 ; %bb.19:
-	jmp	.LBB71_2
-.LBB71_14:
+	jmp	.LBB72_2
+.LBB72_14:
 	ldx	__rc2
 	stx	mos8(.Lmemmove_zp_stk)          ; 1-byte Folded Spill
 	ldx	__rc3
@@ -10267,8 +10799,8 @@ memmove:                                ; @memmove
 	ldx	mos8(.Lmemmove_zp_stk+1)        ; 1-byte Folded Reload
 	stx	__rc3
 	rts
-.Lfunc_end71:
-	.size	memmove, .Lfunc_end71-memmove
+.Lfunc_end72:
+	.size	memmove, .Lfunc_end72-memmove
                                         ; -- End function
 	.type	.L.str,@object                  ; @.str
 	.section	.rodata.str1.1,"aMS",@progbits,1
@@ -10350,26 +10882,31 @@ direntryblock.1:
 	.short	0
 	.size	direntryblock.1, 2
 
-	.type	.L.str.11,@object               ; @.str.11
+	.type	.L.str.4.10,@object             ; @.str.4.10
 	.section	.rodata.str1.1,"aMS",@progbits,1
-.L.str.11:
-	.asciz	"number of sectors too big"
-	.size	.L.str.11, 26
+.L.str.4.10:
+	.asciz	" D"
+	.size	.L.str.4.10, 3
 
 	.type	.L.str.12,@object               ; @.str.12
 .L.str.12:
-	.asciz	"first sector set, i="
-	.size	.L.str.12, 21
+	.asciz	"number of sectors too big"
+	.size	.L.str.12, 26
 
 	.type	.L.str.13,@object               ; @.str.13
 .L.str.13:
-	.asciz	"directory entries exhausted"
-	.size	.L.str.13, 28
+	.asciz	"first sector set, i="
+	.size	.L.str.13, 21
 
 	.type	.L.str.14,@object               ; @.str.14
 .L.str.14:
+	.asciz	"directory entries exhausted"
+	.size	.L.str.14, 28
+
+	.type	.L.str.15,@object               ; @.str.15
+.L.str.15:
 	.asciz	"entry not found"
-	.size	.L.str.14, 16
+	.size	.L.str.15, 16
 
 	.type	.Lswitch.table.gettype,@object  ; @switch.table.gettype
 	.section	.rodata..Lswitch.table.gettype,"a",@progbits
@@ -10377,17 +10914,17 @@ direntryblock.1:
 	.ascii	"SPURC"
 	.size	.Lswitch.table.gettype, 5
 
-	.type	.Lswitch.table.gettype.15,@object ; @switch.table.gettype.15
-	.section	.rodata..Lswitch.table.gettype.15,"a",@progbits
-.Lswitch.table.gettype.15:
-	.ascii	"ERSEB"
-	.size	.Lswitch.table.gettype.15, 5
-
 	.type	.Lswitch.table.gettype.16,@object ; @switch.table.gettype.16
 	.section	.rodata..Lswitch.table.gettype.16,"a",@progbits
 .Lswitch.table.gettype.16:
-	.ascii	"QGRLM"
+	.ascii	"ERSEB"
 	.size	.Lswitch.table.gettype.16, 5
+
+	.type	.Lswitch.table.gettype.17,@object ; @switch.table.gettype.17
+	.section	.rodata..Lswitch.table.gettype.17,"a",@progbits
+.Lswitch.table.gettype.17:
+	.ascii	"QGRLM"
+	.size	.Lswitch.table.gettype.17, 5
 
 	.type	.Lswitch.table.asciitoscreencode_s,@object ; @switch.table.asciitoscreencode_s
 	.section	.rodata..Lswitch.table.asciitoscreencode_s,"a",@progbits
@@ -10414,81 +10951,81 @@ s:
 	.zero	40
 	.size	s, 40
 
-	.type	.L.str.1.36,@object             ; @.str.1.36
+	.type	.L.str.1.39,@object             ; @.str.1.39
 	.section	.rodata.str1.1,"aMS",@progbits,1
-.L.str.1.36:
+.L.str.1.39:
 	.asciz	"1"
-	.size	.L.str.1.36, 2
+	.size	.L.str.1.39, 2
 
-	.type	.L.str.2.37,@object             ; @.str.2.37
-.L.str.2.37:
+	.type	.L.str.2.40,@object             ; @.str.2.40
+.L.str.2.40:
 	.asciz	"Help  "
-	.size	.L.str.2.37, 7
+	.size	.L.str.2.40, 7
 
-	.type	.L.str.3.38,@object             ; @.str.3.38
-.L.str.3.38:
+	.type	.L.str.3.41,@object             ; @.str.3.41
+.L.str.3.41:
 	.asciz	" 2"
-	.size	.L.str.3.38, 3
+	.size	.L.str.3.41, 3
 
-	.type	.L.str.4.39,@object             ; @.str.4.39
-.L.str.4.39:
+	.type	.L.str.4.42,@object             ; @.str.4.42
+.L.str.4.42:
 	.asciz	"Mount "
-	.size	.L.str.4.39, 7
+	.size	.L.str.4.42, 7
 
-	.type	.L.str.5.40,@object             ; @.str.5.40
-.L.str.5.40:
+	.type	.L.str.5.43,@object             ; @.str.5.43
+.L.str.5.43:
 	.asciz	" 3"
-	.size	.L.str.5.40, 3
+	.size	.L.str.5.43, 3
 
-	.type	.L.str.6.41,@object             ; @.str.6.41
-.L.str.6.41:
+	.type	.L.str.6.44,@object             ; @.str.6.44
+.L.str.6.44:
 	.asciz	"View  "
-	.size	.L.str.6.41, 7
+	.size	.L.str.6.44, 7
 
 	.type	.L.str.7,@object                ; @.str.7
 .L.str.7:
 	.asciz	" 4"
 	.size	.L.str.7, 3
 
-	.type	.L.str.8.42,@object             ; @.str.8.42
-.L.str.8.42:
+	.type	.L.str.8,@object                ; @.str.8
+.L.str.8:
 	.asciz	"Edit  "
-	.size	.L.str.8.42, 7
+	.size	.L.str.8, 7
 
-	.type	.L.str.9.43,@object             ; @.str.9.43
-.L.str.9.43:
+	.type	.L.str.9.45,@object             ; @.str.9.45
+.L.str.9.45:
 	.asciz	" 5"
-	.size	.L.str.9.43, 3
+	.size	.L.str.9.45, 3
 
-	.type	.L.str.10.44,@object            ; @.str.10.44
-.L.str.10.44:
+	.type	.L.str.10.46,@object            ; @.str.10.46
+.L.str.10.46:
 	.asciz	"Copy  "
-	.size	.L.str.10.44, 7
+	.size	.L.str.10.46, 7
 
-	.type	.L.str.11.45,@object            ; @.str.11.45
-.L.str.11.45:
+	.type	.L.str.11.47,@object            ; @.str.11.47
+.L.str.11.47:
 	.asciz	" 6"
-	.size	.L.str.11.45, 3
+	.size	.L.str.11.47, 3
 
-	.type	.L.str.12.46,@object            ; @.str.12.46
-.L.str.12.46:
+	.type	.L.str.12.48,@object            ; @.str.12.48
+.L.str.12.48:
 	.asciz	"RenMov"
-	.size	.L.str.12.46, 7
+	.size	.L.str.12.48, 7
 
-	.type	.L.str.13.47,@object            ; @.str.13.47
-.L.str.13.47:
+	.type	.L.str.13.49,@object            ; @.str.13.49
+.L.str.13.49:
 	.asciz	" 7"
-	.size	.L.str.13.47, 3
+	.size	.L.str.13.49, 3
 
-	.type	.L.str.14.48,@object            ; @.str.14.48
-.L.str.14.48:
+	.type	.L.str.14.50,@object            ; @.str.14.50
+.L.str.14.50:
 	.asciz	"Mkdir "
-	.size	.L.str.14.48, 7
+	.size	.L.str.14.50, 7
 
-	.type	.L.str.15,@object               ; @.str.15
-.L.str.15:
+	.type	.L.str.15.51,@object            ; @.str.15.51
+.L.str.15.51:
 	.asciz	" 8"
-	.size	.L.str.15, 3
+	.size	.L.str.15.51, 3
 
 	.type	.L.str.16,@object               ; @.str.16
 .L.str.16:
@@ -10603,12 +11140,6 @@ dmalist:
 	.zero	33
 	.size	.Lzp_stack, 33
 
-	.type	.Lstatic_stack,@object          ; @static_stack
-	.section	.noinit..Lstatic_stack,"aw",@nobits
-.Lstatic_stack:
-	.zero	2
-	.size	.Lstatic_stack, 2
-
 .set .L__udivmodhi4_zp_stk, .Lzp_stack+32
 	.size	.L__udivmodhi4_zp_stk, 1
 .set .Lcputsxy_zp_stk, .Lzp_stack+23
@@ -10651,20 +11182,15 @@ dmalist:
 	.size	.Lmemset_zp_stk, 2
 .set .Lmemmove_zp_stk, .Lzp_stack
 	.size	.Lmemmove_zp_stk, 2
-.set .Lgetdirententry_zp_stk, .Lzp_stack
-	.size	.Lgetdirententry_zp_stk, 13
 .set .Lcsputdec_zp_stk, .Lzp_stack+1
 	.size	.Lcsputdec_zp_stk, 22
+.set .Lgetdirententry_zp_stk, .Lzp_stack
+	.size	.Lgetdirententry_zp_stk, 13
 .set .Lmprintf_zp_stk, .Lzp_stack
 	.size	.Lmprintf_zp_stk, 1
-.set .LBAMSectorUpdate_zp_stk, .Lzp_stack+6
+.set .LBAMSectorUpdate_zp_stk, .Lzp_stack
 	.size	.LBAMSectorUpdate_zp_stk, 4
-.set .LPutOneSector_zp_stk, .Lzp_stack+6
-	.size	.LPutOneSector_zp_stk, 6
-.set .LfindnextBAMtracksector_zp_stk, .Lzp_stack
-	.size	.LfindnextBAMtracksector_zp_stk, 6
-.set .LfindnextBAMtracksector_sstk, .Lstatic_stack
-	.size	.LfindnextBAMtracksector_sstk, 2
+	.ident	"clang version 18.0.0 (https://github.com/llvm-mos/llvm-mos e0380cf4b8a252e7032622846436ede2f1bf9165)"
 	.ident	"clang version 18.0.0 (https://github.com/llvm-mos/llvm-mos e0380cf4b8a252e7032622846436ede2f1bf9165)"
 	.ident	"clang version 18.0.0 (https://github.com/llvm-mos/llvm-mos e0380cf4b8a252e7032622846436ede2f1bf9165)"
 	.ident	"clang version 18.0.0 (https://github.com/llvm-mos/llvm-mos e0380cf4b8a252e7032622846436ede2f1bf9165)"
@@ -10687,7 +11213,6 @@ dmalist:
 	.addrsig_sym s
 	.addrsig_sym dmalist
 	.addrsig_sym .Lzp_stack
-	.addrsig_sym .Lstatic_stack
 	;Declaring this symbol tells the CRT that there is something in .bss, so it may need to be zeroed.
 	.globl	__do_zero_bss
 	;Declaring this symbol tells the CRT that there is something in .zp.bss, so it may need to be zeroed.

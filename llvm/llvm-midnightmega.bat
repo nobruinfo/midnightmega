@@ -21,7 +21,8 @@ set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
 set LLVM_BAT=%LLVM_HOME%\bin\mos-mega65-clang.bat
 set LLVMDUMP=%LLVM_HOME%\bin\llvm-objdump.exe
 SET libcfilesdir=..\..\mega65-libc\src
-SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c include\memory_asm.s
+SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%\hal.c
+SET libcfiles=%libcfiles% include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
 SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
@@ -34,6 +35,7 @@ REM SET opts=%opts% -Wl,--gc-sections -Wl,-s
 SET opts=%opts% -Wl,-Map=%PRJ%.map
 SET opts=%opts% -Wl,-trace
 SET opts=%opts% -Wl,--reproduce=reproduce.tar
+SET opts=%opts% -DDISKDEBUG
 
 REM DEL %TEMP%\*.o
 CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %cfiles% %libcfiles%

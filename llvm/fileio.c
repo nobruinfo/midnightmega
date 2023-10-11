@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <mega65/conio.h>  // llvm instead of <printf.h>
 #include <mega65/memory.h>  // mega65-libc
+#include <mega65/hal.h>  // mega65-libc
 #include "regions.h"
 #include "fileio.h"
 #include "conioextensions.h"
@@ -136,6 +137,40 @@ unsigned char WriteSector(unsigned char drive, char track,
 	return retval;
 }
 
+#define READ 0
+#define WRITE 1
+void ShowAccess(unsigned char drive,
+                char track, char sector, unsigned char rw)  {
+#ifdef DISKDEBUG
+  revers(1);
+  textcolor(COLOUR_LIGHTGREY);
+  mcputsxy(10, 23, " D");
+  csputdec(drive, 1, 0);
+  textcolor(COLOUR_ORANGE);
+  cputc('T');
+  csputdec(track, 2, 0);
+  textcolor(COLOUR_LIGHTBLUE);
+  cputc('S');
+  csputdec(sector, 2, 0);
+  cputc(' ');
+  if (rw == WRITE)  {
+    textcolor(COLOUR_RED);
+    cputc('W');
+    cputc(' ');
+  } else {
+    textcolor(COLOUR_ORANGE);
+    cputc('R');
+    cputc(' ');
+  }
+  revers(0);
+  usleep(800000); // microseconds
+  textcolor(COLOUR_CYAN);
+  mcputsxy(10, 23, " D");
+  hline(10, 23, 12, 64);  // 64 is the horizontal line
+  usleep(20000); // microseconds
+#endif
+}
+
 // depending on the sector's side this returns the wanted
 // sector in the regular or upper 256 bytes of the 512
 // bytes buffer:
@@ -183,6 +218,8 @@ unsigned char GetOneSector(BAM* entry, unsigned char drive,
   cputln();
   cgetc();
 #endif
+
+  ShowAccess(drive, track, sector, READ);
   return side;
 }
 unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
@@ -239,6 +276,8 @@ unsigned char PutOneSector(BAM* entry, unsigned char drive,
   }
   msprintfd("PutOneSector done. Returning while WriteSector.");
   cgetcd();
+
+  ShowAccess(drive, track, sector, WRITE);
   return WriteSector(drive, track, sector - side);
 }
 
