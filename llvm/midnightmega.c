@@ -32,6 +32,14 @@ int main() {
   unsigned char fd = 0;
   unsigned char readerr = 0;
 
+  asm volatile(
+	"php\n"
+	"pha\n"
+	"phx\n"
+	"phy\n"
+	"phz"
+  );
+
   // Backup ZP:
 //  lcopy(0, ATTICZPBACKUP, BLOCKSIZE);
 
@@ -65,6 +73,9 @@ int main() {
   textcolor (COLOUR_CYAN);
   bordercolor (COLOUR_BLACK);
   bgcolor (COLOUR_BLUE);
+  
+  // setscreensize(80, 50);  or 40 25
+  setscreensize(80, 25);
 
   clrhome();
 /*
@@ -74,18 +85,12 @@ int main() {
   printf("ATTICZPBACKUP 32addr is: %08lx", (unsigned long) ATTICZPBACKUP);
   cgetc();
 */
-  messagebox("    is currently beta and does destroy .d81 and disks!");
-  revers(1);
-  mcputsxy(14, 4, " Midnight Mega ");
-  mcputsxy(40, 4, " The Mega65 file commander ");
-  revers(0);
+  messagebox("is currently beta and does destroy .d81 and disks!",
+             "Physical disks are still stressed, better use .d81.",
+			 "Press RETURN to continue, STOP to crash.");
   mcputsxy(2, 23, VERSION);
-  gotoxy(22,7);
-  msprintf("Press almost any key to continue.");
-  cgetc();
-  
-  // setscreensize(80, 50);  or 40 25
-  setscreensize(80, 25);
+  mcputsxy(58, 23, "github.com/nobruinfo");
+  if (cgetc() == 13)  {
 
 #ifdef sduhgsiuzfgsuzd
   // cputu("hyppo_setname is: ", hyppo_setname("EMPTY.D81"), HEXADECIMAL);
@@ -205,8 +210,9 @@ hyppo_setname("DATADISK.D81");
 //  initkeyboard();
 #endif
 
-  navi(0);
-
+    navi(0);
+  }
+  clrhome();
   msprintf("Have fun with your Mega65!");
   cputln();
   cgetc();
@@ -214,6 +220,15 @@ hyppo_setname("DATADISK.D81");
 
   // Restore ZP:
 //  lcopy(ATTICZPBACKUP, 0, BLOCKSIZE);
+
+  asm volatile(
+	"plz\n"
+	"ply\n"
+	"plx\n"
+	"pla\n"
+	"plp\n"
+	"cli"
+  );
 
   asm volatile(
 	"lda #$37\n"  // reinstate previous banking

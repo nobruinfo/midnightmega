@@ -42,5 +42,5 @@ unsigned char cinput2(
 
 void mcbox(unsigned char left, unsigned char top, unsigned char right, unsigned char bottom,
     unsigned char color, unsigned char style, unsigned char clear, unsigned char shadow);
-void messagebox(char* message);
+void messagebox(char* message, char* message2, char* message3);
 char* inputbox(char* inputstr, char* message);

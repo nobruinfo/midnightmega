@@ -386,7 +386,7 @@ void readblockchain(uint32_t destination_address, // attic RAM
   }
   
   if (nexttrack > 0)  {
-	messagebox("number of sectors too big");
+	messagebox("Reading file,", "number of sectors too big.", " ");
 	cgetc();
   }
 }
@@ -544,7 +544,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
   }
   
   if (nexttrack > 0 && i >= maxblocks)  {
-	messagebox("number of sectors too big");
+	messagebox("Writing file,", "number of sectors too big", " ");
 	cgetc();
   }
 }
@@ -911,6 +911,6 @@ void deletedirententry(unsigned char drive, unsigned char side, unsigned char en
     }
 #endif
   }
-  messagebox("entry not found");
-  cgetc();
+//  messagebox("entry not found");
+//  cgetc();
 }

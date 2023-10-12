@@ -47,29 +47,31 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 SET opts=%opts% -DVERSION=\"%v%\"
 
-REM SET opts=%opts% -DDISKDEBUG
-
 REM DEL %TEMP%\*.o
 CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %cfiles% %libcfiles%
-ECHO ------------------------------------------------------
-REM  -Wall
-CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %cfiles% %libcfiles%
-
-for /f "tokens=1* delims=?" %%i in ('DIR /B /O:DN "%TEMP%\*.o"') do (
-  ECHO File is %%i
-  SET file=%%i
-  SET "f=!file:~-1,1!"
-  ECHO %LLVMDUMP% --disassemble --syms %%i > %PRJ%_!f!_dump.txt
-)
 
 :NOBUILD
 IF ERRORLEVEL == 1 (
   PAUSE
 ) ELSE (
+  ECHO ------------------------------------------------------
+  REM  -Wall
+  CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %cfiles% %libcfiles%
+  SET opts=%opts% -DDISKDEBUG
+  CALL %LLVM_BAT% -Os -o emu%PRJ%.prg !opts! %cfiles% %libcfiles%
+
+  for /f "tokens=1* delims=?" %%i in ('DIR /B /O:DN "%TEMP%\*.o"') do (
+    ECHO File is %%i
+    SET file=%%i
+    SET "f=!file:~-1,1!"
+    ECHO %LLVMDUMP% --disassemble --syms %%i > %PRJ%_!f!_dump.txt
+  )
+
   %LLVMDUMP% --disassemble --syms %PRJ%.prg.elf > %PRJ%_dump.txt
 
   %c1541% -format disk%PRJ%,id d81 %PRJ%.d81
   %c1541% -attach %PRJ%.d81 -delete %PRJ%
+  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   %c1541% -attach %PRJ%.d81 -write %PRJ%.prg %PRJ%
   ECHO this is a sequential file for testing.>%PRJ%.seq
   %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0

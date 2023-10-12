@@ -19,7 +19,7 @@ of this development will **eat** your files.
 ## kickc
 
 When adding/removing lines of code the emulator freezes at various
-positions with no apparent reason. Currently this environment is no
+positions with no apparent reason. Currently this environment is
 no longer pursued.
 
 ## llvm
@@ -30,7 +30,7 @@ adding functionality to my little file manager project.
 
 Please be aware currently Midnight Mega is in an unstable state, it
 might handle your .d81 and real disk drive inserted diskettes
-maliciously. Expect data loss. Feedbacks welcome as issue tickets.
+maliciously. Expect data loss. Feedback welcome as issue tickets.
 
 ## ninja
 
@@ -43,12 +43,14 @@ additions to the [mega65-libc](https://github.com/mega65/mega65-libc)
 is to later adapt the mega65-libc functions and data structures in a
 more cc65 style to llvm.
 
+Currently this environment is not pursued.
+
 # requirements
 
 ## not yet in progress
 
-* Hyppo SD card handling as far as possible (writing not yet implemented
-  on Hyppo side)
+* Hyppo SD card handling as far as possible (writing not yet
+  implemented on Hyppo side)
 * Creation of .d81 image files currently unsopported by Hyppo
 * copying of complete disk images, real diskettes respectively
 * copying of single/multiple files in between real/virtual drives,
@@ -70,7 +72,8 @@ more cc65 style to llvm.
 * ✓ proof of concept writing files, sectors, tracks
 * refactoring for code runtime optimisation
 * test data copy by exceeding the maximum number of allowed blocks
-* test unmounted drives and other error handling
+* test unmounted drives, empty disks and other error handling
+* show a status feeter with number of blocks available
 
 ## contributions to `mega65-libc`
 
@@ -91,17 +94,21 @@ __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
 
 # bugs
 
-* `dirent` is currently not fully updated, additional sectors are
+* BAM and `dirent` blocks are read/written way too often. With the
+  now cache for two disks (left and right) in place this can be
+  optimised.
+* ✓ `dirent` is currently not fully updated, additional sectors are
   currently not added automatically.
 * `dirent` currently uses a full 255 bytes page of data which of
   course is completely unecessary.
 * `dirent` currently is read beginning with the first block of file
   entries not supporting the disk name block at track 40 sector 0.
-* The yet state of development only uses the left file list so *copy*
-  actually only duplicates files on the same disk
+* ✓ ~~The yet state of development only uses the left file list so~~
+  ~~*copy* actually only duplicates files on the same disk~~
 * ✓ ~~BAM is only supported for one sector, tracks 41 to 80~~
   ~~therefore not yet covered.~~
-* BAM is not yet in attic RAM, therefore multiple discs not cached.
+* ✓ ~~BAM is not yet in attic RAM, therefore multiple discs not~~
+  ~~cached.~~
 * Improve handling of DEL type files.
 * ✓ ~~reading/writing .d81 always takes two logical sectors at once,~~
   ~~writing of a single one should first read its accompaigning one~~

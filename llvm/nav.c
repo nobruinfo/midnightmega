@@ -234,7 +234,7 @@ unsigned char d81navi(unsigned char side)  {
 //		hyppo_setname((char *) filelist[pos]);
 //		attachresult = (midnight[side]->drive ? hyppo_d81attach1() : hyppo_d81attach0());
 		if (attachresult != 0)  {
-		  messagebox("mount failed");
+		  messagebox("Storage card mounting,", "mount failed for", filelist[pos]);
 		  cgetc();
 		} else {
 		  strcpy((char *) midnight[side]->curfile, (char *) filelist[pos]);
@@ -242,7 +242,8 @@ unsigned char d81navi(unsigned char side)  {
 		}		
       break;
 
-	  case 27:
+	  case 3:  // STOP
+	  case 27: // Esc
 	    return 0;
       break;
 	
@@ -376,7 +377,7 @@ void navi(unsigned char side)  {
 	  case 0xf6:
 	  case 0xf7:
 	  case 0xf9:
-		messagebox("not yet implemented");
+		messagebox("Navigation keys,", "not yet implemented", " ");
 		cgetc();
 /* DESTRUCTIVE test:
 		if (strcmp((char *) midnight[side]->curfile, "already mounted") == 0)  {
@@ -392,7 +393,6 @@ void navi(unsigned char side)  {
 	  // case 0xF9: // ASC_F9:
 	  case 0xFA: // Modifier and ASC_F9:
 	    if (getkeymodstate() == KEYMOD_RSHIFT || getkeymodstate() == KEYMOD_LSHIFT)  {
-	      clrhome();
     	  return;
 	    }
       break;

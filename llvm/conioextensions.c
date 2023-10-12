@@ -310,19 +310,30 @@ void mcbox(unsigned char left, unsigned char top, unsigned char right, unsigned 
 //    textcolor(prevCol);
 }
 
-void messagebox(char* message)  {
+void messagebox(char* message, char* message2, char* message3)  {
   unsigned char clear = 1;
   unsigned char shadow = 1;
 
-  mcbox(10, 4, 70, 9, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+  mcbox(10, 4, 70, 12, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
   
-  gotoxy(12, 6);
-  msprintf(message);
-  gotoxy(1, 10);
+  revers(1);
+  mcputsxy(14, 4, " Midnight Mega ");
+  mcputsxy(40, 4, " The Mega65 file commander ");
+  revers(0);
+
+  mcputsxy(12, 6, message);
+  mcputsxy(12, 7, message2);
+  mcputsxy(12, 8, message3);
+
+  revers(1);
+  mcputsxy(12, 10, "   OK   ");
+  mcputsxy(60, 10, " Cancel ");
+  revers(0);
+//  gotoxy(1, 10);
 }
 
 char* inputbox(char* inputstr, char* message)  {
-  messagebox(message);
+  messagebox(message, "", "");
   gotoxy(12, 6);
   cinput2((unsigned char*) inputstr, 56, CINPUT_ACCEPT_ALL); // | CINPUT_NO_AUTOTRANSLATE);
 
