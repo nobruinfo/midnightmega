@@ -79,6 +79,7 @@ int main() {
   mcputsxy(14, 4, " Midnight Mega ");
   mcputsxy(40, 4, " The Mega65 file commander ");
   revers(0);
+  mcputsxy(2, 23, VERSION);
   gotoxy(22,7);
   msprintf("Press almost any key to continue.");
   cgetc();

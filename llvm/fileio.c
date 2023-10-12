@@ -806,9 +806,11 @@ void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)
 		topdirent / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
 		BLOCKDATALOW, BLOCKSIZE);
   PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
-  mprintf("first sector set, i=", i);
+#ifdef DEBUG
+      mprintf("first sector set, i=", i);
 	  cputln();
-  cgetc();
+      cgetc();
+#endif
 
   // i is already incremented after the loop, so step into next dirent block
   lfill(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
@@ -824,8 +826,8 @@ void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)
 		i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
 		BLOCKDATALOW, BLOCKSIZE);
   PutOneSector((BAM *) worksectorasBAM[0], drive, nexttrack, nextsector);
-  messagebox("directory entries exhausted");
-  cgetc();
+//  messagebox("directory entries exhausted");
+//  cgetc();
 }
 
 void deletedirententry(unsigned char drive, unsigned char side, unsigned char entry)  {

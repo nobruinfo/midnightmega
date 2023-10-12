@@ -35,7 +35,19 @@ REM SET opts=%opts% -Wl,--gc-sections -Wl,-s
 SET opts=%opts% -Wl,-Map=%PRJ%.map
 SET opts=%opts% -Wl,-trace
 SET opts=%opts% -Wl,--reproduce=reproduce.tar
-SET opts=%opts% -DDISKDEBUG
+
+REM git tag -a "v0.1.0-beta" -m "version v0.1.0-beta"
+git describe --tags>arghh.tmp
+SET /P v=<arghh.tmp
+IF "%v%" == "" (
+  ECHO FATAL: v is %v%
+  PAUSE
+  GOTO :eof
+)
+DEL arghh.tmp > NUL 2> NUL
+SET opts=%opts% -DVERSION=\"%v%\"
+
+REM SET opts=%opts% -DDISKDEBUG
 
 REM DEL %TEMP%\*.o
 CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %cfiles% %libcfiles%
