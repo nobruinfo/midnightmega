@@ -93,6 +93,7 @@ void getDiskname(unsigned char drive, char* diskname);
 void readblockchain(uint32_t destination_address, // attic RAM
                     unsigned char maxblocks, unsigned char drive,
                     unsigned char track, unsigned char sector);
+void BAM2Attic(unsigned char drive, unsigned char side);
 void findnextBAMtracksector(unsigned char drive,
                             unsigned char * nexttrack, unsigned char * nextsector);
 void writeblockchain(uint32_t source_address, // attic RAM

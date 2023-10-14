@@ -314,9 +314,11 @@ void mcbox(unsigned char left, unsigned char top, unsigned char right, unsigned 
 //    textcolor(prevCol);
 }
 
-void messagebox(char* message, char* message2, char* message3)  {
+unsigned char messagebox(unsigned char mode, char* message, char* message2,
+                         char* message3)  {
   unsigned char clear = 1;
   unsigned char shadow = 1;
+  char c;
 
   mcbox(10, 4, 70, 12, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
   
@@ -334,10 +336,32 @@ void messagebox(char* message, char* message2, char* message3)  {
   mcputsxy(60, 10, " Cancel ");
   revers(0);
 //  gotoxy(1, 10);
+  if (mode)  {
+    mcputsxy(2, 23, VERSION);
+    mcputsxy(58, 23, "github.com/nobruinfo");
+  }
+  
+  while(1)  {
+    c = cgetc();
+    switch (c) {
+	  case 13: // RETURN
+	    return TRUE;
+      break;
+
+	  case 3:  // STOP
+	  case 27: // Esc
+	    return FALSE;
+      break;
+
+	  default:
+	    mprintf("val=", c);
+		cputc(' ');
+	}
+  }
 }
 
 char* inputbox(char* inputstr, char* message)  {
-  messagebox(message, "", "");
+  messagebox(0, message, "", "");
   gotoxy(12, 6);
   cinput2((unsigned char*) inputstr, 56, CINPUT_ACCEPT_ALL); // | CINPUT_NO_AUTOTRANSLATE);
 

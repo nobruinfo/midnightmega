@@ -2,6 +2,9 @@
 // ***  conioextensions.h strings and scrolling          ***
 // *********************************************************
 
+#define TRUE  1
+#define FALSE 0
+
 char tolowerchar(char ch);
 char * strlowr(char *str);
 char * strsan(char *str);
@@ -42,5 +45,6 @@ unsigned char cinput2(
 
 void mcbox(unsigned char left, unsigned char top, unsigned char right, unsigned char bottom,
     unsigned char color, unsigned char style, unsigned char clear, unsigned char shadow);
-void messagebox(char* message, char* message2, char* message3);
+unsigned char messagebox(unsigned char mode, char* message, char* message2,
+                         char* message3);
 char* inputbox(char* inputstr, char* message);

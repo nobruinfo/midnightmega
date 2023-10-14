@@ -234,8 +234,7 @@ unsigned char d81navi(unsigned char side)  {
 //		hyppo_setname((char *) filelist[pos]);
 //		attachresult = (midnight[side]->drive ? hyppo_d81attach1() : hyppo_d81attach0());
 		if (attachresult != 0)  {
-		  messagebox("Storage card mounting,", "mount failed for", (char *) filelist[pos]);
-		  cgetc();
+		  messagebox(0, "Storage card mounting,", "mount failed for", (char *) filelist[pos]);
 		} else {
 		  strcpy((char *) midnight[side]->curfile, (char *) filelist[pos]);
 		  return 1;
@@ -254,6 +253,12 @@ unsigned char d81navi(unsigned char side)  {
   return 0;
 }
 
+void UpdateSectors(unsigned char drive, unsigned char side)  {
+  BAM2Attic(drive, side);
+  midnight[side]->blocksfree = FreeBlocks(side);
+  midnight[side]->entries = getdirent(drive, side);
+}
+
 extern unsigned char dosfilename[DOSFILENAMELEN + 1]; // fileio.c
 // unsigned char testtrack;
 // unsigned char testsector;
@@ -265,27 +270,25 @@ void navi(unsigned char side)  {
   unsigned char i;
   DIRENT* ds;
   
-  // @@ test
-  midnight[0]->drive = 0;
-  midnight[1]->drive = 1;
+  for (i = 0; i <= 1; i++)  {
+    // @@ test
+    midnight[i]->drive = i;
 
-  // title of mcbox is .d81 file name, cannot be read at startup:
-  strcpy((char *) midnight[0]->curfile, (char *) "already mounted");
-  strcpy((char *) midnight[1]->curfile, (char *) "already mounted");
-  midnight[0]->pos = 0;
-  midnight[1]->pos = 0;
+    // title of mcbox is .d81 file name, cannot be read at startup:
+    strcpy((char *) midnight[i]->curfile, (char *) "already mounted");
+    midnight[i]->pos = 0;
+    UpdateSectors(midnight[i]->drive, i);
+  }
   while (1)  {
     for (i = 0; i <= 1; i++)  {
-      midnight[i]->blocksfree = FreeBlocks(midnight[i]->drive);
-	  midnight[i]->entries = getdirent(midnight[i]->drive, i);
       if (midnight[i]->pos > midnight[i]->entries)  {
         midnight[i]->pos = midnight[i]->entries;
       }
 	  leftx = i * 40;
       mcbox(leftx, 0, leftx + 39, 0 + 23, COLOUR_CYAN, BOX_STYLE_INNER, 1, 0);
+	  getDiskname(midnight[i]->drive, (char *) dosfilename);
       revers(1);
       mcputsxy(leftx + 2, 0, " ");  // @@ to be string optimised as in listbox()
-	  getDiskname(midnight[i]->drive, (char *) dosfilename);
 	  msprintf((char *) dosfilename);
 	  cputc(' ');
       mcputsxy(wherex() + 1, 0, " ");
@@ -314,21 +317,31 @@ void navi(unsigned char side)  {
 	  case 17: // Crsrdown
 	    midnight[side]->pos++;
       break;
+	  case 0x9d: // Left
+	  case 0x5f: // Left
+	    if (midnight[side]->pos > 0)  midnight[side]->pos -= 10;
+      break;
+	  case 0x1d: // Right
+	    midnight[side]->pos += 10;
+      break;
 
 	  case 9: // Tab
 	    side = (side ? 0 : 1);
-		midnight[side]->entries = getdirent(midnight[side]->drive, side);
+//		midnight[side]->entries = getdirent(midnight[side]->drive, side);
       break;
 
 	  case 0xf2: // Modifier and ASC_F1:
 	    if (d81navi(side))  {
+	      UpdateSectors(midnight[i]->drive, i);
 		  midnight[side]->entries = getdirent(midnight[side]->drive, side);
 		}
       break;
 
 	  case 0xf5: // ASC_F5 copy
 	  case 0xf8: // Modifier and ASC_F8 delete
+        // @@ message
         ds = getdirententry(side, midnight[side]->pos);
+		if ((ds->type&0xf) != VAL_DOSFTYPE_CBM && ds->type != VAL_DOSFTYPE_DEL)  {
 
 #ifdef DEBUG
         msprintf("name: ");
@@ -344,37 +357,43 @@ void navi(unsigned char side)  {
 	  cputln();
 	      cgetc();
 #endif
-	    if (c == 0xf5)  {  // copy
-		  readblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side]->drive,
-                         ds->track, ds->sector);
-		  // write on opposing side disk:
-		  writeblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side?0:1]->drive,
-		                  &starttrack, &startsector);
-		  ds->track = starttrack;  // recycle src dirent for destination
-		  ds->sector = startsector;
+          if (c == 0xf5)  {  // copy
+            readblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side]->drive,
+                           ds->track, ds->sector);
+            // write on opposing side disk:
+            GetBAM(side?0:1);
+            writeblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side?0:1]->drive,
+		                    &starttrack, &startsector);
+            ds->track = starttrack;  // recycle src dirent for destination
+		    ds->sector = startsector;
 
 #ifdef DEBUG
 		  mprintf("   before newds type=", ds->type);
 	  cputln();
 	      cgetc();
 #endif
-		  // load opposing side dirent block into Attic:
-//		  midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
-		  writenewdirententry(midnight[side?0:1]->drive, side?0:1, ds);
-		  // re-read altered dirent on opposing side after entry added:
-//		  midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
-		} else {  // delete
-		  // confirmation box
-		  if (ds->type != VAL_DOSFTYPE_DEL)  {
-		    ds->type = VAL_DOSFTYPE_DEL;
-		    deletedirententry(midnight[side]->drive, side, midnight[side]->pos);
+		    // load opposing side dirent block into Attic:
+//		    midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
+		    writenewdirententry(midnight[side?0:1]->drive, side?0:1, ds);
+		    // re-read altered dirent on opposing side after entry added:
+//		    midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
+		    PutBAM(midnight[side?0:1]->drive);
+	        UpdateSectors(midnight[side?0:1]->drive, side?0:1);
+		  } else {  // delete
+		    // confirmation box
+		    if (ds->type != VAL_DOSFTYPE_DEL)  {
+		      ds->type = VAL_DOSFTYPE_DEL;
+		      deletedirententry(midnight[side]->drive, side, midnight[side]->pos);
+	          UpdateSectors(midnight[i]->drive, i);
+		    }
 		  }
+		  midnight[side]->entries = getdirent(midnight[side]->drive, side);
 		}
-		midnight[side]->entries = getdirent(midnight[side]->drive, side?0:1);
       break;
 
 	  case 0x12: // Ctrl-r
-		midnight[side]->entries = getdirent(midnight[side]->drive, side?0:1);
+	    UpdateSectors(midnight[side]->drive, side);
+		midnight[side]->entries = getdirent(midnight[side]->drive, side);
       break;
 
 	  case 13: // return
@@ -385,8 +404,7 @@ void navi(unsigned char side)  {
 	  case 0xf6:
 	  case 0xf7:
 	  case 0xf9:
-		messagebox("Navigation keys,", "not yet implemented", " ");
-		cgetc();
+		messagebox(0, "Navigation keys,", "not yet implemented", " ");
 /* DESTRUCTIVE test:
 		if (strcmp((char *) midnight[side]->curfile, "already mounted") == 0)  {
 		  findnextBAMtracksector(&testtrack, &testsector);

@@ -286,6 +286,36 @@ unsigned char driveled(unsigned char errorcode)  {
 	return errorcode;
 }
 
+void GetBAM(unsigned char side)  {
+  BAM* bs;
+/*
+  _miniInit();
+  / * BAMside = * / GetOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
+  bs = BAMsector[0];
+  GetOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
+*/
+
+  bs = BAMsector[0];
+  lcopy(ATTICBAMBUFFER + side * ATTICBAMBUFFERSIZE,
+        (uint32_t) bs, ATTICBAMBUFFERSIZE);
+}
+void PutBAM(unsigned char drive)  {
+  BAM* bs;
+
+  PutOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
+  bs = BAMsector[0];
+  PutOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
+}
+
+void BAM2Attic(unsigned char drive, unsigned char side) {
+  BAM* bs;
+
+  _miniInit();
+
+  readblockchain(side?ATTICBAM2BUFFER:ATTICBAMBUFFER, BAMBLOCKS,
+                 drive, BAMTRACK, BAMSECT);
+}
+
 // this expects data in sector buffer:
 void BAMSectorUpdate(BAM* BAMsector, BAM* BAMsector2, char track, char sector, char set) {
   unsigned char bitshifter = 1;
@@ -367,15 +397,8 @@ unsigned int BAMSectorsFreeBlocks(BAM* BAMsector, BAM* BAMsector2) {
   return free;
 }
 
-unsigned int FreeBlocks(unsigned char drive) {
-  BAM* bs;
-
-  _miniInit();
-
-  GetOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
-  bs = BAMsector[0];
-  GetOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
-
+unsigned int FreeBlocks(unsigned char side) {
+  GetBAM(side);
   return BAMSectorsFreeBlocks(BAMsector[0], BAMsector[1]);
 }
 
@@ -386,7 +409,7 @@ void getDiskname(unsigned char drive, char* diskname) {
   _miniInit();
 
   GetOneSector(BAMsector[0], drive, HEADERTRACK, HEADERSECT);
-  hs = BAMsector[0];
+  hs = (HEADER*) BAMsector[0];
 
   i = 0;
   while (hs->diskname[i] != 0xa0 && i < DOSFILENAMELEN)  {
@@ -437,8 +460,7 @@ void readblockchain(uint32_t destination_address, // attic RAM
   }
   
   if (nexttrack > 0)  {
-	messagebox("Reading file,", "number of sectors too big.", " ");
-	cgetc();
+	messagebox(0, "Reading file,", "number of sectors too big.", " ");
   }
 }
 
@@ -450,10 +472,7 @@ void findnextBAMtracksector(unsigned char drive,
   unsigned char done = 0;
   BAM* bs;
 
-  _miniInit();
-  /* BAMside = */ GetOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
   bs = BAMsector[0];
-  GetOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
 
   // access track array zero based
   for (track = 0; track <= 79; track++)  {
@@ -537,8 +556,6 @@ void findnextBAMtracksector(unsigned char drive,
 
   if (done)  {
     BAMSectorUpdate(BAMsector[0], BAMsector[1], track, sector, 1); // 1=allocate
-    PutOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
-    PutOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
   
     // return values:
     *nexttrack  = track;
@@ -595,8 +612,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
   }
   
   if (nexttrack > 0 && i >= maxblocks)  {
-	messagebox("Writing file,", "number of sectors too big", " ");
-	cgetc();
+	messagebox(0, "Writing file,", "number of sectors too big", " ");
   }
 }
 
@@ -731,7 +747,7 @@ unsigned char getdirent(unsigned char drive, unsigned char side)  {
   cgetc();
 */
   readblockchain(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE,
-                 DIRENTBLOCKS, drive, 40, 3);
+                 DIRENTBLOCKS, drive, DIRENTTRACK, DIRENTSECT);
 /*
   msprintf("after readblockchain");
   cputln();
@@ -877,8 +893,7 @@ void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)
 		i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
 		BLOCKDATALOW, BLOCKSIZE);
   PutOneSector((BAM *) worksectorasBAM[0], drive, nexttrack, nextsector);
-//  messagebox("directory entries exhausted");
-//  cgetc();
+//  messagebox(0, "directory entries exhausted");
 }
 
 void deletedirententry(unsigned char drive, unsigned char side, unsigned char entry)  {
@@ -962,6 +977,5 @@ void deletedirententry(unsigned char drive, unsigned char side, unsigned char en
     }
 #endif
   }
-//  messagebox("entry not found");
-//  cgetc();
+//  messagebox(0, "entry not found");
 }
