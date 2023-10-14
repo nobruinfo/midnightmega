@@ -234,7 +234,7 @@ unsigned char d81navi(unsigned char side)  {
 //		hyppo_setname((char *) filelist[pos]);
 //		attachresult = (midnight[side]->drive ? hyppo_d81attach1() : hyppo_d81attach0());
 		if (attachresult != 0)  {
-		  messagebox("Storage card mounting,", "mount failed for", filelist[pos]);
+		  messagebox("Storage card mounting,", "mount failed for", (char *) filelist[pos]);
 		  cgetc();
 		} else {
 		  strcpy((char *) midnight[side]->curfile, (char *) filelist[pos]);
@@ -254,12 +254,11 @@ unsigned char d81navi(unsigned char side)  {
   return 0;
 }
 
+extern unsigned char dosfilename[DOSFILENAMELEN + 1]; // fileio.c
 // unsigned char testtrack;
 // unsigned char testsector;
 void navi(unsigned char side)  {
   char c;
-//  unsigned char pos = 0;
-//  unsigned char entries = 0;
   unsigned char leftx;
   unsigned char starttrack;
   unsigned char startsector;
@@ -277,7 +276,7 @@ void navi(unsigned char side)  {
   midnight[1]->pos = 0;
   while (1)  {
     for (i = 0; i <= 1; i++)  {
-      // @@ todo put dirents of both sides into seperate Attic buffers:
+      midnight[i]->blocksfree = FreeBlocks(midnight[i]->drive);
 	  midnight[i]->entries = getdirent(midnight[i]->drive, i);
       if (midnight[i]->pos > midnight[i]->entries)  {
         midnight[i]->pos = midnight[i]->entries;
@@ -286,12 +285,18 @@ void navi(unsigned char side)  {
       mcbox(leftx, 0, leftx + 39, 0 + 23, COLOUR_CYAN, BOX_STYLE_INNER, 1, 0);
       revers(1);
       mcputsxy(leftx + 2, 0, " ");  // @@ to be string optimised as in listbox()
-	  msprintf("drv:");
-      csputdec(midnight[i]->drive, 0, 0);
+	  getDiskname(midnight[i]->drive, (char *) dosfilename);
+	  msprintf((char *) dosfilename);
 	  cputc(' ');
-      mcputsxy(leftx + 10, 0, " ");
+      mcputsxy(wherex() + 1, 0, " ");
       msprintf((char *) midnight[i]->curfile);
 	  cputc(' ');
+      mcputsxy(leftx + 2, 23, " drv:");
+      csputdec(midnight[i]->drive, 0, 0);
+	  cputc(' ');
+      mcputsxy(leftx + 12, 23, " ");
+      csputdec(midnight[i]->blocksfree, 0, 0);
+	  msprintf(" blocks free ");
       revers(0);
       listbox((side == i), i, leftx + 1, 1, midnight[i]->pos, midnight[i]->entries);
 	}
@@ -360,8 +365,10 @@ void navi(unsigned char side)  {
 //		  midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
 		} else {  // delete
 		  // confirmation box
-		  ds->type = VAL_DOSFTYPE_DEL;
-		  deletedirententry(midnight[side]->drive, side, midnight[side]->pos);
+		  if (ds->type != VAL_DOSFTYPE_DEL)  {
+		    ds->type = VAL_DOSFTYPE_DEL;
+		    deletedirententry(midnight[side]->drive, side, midnight[side]->pos);
+		  }
 		}
 		midnight[side]->entries = getdirent(midnight[side]->drive, side?0:1);
       break;
@@ -371,6 +378,7 @@ void navi(unsigned char side)  {
       break;
 
 	  case 13: // return
+	  case 0x1f: // HELP
 	  case 0xf1: // unused F keys
 	  case 0xf3:
 	  case 0xf4:

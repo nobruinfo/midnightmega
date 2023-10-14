@@ -56,6 +56,23 @@ typedef struct structBAM {
 } BAM;
 #define BAMBLOCKS    2   // nbr of BAM pages in attic
 
+typedef struct structHEADER {
+	unsigned char chntrack;
+	unsigned char chnsector;
+    unsigned char diskdosversion; // $44
+	unsigned char unused;
+             char diskname[DOSFILENAMELEN]; /* name in PetSCII, limited to 16 chars */
+	unsigned char unused1;
+	unsigned char unused2;
+	unsigned char diskid;
+	unsigned char unused3;
+    unsigned char dosversion; // $19
+    unsigned char diskversion; // $1a
+	unsigned char unused4;
+	unsigned char unused5;
+	unsigned char dummy[227];
+} HEADER;
+
 #define DATABLOCKS 199   // nbr of file data pages in attic
 typedef struct structdatablock {
 	unsigned char chntrack;
@@ -63,12 +80,16 @@ typedef struct structdatablock {
 	unsigned char data[254];
 } DATABLOCK;
 
+#define HEADERTRACK 40
+#define HEADERSECT   0
 #define BAMTRACK 40
 #define BAMSECT   1
 #define DIRENTTRACK 40
 #define DIRENTSECT   3
 
 void BAMSectorUpdate(BAM* BAMsector, BAM* BAMsector2, char track, char sector, char set);
+unsigned int FreeBlocks(unsigned char drive);
+void getDiskname(unsigned char drive, char* diskname);
 void readblockchain(uint32_t destination_address, // attic RAM
                     unsigned char maxblocks, unsigned char drive,
                     unsigned char track, unsigned char sector);

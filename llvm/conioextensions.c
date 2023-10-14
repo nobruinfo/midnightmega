@@ -129,7 +129,11 @@ char* asciitoscreencode_s(char* s)
     char* dest = p2sbuf;
     while ((*dest++ = asciitoscreencode(*src++)))
         ;
-    return p2sbuf;
+    if (p2sbuf[0] == 0)  {
+      p2sbuf[0] = ' ';  // print crash prevention
+      p2sbuf[1] = 0;
+	}
+	return p2sbuf;
 }
 
 void clrhome(void)

@@ -71,8 +71,8 @@ IF ERRORLEVEL == 1 (
 
   %c1541% -format disk%PRJ%,id d81 %PRJ%.d81
   %c1541% -attach %PRJ%.d81 -delete %PRJ%
-  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   %c1541% -attach %PRJ%.d81 -write %PRJ%.prg %PRJ%
+  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   ECHO this is a sequential file for testing.>%PRJ%.seq
   %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0
   ECHO this is a relential file for testing.>%PRJ%.seq

@@ -39,7 +39,6 @@ SECTDIRENT * direntryblock[2];
 // unsigned char workside;
 unsigned char BAMside;
 unsigned char direntside;
-
 unsigned char dosfilename[DOSFILENAMELEN + 1]; // extra byte for nullterm
 
 void _miniInit()  {
@@ -144,7 +143,7 @@ void ShowAccess(unsigned char drive,
 #ifdef DISKDEBUG
   revers(1);
   textcolor(COLOUR_LIGHTGREY);
-  mcputsxy(10, 23, " D");
+  mcputsxy(25, 23, " D");
   csputdec(drive, 1, 0);
   textcolor(COLOUR_ORANGE);
   cputc('T');
@@ -165,8 +164,8 @@ void ShowAccess(unsigned char drive,
   revers(0);
   usleep(800000); // microseconds
   textcolor(COLOUR_CYAN);
-  mcputsxy(10, 23, " D");
-  hline(10, 23, 12, 64);  // 64 is the horizontal line
+  mcputsxy(25, 23, " D");
+  hline(25, 23, 12, 64);  // 64 is the horizontal line
   usleep(20000); // microseconds
 #endif
 }
@@ -343,6 +342,58 @@ void BAMSectorUpdate(BAM* BAMsector, BAM* BAMsector2, char track, char sector, c
     }
     BAMsector->entry[track].free++;
   }
+}
+
+unsigned int BAMSectorsFreeBlocks(BAM* BAMsector, BAM* BAMsector2) {
+  unsigned char track80;
+  unsigned char track;
+  unsigned int free = 0;
+
+  // access track array zero based
+  for (track80 = 0; track80 <= 79; track80++)  {
+    // next BAM sector of two in total:
+    if (track80 < 40)  {
+      track = track80;
+    } else {
+      track = track80 - 40;
+	  BAMsector = BAMsector2;
+	}
+
+    if (track80 != 39)  {
+	  free += BAMsector->entry[track].free;
+	}
+  }
+
+  return free;
+}
+
+unsigned int FreeBlocks(unsigned char drive) {
+  BAM* bs;
+
+  _miniInit();
+
+  GetOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
+  bs = BAMsector[0];
+  GetOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
+
+  return BAMSectorsFreeBlocks(BAMsector[0], BAMsector[1]);
+}
+
+void getDiskname(unsigned char drive, char* diskname) {
+  HEADER* hs;
+  unsigned char i;
+
+  _miniInit();
+
+  GetOneSector(BAMsector[0], drive, HEADERTRACK, HEADERSECT);
+  hs = BAMsector[0];
+
+  i = 0;
+  while (hs->diskname[i] != 0xa0 && i < DOSFILENAMELEN)  {
+    diskname[i] = hs->diskname[i];
+	i++;
+  }
+  diskname[i] = 0;
 }
 
 void readblockchain(uint32_t destination_address, // attic RAM

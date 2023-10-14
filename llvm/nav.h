@@ -7,11 +7,10 @@ typedef struct structMIDNIGHT {
 	unsigned char pos;       // cursor bar
     unsigned char entries;   // nbr of list entries
     unsigned char curfile[65];  // currently mounted .d81 filename
-	unsigned char versioninvert;
-	unsigned char diskid1;
-	unsigned char diskid2;
-	unsigned char io;
-	unsigned char autoboot;
+	unsigned int  blocksfree;
+	unsigned char dummy1;
+	unsigned char dummy2;
+	unsigned char dummy3;
 	unsigned char inputstr[80];  // for conio text input
 } MIDNIGHT; // for each of the two sides of the file navi
 
