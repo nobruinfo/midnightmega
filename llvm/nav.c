@@ -17,6 +17,7 @@
 // flags and stuff:
 MIDNIGHT* midnight[2] = { (MIDNIGHT*) MIDNIGHTLEFTPAGE,
                           (MIDNIGHT*) MIDNIGHTRIGHTPAGE };
+unsigned char diskname[2][DOSFILENAMELEN + 1]; // @@ change for pointer
 
 #define FILEENTRIES 18
 unsigned char filelist[FILEENTRIES][65];
@@ -197,7 +198,14 @@ void shortcuts()  {
   textcolor(COLOUR_CYAN);
 }
 
-unsigned char d81navi(unsigned char side)  {
+void UpdateSectors(unsigned char drive, unsigned char side)  {
+  getDiskname(midnight[side]->drive, (char *) diskname[side]);
+  BAM2Attic(drive, side);
+  midnight[side]->blocksfree = FreeBlocks(side);
+  midnight[side]->entries = getdirent(drive, side);
+}
+
+unsigned char d81navi(unsigned char drive, unsigned char side)  {
   char c;
   char pos = 0;
   unsigned char entries = 0;
@@ -236,14 +244,16 @@ unsigned char d81navi(unsigned char side)  {
 		if (attachresult != 0)  {
 		  messagebox(0, "Storage card mounting,", "mount failed for", (char *) filelist[pos]);
 		} else {
+	      UpdateSectors(midnight[side]->drive, side);
+		  // .d81 name goes here:
 		  strcpy((char *) midnight[side]->curfile, (char *) filelist[pos]);
-		  return 1;
+		  return TRUE;
 		}		
       break;
 
 	  case 3:  // STOP
 	  case 27: // Esc
-	    return 0;
+	    return FALSE;
       break;
 	
 	  default:
@@ -253,13 +263,6 @@ unsigned char d81navi(unsigned char side)  {
   return 0;
 }
 
-void UpdateSectors(unsigned char drive, unsigned char side)  {
-  BAM2Attic(drive, side);
-  midnight[side]->blocksfree = FreeBlocks(side);
-  midnight[side]->entries = getdirent(drive, side);
-}
-
-extern unsigned char dosfilename[DOSFILENAMELEN + 1]; // fileio.c
 // unsigned char testtrack;
 // unsigned char testsector;
 void navi(unsigned char side)  {
@@ -286,10 +289,9 @@ void navi(unsigned char side)  {
       }
 	  leftx = i * 40;
       mcbox(leftx, 0, leftx + 39, 0 + 23, COLOUR_CYAN, BOX_STYLE_INNER, 1, 0);
-	  getDiskname(midnight[i]->drive, (char *) dosfilename);
       revers(1);
       mcputsxy(leftx + 2, 0, " ");  // @@ to be string optimised as in listbox()
-	  msprintf((char *) dosfilename);
+	  msprintf((char *) diskname[i]);
 	  cputc(' ');
       mcputsxy(wherex() + 1, 0, " ");
       msprintf((char *) midnight[i]->curfile);
@@ -319,7 +321,8 @@ void navi(unsigned char side)  {
       break;
 	  case 0x9d: // Left
 	  case 0x5f: // Left
-	    if (midnight[side]->pos > 0)  midnight[side]->pos -= 10;
+	    if (midnight[side]->pos > 10)  midnight[side]->pos -= 10;
+		else                           midnight[side]->pos = 0;
       break;
 	  case 0x1d: // Right
 	    midnight[side]->pos += 10;
@@ -331,8 +334,8 @@ void navi(unsigned char side)  {
       break;
 
 	  case 0xf2: // Modifier and ASC_F1:
-	    if (d81navi(side))  {
-	      UpdateSectors(midnight[i]->drive, i);
+	    if (d81navi(midnight[side]->drive, side))  {
+	      UpdateSectors(midnight[side]->drive, side);
 		  midnight[side]->entries = getdirent(midnight[side]->drive, side);
 		}
       break;
@@ -358,33 +361,39 @@ void navi(unsigned char side)  {
 	      cgetc();
 #endif
           if (c == 0xf5)  {  // copy
-            readblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side]->drive,
-                           ds->track, ds->sector);
-            // write on opposing side disk:
-            GetBAM(side?0:1);
-            writeblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side?0:1]->drive,
-		                    &starttrack, &startsector);
-            ds->track = starttrack;  // recycle src dirent for destination
-		    ds->sector = startsector;
+            if (ds->size > midnight[side?0:1]->blocksfree)  {
+			  messagebox(0, "File copy,", "destination disk space insufficient", " ");
+			} else {
+			  readblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side]->drive,
+                             ds->track, ds->sector);
+              // write on opposing side disk:
+              GetBAM(side?0:1);
+              writeblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side?0:1]->drive,
+		                      &starttrack, &startsector);
+              ds->track = starttrack;  // recycle src dirent for destination
+		      ds->sector = startsector;
 
 #ifdef DEBUG
 		  mprintf("   before newds type=", ds->type);
 	  cputln();
 	      cgetc();
 #endif
-		    // load opposing side dirent block into Attic:
-//		    midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
-		    writenewdirententry(midnight[side?0:1]->drive, side?0:1, ds);
-		    // re-read altered dirent on opposing side after entry added:
-//		    midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
-		    PutBAM(midnight[side?0:1]->drive);
-	        UpdateSectors(midnight[side?0:1]->drive, side?0:1);
+		      // load opposing side dirent block into Attic:
+//		      midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
+		      writenewdirententry(midnight[side?0:1]->drive, side?0:1, ds);
+		      // re-read altered dirent on opposing side after entry added:
+//		      midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
+		      PutBAM(midnight[side?0:1]->drive, side?0:1);
+	          UpdateSectors(midnight[side?0:1]->drive, side?0:1);
+			}
 		  } else {  // delete
 		    // confirmation box
 		    if (ds->type != VAL_DOSFTYPE_DEL)  {
 		      ds->type = VAL_DOSFTYPE_DEL;
+              GetBAM(side);
 		      deletedirententry(midnight[side]->drive, side, midnight[side]->pos);
-	          UpdateSectors(midnight[i]->drive, i);
+		      PutBAM(midnight[side]->drive, side);
+	          UpdateSectors(midnight[side]->drive, side);
 		    }
 		  }
 		  midnight[side]->entries = getdirent(midnight[side]->drive, side);
@@ -405,15 +414,6 @@ void navi(unsigned char side)  {
 	  case 0xf7:
 	  case 0xf9:
 		messagebox(0, "Navigation keys,", "not yet implemented", " ");
-/* DESTRUCTIVE test:
-		if (strcmp((char *) midnight[side]->curfile, "already mounted") == 0)  {
-		  findnextBAMtracksector(&testtrack, &testsector);
-		  gotoxy(42, 0);
-		  mprintf("t=", testtrack);
-		  mprintf(" s=", testsector);
-//	      cgetc();
-		}
-*/
       break;
 
 	  // case 0xF9: // ASC_F9:

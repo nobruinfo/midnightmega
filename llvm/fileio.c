@@ -299,12 +299,14 @@ void GetBAM(unsigned char side)  {
   lcopy(ATTICBAMBUFFER + side * ATTICBAMBUFFERSIZE,
         (uint32_t) bs, ATTICBAMBUFFERSIZE);
 }
-void PutBAM(unsigned char drive)  {
+void PutBAM(unsigned char drive, unsigned char side)  {
   BAM* bs;
 
   PutOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
   bs = BAMsector[0];
   PutOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
+  lcopy((uint32_t) bs,
+        ATTICBAMBUFFER + side * ATTICBAMBUFFERSIZE, ATTICBAMBUFFERSIZE);
 }
 
 void BAM2Attic(unsigned char drive, unsigned char side) {
@@ -420,9 +422,9 @@ void getDiskname(unsigned char drive, char* diskname) {
 }
 
 void readblockchain(uint32_t destination_address, // attic RAM
-                    unsigned char maxblocks, unsigned char drive,
+                    unsigned int maxblocks, unsigned char drive,
                     unsigned char track, unsigned char sector)  {
-  unsigned char i;
+  unsigned int i;
   unsigned char nexttrack;
   unsigned char nextsector;
 
@@ -464,9 +466,9 @@ void readblockchain(uint32_t destination_address, // attic RAM
   }
 }
 
-void findnextBAMtracksector(unsigned char drive,
-                            unsigned char * nexttrack, unsigned char * nextsector)  {
+void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector)  {
   unsigned char bitshifter = 1;
+  unsigned char track80;
   unsigned char track;
   unsigned char sector;
   unsigned char done = 0;
@@ -475,7 +477,15 @@ void findnextBAMtracksector(unsigned char drive,
   bs = BAMsector[0];
 
   // access track array zero based
-  for (track = 0; track <= 79; track++)  {
+  // @@ missing track strategy and track 40 special handling
+  for (track80 = 0; track80 <= 79; track80++)  {
+    // next BAM sector of two in total:
+    if (track80 < 40)  {
+      track = track80;
+    } else {
+      track = track80 - 40;
+	  bs = BAMsector[1];
+	}
     for (sector = 0; sector <= 39; sector++)  {
       if (sector < 8)  {
         if (bs->entry[track].alloc1 & (bitshifter << sector))  {
@@ -552,13 +562,13 @@ void findnextBAMtracksector(unsigned char drive,
     }
 	if (done)  break;
   }
-  track++;  // access array zero based, but tracks are 1..80
+  track80++;  // access array zero based, but tracks are 1..80
 
   if (done)  {
-    BAMSectorUpdate(BAMsector[0], BAMsector[1], track, sector, 1); // 1=allocate
+    BAMSectorUpdate(BAMsector[0], BAMsector[1], track80, sector, 1); // 1=allocate
   
     // return values:
-    *nexttrack  = track;
+    *nexttrack  = track80;
     *nextsector = sector;
   } else {
     *nexttrack  = 0xff;
@@ -568,9 +578,9 @@ void findnextBAMtracksector(unsigned char drive,
 
 // ignores start track and sector upon call but gives them back:
 void writeblockchain(uint32_t source_address, // attic RAM
-                    unsigned char maxblocks, unsigned char drive,
+                    unsigned int maxblocks, unsigned char drive,
 					unsigned char * starttrack, unsigned char * startsector)  {
-  unsigned char i;
+  unsigned int i;
   unsigned char nexttrack = 0;
   unsigned char nextsector = 0xff;
   unsigned char track;
@@ -580,7 +590,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
   DATABLOCK* ws = worksector[0];
 
   // get a first sector anyway:
-  findnextBAMtracksector(drive, &track, &sector);
+  findnextBAMtracksector(&track, &sector);
   *starttrack = track;  // to later write dirent
   *startsector = sector;
   
@@ -600,7 +610,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
 
 	// replace chain with available ones or leave 0 if last datablock:
 	if (ws->chntrack > 0)  {
-      findnextBAMtracksector(drive, &nexttrack, &nextsector);
+      findnextBAMtracksector(&nexttrack, &nextsector);
       ws->chntrack = nexttrack;
       ws->chnsector = nextsector;
 	}
@@ -861,7 +871,7 @@ void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)
 	    (uint32_t) ds, DIRENTSIZE);
   // dirent already full, establish an additional sector:
   // @@ sector strategy needed
-  findnextBAMtracksector(drive, &nexttrack, &nextsector);
+  findnextBAMtracksector(&nexttrack, &nextsector);
   ds->chntrack = nexttrack;
   ds->chnsector = nextsector;
   // write new chain:

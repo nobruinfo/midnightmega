@@ -87,6 +87,9 @@ IF ERRORLEVEL == 1 (
 
   %c1541% -format disk%DATADISK%,id d81 %DATADISK%.d81
   %c1541% -attach %DATADISK%.d81 -delete %DATADISK%
+  for /l %%i in (1, 1, 2) do (
+    %c1541% -attach %DATADISK%.d81 -write %PRJ%.s asm%%i%PRJ%.%%i,s
+  )
   ECHO this is a sequential file for testing.>%DATADISK%.seq
   %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.0
   ECHO this is a relential file for testing.>%DATADISK%.seq
@@ -103,7 +106,7 @@ IF ERRORLEVEL == 1 (
   ECHO this is a deleted file for testing.>%DATADISK%.seq
   %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.4,d
   DEL %DATADISK%.seq>NUL
-  for /l %%i in (1, 1, 10) do (
+  for /l %%i in (1, 1, 17) do (
     %c1541% -attach %DATADISK%.d81 -write %PRJ%.prg _%PRJ%.%%i
   )
   REM Use in Xemu's out of the image file fs access:

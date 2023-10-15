@@ -73,7 +73,7 @@ typedef struct structHEADER {
 	unsigned char dummy[227];
 } HEADER;
 
-#define DATABLOCKS 199   // nbr of file data pages in attic
+#define DATABLOCKS 3160 // 199   // nbr of file data pages in attic
 typedef struct structdatablock {
 	unsigned char chntrack;
 	unsigned char chnsector;
@@ -91,13 +91,12 @@ void BAMSectorUpdate(BAM* BAMsector, BAM* BAMsector2, char track, char sector, c
 unsigned int FreeBlocks(unsigned char drive);
 void getDiskname(unsigned char drive, char* diskname);
 void readblockchain(uint32_t destination_address, // attic RAM
-                    unsigned char maxblocks, unsigned char drive,
+                    unsigned int maxblocks, unsigned char drive,
                     unsigned char track, unsigned char sector);
 void BAM2Attic(unsigned char drive, unsigned char side);
-void findnextBAMtracksector(unsigned char drive,
-                            unsigned char * nexttrack, unsigned char * nextsector);
+void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector);
 void writeblockchain(uint32_t source_address, // attic RAM
-                    unsigned char maxblocks, unsigned char drive,
+                    unsigned int maxblocks, unsigned char drive,
 					unsigned char * starttrack, unsigned char * startsector);
 void deleteblockchain(unsigned char drive,
                       unsigned char track, unsigned char sector);

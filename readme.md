@@ -11,8 +11,8 @@ of this development will **eat** your files.
 
 * Goto branch `development` and dive into folder `llvm`.
 * Use `MOUNT "midnightmega.d81"` as programme disk.
-* Optionally use `MOUNT "datadisk.d81",U9` as torture disk. Or
-  use copies of your own disks.
+* Optionally use `MOUNT "datadisk.d81",U9` as a torture disk. Or
+  use **copies** of your own disks.
 
 # subfolders
 
@@ -50,16 +50,20 @@ Currently this environment is not pursued.
 ## not yet in progress
 
 * Hyppo SD card handling as far as possible (writing not yet
-  implemented on Hyppo side)
+  implemented on Hyppo side, neither reading back info on already
+  mounted image files)
 * Creation of .d81 image files currently unsopported by Hyppo
 * copying of complete disk images, real diskettes respectively
 * copying of single/multiple files in between real/virtual drives,
   mounted images
-* GUI, Midnight/Norton Commander oriented
+* Text based GUI, Midnight/Norton Commander oriented
 * It will not be possible to copy full .d81 files or complete disk
   images to new ones of each other because of the lack of Hyppo
   functions for it. So use the freezer to have a couple of empty .d81
   files at hand and use full disk or per file copy, whatever suits.
+* Handling of subdirectories (sub-partitions of file type `CBM`).
+* Full disk copy, meaning only within already mounted .d81 disk
+  image files or with real floppy diskettes.
 
 # tasks
 
@@ -73,16 +77,16 @@ Currently this environment is not pursued.
 * refactoring for code runtime optimisation
 * test data copy by exceeding the maximum number of allowed blocks
 * test unmounted drives, empty disks and other error handling
-* show a status feeter with number of blocks available
+* ✓ show a status feeter with number of blocks available
 
-## contributions to `mega65-libc`
+## additions to `mega65-libc`
 
 * are in file `llvm/conioextensions.h` and are quirky because of most
   in `conio.c` being `static`
 * the full removal of `KickC` based include files from folder
   `llvm/include`
 
-## contributions to llvm-mos
+## additions to llvm-mos
 
 * The following line do autodeclare `DIRENTPAGELOW` in case it
   is not defined elsewhere. It's value then is indetermined.
@@ -94,15 +98,19 @@ __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
 
 # bugs
 
+* Additional `dirent` blocks are placed outside track 40 and this
+  is not what Commodore did.
+* Additional file blocks are also placed within track 40.
 * BAM and `dirent` blocks are read/written way too often. With the
   now cache for two disks (left and right) in place this can be
   optimised.
-* ✓ `dirent` is currently not fully updated, additional sectors are
-  currently not added automatically.
+* ✓ ~~`dirent` is currently not fully updated, additional sectors~~
+  ~~are currently not added automatically.~~
 * `dirent` currently uses a full 255 bytes page of data which of
   course is completely unecessary.
-* `dirent` currently is read beginning with the first block of file
-  entries not supporting the disk name block at track 40 sector 0.
+* ✓ ~~`dirent` currently is read beginning with the first block of~~
+  ~~file entries not supporting the disk name block at track 40~~
+  ~~sector 0.~~
 * ✓ ~~The yet state of development only uses the left file list so~~
   ~~*copy* actually only duplicates files on the same disk~~
 * ✓ ~~BAM is only supported for one sector, tracks 41 to 80~~

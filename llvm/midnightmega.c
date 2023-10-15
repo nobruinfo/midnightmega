@@ -85,9 +85,9 @@ int main() {
   printf("ATTICZPBACKUP 32addr is: %08lx", (unsigned long) ATTICZPBACKUP);
   cgetc();
 */
-  if (messagebox(1, "is currently beta and does destroy .d81 and disks!",
-                    "Physical disks are still stressed, better use .d81.",
-			        "Press RETURN to continue, STOP to crash."))  {
+  if (messagebox(1, "is currently beta and may destroy data structures on",
+                    ".d81 and real disks! Please work on backed up media.",
+			        "Press RETURN to continue, STOP to halt."))  {
 
 #ifdef sduhgsiuzfgsuzd
   // cputu("hyppo_setname is: ", hyppo_setname("EMPTY.D81"), HEXADECIMAL);
