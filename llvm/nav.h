@@ -1,0 +1,24 @@
+// *********************************************************
+// ***  nav.h Midnight Mega's window mgmt                ***
+// *********************************************************
+
+typedef struct structMIDNIGHT {
+	unsigned char drive;     // 0 or 1
+	unsigned char pos;       // cursor bar
+    unsigned char entries;   // nbr of list entries
+    unsigned char curfile[65];  // currently mounted .d81 filename
+	unsigned int  blocksfree;
+	unsigned char dummy1;
+	unsigned char dummy2;
+	unsigned char dummy3;
+	unsigned char inputstr[80];  // for conio text input
+} MIDNIGHT; // for each of the two sides of the file navi
+
+void listboxd81(unsigned char x, unsigned char y,
+             unsigned char currentitem, unsigned char nbritems);
+void listbox(unsigned char iscurrent, unsigned char side,
+             unsigned char x, unsigned char y,
+             unsigned char currentitem, unsigned char nbritems);
+void shortcuts();
+unsigned char d81navi(unsigned char drive, unsigned char side);
+void navi(unsigned char side);

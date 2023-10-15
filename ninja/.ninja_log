@@ -1,0 +1,25 @@
+# ninja log v5
+36	258	7144759809769619	mega65-libc/CMakeFiles/mega65libc.dir/src/memory.c.obj	5955a033b4f37448
+69	277	7144759809639587	mega65-libc/CMakeFiles/mega65libc.dir/src/targets.c.obj	72c5cf17f197d320
+16	294	7144759809759616	mega65-libc/CMakeFiles/mega65libc.dir/src/debug.c.obj	b4347459f9925767
+52	267	7144759809859601	mega65-libc/CMakeFiles/mega65libc.dir/src/random.c.obj	a7a461bab4e83c4c
+58	361	7144759810799661	mega65-libc/CMakeFiles/mega65libc.dir/src/sdcard.c.obj	fb2477305ea4e6b3
+44	306	7144759809889600	mega65-libc/CMakeFiles/mega65libc.dir/src/mouse.c.obj	dee7176ea73f56ae
+287	406	7144759811489585	mega65-libc/CMakeFiles/mega65libc.dir/src/llvm/dirent.s.obj	61ea5c15527cea4e
+28	286	7144759809619601	mega65-libc/CMakeFiles/mega65libc.dir/src/hal.c.obj	4e8edf36812ea966
+21	316	7144759810189608	mega65-libc/CMakeFiles/mega65libc.dir/src/fat32.c.obj	197a5c2a3b5fb0ca
+278	416	7144759811469582	mega65-libc/CMakeFiles/mega65libc.dir/src/llvm/fileio.s.obj	7e3b952cd0cdb914
+294	434	7144759811529585	mega65-libc/CMakeFiles/mega65libc.dir/src/llvm/memory_asm.s.obj	2927158926971046
+259	445	7144759811659592	mega65-libc/CMakeFiles/mega65libc.dir/src/tests.c.obj	f1a7a532412387cf
+268	450	7144759811749590	mega65-libc/CMakeFiles/mega65libc.dir/src/time.c.obj	1266237d7d090d94
+341	463	7144759811959603	mega65-libc/tests/CMakeFiles/test-integer-size.dir/test-integer-size.c.obj	9a38fdb4da2ed6c6
+362	476	7144759812169613	mega65-libc/tests/CMakeFiles/test-memory.dir/test-memory.c.obj	8a636ae7818db6f3
+10	483	7144759812209606	mega65-libc/CMakeFiles/mega65libc.dir/src/conio.c.obj	78610ba483e249dd
+307	489	7144759812179604	mega65-libc/tests/CMakeFiles/test-fileio.dir/test-fileio.c.obj	3bc5c4b539991a94
+406	517	7144759812699566	mega65-libc/tests/CMakeFiles/test-time.dir/test-time.c.obj	f7d97a300a2932d2
+15	298	7144791165419897	mega65-libc/libmega65libc.a	e9faf85c1cda9359
+36	836	7144791575631386	mega65-libc/tests/test-time.prg	2b85a639452a3f39
+28	842	7144791575641387	mega65-libc/tests/test-memory.prg	f0cfa7a804d62dd3
+14	845	7144791575681396	mega65-libc/tests/test-fileio.prg	6d0ae341ea16c9b7
+21	846	7144791575681396	mega65-libc/tests/test-integer-size.prg	e8f1c55072795ad0
+9	144	7144793491920815	CMakeFiles/midnightmega.prg.dir/midnightmega.c.obj	992c559420f5b1b9
