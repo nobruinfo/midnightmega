@@ -1,7 +1,0 @@
-cmake_minimum_required(VERSION 3.18) 
-set(LLVM_MOS_PLATFORM mega65)        
-find_package(llvm-mos-sdk REQUIRED)  
-project(midnightmega VERSION 1.0.0 LANGUAGES C) 
-add_subdirectory(mega65-libc)        
-add_executable(midnightmega.prg midnightmega.c)        
-target_link_libraries(midnightmega.prg PRIVATE mega65libc) 

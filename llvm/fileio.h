@@ -94,7 +94,8 @@ void readblockchain(uint32_t destination_address, // attic RAM
                     unsigned int maxblocks, unsigned char drive,
                     unsigned char track, unsigned char sector);
 void BAM2Attic(unsigned char drive, unsigned char side);
-void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector);
+void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector,
+                            unsigned char track40);
 void writeblockchain(uint32_t source_address, // attic RAM
                     unsigned int maxblocks, unsigned char drive,
 					unsigned char * starttrack, unsigned char * startsector);

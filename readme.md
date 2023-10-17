@@ -9,18 +9,12 @@ Work in progress.
 Try only with **backed up** disks and .d81 ! The current state
 of this development will **eat** your files.
 
-* Goto branch `development` and dive into folder `llvm`.
+* Check the project out and dive into folder `llvm`.
 * Use `MOUNT "midnightmega.d81"` as programme disk.
 * Optionally use `MOUNT "datadisk.d81",U9` as a torture disk. Or
   use **copies** of your own disks.
 
 # subfolders
-
-## kickc
-
-When adding/removing lines of code the emulator freezes at various
-positions with no apparent reason. Currently this environment is
-no longer pursued.
 
 ## llvm
 
@@ -31,19 +25,6 @@ adding functionality to my little file manager project.
 Please be aware currently Midnight Mega is in an unstable state, it
 might handle your .d81 and real disk drive inserted diskettes
 maliciously. Expect data loss. Feedback welcome as issue tickets.
-
-## ninja
-
-Switched to repo `https://github.com/mlund/llvm-mos-sdk` branch
-`mega65-headers` to have KickC alike include files. Did have to rebuild
-the whole `llvm-mos-sdk` to get it to cross compile. Currently I'm not
-following this line of development chain. ~~I'm awaiting the latest
-additions to the [mega65-libc](https://github.com/mega65/mega65-libc)
-.~~ **Instead** I'm using mega65-libc with own extensions. The plan
-is to later adapt the mega65-libc functions and data structures in a
-more cc65 style to llvm.
-
-Currently this environment is not pursued.
 
 # requirements
 
@@ -64,6 +45,10 @@ Currently this environment is not pursued.
 * Handling of subdirectories (sub-partitions of file type `CBM`).
 * Full disk copy, meaning only within already mounted .d81 disk
   image files or with real floppy diskettes.
+* For `llvm` replace most fixed strings for screen output with
+  [their syntax](https://llvm-mos.org/wiki/Character_set). Maybe
+  check how PETSCII differs from screen codes/attributes. Otherwise
+  use the cc65 approach.
 
 # tasks
 
@@ -77,6 +62,8 @@ Currently this environment is not pursued.
 * refactoring for code runtime optimisation
 * test data copy by exceeding the maximum number of allowed blocks
 * test unmounted drives, empty disks and other error handling
+* remove `dirent` sectors if empty after file deletions, retain
+  track chain.
 * ✓ show a status feeter with number of blocks available
 
 ## additions to `mega65-libc`

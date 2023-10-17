@@ -138,12 +138,15 @@ unsigned char WriteSector(unsigned char drive, char track,
 
 #define READ 0
 #define WRITE 1
+#define SHOWACCESSX 26
+#define SHOWACCESSY 22
 void ShowAccess(unsigned char drive,
                 char track, char sector, unsigned char rw)  {
 #ifdef DISKDEBUG
   revers(1);
-  textcolor(COLOUR_LIGHTGREY);
-  mcputsxy(25, 23, " D");
+  if (drive)  textcolor(COLOUR_LIGHTGREEN);
+  else        textcolor(COLOUR_LIGHTGREY);
+  mcputsxy(SHOWACCESSX, SHOWACCESSY, " D");
   csputdec(drive, 1, 0);
   textcolor(COLOUR_ORANGE);
   cputc('T');
@@ -164,8 +167,8 @@ void ShowAccess(unsigned char drive,
   revers(0);
   usleep(800000); // microseconds
   textcolor(COLOUR_CYAN);
-  mcputsxy(25, 23, " D");
-  hline(25, 23, 12, 64);  // 64 is the horizontal line
+  mcputsxy(SHOWACCESSX, SHOWACCESSY, " D");
+  hline(SHOWACCESSX, SHOWACCESSY, 12, 32); // 64);  // 64 is the horizontal line
   usleep(20000); // microseconds
 #endif
 }
@@ -283,6 +286,7 @@ unsigned char PutOneSector(BAM* entry, unsigned char drive,
 unsigned char driveled(unsigned char errorcode)  {
 	// Turn on just the LED, this causes it to blink:
     POKE(0xd080U, 0x40);
+//    bordercolor (COLOUR_RED);
 	return errorcode;
 }
 
@@ -466,22 +470,34 @@ void readblockchain(uint32_t destination_address, // attic RAM
   }
 }
 
-void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector)  {
+void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector,
+                            unsigned char track40)  {
   unsigned char bitshifter = 1;
   unsigned char track80;
   unsigned char track;
+  unsigned char i;
   unsigned char sector;
-  unsigned char done = 0;
+  unsigned char done = 0; //      0   1   2   3   4   5   6   7   8   9
+  unsigned char strategy[80] = { 38, 41, 40, 42, 37, 43, 36, 44, 35, 45,
+                                 34, 46, 33, 47, 32, 48, 31, 49, 30, 50,
+								 29, 51, 28, 52, 27, 53, 26, 54, 25, 55,
+								 24, 56, 23, 57, 22, 58, 21, 59, 20, 60,
+								 19, 61, 18, 62, 17, 63, 16, 64, 15, 65,
+								 14, 66, 13, 67, 12, 68, 11, 69, 10, 70,
+								  9, 71,  8, 72,  7, 73,  6, 74,  5, 75,
+                                  4, 76,  3, 77,  2, 78,  1, 79,  0, 39 };
   BAM* bs;
-
-  bs = BAMsector[0];
 
   // access track array zero based
   // @@ missing track strategy and track 40 special handling
-  for (track80 = 0; track80 <= 79; track80++)  {
-    // next BAM sector of two in total:
+  for (i = 0; i <= 79; i++)  {
+    track80 = strategy[i];
+	if (track40)       track80++;    // BAM strategy is different
+	if (track80 > 79)  track80 = 0;
+	// next BAM sector of two in total:
     if (track80 < 40)  {
       track = track80;
+      bs = BAMsector[0];
     } else {
       track = track80 - 40;
 	  bs = BAMsector[1];
@@ -590,7 +606,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
   DATABLOCK* ws = worksector[0];
 
   // get a first sector anyway:
-  findnextBAMtracksector(&track, &sector);
+  findnextBAMtracksector(&track, &sector, FALSE);
   *starttrack = track;  // to later write dirent
   *startsector = sector;
   
@@ -610,7 +626,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
 
 	// replace chain with available ones or leave 0 if last datablock:
 	if (ws->chntrack > 0)  {
-      findnextBAMtracksector(&nexttrack, &nextsector);
+      findnextBAMtracksector(&nexttrack, &nextsector, FALSE);
       ws->chntrack = nexttrack;
       ws->chnsector = nextsector;
 	}
@@ -871,7 +887,7 @@ void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)
 	    (uint32_t) ds, DIRENTSIZE);
   // dirent already full, establish an additional sector:
   // @@ sector strategy needed
-  findnextBAMtracksector(&nexttrack, &nextsector);
+  findnextBAMtracksector(&nexttrack, &nextsector, TRUE);
   ds->chntrack = nexttrack;
   ds->chnsector = nextsector;
   // write new chain:

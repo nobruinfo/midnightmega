@@ -32,6 +32,7 @@ SET opts=%opts% -ferror-limit=1 -Wno-error=implicit-function-declaration
 REM https://courses.washington.edu/cp105/GCC/Removing%20unused%20functions%20and%20dead%20code.html
 REM SET opts=%opts% -Wl,-static -fdata-sections -ffunction-sections
 REM SET opts=%opts% -Wl,--gc-sections -Wl,-s
+SET opts=%opts% -Oz
 SET opts=%opts% -Wl,-Map=%PRJ%.map
 SET opts=%opts% -Wl,-trace
 SET opts=%opts% -Wl,--reproduce=reproduce.tar
@@ -87,8 +88,9 @@ IF ERRORLEVEL == 1 (
 
   %c1541% -format disk%DATADISK%,id d81 %DATADISK%.d81
   %c1541% -attach %DATADISK%.d81 -delete %DATADISK%
+  %c1541% -attach %DATADISK%.d81 -write regions.h regions.h,s
   for /l %%i in (1, 1, 2) do (
-    %c1541% -attach %DATADISK%.d81 -write %PRJ%.s asm%%i%PRJ%.%%i,s
+    %c1541% -attach %DATADISK%.d81 -write %PRJ%.s asm%%i%PRJ%,s
   )
   ECHO this is a sequential file for testing.>%DATADISK%.seq
   %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.0
@@ -106,7 +108,7 @@ IF ERRORLEVEL == 1 (
   ECHO this is a deleted file for testing.>%DATADISK%.seq
   %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.4,d
   DEL %DATADISK%.seq>NUL
-  for /l %%i in (1, 1, 17) do (
+  for /l %%i in (1, 1, 12) do (
     %c1541% -attach %DATADISK%.d81 -write %PRJ%.prg _%PRJ%.%%i
   )
   REM Use in Xemu's out of the image file fs access:

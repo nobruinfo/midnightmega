@@ -70,6 +70,8 @@ unsigned char getd81(void)  {
 }
 
 #define DIRENTENTRIES 22
+// @@ The in here present recognition of 0xa0 is also in conioextensions.c
+// @@ string build-up may be used elsewhere
 unsigned char s[DOSFILENAMEANDTYPELEN];
 void listbox(unsigned char iscurrent, unsigned char side,
              unsigned char x, unsigned char y,
@@ -280,6 +282,7 @@ void navi(unsigned char side)  {
     // title of mcbox is .d81 file name, cannot be read at startup:
     strcpy((char *) midnight[i]->curfile, (char *) "already mounted");
     midnight[i]->pos = 0;
+    progress("Initialising...", "reading disk drives", i * 40 + 40);
     UpdateSectors(midnight[i]->drive, i);
   }
   while (1)  {
@@ -336,7 +339,6 @@ void navi(unsigned char side)  {
 	  case 0xf2: // Modifier and ASC_F1:
 	    if (d81navi(midnight[side]->drive, side))  {
 	      UpdateSectors(midnight[side]->drive, side);
-		  midnight[side]->entries = getdirent(midnight[side]->drive, side);
 		}
       break;
 
@@ -363,11 +365,15 @@ void navi(unsigned char side)  {
           if (c == 0xf5)  {  // copy
             if (ds->size > midnight[side?0:1]->blocksfree)  {
 			  messagebox(0, "File copy,", "destination disk space insufficient", " ");
-			} else {
+			} else if (messagebox(0, "File copy,", ds->name,
+			           (side ? "from right to left" : "from left to right"))) {
+              progress("Reading...", "source file", 20);
 			  readblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side]->drive,
                              ds->track, ds->sector);
+              progress("Reading...", "BAM", 30);
               // write on opposing side disk:
               GetBAM(side?0:1);
+              progress("Writing...", "destination file", 40);
               writeblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side?0:1]->drive,
 		                      &starttrack, &startsector);
               ds->track = starttrack;  // recycle src dirent for destination
@@ -378,23 +384,27 @@ void navi(unsigned char side)  {
 	  cputln();
 	      cgetc();
 #endif
+              progress("Writing...", "directory", 60);
 		      // load opposing side dirent block into Attic:
 //		      midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
 		      writenewdirententry(midnight[side?0:1]->drive, side?0:1, ds);
 		      // re-read altered dirent on opposing side after entry added:
 //		      midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
+              progress("Writing...", "BAM", 80);
 		      PutBAM(midnight[side?0:1]->drive, side?0:1);
 	          UpdateSectors(midnight[side?0:1]->drive, side?0:1);
 			}
-		  } else {  // delete
-		    // confirmation box
-		    if (ds->type != VAL_DOSFTYPE_DEL)  {
-		      ds->type = VAL_DOSFTYPE_DEL;
-              GetBAM(side);
-		      deletedirententry(midnight[side]->drive, side, midnight[side]->pos);
-		      PutBAM(midnight[side]->drive, side);
-	          UpdateSectors(midnight[side]->drive, side);
-		    }
+		  } else if (ds->type != VAL_DOSFTYPE_DEL &&  // delete
+			         messagebox(0, "File delete,", ds->name,
+			                    (side ? "from right side" : "from left side")))  {
+            progress("Reading...", "BAM", 20);
+            ds->type = VAL_DOSFTYPE_DEL;
+            GetBAM(side);
+            progress("Writing...", "removing BAM entries", 40);
+            deletedirententry(midnight[side]->drive, side, midnight[side]->pos);
+            progress("Writing...", "updating BAM", 80);
+            PutBAM(midnight[side]->drive, side);
+            UpdateSectors(midnight[side]->drive, side);
 		  }
 		  midnight[side]->entries = getdirent(midnight[side]->drive, side);
 		}
@@ -402,7 +412,6 @@ void navi(unsigned char side)  {
 
 	  case 0x12: // Ctrl-r
 	    UpdateSectors(midnight[side]->drive, side);
-		midnight[side]->entries = getdirent(midnight[side]->drive, side);
       break;
 
 	  case 13: // return
