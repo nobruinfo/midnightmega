@@ -57,14 +57,16 @@ int main() {
 
   conioinit();
   // ASCII lowercase is in conioinit()
-  setuppercase();  // to activate PETSCII
-  POKE(0xD018U, PEEK(0xD018U) ^ 0x02); // toggle case as if [Mega][Alt] was pressed
-  flushkeybuf();
+//  setuppercase();  // to activate PETSCII
+//  POKE(0xD018U, PEEK(0xD018U) ^ 0x02); // toggle case as if [Mega][Alt] was pressed
+//  flushkeybuf();  <-- done in conioinit()
 //  mega65_io_enable();
 
+//  POKE(0,64);
   // Disable 48MHz fast mode
   VICIV->CONTROLB &= ~(VICIV_FAST);
   VICIV->CONTROLC &= ~(VICIV_VFAST);
+  sethotregs(0);  // make effects imminent
 
   msprintf("UPPERCASE lowercase."); // Atticend=", ATTICEND);
   cputln();

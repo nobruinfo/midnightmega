@@ -106,6 +106,8 @@ char asciitoscreencode(char c)
 //        return c - 64;
 //    }
 
+    if (c == 0xa0) return 32; // unused dos file name characters
+
     if (c >= 192) {
         return c - 128;
     }
@@ -358,6 +360,32 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
 		cputc(' ');
 	}
   }
+}
+
+// used to be put over previously printed messagebox:
+void progress(char* message, char* message2, unsigned char progresspercent)  {
+  unsigned char i;
+
+  //        left top right bottom  to clear out previous box contents
+  RECT rc = { 12, 6, 68, 8 };
+  fillrect(&rc, ' ', COLOUR_CYAN);
+
+  mcputsxy(12, 6, message);
+  mcputsxy(12, 7, message2);
+  cputcxy(12, 9, 0xa0); // filled space
+  for (i = 0; i < 50; i++)  {
+    if (progresspercent / 2 > i)  {
+	  cputc(0xa0); // filled space
+	} else {
+	  cputc(0x7b); // '. '
+	}
+  }
+  cputc(0x65); // '| '
+  mprintf(" ", progresspercent);
+  cputc('%');
+
+  mcputsxy(12, 10, "        ");
+  mcputsxy(60, 10, "        ");
 }
 
 char* inputbox(char* inputstr, char* message)  {
