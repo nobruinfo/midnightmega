@@ -20,14 +20,14 @@ SET DATADISK=datadisk
 set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
 set LLVM_BAT=%LLVM_HOME%\bin\mos-mega65-clang.bat
 set LLVMDUMP=%LLVM_HOME%\bin\llvm-objdump.exe
-SET libcfilesdir=..\..\mega65-libc\src
+SET libcfilesdir=..\mega65-libc\src
 SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%\hal.c
 SET libcfiles=%libcfiles% include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
 SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
 SET opts=--include-directory=.\include
-SET opts=%opts% --include-directory=..\..\mega65-libc\include
+SET opts=%opts% --include-directory=..\mega65-libc\include
 SET opts=%opts% -ferror-limit=1 -Wno-error=implicit-function-declaration
 REM https://courses.washington.edu/cp105/GCC/Removing%20unused%20functions%20and%20dead%20code.html
 REM SET opts=%opts% -Wl,-static -fdata-sections -ffunction-sections
@@ -115,6 +115,7 @@ IF ERRORLEVEL == 1 (
   XCOPY /Y %PRJ%.d81 %HDOS%
   XCOPY /Y %DATADISK%.d81 %HDOS%
 
-  XMEGA65 -besure -8 %HDOS%%PRJ%.d81 -9 %HDOS%%DATADISK%.d81 -autoload -hdosvirt
+  XMEGA65 -besure -8 %HDOS%%PRJ%.d81 -9 %HDOS%%DATADISK%.d81 -autoload ^
+    -hdosvirt -driveled
   REM XMEGA65 -syscon -besure -prg %PRJ%.prg
 )

@@ -125,79 +125,88 @@ void listbox(unsigned char iscurrent, unsigned char side,
   cputln();
 }
 
-void shortcuts()  {
-  // @@ todo: Modifier key display
+void shortcutprint(unsigned char active, char* textbefore, char* textafter)  {
   textcolor(COLOUR_WHITE);
-  mcputsxy(0, 24, "1");
-  textcolor(COLOUR_GREY);
+  msprintf(textbefore);
+  if (active)  textcolor(COLOUR_CYAN);
+  else         textcolor(COLOUR_GREY);
   revers(1);
-  msprintf("Help  ");
+  msprintf(textafter);
   revers(0);
+}
 
-  textcolor(COLOUR_WHITE);
-  msprintf(" 2");
-  textcolor(COLOUR_CYAN);
-  revers(1);
-  msprintf("Mount ");
-  revers(0);
+void shortcuts(unsigned char mod)  {
+  gotoxy(0, 24);
 
-  textcolor(COLOUR_WHITE);
-  msprintf(" 3");
-  textcolor(COLOUR_GREY);
-  revers(1);
-  msprintf("View  ");
-  revers(0);
-
-  textcolor(COLOUR_WHITE);
-  msprintf(" 4");
-  textcolor(COLOUR_GREY);
-  revers(1);
-  msprintf("Edit  ");
-  revers(0);
-
-  textcolor(COLOUR_WHITE);
-  msprintf(" 5");
-  textcolor(COLOUR_CYAN);
-  revers(1);
-  msprintf("Copy  ");
-  revers(0);
-
-  textcolor(COLOUR_WHITE);
-  msprintf(" 6");
-  textcolor(COLOUR_GREY);
-  revers(1);
-  msprintf("RenMov");
-  revers(0);
-
-  textcolor(COLOUR_WHITE);
-  msprintf(" 7");
-  textcolor(COLOUR_GREY);
-  revers(1);
-  msprintf("Mkdir ");
-  revers(0);
-
-  textcolor(COLOUR_WHITE);
-  msprintf(" 8");
-  textcolor(COLOUR_CYAN);
-  revers(1);
-  msprintf("Delete");
-  revers(0);
-
-  textcolor(COLOUR_WHITE);
-  msprintf(" 9");
-  textcolor(COLOUR_GREY);
-  revers(1);
-  msprintf("Menu  ");
-  revers(0);
-
-  textcolor(COLOUR_WHITE);
-  msprintf(" 10");
-  textcolor(COLOUR_CYAN);
-  revers(1);
-  msprintf("Quit  ");
-  revers(0);
+  // MODKEY, with 1 meaning the key was held during the event:
+  // Bit 6 Bit 5 Bit 4 Bit 3 Bit 2 Bit 1 Bit 0
+  // CAPS  NO    ALT   C=    CTRL  SHIFT SHIFT
+  // LOCK  SCROLL                  right left
+  if (mod & 20)  {  // Alt or ctrl are masked
+	shortcutprint(FALSE, " 1",  "Help  ");
+	shortcutprint(FALSE, " 2",  "Mount ");
+	shortcutprint(FALSE, " 3",  "View  ");
+	shortcutprint(FALSE, " 4",  "Edit  ");
+	shortcutprint(FALSE, " 5",  "Copy  ");
+	shortcutprint(FALSE, " 6",  "RenMov");
+	shortcutprint(FALSE, " 7",  "Mkdir ");
+	shortcutprint(FALSE, " 8",  "Delete");
+	shortcutprint(FALSE, " 9",  "Menu  ");
+	shortcutprint(FALSE, " 10", "Quit ");
+  } else if (mod & 8)  {  // MEGA key, C=
+	shortcutprint(FALSE, " 1",  "      ");
+	shortcutprint(FALSE, " 2",  "      ");
+	shortcutprint(FALSE, " 3",  "      ");
+	shortcutprint(FALSE, " 4",  "      ");
+	shortcutprint(TRUE , " 5",  "DskCpy");
+	shortcutprint(FALSE, " 6",  "      ");
+	shortcutprint(FALSE, " 7",  "      ");
+	shortcutprint(FALSE, " 8",  "Format");
+	shortcutprint(FALSE, " 9",  "      ");
+	shortcutprint(FALSE, " 10", "     ");
+  } else if (mod & 3)  {  // either of the shift keys makes next even numbered F key
+	shortcutprint( TRUE, " 1",  "Mount ");
+	shortcutprint(FALSE, " 2",  "      ");
+	shortcutprint(FALSE, " 3",  "Edit  ");
+	shortcutprint(FALSE, " 4",  "      ");
+	shortcutprint(FALSE, " 5",  "RenMov");
+	shortcutprint(FALSE, " 6",  "      ");
+	shortcutprint( TRUE, " 7",  "Delete");
+	shortcutprint(FALSE, " 8",  "      ");
+	shortcutprint( TRUE, " 9",  "Quit  ");
+	shortcutprint(FALSE, " 10", "     ");
+  } else {
+	shortcutprint(FALSE, " 1",  "Help  ");
+	shortcutprint( TRUE, " 2",  "Mount ");
+	shortcutprint(FALSE, " 3",  "View  ");
+	shortcutprint(FALSE, " 4",  "Edit  ");
+	shortcutprint( TRUE, " 5",  "Copy  ");
+	shortcutprint(FALSE, " 6",  "RenMov");
+	shortcutprint(FALSE, " 7",  "Mkdir ");
+	shortcutprint( TRUE, " 8",  "Delete");
+	shortcutprint(FALSE, " 9",  "Menu  ");
+	shortcutprint( TRUE, " 10", "Quit ");
+  }
 
   textcolor(COLOUR_CYAN);
+}
+
+unsigned int cgetcalt(void)
+{
+    unsigned char k;
+    unsigned char m, mbefore;
+	
+	shortcuts(0);
+    while ((k = PEEK(0xD610U)) == 0)  {
+      m = getkeymodstate();
+      if (m != mbefore)  {
+        shortcuts(m);
+		mbefore = m;
+	  }
+	}
+    POKE(0xD610U, 0);
+    gotoxy(0, 0); // @@ To get debug output from top left
+    return (m << 8) + k;
 }
 
 void UpdateSectors(unsigned char drive, unsigned char side)  {
@@ -208,7 +217,7 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
 }
 
 unsigned char d81navi(unsigned char drive, unsigned char side)  {
-  char c;
+  unsigned int c;
   char pos = 0;
   unsigned char entries = 0;
   unsigned char attachresult;
@@ -223,7 +232,7 @@ unsigned char d81navi(unsigned char drive, unsigned char side)  {
     msprintf(": ");
     revers(0);
     listboxd81(10, 5, pos, entries);
-    c = cgetc();
+    c = cgetcalt();
     switch (c) {
 	  case 145: // Crsrup
 	    if (pos > 0)  pos--;
@@ -259,7 +268,8 @@ unsigned char d81navi(unsigned char drive, unsigned char side)  {
       break;
 	
 	  default:
-	    mprintf("val=", c);
+	    mh4printf("val=", c);
+		cputc(' ');
     }
   }
   return 0;
@@ -268,7 +278,7 @@ unsigned char d81navi(unsigned char drive, unsigned char side)  {
 // unsigned char testtrack;
 // unsigned char testsector;
 void navi(unsigned char side)  {
-  char c;
+  unsigned int c;
   unsigned char leftx;
   unsigned char starttrack;
   unsigned char startsector;
@@ -309,12 +319,7 @@ void navi(unsigned char side)  {
       listbox((side == i), i, leftx + 1, 1, midnight[i]->pos, midnight[i]->entries);
 	}
 
-	shortcuts();
-	
-	// @@ as long as dirents are not kept seperately in Attic RAM:
-	// midnight[side]->entries = getdirent(midnight[side]->drive, side);
-	gotoxy(0, 0); // @@ To get debug output from top left
-    c = cgetc();
+    c = cgetcalt();
     switch (c) {
 	  case 145: // Crsrup
 	    if (midnight[side]->pos > 0)  midnight[side]->pos--;
@@ -410,7 +415,14 @@ void navi(unsigned char side)  {
 		}
       break;
 
-	  case 0x12: // Ctrl-r
+	  case 0x8f6: // Mega-F5
+	    if (messagebox(0, "Disk copy,", "destination disk will be OVERWRITTEN", " "))  {
+          copywholedisk(midnight[side]->drive, midnight[side?0:1]->drive);
+		  UpdateSectors(midnight[side?0:1]->drive, side?0:1);
+		}
+      break;
+
+	  case 0x412: // Ctrl-r
 	    UpdateSectors(midnight[side]->drive, side);
       break;
 
@@ -422,7 +434,7 @@ void navi(unsigned char side)  {
 	  case 0xf6:
 	  case 0xf7:
 	  case 0xf9:
-		messagebox(0, "Navigation keys,", "not yet implemented", " ");
+		messagebox(0, "Some function keys,", "are not yet implemented.", " ");
       break;
 
 	  // case 0xF9: // ASC_F9:
@@ -437,8 +449,8 @@ void navi(unsigned char side)  {
 //    break;
 	
 	  default:
-	    mprintf("val=", c);
+	    mh4printf("val=", c);
 		cputc(' ');
-    }
+   }
   }
 }

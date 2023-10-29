@@ -85,16 +85,20 @@ __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
 
 # bugs
 
-* Additional `dirent` blocks are placed outside track 40 and this
-  is not what Commodore did.
-* Additional file blocks are also placed within track 40.
+* ✓ ~~Additional `dirent` blocks are placed outside track 40~~
+  ~~and this is not what Commodore did.~~
+* ✓ ~~Additional file blocks are also placed within track 40.~~
 * BAM and `dirent` blocks are read/written way too often. With the
   now cache for two disks (left and right) in place this can be
   optimised.
+* The disk controller always reads/writes two logical sectors
+  at a time because of course it acts on physical 80 sectored
+  dual sided media. The now abstraction make in no way optimal
+  use of that.
 * ✓ ~~`dirent` is currently not fully updated, additional sectors~~
   ~~are currently not added automatically.~~
 * `dirent` currently uses a full 255 bytes page of data which of
-  course is completely unecessary.
+  course is completely unnecessary.
 * ✓ ~~`dirent` currently is read beginning with the first block of~~
   ~~file entries not supporting the disk name block at track 40~~
   ~~sector 0.~~

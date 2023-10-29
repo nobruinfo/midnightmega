@@ -326,7 +326,7 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
   
   revers(1);
   mcputsxy(14, 4, " Midnight Mega ");
-  mcputsxy(40, 4, " The Mega65 file commander ");
+  mcputsxy(40, 4, " The MEGA65 file commander ");
   revers(0);
 
   mcputsxy(12, 6, message);
@@ -339,8 +339,8 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
   revers(0);
 //  gotoxy(1, 10);
   if (mode)  {
-    mcputsxy(2, 23, VERSION);
-    mcputsxy(58, 23, "github.com/nobruinfo");
+    mcputsxy(2, 1, VERSION);
+    mcputsxy(58, 1, "github.com/nobruinfo");
   }
   
   while(1)  {
