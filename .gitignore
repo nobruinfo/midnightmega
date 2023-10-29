@@ -1,6 +1,11 @@
 # Prerequisites
 *.d
 
+# Intermediate
+*.s
+*_dump.txt
+reproduce.tar
+
 # Compiled Object files
 *.slo
 *.lo
@@ -11,6 +16,7 @@
 # Linker output
 *.ilk
 *.exp
+*.elf
 
 # Precompiled Headers
 *.gch

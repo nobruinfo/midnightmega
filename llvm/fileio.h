@@ -73,7 +73,8 @@ typedef struct structHEADER {
 	unsigned char dummy[227];
 } HEADER;
 
-#define DATABLOCKS 3160 // 199   // nbr of file data pages in attic
+// 3160 is the usable space for data, 3200 to copy whole disks
+#define DATABLOCKS 3200 // 199   // nbr of file data pages in attic
 typedef struct structdatablock {
 	unsigned char chntrack;
 	unsigned char chnsector;
@@ -87,6 +88,9 @@ typedef struct structdatablock {
 #define DIRENTTRACK 40
 #define DIRENTSECT   3
 
+void GetBAM(unsigned char side);
+void PutBAM(unsigned char drive, unsigned char side);
+void BAM2Attic(unsigned char drive, unsigned char side);
 void BAMSectorUpdate(BAM* BAMsector, BAM* BAMsector2, char track, char sector, char set);
 unsigned int FreeBlocks(unsigned char drive);
 void getDiskname(unsigned char drive, char* diskname);
@@ -101,6 +105,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
 					unsigned char * starttrack, unsigned char * startsector);
 void deleteblockchain(unsigned char drive,
                       unsigned char track, unsigned char sector);
+void copywholedisk(unsigned char srcdrive, unsigned char destdrive);
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i);
 DIRENT* getdirententry(unsigned char side, unsigned char entry);
 unsigned char getdirent(unsigned char drive, unsigned char side);

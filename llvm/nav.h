@@ -19,6 +19,6 @@ void listboxd81(unsigned char x, unsigned char y,
 void listbox(unsigned char iscurrent, unsigned char side,
              unsigned char x, unsigned char y,
              unsigned char currentitem, unsigned char nbritems);
-void shortcuts();
+void shortcuts(unsigned char mod);
 unsigned char d81navi(unsigned char drive, unsigned char side);
 void navi(unsigned char side);

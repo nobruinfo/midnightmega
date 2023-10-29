@@ -65,7 +65,7 @@ unsigned char ReadSector(unsigned char drive, char track,
 	unsigned char retval;
 
 	if (track == 0)  return 0xFC;
-	drive += 0x60;   // #$60 drive 0
+	drive += 0x20;   // #$60 drive 0
     mprintfd("Begin ReadSector t=", track);
     mprintfd(" s=", sector);
 	
@@ -102,7 +102,7 @@ unsigned char WriteSector(unsigned char drive, char track,
                                                char sector) {
 	unsigned char retval;
 
-	drive += 0x60;   // #$60 drive 0
+	drive += 0x20;   // #$60 drive 0
 	if (sector >= 20)  {
 		drive += 0x08; // second side of disk
 	}
@@ -684,6 +684,55 @@ void deleteblockchain(unsigned char drive,
   }
   PutOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
   PutOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
+}
+
+extern unsigned char s[DOSFILENAMEANDTYPELEN];
+char * tracksectorstring(unsigned char track, unsigned char sector)  {
+  unsigned int  i;
+
+  i = 0;
+  s[i++] = 'T';
+  s[i++] = 'r';
+  s[i++] = 'a';
+  s[i++] = 'c';
+  s[i++] = 'k';
+  s[i++] = ':';
+  s[i++] = ' ';
+  s[i++] = track / 10 + 48; // digit screen codes
+  s[i++] = track % 10 + 48;
+  s[i++] = ' ';
+  s[i++] = 'S';
+  s[i++] = 'e';
+  s[i++] = 'c';
+  s[i++] = 't';
+  s[i++] = 'o';
+  s[i++] = 'r';
+  s[i++] = ':';
+  s[i++] = ' ';
+  s[i++] = sector / 10 + 48;
+  s[i++] = sector % 10 + 48;
+  s[i++] = 0;
+  return (char*) s;
+}
+
+void copywholedisk(unsigned char srcdrive, unsigned char destdrive)  {
+  unsigned char track;
+  unsigned char sector;
+  unsigned int  i;
+
+  i = 0;
+  for (track = 1; track <= 80; track++)  {
+	for (sector = 1; sector <= 40; sector++)  {
+	  progress("Reading...", tracksectorstring(track, sector), i / 32);
+	  GetOneSector(worksectorasBAM[0], srcdrive, track, sector);
+	  DATABLOCK* ws = worksector[0];
+	  lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE);
+	  progress("Writing...", tracksectorstring(track, sector), i / 32);
+	  lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
+	  PutOneSector((BAM *) ws, destdrive, track, sector);
+	  i++;
+	}
+  }
 }
 
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i)  {

@@ -87,6 +87,11 @@ int main() {
   printf("ATTICZPBACKUP 32addr is: %08lx", (unsigned long) ATTICZPBACKUP);
   cgetc();
 */
+  mcputsxy(0, 22, "The function keys shown in the bottom line are ");
+  msprintf("meant to be used with ");
+  mcputsxy(0, 23, "and without [Shift] and [Mega] after the messagebox is dismissed:");
+  shortcuts(16);
+
   if (messagebox(1, "is currently beta and may destroy data structures on",
                     ".d81 and real disks! Please work on backed up media.",
 			        "Press RETURN to continue, STOP to halt."))  {
@@ -212,7 +217,7 @@ hyppo_setname("DATADISK.D81");
     navi(0);
   }
   clrhome();
-  msprintf("Have fun with your Mega65!");
+  msprintf("Have fun with your MEGA65!");
   cputln();
   cgetc();
   flushkeybuf();
