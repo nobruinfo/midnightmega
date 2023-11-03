@@ -320,6 +320,7 @@ void navi(unsigned char side)  {
 	}
 
     c = cgetcalt();
+    bordercolor (COLOUR_BLACK); // to unset red error borders
     switch (c) {
 	  case 145: // Crsrup
 	    if (midnight[side]->pos > 0)  midnight[side]->pos--;
@@ -341,14 +342,18 @@ void navi(unsigned char side)  {
 //		midnight[side]->entries = getdirent(midnight[side]->drive, side);
       break;
 
-	  case 0xf2: // Modifier and ASC_F1:
+	  case 0xf2: // Modifiers and ASC_F1:
+	  case 0x1f2:
+	  case 0x2f2:
 	    if (d81navi(midnight[side]->drive, side))  {
 	      UpdateSectors(midnight[side]->drive, side);
 		}
       break;
 
 	  case 0xf5: // ASC_F5 copy
-	  case 0xf8: // Modifier and ASC_F8 delete
+	  case 0xf8: // Modifiers and ASC_F8 delete
+	  case 0x1f8:
+	  case 0x2f8:
         // @@ message
         ds = getdirententry(side, midnight[side]->pos);
 		if ((ds->type&0xf) != VAL_DOSFTYPE_CBM && ds->type != VAL_DOSFTYPE_DEL)  {
@@ -438,7 +443,9 @@ void navi(unsigned char side)  {
       break;
 
 	  // case 0xF9: // ASC_F9:
-	  case 0xFA: // Modifier and ASC_F9:
+	  case 0xFA: // Modifiers and ASC_F9:
+	  case 0x1FA:
+	  case 0x2FA:
 	    if (getkeymodstate() == KEYMOD_RSHIFT || getkeymodstate() == KEYMOD_LSHIFT)  {
     	  return;
 	    }

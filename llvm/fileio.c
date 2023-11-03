@@ -89,6 +89,7 @@ unsigned char ReadSector(unsigned char drive, char track,
 	if (PEEK(0xd082U) & 0x18) {
       // Turn on just the LED, this causes to blink:
 	  POKE(0xd080U, 0x40);
+	  bordercolor(COLOUR_RED);
 	  return 0xff;
 	}
 	// Make sure we can see the data, clear bit 7:
@@ -128,6 +129,7 @@ unsigned char WriteSector(unsigned char drive, char track,
 	if (PEEK(0xd082U) & 0x18) {
       // Turn on just the LED, this causes to blink:
 	  POKE(0xd080U, 0x40);
+	  bordercolor(COLOUR_RED);
 	  return 0xff;
 	}
 	// Make sure we can see the data, clear bit 7:
@@ -286,7 +288,7 @@ unsigned char PutOneSector(BAM* entry, unsigned char drive,
 unsigned char driveled(unsigned char errorcode)  {
 	// Turn on just the LED, this causes it to blink:
     POKE(0xd080U, 0x40);
-//    bordercolor (COLOUR_RED);
+    bordercolor (COLOUR_RED);
 	return errorcode;
 }
 
@@ -691,7 +693,7 @@ char * tracksectorstring(unsigned char track, unsigned char sector)  {
   unsigned int  i;
 
   i = 0;
-  s[i++] = 'T';
+  s[i++] = 'T'; // @@ is this now how I want things to be?
   s[i++] = 'r';
   s[i++] = 'a';
   s[i++] = 'c';
@@ -719,15 +721,22 @@ void copywholedisk(unsigned char srcdrive, unsigned char destdrive)  {
   unsigned char track;
   unsigned char sector;
   unsigned int  i;
+  DATABLOCK* ws;
 
   i = 0;
   for (track = 1; track <= 80; track++)  {
 	for (sector = 1; sector <= 40; sector++)  {
-	  progress("Reading...", tracksectorstring(track, sector), i / 32);
+	  progress("Reading...", tracksectorstring(track, sector), i / 64);
 	  GetOneSector(worksectorasBAM[0], srcdrive, track, sector);
-	  DATABLOCK* ws = worksector[0];
+	  ws = worksector[0];
 	  lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE);
-	  progress("Writing...", tracksectorstring(track, sector), i / 32);
+	  i++;
+	}
+  }
+  i = 0;
+  for (track = 1; track <= 80; track++)  {
+	for (sector = 1; sector <= 40; sector++)  {
+	  progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
 	  lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
 	  PutOneSector((BAM *) ws, destdrive, track, sector);
 	  i++;

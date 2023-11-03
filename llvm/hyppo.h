@@ -41,3 +41,4 @@ unsigned char hyppo_closedir(unsigned char filedescriptor);
 unsigned char hyppo_readdir(unsigned char filedescriptor);
 char * getsfn();
 char * getlfn();
+void hyppo_reset(void);

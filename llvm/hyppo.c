@@ -294,6 +294,14 @@ char * getlfn() {
   return readdir_dirent->lfn;
 }
 
+void hyppo_reset(void)  {
+  asm volatile(
+    "lda #$7E\n"
+	"sta HTRAP00\n"
+	"clv\n"
+  :  :  : "a");
+}
+
 // ******************************************
 // ***  End of hyppo related functions    ***
 // ******************************************

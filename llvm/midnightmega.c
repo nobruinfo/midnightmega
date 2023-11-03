@@ -218,9 +218,11 @@ hyppo_setname("DATADISK.D81");
   }
   clrhome();
   msprintf("Have fun with your MEGA65!");
-  cputln();
-  cgetc();
-  flushkeybuf();
+  usleep(2000000); // microseconds
+//  cputln();
+//  cgetc();
+//  flushkeybuf();
+  hyppo_reset();
 
   // Restore ZP:
 //  lcopy(ATTICZPBACKUP, 0, BLOCKSIZE);
