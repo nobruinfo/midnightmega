@@ -10,6 +10,7 @@ SET c1541="%VICE%\c1541"
 SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Connect\M65Connect Resources\mega65_ftp.exe
 SET XMEGA65=D:\Game Collections\C64\Mega65\Xemu\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos\
+SET "HDOSSLASH=%HDOS:\=/%"
 SET IMG=%APPDATA%\xemu-lgb\mega65\mega65.img
 SET PATH=%PATH%;%VICE%;%XMEGA65%
 
@@ -58,13 +59,16 @@ quit - leave this programme.
 
 SET PRJ=midnightmega
 SET DATADISK=datadisk
+SET "prefix=%HDOS%\*.d81"
 
 REM mega65_ftp -d mega65.img
 
 "%MFTP%" -d %IMG%
-"%MFTP%" -d %IMG% -c "del 2.d81"
-"%MFTP%" -d %IMG% -c "put C:/Users/Superuser/AppData/Roaming/xemu-lgb/mega65/hdos/2.d81"
-"%MFTP%" -d %IMG% -c "dir"
+for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N "%prefix%"') do (
+  "%MFTP%" -d %IMG% -c "del %%i"
+  "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/%%i"
+)
+"%MFTP%" -d %IMG% -c "dir"|more
 
 PAUSE
 GOTO :eof

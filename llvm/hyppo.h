@@ -56,3 +56,5 @@ unsigned char hyppo_readdir(unsigned char filedescriptor);
 char * getsfn();
 char * getlfn();
 void hyppo_reset(void);
+void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
+                      unsigned char * majorHDOS,  unsigned char * minorHDOS);

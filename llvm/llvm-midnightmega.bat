@@ -7,12 +7,15 @@ SET VICE=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\2021
 SET VICE=%VICE%\GTK3VICE-3.6.1-win64\bin\
 SET c1541="%VICE%\c1541"
 
-SET XMEGA65=D:\Game Collections\C64\Mega65\Xemu\xemu-binaries-win64\
-SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos\
+SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Connect\M65Connect Resources\mega65_ftp.exe
+SET HICKUP=D:\Game Collections\C64\Mega65\Xemu
+SET XMEGA65=%HICKUP%\xemu-binaries-win64\
+SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos
+SET "HDOSSLASH=%HDOS:\=/%"
+SET IMG=%APPDATA%\xemu-lgb\mega65\mega65.img
 SET PATH=%PATH%;%VICE%;%XMEGA65%
 
 CD /D %~dp0
-
 
 SET PRJ=midnightmega
 SET DATADISK=datadisk
@@ -115,10 +118,21 @@ IF ERRORLEVEL == 1 (
     %c1541% -attach %DATADISK%.d81 -write %PRJ%.prg _%PRJ%.%%i
   )
   REM Use in Xemu's out of the image file fs access:
-  XCOPY /Y %PRJ%.d81 %HDOS%
-  XCOPY /Y %DATADISK%.d81 %HDOS%
+  XCOPY /Y %PRJ%.d81 %HDOS%\
+  XCOPY /Y %DATADISK%.d81 %HDOS%\
 
-  XMEGA65 -besure -8 %HDOS%%PRJ%.d81 -9 %HDOS%%DATADISK%.d81 -autoload ^
-    -hdosvirt -driveled
+  REM Put project into the SD card image file:
+  SET "PRJ=%PRJ:~0,8%"
+  DEL %HDOS%\!PRJ!.d81
+  REN %HDOS%\%PRJ%.d81 !PRJ!.d81
+  "%MFTP%" -d %IMG% -c "del !PRJ!.d81"
+  "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/!PRJ!.d81"
+  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
+  "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/%DATADISK%.d81"
+
+  XMEGA65 -besure -8 !PRJ!.d81 -9 %DATADISK%.d81 -autoload ^
+    -hickup "%HICKUP%\HICKUP.M65" ^
+	-driveled
+REM    -hdosvirt 
   REM XMEGA65 -syscon -besure -prg %PRJ%.prg
 )

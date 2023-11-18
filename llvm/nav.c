@@ -297,6 +297,9 @@ void navi(unsigned char side)  {
     UpdateSectors(midnight[i]->drive, i);
   }
   while (1)  {
+    // @@ testing:
+	mprintf("hyppo_get_proc_desc=", hyppo_get_proc_desc());
+
     for (i = 0; i <= 1; i++)  {
       if (midnight[i]->pos > midnight[i]->entries)  {
         midnight[i]->pos = midnight[i]->entries;

@@ -346,6 +346,19 @@ void hyppo_reset(void)  {
   :  :  : "a");
 }
 
+// https://www.felixcloutier.com/documents/gcc-asm.html#outputs
+// @@ minorHDOS not yet implemented
+void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
+                      unsigned char * majorHDOS,  unsigned char * minorHDOS)  {
+  asm volatile(
+    "lda #$00\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	                                                  // llvm doesn't know the z reg
+  : "=a" (*majorhyppo), "=x" (*minorhyppo), "=y" (*majorHDOS) // , "=z" (*minorHDOS)
+  :  : "a", "x", "y" /* , "z" */ );
+}
+
 // ******************************************
 // ***  End of hyppo related functions    ***
 // ******************************************

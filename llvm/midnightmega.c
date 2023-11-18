@@ -49,6 +49,18 @@ int main() {
   // clrhome();
   // mprintf("hyppo_d81detach=", hyppo_d81detach());
 
+/*
+  unsigned char majorhyppo;
+  unsigned char minorhyppo;
+  unsigned char majorHDOS;
+  unsigned char minorHDOS;
+  hyppo_getversion(&majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
+  mprintf(" majorhyppo=", majorhyppo);
+  mprintf(" minorhyppo=", minorhyppo);
+  mprintf(" majorHDOS=", majorHDOS);
+  mprintf(" minorHDOS=", minorHDOS);
+*/
+
   if (messagebox(1, "is currently beta and may destroy data structures on",
                     ".d81 and real disks! Please work on backed up media.",
 			        "Press RETURN to continue, STOP to halt."))  {
