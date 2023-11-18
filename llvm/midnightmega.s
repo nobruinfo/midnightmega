@@ -197,7 +197,7 @@ main:                                   ; @main
 	lda	#16
 	jsr	shortcuts
 	jsr	clrhome
-	jsr	hyppo_get_proc_desc
+	jsr	hyppo_d81detach
 	cpx	#0
 	bpl	.LBB0_15
 ; %bb.14:
@@ -3635,31 +3635,29 @@ donehypclosedir6:
 	.byte	.LBB0_102@mos16hi
 	.byte	.LBB0_130@mos16hi
                                         ; -- End function
-	.section	.text.hyppo_get_proc_desc,"ax",@progbits
-	.type	hyppo_get_proc_desc,@function   ; -- Begin function hyppo_get_proc_desc
-hyppo_get_proc_desc:                    ; @hyppo_get_proc_desc
+	.section	.text.hyppo_d81detach,"ax",@progbits
+	.type	hyppo_d81detach,@function       ; -- Begin function hyppo_d81detach
+hyppo_d81detach:                        ; @hyppo_d81detach
 ; %bb.0:
-	ldy	#28
-	sty	fnamehi
 	;APP
 	ldx	#0
-	lda	#72
+	lda	#66
 	sta	54848
 	clv
-	bcc	errgetproc7
+	bcc	errhypd81detach7
 	sta	__rc2
-	jmp	donegetproc7
-errgetproc7:
+	jmp	donehypd81detach7
+errhypd81detach7:
 	lda	#255
 	sta	__rc2
-donegetproc7:
+donehypd81detach7:
 	nop
 
 	;NO_APP
 	lda	__rc2
 	rts
 .Lfunc_end1:
-	.size	hyppo_get_proc_desc, .Lfunc_end1-hyppo_get_proc_desc
+	.size	hyppo_d81detach, .Lfunc_end1-hyppo_d81detach
                                         ; -- End function
 	.section	.text.ReadSector,"ax",@progbits
 	.type	ReadSector,@function            ; -- Begin function ReadSector
@@ -11764,8 +11762,8 @@ memmove:                                ; @memmove
 
 	.type	.L.str.3,@object                ; @.str.3
 .L.str.3:
-	.asciz	"hyppo_get_proc_desc="
-	.size	.L.str.3, 21
+	.asciz	"hyppo_d81detach="
+	.size	.L.str.3, 17
 
 	.type	.L.str.4,@object                ; @.str.4
 .L.str.4:

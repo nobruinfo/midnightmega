@@ -46,6 +46,8 @@ int main() {
   // testing:
   // clrhome();
   // mprintf("hyppo_get_proc_desc=", hyppo_get_proc_desc());
+  // clrhome();
+  // mprintf("hyppo_d81detach=", hyppo_d81detach());
 
   if (messagebox(1, "is currently beta and may destroy data structures on",
                     ".d81 and real disks! Please work on backed up media.",

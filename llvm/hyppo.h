@@ -49,6 +49,7 @@ unsigned char hyppo_selectdrive(unsigned char nb);
 unsigned char hyppo_setname(char *filename);
 unsigned char hyppo_d81attach0(void);
 unsigned char hyppo_d81attach1(void);
+unsigned char hyppo_d81detach(void);
 unsigned char hyppo_opendir(void);
 unsigned char hyppo_closedir(unsigned char filedescriptor);
 unsigned char hyppo_readdir(unsigned char filedescriptor);

@@ -192,6 +192,26 @@ unsigned char hyppo_d81attach1(void)  {
   return retval;
 }
 
+unsigned char hyppo_d81detach(void)  {
+	unsigned char retval;
+
+  asm volatile(
+	"ldx #$00\n"    // shouldn't be necessary
+    "lda #$42\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	"bcc errhypd81detach%=\n"
+    "sta %0\n"
+	"jmp donehypd81detach%=\n"
+"errhypd81detach%=:\n"
+    "lda #$FF\n"
+	"sta %0\n"
+"donehypd81detach%=:\n"
+    "nop\n"
+  : "=r"(retval) : : "a", "x");
+  return retval;
+}
+
 /*
 hyppo_loadfile
 HTRAP00
