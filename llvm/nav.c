@@ -234,10 +234,11 @@ unsigned char d81navi(unsigned char drive, unsigned char side)  {
     listboxd81(10, 5, pos, entries);
     c = cgetcalt();
     switch (c) {
-	  case 145: // Crsrup
+	  case 0x91: // Crsrup
+	  case 0x291: // Shift Crsrup
 	    if (pos > 0)  pos--;
       break;
-	  case 17: // Crsrdown
+	  case 0x11: // Crsrdown
 	    pos++;
       break;
 
@@ -322,10 +323,11 @@ void navi(unsigned char side)  {
     c = cgetcalt();
     bordercolor (COLOUR_BLACK); // to unset red error borders
     switch (c) {
-	  case 145: // Crsrup
+	  case 0x91: // Crsrup
+	  case 0x291: // Shift Crsrup
 	    if (midnight[side]->pos > 0)  midnight[side]->pos--;
       break;
-	  case 17: // Crsrdown
+	  case 0x11: // Crsrdown
 	    midnight[side]->pos++;
       break;
 	  case 0x9d: // Left

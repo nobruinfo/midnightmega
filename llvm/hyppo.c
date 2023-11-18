@@ -20,13 +20,15 @@ struct DIRENT* const __attribute__((used)) readdir_dirent = (struct DIRENT*) DIR
 __asm__(".set HTRAP00, " XSTR(HTRAP00asm) );
 __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
 
+// please be aware the following structures are the same RAM page:
 struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) FILENAMEPAGE;
+struct TASKBLOCK* const taskblock = (struct TASKBLOCK*) FILENAMEPAGE;
 
 // https://stackoverflow.com/questions/8810390/how-to-use-a-global-variable-in-gcc-inline-assembly
 // define fnamehi (unsigned char)((unsigned int)hyppofn->name >> 8)
 static unsigned char __attribute__((used)) fnamehi;
 unsigned char hyppo_setup_transfer_area(void)  {
-	unsigned char retval;
+  unsigned char retval;
 
   fnamehi = (unsigned int)hyppofn->name >> 8;
 
@@ -43,6 +45,28 @@ unsigned char hyppo_setup_transfer_area(void)  {
     "lda #$FF\n"
 	"sta %0\n"
 "donesettrans%=:\n"
+    "nop\n"
+	: "=r"(retval) : "y"(fnamehi) : "a", "x");
+  return retval;
+}
+unsigned char hyppo_get_proc_desc(void)  {
+  unsigned char retval;
+
+  fnamehi = (unsigned int)taskblock >> 8;
+
+  asm volatile(
+	"ldx #$00\n"         // shouldn't be necessary
+//	"ldy #>(fnamehi)\n"  // works only because "name" is first in struct
+    "lda #$48\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	"bcc errgetproc%=\n"
+    "sta %0\n"
+	"jmp donegetproc%=\n"
+"errgetproc%=:\n"
+    "lda #$FF\n"
+	"sta %0\n"
+"donegetproc%=:\n"
     "nop\n"
 	: "=r"(retval) : "y"(fnamehi) : "a", "x");
   return retval;

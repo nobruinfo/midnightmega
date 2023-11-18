@@ -48,7 +48,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.3.0-beta
+SET v=v0.3.1-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 REM DEL %TEMP%\*.o

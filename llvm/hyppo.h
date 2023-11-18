@@ -2,11 +2,23 @@
 // ***  hyppo.h abstraction to hyppo mount handling      ***
 // *********************************************************
 
+// please be aware the following structures are the same RAM page:
 struct HYPPOFILENAME {
 	char name[65];
 	char sfn[65];
 	unsigned char dummy[256-65-65];  // blown up to fill a whole page
 };
+struct TASKBLOCK {  // big book page #39b
+    char taskID;
+	char taskname[16];
+	char d81flags0;
+	char d81flags1;
+	char d81filenamelength0;
+	char d81filenamelength1;
+	char d81filename0[32];
+	char d81filename1[32];
+	unsigned char notimplemented[256-32-32-16-5];
+};                                   // blown up to fill a whole page
 
 struct DIRENT {
 	char lfn[0x40];    // The long file name
@@ -31,6 +43,7 @@ struct DIRENT {
 };
 
 unsigned char hyppo_setup_transfer_area(void);
+unsigned char hyppo_get_proc_desc(void);
 unsigned char hyppo_getcurrentdrive(void);
 unsigned char hyppo_selectdrive(unsigned char nb);
 unsigned char hyppo_setname(char *filename);
