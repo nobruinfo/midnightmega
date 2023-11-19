@@ -210,7 +210,45 @@ unsigned int cgetcalt(void)
 }
 
 void UpdateSectors(unsigned char drive, unsigned char side)  {
-  getDiskname(midnight[side]->drive, (char *) diskname[side]);
+  unsigned char i;
+
+  // This would actually only have to be done once for both drives:
+  hyppo_get_proc_desc();
+  /*
+  // https://stackoverflow.com/questions/1258550/why-should-you-use-strncpy-instead-of-strcpy
+  strncpy((char *) midnight[side]->curfile,
+          (drive ? (char *) taskblock->d81filename1 : (char *) taskblock->d81filename0),
+          (drive ? taskblock->d81filenamelength1 : taskblock->d81filenamelength0));
+*/
+  if (drive == 0)  {
+/*
+    strncpy(midnight[side]->curfile,
+            taskblock->d81filename0,
+            taskblock->d81filenamelength0);
+    midnight[side]->curfile[taskblock->d81filenamelength0] = 0;
+*/
+    i = 0;
+    while (taskblock->d81filename0[i] != 0 && i < taskblock->d81filenamelength0)  {
+      midnight[side]->curfile[i] = taskblock->d81filename0[i];
+      i++;
+    }
+    midnight[side]->curfile[i] = 0;
+  } else {
+/*
+    strncpy(midnight[side]->curfile,
+            taskblock->d81filename1,
+            taskblock->d81filenamelength1);
+    midnight[side]->curfile[taskblock->d81filenamelength1] = 0;
+*/
+    i = 0;
+    while (taskblock->d81filename1[i] != 0 && i < taskblock->d81filenamelength1)  {
+      midnight[side]->curfile[i] = taskblock->d81filename1[i];
+      i++;
+    }
+    midnight[side]->curfile[i] = 0;
+  }
+
+  getDiskname(drive, (char *) diskname[side]);
   BAM2Attic(drive, side);
   midnight[side]->blocksfree = FreeBlocks(side);
   midnight[side]->entries = getdirent(drive, side);
@@ -287,7 +325,7 @@ void navi(unsigned char side)  {
   DIRENT* ds;
   
   for (i = 0; i <= 1; i++)  {
-    // @@ test
+    // @@ to be made variable maybe?
     midnight[i]->drive = i;
 
     // title of mcbox is .d81 file name, cannot be read at startup:
@@ -297,9 +335,6 @@ void navi(unsigned char side)  {
     UpdateSectors(midnight[i]->drive, i);
   }
   while (1)  {
-    // @@ testing:
-	mprintf("hyppo_get_proc_desc=", hyppo_get_proc_desc());
-
     for (i = 0; i <= 1; i++)  {
       if (midnight[i]->pos > midnight[i]->entries)  {
         midnight[i]->pos = midnight[i]->entries;

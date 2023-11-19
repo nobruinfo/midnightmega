@@ -42,6 +42,8 @@ struct DIRENT {
 	unsigned char dummy[256-87];  // blown up to fill a whole page
 };
 
+extern struct TASKBLOCK* const taskblock;
+
 unsigned char hyppo_setup_transfer_area(void);
 unsigned char hyppo_get_proc_desc(void);
 unsigned char hyppo_getcurrentdrive(void);

@@ -9,6 +9,7 @@
 #include <stdio.h>  // llvm
 #include <mega65/conio.h>  // llvm instead of <printf.h>
 #include <mega65/memory.h>  // mega65-libc
+#include <mega65/hal.h>  // mega65-libc
 // #include <peekpoke.h>  llvm
 // #include <conio_.h>
 // #include <conio-lines.h>
@@ -20,6 +21,7 @@
 
 #include "regions.h"
 #include "conioextensions.h"
+#include "hyppo.h"
 #include "nav.h"
 
 // char* inputstr = (char*) INPUTSTRPAGE;

@@ -6,6 +6,8 @@ setlocal enabledelayedexpansion
 SET VICE=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\2021
 SET VICE=%VICE%\GTK3VICE-3.6.1-win64\bin\
 SET c1541="%VICE%\c1541"
+SET PETCAT=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\
+SET PETCAT="%PETCAT%2021\GTK3VICE-3.6.1-win64\bin\petcat.exe"
 
 SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Connect\M65Connect Resources\mega65_ftp.exe
 SET HICKUP=D:\Game Collections\C64\Mega65\Xemu
@@ -13,6 +15,7 @@ SET XMEGA65=%HICKUP%\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos
 SET "HDOSSLASH=%HDOS:\=/%"
 SET IMG=%APPDATA%\xemu-lgb\mega65\mega65.img
+SET D81NAME=MEGA65.D81
 SET PATH=%PATH%;%VICE%;%XMEGA65%
 
 CD /D %~dp0
@@ -130,9 +133,24 @@ IF ERRORLEVEL == 1 (
   "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/%DATADISK%.d81"
 
-  XMEGA65 -besure -8 !PRJ!.d81 -9 %DATADISK%.d81 -autoload ^
+  REM Create a stub disk to be loaded at CLI level from current host
+  REM directory to mount .d81 within virtual SD card image:
+  SET "PRJUPPER=!PRJ!"
+  SET "DATADISKUPPER=!DATADISK!"
+  for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+    set "PRJUPPER=!PRJUPPER:%%b=%%b!"
+    set "DATADISKUPPER=!DATADISKUPPER:%%b=%%b!"
+  )
+  ECHO 10 MOUNT "!PRJUPPER!.D81">mega65.bas
+  ECHO 20 MOUNT "!DATADISKUPPER!.D81",U9>>mega65.bas
+  ECHO 30 RUN "*">>mega65.bas
+
+  XMEGA65 -besure -defd81fromsd ^
+    -importbas mega65.bas ^
     -hickup "%HICKUP%\HICKUP.M65" ^
 	-driveled
-REM    -hdosvirt 
+REM    -hdosvirt -defd81fromsd
+REM    -8 !PRJ!.d81 -9 %DATADISK%.d81 -autoload
   REM XMEGA65 -syscon -besure -prg %PRJ%.prg
+  DEL mega65.bas
 )
