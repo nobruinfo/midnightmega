@@ -1,0 +1,202 @@
+WINDOWS: console is open
+**** The Evolving MEGA65 emulator from LGB ****
+This software is part of the Xemu project: https://github.com/lgblgblgb/xemu
+CREATED: travis@lgb on Linux 5.15.0-1037-gcp at Sun 26 Nov 2023 11:59:31 PM UTC
+CREATED: gcc-mingw64 9.3-win32 20200320 64LE for win64
+VERSION: https://github.com/lgblgblgb/xemu.git next 2cf798333fef29c6ab79777417c04e3456bcce66 20231127005406 official-build
+EMULATE: MEGA65 (mega65): xmega65 (../../build/bin/xmega65.win64) for mega65 on win64 (win64) using x86_64-w64-mingw32-gcc
+LICENSE: Copyright (C)2016-2023 Gábor Lénárt (aka LGB) lgb@lgb.hu http://lgb.hu/
+LICENSE: This software is a GNU/GPL version 2 (or later) software.
+LICENSE: <http://gnu.org/licenses/gpl.html>
+LICENSE: This is free software; you are free to change and redistribute it.
+LICENSE: There is NO WARRANTY, to the extent permitted by law.
+
+WINDOWS: UTF-8 filenames ARE supported, cool!
+FILE: file @mega65-default.cfg opened as C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\mega65-default.cfg with base mode-set as fd=6
+FILE: 350 bytes loaded from file: C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\mega65-default.cfg
+CFG: Default config file @mega65-default.cfg has been used
+CFG: CLI parsing is done without error.
+FILE: file @mega65-template.cfg.TMP opened as C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\mega65-template.cfg.TMP with base mode-set as fd=6
+FILE: 8422 bytes saved into file: @mega65-template.cfg.TMP
+FILE: renaming file: C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\mega65-template.cfg.TMP -> C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\mega65-template.cfg
+XEMU: emulated MEGA65 model ID: $03
+INSTALLER: not activated.
+Logging is disabled at compile-time.
+Logging into file: not enabled.
+SDL: no SDL subsystem initialization has been done yet, do it!
+SDL version: (hg-14525:e52d96ea04fc) compiled with 2.0.14, used with 2.0.14 on platform Windows
+SDL system info: 64 bits LE, 8 cores, l1_line=64, RAM=16325Mbytes, max_alignment=16, CPU features: 3DNow=0 AVX=1 AVX2=1 AltiVec=0 MMX=1 RDTSC=1 SSE=1 SSE2=1 SSE3=1 SSE41=1 SSE42=1
+SDL drivers: video = windows, audio = wasapi
+TIMING: sleep = usleep, query = SDL_GetPerformanceCounter
+SDL preferences directory: C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\
+SDL window native pixel format: SDL_PIXELFORMAT_RGB888
+SDL renderer driver #0: "direct3d"
+SDL renderer driver #1: "opengl"
+SDL renderer driver #2: "opengles2"
+SDL renderer driver #3: "software"
+SDL renderer used: "direct3d" max_tex=16384x16384 tex_formats=3 (ARGB8888 YV12 IYUV)
+SDL: creating main texture 800 x 625
+
+GUI: no GUI was specified, using the first available one from this list: windows osd none
+GUI: using "windows" (Windows API based Xemu UI implementation)
+FILE: file @keymap-default.cfg opened as C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\keymap-default.cfg with base mode-set as fd=6
+HID: 93 key bindings has been added as the default built-in configuration
+FILE: file @keymap.cfg opened as C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\keymap.cfg with base mode-set as fd=6
+FILE: 2014 bytes loaded from file: C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\keymap.cfg
+HID: altering keyboard mapping for "COLON" from "'" to ";" at array index #53
+HID: altering keyboard mapping for "SEMICOLON" from ";" to "'" at array index #59
+HID: altering keyboard mapping for "F9" from "" to "F9" at array index #80
+HID: altering keyboard mapping for "F11" from "" to "F11" at array index #81
+HID: keymap configuration from file @keymap.cfg has been processed (91 successfull mappings).
+FILE: file @i2c.bin opened as C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\i2c.bin with base mode-set as fd=6
+FILE: 4096 bytes loaded from file: C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\i2c.bin
+MEMCONTENT: "extfreezer" (Freezer) was not requested, using the built-in ($7E7C bytes) [4c9ce23675619d2e7db54c39add8969a48a74fac].
+MEMCONTENT: "extinitrom" (Initial boot-ROM) was not requested, using the built-in ($20000 bytes) [bbdfca752a6e7b81fbbf70c5555444d82fad8af7].
+MEMCONTENT: "extonboard" (On-boarding utility) was not requested, using the built-in ($2B84 bytes) [e2b04c493fc352837b0462681b6c51c2cf257293].
+MEMCONTENT: "extflashutil" (MEGA-flash utility) was not requested, using the built-in ($27 bytes) [af0ac0ad99f6fe9110e86d7cd3faf0d7c28405c1].
+MEMCONTENT: "extbanner" (MEGA65 banner) was not requested, using the built-in ($5300 bytes) [7356a08ede7d191a523090fcb417b00b6b4abf86].
+MEMCONTENT: "extchrwom" (Character-WOM) was not requested, using the built-in ($1000 bytes) [466e399a5e994b52f6cef6019b32b9f6b504cd14].
+MEMCONTENT: "extcramutils" (Utils in CRAM) was not requested, using the built-in ($8000 bytes) [a9a4890807560bb3eef2c3238120ef78c6c214e7].
+FILE: file D:\Game Collections\C64\Mega65\Xemu\HICKUP.M65 opened as D:\Game Collections\C64\Mega65\Xemu\HICKUP.M65 with base mode-set as fd=6
+FILE: 16384 bytes loaded from file: D:\Game Collections\C64\Mega65\Xemu\HICKUP.M65
+MEMCONTENT: "hickup" (Hyppo-Hickup) loaded custom object ($4000 bytes) from external file [84eb87c8feefeb4bde9e1b5fce503c18c6fd5cbc]: D:\Game Collections\C64\Mega65\Xemu\HICKUP.M65
+D81: initial subsystem reset
+SDCARD: configuring F011 FDC (#0) with have_disk=0, can_write=1, image_size=0, d81_access="D81"(M:0,A=$00,B=$00)
+SDCARD: configuring F011 FDC (#1) with have_disk=0, can_write=1, image_size=0, d81_access="D81"(M:0,A=$00,B=$00)
+FILE: file @mega65.img opened as C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\mega65.img with base mode-set as fd=6
+SDCARD: image is not compressed
+SDCARD: card init done, size=4096 Mbytes (R/W), virtsd_mode=image-file, default_D81_from_sd=0
+SDCARD: external mount pool is #8388608...8399487 (card size: 8388608)
+SDCARD: check Xemu signature (@block 2): disk=2 this_xemu=2
+VIC4: writing $D030 in VIC2 I/O mode with data $00 @ PC=$0000 (hypervisor mode: 0)
+VIC4: setting PAL mode (by emulator initalization)
+DMA: initializing DMA engine for chip revision 1 (initially, may be modified later!), modulo_support=DISABLED.
+UARTMON: disabled, no name is specified to bind to.
+SPEED: fast clock is set to 40.50MHz.
+CPU[65CE02]: RESET, PC=FCE2, BCD_behaviour=NMOS-6502
+HDOS: initialization with do_virt=0 and virtroot="<NULL>"
+HDOS: reset
+HDOS: virtualization is DISABLED, root = "C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\hdos\"
+HYPERVISOR: HYPPO version "development,20231111.11,5e72075~" (OVERRIDEN) starting with TRAP reset (#$40)
+HDOS: system-start-begin notification received.
+HDOS: reset
+HYPERVISOR: setting video standard change (PAL/NTSC) banning
+SPEED: in_hypervisor=1 force_fast=0 c128_fast=0, c65_fast=0 m65_fast=0
+AUDIO: reset for 4 SIDs (1000000 cycles per sec) and 1 OPL3 chip for 44100Hz sampling rate.
+AUDIO: clearing audio related registers.
+AUDIO: initialized (#2), 44100 Hz, 2 channels, 1024 buffer sample size.
+AUDIO: volume is set to 100%, stereo separation is 60% [component-A is 80, component-B is 20]
+MEM: UNHANDLED memory policy: 0
+UMON: not enabled
+FILE: file mega65.bas opened as mega65.bas with base mode-set as fd=7
+FILE: 65 bytes loaded from file: mega65.bas
+FILE: file @lastimporttext.bas.TMP opened as C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\lastimporttext.bas.TMP with base mode-set as fd=7
+FILE: 65 bytes saved into file: @lastimporttext.bas.TMP
+FILE: renaming file: C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\lastimporttext.bas.TMP -> C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\lastimporttext.bas
+INJECT: registering 'READY.' event: BASIC65 text import
+INJECT: READY. has been invalidated 0 times (40x25@$0)
+ROM: unsetting custom ROM (clear request)
+AUDIO: start mixing.
+VIC4: switching video standard from <UNDEF> to PAL (1MHz line cycle count is 32.000000, frame time is 20000usec, max raster is 624, visible area height is 576)
+VIC4: warning: I/O mode KEY $D02F register wanted to be written (with $47) in hypervisor mode! PC=$FB44
+VIC4: warning: I/O mode KEY $D02F register wanted to be written (with $53) in hypervisor mode! PC=$FB49
+AUDIO: callback switches to working mode.
+VIC4: warning: I/O mode KEY $D02F register wanted to be written (with $C0) in hypervisor mode! PC=$EDC1
+VIC4: warning: I/O mode KEY $D02F register wanted to be written (with $47) in hypervisor mode! PC=$0816
+VIC4: warning: I/O mode KEY $D02F register wanted to be written (with $53) in hypervisor mode! PC=$081B
+SDL: no auto-resizing was needed (same size)
+DMA: default DMA chip revision change 1 -> 0 because of writing DMA register 3
+CART: writing byte ($07) at $7FEFFFF
+DMA: default DMA chip revision change 0 -> 1 because of writing DMA register 3
+CART: writing byte ($20) at $7010000
+CART: writing byte ($00) at $7010000
+HYPERVISOR: first return after RESET, start of processing workarounds.
+FILE: file @MEGA65.ROM opened as C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\MEGA65.ROM with base mode-set as fd=7
+FILE: 131072 bytes loaded from file: C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\MEGA65.ROM
+ROM: using 'ROM from prefdir' policy for default ROM, ROM is from file C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\MEGA65.ROM
+ROM: force ROM re-apply policy, PC change: $E4B8 -> $E4B8
+ROM: SHA1 checksum is a4dbb0ff346fc293be2aed6d630e9fffe9d1cbbd
+ROM: Closed-ROMs detected with version 920385
+DMA: default DMA chip revision change 1 -> 1 based on ROM version (920385 Closed-ROMs)
+VIC4: setting PAL mode (in hypervisor.c, requested as boot/reset default)
+HDOS: system-start-end notification recevied.
+SDCARD: MOUNT: default SD-internal image for unit #0 is at sector #11488 (D81)
+SDCARD: MOUNT: default SD-internal image for unit #1 could not be determined
+SDCARD: MOUNT: trying to mount DEFAULT external image instead of internal default one as C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\hdos\mega65.d81 on unit #0
+FILE: C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\hdos\mega65.d81 cannot be open, tried path(s):  C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\hdos\mega65.d81
+D81ACCESS: D81 image "C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\hdos\mega65.d81" existed before.
+SDCARD: MOUNT: sdcard_external_mount(0, "C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\hdos\mega65.d81", "Cannot mount default external D81");
+SDCARD: MOUNT: external mount #0 from file C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\hdos\mega65.d81 (R/W)
+FILE: file C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\hdos\mega65.d81 opened as C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\hdos\mega65.d81 with base mode-set as fd=7
+D81: fd 7 has been attached to #0 with 0 offset, read_only = 0, autoclose = 1, size = 819200
+SDCARD: configuring F011 FDC (#0) with have_disk=1, can_write=1, image_size=819200, d81_access="D81"(M:0,A=$00,B=$03)
+HYPERVISOR: first return after RESET, end of processing workarounds.
+HYPERVISOR: clearing video standard change (PAL/NTSC) banning
+CART: reading byte ($FF) at $4008006
+CART: reading byte ($FF) at $4008007
+INJECT: hit 'READY.' trigger, about to import BASIC65 text program.
+SDCARD: MOUNT: sdcard_external_mount(1, "@lastimporttext.bas", "Mount failure for BASIC65 import");
+SDCARD: MOUNT: external mount #1 from file @lastimporttext.bas (R/W)
+FILE: file @lastimporttext.bas opened as C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\lastimporttext.bas with base mode-set as fd=8
+D81: fd 8 has been attached to #1 with 0 offset, read_only = 1, autoclose = 1, size = 819200
+SDCARD: configuring F011 FDC (#1) with have_disk=1, can_write=0, image_size=819200, d81_access="D81"(M:0,A=$00,B=$3B)
+INJECT: pressing key #1
+INJECT: registering 'READY.' event: BASIC65 text import2
+INJECT: READY. has been invalidated 1 times (80x25@$800)
+D81VIRTUAL: reading sub-sector @ $16400
+D81VIRTUAL: reading sub-sector @ $16500
+D81VIRTUAL: reading sub-sector @ $61800
+D81VIRTUAL: reading sub-sector @ $61900
+D81VIRTUAL: reading sub-sector @ $61800
+D81VIRTUAL: reading sub-sector @ $61900
+D81VIRTUAL: reading sub-sector @ $61A00
+D81VIRTUAL: reading sub-sector @ $61B00
+D81VIRTUAL: reading sub-sector @ $16400
+D81VIRTUAL: reading sub-sector @ $16500
+D81VIRTUAL: reading sub-sector @ $61800
+D81VIRTUAL: reading sub-sector @ $61900
+D81VIRTUAL: reading sub-sector @ $61800
+D81VIRTUAL: reading sub-sector @ $61900
+D81VIRTUAL: reading sub-sector @ $61A00
+D81VIRTUAL: reading sub-sector @ $61B00
+FDC: warning: SWAP bit emulation is experimental! There will be no further warnings on this.
+D81VIRTUAL: reading sub-sector @ $0
+D81VIRTUAL: ... data block, block number 0, next_track = $00 next_sector = $FF
+D81VIRTUAL: ... reading result: expected 65 retval 65
+D81VIRTUAL: reading sub-sector @ $100
+INJECT: releasing key #1
+INJECT: pressing key #1
+HDOS: entering function #$2E (setname) A=$2E X=$00 Y=$04 Z=$00
+HDOS: leaving function #$2E (setname) with carry SET (A,X,Y,Z=$2E,$00,$04,$00)
+HDOS: setname: selected filename is [midnight.d81] from $0400
+HDOS: entering function #$40 (d81attach0) A=$40 X=$08 Y=$0D Z=$00
+SDCARD: MOUNT: D81 for unit #0 instructed for R/O mount in hypervisor mode. HYPPO/HDOS bug? Forcing R/W!
+SDCARD: MOUNT: internal mount #0 from SD sector $10E48 (R/W)
+D81: previous file descriptor (7) closed because of auto-close policy
+D81: fd 6 has been attached to #0 with 35426304 offset, read_only = 0, autoclose = 0, size = 819200
+SDCARD: configuring F011 FDC (#0) with have_disk=1, can_write=1, image_size=819200, d81_access="D81"(M:0,A=$02,B=$3B)
+SDCARD: MOUNT: D81 for unit #1 instructed for R/O mount in hypervisor mode. HYPPO/HDOS bug? Forcing R/W!
+SDCARD: MOUNT: (internal mount) fake register mount using previous EXTERNAL mount now on #1 for: @lastimporttext.bas
+SDCARD: MOUNT: external mount #1 from file @lastimporttext.bas (R/W)
+FILE: file @lastimporttext.bas opened as C:\Users\Superuser\AppData\Roaming\xemu-lgb\mega65\lastimporttext.bas with base mode-set as fd=7
+D81: previous file descriptor (8) closed because of auto-close policy
+D81: fd 7 has been attached to #1 with 0 offset, read_only = 1, autoclose = 1, size = 819200
+SDCARD: configuring F011 FDC (#1) with have_disk=1, can_write=0, image_size=819200, d81_access="D81"(M:0,A=$02,B=$3B)
+SDCARD: MOUNT: (internal mount) INVALID mount sector (#8394048) on #1, refusing to change config!
+OSD: INVALID FDC MOUNT FROM SD
+<emergency unmounting>
+SDCARD: MOUNT: unmounting #1
+D81: previous file descriptor (7) closed because of auto-close policy
+SDCARD: configuring F011 FDC (#1) with have_disk=0, can_write=1, image_size=0, d81_access="D81"(M:0,A=$02,B=$03)
+HDOS: leaving function #$40 (d81attach0) with carry SET (A,X,Y,Z=$40,$08,$0D,$00)
+HDOS: d81attach0("midnight.d81") = OK
+HDOS: entering function #$2E (setname) A=$2E X=$00 Y=$04 Z=$00
+HDOS: leaving function #$2E (setname) with carry SET (A,X,Y,Z=$2E,$00,$04,$00)
+HDOS: setname: selected filename is [datadisk.d81] from $0400
+HDOS: entering function #$46 (d81attach1) A=$46 X=$09 Y=$1D Z=$00
+SDCARD: MOUNT: D81 for unit #1 instructed for R/O mount in hypervisor mode. HYPPO/HDOS bug? Forcing R/W!
+SDCARD: MOUNT: internal mount #1 from SD sector $11488 (R/W)
+D81: fd 6 has been attached to #1 with 36245504 offset, read_only = 0, autoclose = 0, size = 819200
+SDCARD: configuring F011 FDC (#1) with have_disk=1, can_write=1, image_size=819200, d81_access="D81"(M:0,A=$02,B=$1B)
+HDOS: leaving function #$46 (d81attach1) with carry SET (A,X,Y,Z=$46,$09,$1D,$00)
+INJECT: releasing key #1

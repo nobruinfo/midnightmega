@@ -10,7 +10,7 @@ char * strlowr(char *str);
 char * strsan(char *str);
 
 #define COLOR_RAM_BASE 0xFF80000UL
-// to by replaced by a getter function
+// to be replaced by a getter function
 void cputln(void);
 
 // taken from mega65-libc memory.c being inactive by #ifdef:

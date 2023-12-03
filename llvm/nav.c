@@ -19,18 +19,28 @@ MIDNIGHT* midnight[2] = { (MIDNIGHT*) MIDNIGHTLEFTPAGE,
                           (MIDNIGHT*) MIDNIGHTRIGHTPAGE };
 unsigned char diskname[2][DOSFILENAMELEN + 1]; // @@ change for pointer
 
-#define FILEENTRIES 18
+#define FILEENTRIES 32
+#define SDENTRIESPERSCREEN 18
 unsigned char filelist[FILEENTRIES][65];
 
 void listboxd81(unsigned char x, unsigned char y,
              unsigned char currentitem, unsigned char nbritems)  {
   unsigned int n;
+  unsigned int ofs = 0;
 
-  for (n = 0; n < FILEENTRIES; n++)  {
-	if (filelist[n][0] == 0)  break;
-	if (n == currentitem)  revers(1);
-	else                   revers(0);
-	cputsxy(x, y + n, filelist[n]);
+  if (currentitem + 1 >= SDENTRIESPERSCREEN)  ofs = currentitem + 1 - SDENTRIESPERSCREEN;
+
+  for (n = 0; n < SDENTRIESPERSCREEN && n < nbritems; n++)  {
+	if (filelist[n + ofs][0] == 0)  break; // @@ maybe no longer needed
+	if (n + ofs == currentitem)  {
+	  revers(1);
+	  cputsxy(x, y + n, (const unsigned char*) "> ");
+	  cputs(filelist[n + ofs]);
+	  cputs((const unsigned char*) " <");
+	} else {
+      revers(0);
+	  cputsxy(x + 2, y + n, filelist[n + ofs]);
+	}
   }
   revers(0);
   cputln();
@@ -52,6 +62,10 @@ unsigned char getd81(void)  {
       readerr = 0;
       for (i = 0; i < FILEENTRIES; i++)  {
         readerr = hyppo_readdir(fd);
+		
+		// @@ add check to exclude non-.d81 and non-dir entries!
+		// @@ see #386, attributes for it in big book.
+		
         if (readerr != 0x85 && readerr != 0xff) {
           msprintfd("filename is: ");
           msprintfd(getsfn()); // already null terminated
@@ -60,16 +74,25 @@ unsigned char getd81(void)  {
 		  entries++;
         }
 		else  {
+		  // empty string usually crash when printed, so:
 		  filelist[i][0] = 32; filelist[i][1] = 0;
+/*
+		  snprintf( filelist[i], 65, "%d", i);
+		  messagebox(1, "error on reading SD card entry",
+                     filelist[i],
+			         "for current directory.");
+*/
 		}
 	  }
 	  hyppo_closedir(fd);
 	}
   }
+//  snprintf( filelist[i], 65, "%d", entries);
+//  messagebox(1, "returning", filelist[i], "entries.");
   return entries;
 }
 
-#define DIRENTENTRIES 22
+#define DIRENTPERSCREEN 22
 // @@ The in here present recognition of 0xa0 is also in conioextensions.c
 // @@ string build-up may be used elsewhere
 unsigned char s[DOSFILENAMEANDTYPELEN];
@@ -82,9 +105,9 @@ void listbox(unsigned char iscurrent, unsigned char side,
   unsigned int ofs = 0;
   DIRENT* ds;
 
-  if (currentitem + 1 >= DIRENTENTRIES)  ofs = currentitem + 1 - DIRENTENTRIES;
+  if (currentitem + 1 >= DIRENTPERSCREEN)  ofs = currentitem + 1 - DIRENTPERSCREEN;
 
-  for (n = 0 ; n < DIRENTENTRIES; n++)  {
+  for (n = 0 ; n < DIRENTPERSCREEN; n++)  {
 	ds = getdirententry(side, n + ofs);
 	if (ds == NULL)  break;
 
@@ -259,25 +282,38 @@ unsigned char d81navi(unsigned char drive, unsigned char side)  {
   char pos = 0;
   unsigned char entries = 0;
   unsigned char attachresult;
+  char sa[5];
 
-  entries = getd81();
+  entries = getd81() - 1;
+//  snprintf( sa, 5, "%d", entries);
+//  messagebox(1, "got returned", sa, "entries.");
   while (1)  {
-    if (pos >= entries || filelist[pos][0] == 0)  pos = 0;
-    mcbox(8, 3, 8 + 65, 3 + 20, COLOUR_CYAN, BOX_STYLE_INNER, 1, 1);
+    shortcuts(0xFF); // inactivate key display
+	if (filelist[pos][0] == 0)  pos = 0;
+	if (pos > entries)  pos = entries;
+    mcbox(8, 2, 8 + 65, 2 + SDENTRIESPERSCREEN + 2, COLOUR_CYAN, BOX_STYLE_INNER, 1, 1);
     revers(1);
-    mcputsxy(12, 3, " Choose disk image file for drive ");
+    mcputsxy(12, 2, " Choose disk image file for drive ");
 	csputdec(midnight[side]->drive, 0, 0);
     msprintf(": ");
     revers(0);
-    listboxd81(10, 5, pos, entries);
-    c = cgetcalt();
+    listboxd81(10, 4, pos, entries);
+    c = cgetc();
     switch (c) {
 	  case 0x91: // Crsrup
-	  case 0x291: // Shift Crsrup
+//	  case 0x291: // Shift Crsrup
 	    if (pos > 0)  pos--;
       break;
 	  case 0x11: // Crsrdown
 	    pos++;
+      break;
+	  case 0x9d: // Left
+	  case 0x5f: // Left
+	    if (pos > 10)  pos -= 10;
+		else           pos = 0;
+      break;
+	  case 0x1d: // Right
+	    pos += 10;
       break;
 
 	  case 13: // return

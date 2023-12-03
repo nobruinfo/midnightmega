@@ -54,7 +54,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.3.1-beta
+SET v=v0.3.2-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 REM DEL %TEMP%\*.o
@@ -122,16 +122,14 @@ IF ERRORLEVEL == 1 (
   )
   REM Use in Xemu's out of the image file fs access:
   XCOPY /Y %PRJ%.d81 %HDOS%\
+  attrib -a %HDOS%\%PRJ%.d81
   XCOPY /Y %DATADISK%.d81 %HDOS%\
+  attrib -a %HDOS%\%DATADISK%.d81
 
   REM Put project into the SD card image file:
   SET "PRJ=%PRJ:~0,8%"
   DEL %HDOS%\!PRJ!.d81
   REN %HDOS%\%PRJ%.d81 !PRJ!.d81
-  "%MFTP%" -d %IMG% -c "del !PRJ!.d81"
-  "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/!PRJ!.d81"
-  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
-  "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/%DATADISK%.d81"
 
   REM Create a stub disk to be loaded at CLI level from current host
   REM directory to mount .d81 within virtual SD card image:
@@ -141,11 +139,19 @@ IF ERRORLEVEL == 1 (
     set "PRJUPPER=!PRJUPPER:%%b=%%b!"
     set "DATADISKUPPER=!DATADISKUPPER:%%b=%%b!"
   )
-  ECHO 10 MOUNT "!PRJUPPER!.D81">mega65.bas
-  ECHO 20 MOUNT "!DATADISKUPPER!.D81",U9>>mega65.bas
-  ECHO 30 RUN "*">>mega65.bas
 
-  XMEGA65 -besure -defd81fromsd ^
+REM  "%MFTP%" -d %IMG% -c "del !PRJ!.d81"
+  "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/!PRJUPPER!.D81"
+REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
+  "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/!DATADISKUPPER!.D81"
+
+  ECHO 10 REM SLEEP 1 >mega65.bas
+  ECHO 20 MOUNT "!PRJUPPER!.D81">>mega65.bas
+  ECHO 30 MOUNT "!DATADISKUPPER!.D81",U9>>mega65.bas
+  ECHO 40 REM SLEEP 1 >>mega65.bas
+  ECHO 50 RUN "*">>mega65.bas
+
+  XMEGA65 -besure ^
     -importbas mega65.bas ^
     -hickup "%HICKUP%\HICKUP.M65" ^
 	-driveled
