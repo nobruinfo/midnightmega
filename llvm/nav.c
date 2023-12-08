@@ -70,7 +70,8 @@ unsigned char getd81(void)  {
           msprintfd("filename is: ");
           msprintfd(getsfn()); // already null terminated
 		  cputlnd();
-		  strcpy((char *) filelist[i], getlfn());
+		  cgetcd();
+		  strcpy((char *) filelist[i], getsfn());
 		  entries++;
         }
 		else  {
@@ -109,14 +110,14 @@ void listbox(unsigned char iscurrent, unsigned char side,
 
   for (n = 0 ; n < DIRENTPERSCREEN; n++)  {
 	ds = getdirententry(side, n + ofs);
-	if (ds == NULL)  break;
+	if (ds == NULL || (n + ofs) > nbritems)  break;
 
 	i = 0;
 	if (n + ofs == currentitem)  s[i++] = '>';
 	else                   s[i++] = ' ';
 	s[i++] = ' ';
 	j = 0;
-	while (ds->name[j] != 0xa0 && j < DOSFILENAMELEN)  {
+	while (ds->name[j] != 0xa0 && ds->name[j] != 0 && j < DOSFILENAMELEN)  {
 	  s[i++] = ds->name[j];
 	  j++;
 	}
@@ -233,48 +234,55 @@ unsigned int cgetcalt(void)
 }
 
 void UpdateSectors(unsigned char drive, unsigned char side)  {
-  unsigned char i;
+  unsigned char c;  // build up a string
 
-  // This would actually only have to be done once for both drives:
-  hyppo_get_proc_desc();
-  /*
-  // https://stackoverflow.com/questions/1258550/why-should-you-use-strncpy-instead-of-strcpy
-  strncpy((char *) midnight[side]->curfile,
-          (drive ? (char *) taskblock->d81filename1 : (char *) taskblock->d81filename0),
-          (drive ? taskblock->d81filenamelength1 : taskblock->d81filenamelength0));
+  if (midnight[side]->ismounted)  {
+    // This would actually only have to be done once for both drives:
+    hyppo_get_proc_desc();
+    /*
+    // https://stackoverflow.com/questions/1258550/why-should-you-use-strncpy-instead-of-strcpy
+    strncpy((char *) midnight[side]->curfile,
+            (drive ? (char *) taskblock->d81filename1 : (char *) taskblock->d81filename0),
+            (drive ? taskblock->d81filenamelength1 : taskblock->d81filenamelength0));
 */
-  if (drive == 0)  {
+    if (drive == 0)  {
 /*
-    strncpy(midnight[side]->curfile,
-            taskblock->d81filename0,
-            taskblock->d81filenamelength0);
-    midnight[side]->curfile[taskblock->d81filenamelength0] = 0;
+      strncpy(midnight[side]->curfile,
+              taskblock->d81filename0,
+              taskblock->d81filenamelength0);
+      midnight[side]->curfile[taskblock->d81filenamelength0] = 0;
 */
-    i = 0;
-    while (taskblock->d81filename0[i] != 0 && i < taskblock->d81filenamelength0)  {
-      midnight[side]->curfile[i] = taskblock->d81filename0[i];
-      i++;
+      c = 0;
+      while (taskblock->d81filename0[c] != 0 && c < taskblock->d81filenamelength0)  {
+        midnight[side]->curfile[c] = taskblock->d81filename0[c];
+        c++;
+      }
+      midnight[side]->curfile[c] = 0;
+    } else {
+/*
+      strncpy(midnight[side]->curfile,
+              taskblock->d81filename1,
+              taskblock->d81filenamelength1);
+      midnight[side]->curfile[taskblock->d81filenamelength1] = 0;
+*/
+      c = 0;
+      while (taskblock->d81filename1[c] != 0 && c < taskblock->d81filenamelength1)  {
+        midnight[side]->curfile[c] = taskblock->d81filename1[c];
+        c++;
+      }
+      midnight[side]->curfile[c] = 0;
     }
-    midnight[side]->curfile[i] = 0;
+
+    getDiskname(drive, (char *) diskname[side]);
+    BAM2Attic(drive, side);
+    midnight[side]->blocksfree = FreeBlocks(side);
+    midnight[side]->entries = getdirent(drive, side);
   } else {
-/*
-    strncpy(midnight[side]->curfile,
-            taskblock->d81filename1,
-            taskblock->d81filenamelength1);
-    midnight[side]->curfile[taskblock->d81filenamelength1] = 0;
-*/
-    i = 0;
-    while (taskblock->d81filename1[i] != 0 && i < taskblock->d81filenamelength1)  {
-      midnight[side]->curfile[i] = taskblock->d81filename1[i];
-      i++;
-    }
-    midnight[side]->curfile[i] = 0;
+	strcopy("SD card", (char *) diskname[side], 16);
+	strcopy("SD card", (char *) midnight[side]->curfile, 16);
+	midnight[side]->blocksfree = 0;
+    midnight[side]->entries = gethyppodirent(drive, side, FILEENTRIES);
   }
-
-  getDiskname(drive, (char *) diskname[side]);
-  BAM2Attic(drive, side);
-  midnight[side]->blocksfree = FreeBlocks(side);
-  midnight[side]->entries = getdirent(drive, side);
 }
 
 unsigned char d81navi(unsigned char drive, unsigned char side)  {
@@ -357,9 +365,11 @@ void navi(unsigned char side)  {
   unsigned char leftx;
   unsigned char starttrack;
   unsigned char startsector;
+  unsigned char attachresult;
   unsigned char i;
   DIRENT* ds;
   
+  // initialising:
   for (i = 0; i <= 1; i++)  {
     // @@ to be made variable maybe?
     midnight[i]->drive = i;
@@ -367,9 +377,11 @@ void navi(unsigned char side)  {
     // title of mcbox is .d81 file name, cannot be read at startup:
     strcpy((char *) midnight[i]->curfile, (char *) "already mounted");
     midnight[i]->pos = 0;
+    midnight[i]->ismounted = TRUE;
     progress("Initialising...", "reading disk drives", i * 40 + 40);
     UpdateSectors(midnight[i]->drive, i);
   }
+
   while (1)  {
     for (i = 0; i <= 1; i++)  {
       if (midnight[i]->pos > midnight[i]->entries)  {
@@ -421,16 +433,20 @@ void navi(unsigned char side)  {
 	  case 0xf2: // Modifiers and ASC_F1:
 	  case 0x1f2:
 	  case 0x2f2:
+/*
 	    if (d81navi(midnight[side]->drive, side))  {
 	      UpdateSectors(midnight[side]->drive, side);
 		}
+*/
+        // Unconditional unmount:
+		midnight[side]->ismounted = !midnight[side]->ismounted;
+		UpdateSectors(midnight[side]->drive, side);
       break;
 
 	  case 0xf5: // ASC_F5 copy
 	  case 0xf8: // Modifiers and ASC_F8 delete
 	  case 0x1f8:
 	  case 0x2f8:
-        // @@ message
         ds = getdirententry(side, midnight[side]->pos);
 		if ((ds->type&0xf) != VAL_DOSFTYPE_CBM && ds->type != VAL_DOSFTYPE_DEL)  {
 
@@ -508,6 +524,44 @@ void navi(unsigned char side)  {
       break;
 
 	  case 13: // return
+        ds = getdirententry(side, midnight[side]->pos);
+
+		if (midnight[side]->ismounted == FALSE)  {
+		  if (ds->type & HYPPODIRENTATTRDIR)  {
+//			ds->name[2] = 77 | 0x80;
+//			ds->name[3] = 0;
+			hyppo_setname((char *) ds->name);
+			attachresult = hyppo_chdir();
+
+		    if (attachresult > 0xf)  {  // @@ better error handling in Hyppo reqd
+  		      messagebox(0, "Storage card change directory,", "open failed for",
+                         (char *) ds->name);
+		    } else {
+	          UpdateSectors(midnight[side]->drive, side);
+            }		
+		  } else {
+	        // @@ todo: choose drive
+		    if (midnight[side]->drive)  {
+		      hyppo_setname((char *) ds->name);
+		      attachresult = hyppo_d81attach1();
+		    } else {
+		      hyppo_setname((char *) ds->name);
+		      attachresult = hyppo_d81attach0();
+		    }
+//		hyppo_setname((char *) filelist[pos]);
+//		attachresult = (midnight[side]->drive ? hyppo_d81attach1() : hyppo_d81attach0());
+		    if (attachresult != 0)  {
+		      messagebox(0, "Storage card mounting,", "mount failed for", (char *) ds->name);
+		    } else {
+		      midnight[side]->ismounted = TRUE;
+	          UpdateSectors(midnight[side]->drive, side);
+            }		
+		  }
+		} else {
+		  messagebox(0, "This file type/directory", "is not yet implemented.", " ");
+		}
+      break;
+
 	  case 0x1f: // HELP
 	  case 0xf1: // unused F keys
 	  case 0xf3:

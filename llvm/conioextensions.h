@@ -8,6 +8,7 @@
 char tolowerchar(char ch);
 char * strlowr(char *str);
 char * strsan(char *str);
+void strcopy(char *src, char *dest, unsigned char len);
 
 #define COLOR_RAM_BASE 0xFF80000UL
 // to be replaced by a getter function

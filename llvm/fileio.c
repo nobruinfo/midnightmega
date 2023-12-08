@@ -4,6 +4,7 @@
 #include <mega65/memory.h>  // mega65-libc
 #include <mega65/hal.h>  // mega65-libc
 #include "regions.h"
+#include "hyppo.h"
 #include "fileio.h"
 #include "conioextensions.h"
 
@@ -323,8 +324,6 @@ void PutBAM(unsigned char drive, unsigned char side)  {
 }
 
 void BAM2Attic(unsigned char drive, unsigned char side) {
-  BAM* bs;
-
   _miniInit();
 
   readblockchain(side?ATTICBAM2BUFFER:ATTICBAMBUFFER, BAMBLOCKS,
@@ -751,40 +750,54 @@ void copywholedisk(unsigned char srcdrive, unsigned char destdrive)  {
   }
 }
 
+// this is a mixture of SD card and C= file types:
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i)  {
-  unsigned char t = (unsigned char) (type & 0xf);
-
-  switch (t) { // (type & 0xf) {
-    case VAL_DOSFTYPE_SEQ:
-	  s[i++] = 'S';
-	  s[i++] = 'E';
-	  s[i++] = 'Q';
-    break;
-    case VAL_DOSFTYPE_PRG:
-	  s[i++] = 'P';
-	  s[i++] = 'R';
-	  s[i++] = 'G';
-    break;
-    case VAL_DOSFTYPE_USR:
-	  s[i++] = 'U';
-	  s[i++] = 'S';
-	  s[i++] = 'R';
-    break;
-    case VAL_DOSFTYPE_REL:
-	  s[i++] = 'R';
-	  s[i++] = 'E';
-	  s[i++] = 'L';
-    break;
-    case VAL_DOSFTYPE_CBM:
-	  s[i++] = 'C';
-	  s[i++] = 'B';
-	  s[i++] = 'M';
-    break;
-    default: // VAL_DOSFTYPE_DEL
-	  s[i++] = 'D';
-	  s[i++] = 'E';
-	  s[i++] = 'L';
-    break;
+  if (type & HYPPODIRENTATTR)  {
+    switch (type & (~HYPPODIRENTATTR)) {
+      case HYPPODIRENTATTRDIR:
+	    s[i++] = 'D';
+	    s[i++] = 'I';
+        s[i++] = 'R';
+      break;
+      default:
+	    s[i++] = ' ';
+	    s[i++] = ' ';
+	    s[i++] = ' ';
+      break;
+	}
+  } else {
+    switch (type & 0xf) {
+      case VAL_DOSFTYPE_SEQ:
+	    s[i++] = 'S';
+	    s[i++] = 'E';
+        s[i++] = 'Q';
+      break;
+      case VAL_DOSFTYPE_PRG:
+	    s[i++] = 'P';
+	    s[i++] = 'R';
+	    s[i++] = 'G';
+      break;
+      case VAL_DOSFTYPE_USR:
+	    s[i++] = 'U';
+	    s[i++] = 'S';
+	    s[i++] = 'R';
+      break;
+      case VAL_DOSFTYPE_REL:
+	    s[i++] = 'R';
+	    s[i++] = 'E';
+	    s[i++] = 'L';
+      break;
+      case VAL_DOSFTYPE_CBM:
+	    s[i++] = 'C';
+	    s[i++] = 'B';
+	    s[i++] = 'M';
+      break;
+      default: // VAL_DOSFTYPE_DEL
+	    s[i++] = 'D';
+	    s[i++] = 'E';
+	    s[i++] = 'L';
+      break;
+	}
   }
   return i;
 }

@@ -20,7 +20,7 @@ struct TASKBLOCK {  // big book page #39b
 	unsigned char notimplemented[256-32-32-16-5];
 };                                   // blown up to fill a whole page
 
-struct DIRENT {
+struct HYPPODIRENT {
 	char lfn[0x40];    // The long file name
 	char length;      // The length of long file name
 	char sfn[8];      // The short file name without the extension
@@ -41,6 +41,13 @@ struct DIRENT {
 					  // 5   Archive
 	unsigned char dummy[256-87];  // blown up to fill a whole page
 };
+#define HYPPODIRENTATTRRO  0x01
+#define HYPPODIRENTATTRHID 0x02
+#define HYPPODIRENTATTRSYS 0x04
+#define HYPPODIRENTATTRVOL 0x08
+#define HYPPODIRENTATTRDIR 0x10
+#define HYPPODIRENTATTRARC 0x20
+#define HYPPODIRENTATTR    0x40 // denotes the type being from SD card
 
 extern struct TASKBLOCK* const taskblock;
 
@@ -53,10 +60,15 @@ unsigned char hyppo_d81attach0(void);
 unsigned char hyppo_d81attach1(void);
 unsigned char hyppo_d81detach(void);
 unsigned char hyppo_opendir(void);
+unsigned char hyppo_chdir(void);
 unsigned char hyppo_closedir(unsigned char filedescriptor);
 unsigned char hyppo_readdir(unsigned char filedescriptor);
 char * getsfn();
 char * getlfn();
+unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
+                                 unsigned char maxentries);
+unsigned char gethyppodirent(unsigned char drive, unsigned char side,
+                             unsigned char maxentries);
 void hyppo_reset(void);
 void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
                       unsigned char * majorHDOS,  unsigned char * minorHDOS);

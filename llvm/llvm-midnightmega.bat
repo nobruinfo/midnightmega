@@ -41,7 +41,7 @@ REM SET opts=%opts% -Wl,--gc-sections -Wl,-s
 SET opts=%opts% -Oz
 SET opts=%opts% -Wl,-Map=%PRJ%.map
 SET opts=%opts% -Wl,-trace
-SET opts=%opts% -Wl,--reproduce=reproduce.tar
+REM SET opts=%opts% -Wl,--reproduce=reproduce.tar
 
 REM git tag -a "v0.1.0-beta" -m "version v0.1.0-beta"
 git describe --tags>arghh.tmp
