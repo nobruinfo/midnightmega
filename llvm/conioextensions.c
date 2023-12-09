@@ -43,6 +43,16 @@ char * strsan(char *str) {
   return s;
 }
 
+void strcopy(char *src, char *dest, unsigned char len) {
+  unsigned char c = 0;  // build up a string
+
+  while (src[c] != 0 && c < len)  {
+	dest[c] = src[c];
+	c++;
+  }
+  dest[c] = 0;
+}
+
 #define COLOR_RAM_BASE 0xFF80000UL
 // to by replaced by a getter function
 void cputln(void)  {

@@ -10,6 +10,7 @@ SET c1541="%VICE%\c1541"
 SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Connect\M65Connect Resources\mega65_ftp.exe
 SET XMEGA65=D:\Game Collections\C64\Mega65\Xemu\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos\
+SET D81=D:\Game Collections\C64\Mega65\disks
 SET IMG=%APPDATA%\xemu-lgb\mega65\mega65.img
 SET PATH=%PATH%;%VICE%;%XMEGA65%
 
@@ -61,18 +62,36 @@ SET DATADISK=datadisk
 
 REM mega65_ftp -d mega65.img
 
+CD /D "%D81%"
 "%MFTP%" -d %IMG%
-"%MFTP%" -d %IMG% -c "del 2.d81"
-"%MFTP%" -d %IMG% -c "put C:/Users/Superuser/AppData/Roaming/xemu-lgb/mega65/hdos/2.d81"
-"%MFTP%" -d %IMG% -c "dir"
+for /d %%k in ("%D81%\*") do (
+  SET FOLDER=%%~nk
+  SET "prefix=!FOLDER!\*.d81"
+  "%MFTP%" -d %IMG% -c "mkdir %%~nk"
+  for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N "!prefix!"') do (
+	ECHO CD=!CD!  D81=!DISKUPPER!
+    SET "FOLDERSLASH=!FOLDER:\=/!"
+	"%MFTP%" -d %IMG% -c "del !FOLDERSLASH!/%%i"
+    SET "DISKUPPER=%%i"
+    for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+      set "DISKUPPER=!DISKUPPER:%%b=%%b!"
+    )
+    "%MFTP%" -d %IMG% -c "cd %%~nk" -c "put !FOLDERSLASH!/!DISKUPPER!"
+    "%MFTP%" -d %IMG% -c "cd %%~nk" -c "ren ??????~?.D81 ??????-?.D81"
+  )
+)
+"%MFTP%" -d %IMG% -c "dir"|more
+
+CD /D %~dp0
 
 PAUSE
 GOTO :eof
   REM Use in Xemu's out of the image file fs access:
-  XCOPY /Y %PRJ%.d81 %HDOS%
-  XCOPY /Y %DATADISK%.d81 %HDOS%
+REM  XCOPY /Y %PRJ%.d81 %HDOS%
+REM  XCOPY /Y %DATADISK%.d81 %HDOS%
 
-  XMEGA65 -besure -8 %HDOS%%PRJ%.d81 -9 %HDOS%%DATADISK%.d81 -autoload ^
+          REM -8 %HDOS%%PRJ%.d81 -9 %HDOS%%DATADISK%.d81
+  XMEGA65 -besure -autoload ^
     -hdosvirt -driveled
   REM XMEGA65 -syscon -besure -prg %PRJ%.prg
 )

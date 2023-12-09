@@ -8,7 +8,7 @@ typedef struct structMIDNIGHT {
     unsigned char entries;   // nbr of list entries
     unsigned char curfile[65];  // currently mounted .d81 filename
 	unsigned int  blocksfree;
-	unsigned char dummy1;
+	unsigned char ismounted;
 	unsigned char dummy2;
 	unsigned char dummy3;
 	unsigned char inputstr[80];  // for conio text input

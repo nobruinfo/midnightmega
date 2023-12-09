@@ -4,6 +4,7 @@
 #include <mega65/memory.h>  // mega65-libc
 #include <mega65/hal.h>  // mega65-libc
 #include "regions.h"
+#include "hyppo.h"
 #include "fileio.h"
 #include "conioextensions.h"
 
@@ -11,6 +12,7 @@
 // ein Laufwerk es sich bei U8 oder U9 handelt, also ob es das
 // interne oder ein .d81 Image ist ?
 // gardners: Du könntest $D6A9 peeken und die Bits daraus lesen
+// effectively found as bits D0IMG and D1IMG in $D68B.
 
 // static unsigned char __attribute__((used)) retval;
 
@@ -28,13 +30,18 @@
 // for zp global vars use: unsigned char var = 0;
 // #pragma bss-name (pop)
 
-BAM * BAMsector[2]; // to point into the disk buffer
-DATABLOCK * worksector[2]; // to point into the disk buffer
-BAM * worksectorasBAM[2]; // to point into the disk buffer
+// All to point into the disk buffer.
+// to access as data:
+BAM * BAMsector[2] = { (BAM*) BLOCKBAMLOW, (BAM*) BLOCKBAMHIGH };
+// to transfer as fake BAM struct:
+DATABLOCK * worksector[2] = { (DATABLOCK*) BLOCKDATALOW, (DATABLOCK*) BLOCKDATAHIGH };
+// eight entries per single block:
+BAM * worksectorasBAM[2] = { (BAM*) BLOCKDATALOW, (BAM*) BLOCKDATAHIGH };
 
 DIRENT direntryleft[NBRENTRIES];
 DIRENT direntryright[NBRENTRIES];
-SECTDIRENT * direntryblock[2];
+// eight entries per single block:
+SECTDIRENT * direntryblock[2] = { (SECTDIRENT*) DIRENTPAGELOW, (SECTDIRENT*) DIRENTPAGEHIGH };
 
 // unsigned char workside;
 unsigned char BAMside;
@@ -42,15 +49,6 @@ unsigned char direntside;
 unsigned char dosfilename[DOSFILENAMELEN + 1]; // extra byte for nullterm
 
 void _miniInit()  {
-  BAMsector[0] = (BAM*) BLOCKBAMLOW;
-  BAMsector[1] = (BAM*) BLOCKBAMHIGH;
-  worksector[0] = (DATABLOCK*) BLOCKDATALOW;      // to access as data
-  worksector[1] = (DATABLOCK*) BLOCKDATAHIGH;
-  worksectorasBAM[0] = (BAM*) BLOCKDATALOW;       // to transfer as fake BAM struct
-  worksectorasBAM[1] = (BAM*) BLOCKDATAHIGH;
-  direntryblock[0] = (SECTDIRENT*) DIRENTPAGELOW; // eight entries per single block
-  direntryblock[1] = (SECTDIRENT*) DIRENTPAGEHIGH;
-
   // clear F011 Floppy Controller Registers
   POKE(0xd080U, 0);
 
@@ -89,6 +87,12 @@ unsigned char ReadSector(unsigned char drive, char track,
 	if (PEEK(0xd082U) & 0x18) {
       // Turn on just the LED, this causes to blink:
 	  POKE(0xd080U, 0x40);
+	  bordercolor(COLOUR_RED);
+  mprintf("ReadSector. Track=", track);
+  mprintf(" Sector=", sector);
+  mhprintf(" $d082U=", PEEK(0xd082U));
+  cputln();
+  cgetc();
 	  return 0xff;
 	}
 	// Make sure we can see the data, clear bit 7:
@@ -128,6 +132,12 @@ unsigned char WriteSector(unsigned char drive, char track,
 	if (PEEK(0xd082U) & 0x18) {
       // Turn on just the LED, this causes to blink:
 	  POKE(0xd080U, 0x40);
+	  bordercolor(COLOUR_RED);
+  mprintf("WriteSector. Track=", track);
+  mprintf(" Sector=", sector);
+  mhprintf(" $d082U=", PEEK(0xd082U));
+  cputln();
+  cgetc();
 	  return 0xff;
 	}
 	// Make sure we can see the data, clear bit 7:
@@ -286,7 +296,7 @@ unsigned char PutOneSector(BAM* entry, unsigned char drive,
 unsigned char driveled(unsigned char errorcode)  {
 	// Turn on just the LED, this causes it to blink:
     POKE(0xd080U, 0x40);
-//    bordercolor (COLOUR_RED);
+    bordercolor (COLOUR_RED);
 	return errorcode;
 }
 
@@ -314,8 +324,6 @@ void PutBAM(unsigned char drive, unsigned char side)  {
 }
 
 void BAM2Attic(unsigned char drive, unsigned char side) {
-  BAM* bs;
-
   _miniInit();
 
   readblockchain(side?ATTICBAM2BUFFER:ATTICBAMBUFFER, BAMBLOCKS,
@@ -691,7 +699,7 @@ char * tracksectorstring(unsigned char track, unsigned char sector)  {
   unsigned int  i;
 
   i = 0;
-  s[i++] = 'T';
+  s[i++] = 'T'; // @@ is this now how I want things to be?
   s[i++] = 'r';
   s[i++] = 'a';
   s[i++] = 'c';
@@ -719,15 +727,22 @@ void copywholedisk(unsigned char srcdrive, unsigned char destdrive)  {
   unsigned char track;
   unsigned char sector;
   unsigned int  i;
+  DATABLOCK* ws;
 
   i = 0;
   for (track = 1; track <= 80; track++)  {
-	for (sector = 1; sector <= 40; sector++)  {
-	  progress("Reading...", tracksectorstring(track, sector), i / 32);
+	for (sector = 0; sector < 40; sector++)  {
+	  progress("Reading...", tracksectorstring(track, sector), i / 64);
 	  GetOneSector(worksectorasBAM[0], srcdrive, track, sector);
-	  DATABLOCK* ws = worksector[0];
+	  ws = worksector[0];
 	  lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE);
-	  progress("Writing...", tracksectorstring(track, sector), i / 32);
+	  i++;
+	}
+  }
+  i = 0;
+  for (track = 1; track <= 80; track++)  {
+	for (sector = 0; sector < 40; sector++)  {
+	  progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
 	  lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
 	  PutOneSector((BAM *) ws, destdrive, track, sector);
 	  i++;
@@ -735,40 +750,54 @@ void copywholedisk(unsigned char srcdrive, unsigned char destdrive)  {
   }
 }
 
+// this is a mixture of storage card and C= file types:
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i)  {
-  unsigned char t = (unsigned char) (type & 0xf);
-
-  switch (t) { // (type & 0xf) {
-    case VAL_DOSFTYPE_SEQ:
-	  s[i++] = 'S';
-	  s[i++] = 'E';
-	  s[i++] = 'Q';
-    break;
-    case VAL_DOSFTYPE_PRG:
-	  s[i++] = 'P';
-	  s[i++] = 'R';
-	  s[i++] = 'G';
-    break;
-    case VAL_DOSFTYPE_USR:
-	  s[i++] = 'U';
-	  s[i++] = 'S';
-	  s[i++] = 'R';
-    break;
-    case VAL_DOSFTYPE_REL:
-	  s[i++] = 'R';
-	  s[i++] = 'E';
-	  s[i++] = 'L';
-    break;
-    case VAL_DOSFTYPE_CBM:
-	  s[i++] = 'C';
-	  s[i++] = 'B';
-	  s[i++] = 'M';
-    break;
-    default: // VAL_DOSFTYPE_DEL
-	  s[i++] = 'D';
-	  s[i++] = 'E';
-	  s[i++] = 'L';
-    break;
+  if (type & HYPPODIRENTATTR)  {
+    switch (type & (~HYPPODIRENTATTR)) {
+      case HYPPODIRENTATTRDIR:
+	    s[i++] = 'D';
+	    s[i++] = 'I';
+        s[i++] = 'R';
+      break;
+      default:
+	    s[i++] = ' ';
+	    s[i++] = ' ';
+	    s[i++] = ' ';
+      break;
+	}
+  } else {
+    switch (type & 0xf) {
+      case VAL_DOSFTYPE_SEQ:
+	    s[i++] = 'S';
+	    s[i++] = 'E';
+        s[i++] = 'Q';
+      break;
+      case VAL_DOSFTYPE_PRG:
+	    s[i++] = 'P';
+	    s[i++] = 'R';
+	    s[i++] = 'G';
+      break;
+      case VAL_DOSFTYPE_USR:
+	    s[i++] = 'U';
+	    s[i++] = 'S';
+	    s[i++] = 'R';
+      break;
+      case VAL_DOSFTYPE_REL:
+	    s[i++] = 'R';
+	    s[i++] = 'E';
+	    s[i++] = 'L';
+      break;
+      case VAL_DOSFTYPE_CBM:
+	    s[i++] = 'C';
+	    s[i++] = 'B';
+	    s[i++] = 'M';
+      break;
+      default: // VAL_DOSFTYPE_DEL
+	    s[i++] = 'D';
+	    s[i++] = 'E';
+	    s[i++] = 'L';
+      break;
+	}
   }
   return i;
 }

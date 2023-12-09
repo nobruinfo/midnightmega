@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 #include <mega65/conio.h>  // llvm instead of <printf.h>
 #include <mega65/memory.h>  // mega65-libc
 #include "regions.h"
@@ -19,18 +20,28 @@ MIDNIGHT* midnight[2] = { (MIDNIGHT*) MIDNIGHTLEFTPAGE,
                           (MIDNIGHT*) MIDNIGHTRIGHTPAGE };
 unsigned char diskname[2][DOSFILENAMELEN + 1]; // @@ change for pointer
 
-#define FILEENTRIES 18
+#define FILEENTRIES 32
+#define SDENTRIESPERSCREEN 18
 unsigned char filelist[FILEENTRIES][65];
 
 void listboxd81(unsigned char x, unsigned char y,
              unsigned char currentitem, unsigned char nbritems)  {
   unsigned int n;
+  unsigned int ofs = 0;
 
-  for (n = 0; n < FILEENTRIES; n++)  {
-	if (filelist[n][0] == 0)  break;
-	if (n == currentitem)  revers(1);
-	else                   revers(0);
-	cputsxy(x, y + n, filelist[n]);
+  if (currentitem + 1 >= SDENTRIESPERSCREEN)  ofs = currentitem + 1 - SDENTRIESPERSCREEN;
+
+  for (n = 0; n < SDENTRIESPERSCREEN && n < nbritems; n++)  {
+	if (filelist[n + ofs][0] == 0)  break; // @@ maybe no longer needed
+	if (n + ofs == currentitem)  {
+	  revers(1);
+	  cputsxy(x, y + n, (const unsigned char*) "> ");
+	  cputs(filelist[n + ofs]);
+	  cputs((const unsigned char*) " <");
+	} else {
+      revers(0);
+	  cputsxy(x + 2, y + n, filelist[n + ofs]);
+	}
   }
   revers(0);
   cputln();
@@ -52,24 +63,38 @@ unsigned char getd81(void)  {
       readerr = 0;
       for (i = 0; i < FILEENTRIES; i++)  {
         readerr = hyppo_readdir(fd);
+		
+		// @@ add check to exclude non-.d81 and non-dir entries!
+		// @@ see #386, attributes for it in big book.
+		
         if (readerr != 0x85 && readerr != 0xff) {
           msprintfd("filename is: ");
           msprintfd(getsfn()); // already null terminated
 		  cputlnd();
-		  strcpy((char *) filelist[i], getlfn());
+		  cgetcd();
+		  strcpy((char *) filelist[i], getsfn());
 		  entries++;
         }
 		else  {
+		  // empty string usually crash when printed, so:
 		  filelist[i][0] = 32; filelist[i][1] = 0;
+/*
+		  snprintf( filelist[i], 65, "%d", i);
+		  messagebox(1, "error at reading storage card entry",
+                     filelist[i],
+			         "for current directory.");
+*/
 		}
 	  }
 	  hyppo_closedir(fd);
 	}
   }
+//  snprintf( filelist[i], 65, "%d", entries);
+//  messagebox(1, "returning", filelist[i], "entries.");
   return entries;
 }
 
-#define DIRENTENTRIES 22
+#define DIRENTPERSCREEN 22
 // @@ The in here present recognition of 0xa0 is also in conioextensions.c
 // @@ string build-up may be used elsewhere
 unsigned char s[DOSFILENAMEANDTYPELEN];
@@ -82,18 +107,18 @@ void listbox(unsigned char iscurrent, unsigned char side,
   unsigned int ofs = 0;
   DIRENT* ds;
 
-  if (currentitem + 1 >= DIRENTENTRIES)  ofs = currentitem + 1 - DIRENTENTRIES;
+  if (currentitem + 1 >= DIRENTPERSCREEN)  ofs = currentitem + 1 - DIRENTPERSCREEN;
 
-  for (n = 0 ; n < DIRENTENTRIES; n++)  {
+  for (n = 0 ; n < DIRENTPERSCREEN; n++)  {
 	ds = getdirententry(side, n + ofs);
-	if (ds == NULL)  break;
+	if (ds == NULL || (n + ofs) > nbritems)  break;
 
 	i = 0;
 	if (n + ofs == currentitem)  s[i++] = '>';
 	else                   s[i++] = ' ';
 	s[i++] = ' ';
 	j = 0;
-	while (ds->name[j] != 0xa0 && j < DOSFILENAMELEN)  {
+	while (ds->name[j] != 0xa0 && ds->name[j] != 0 && j < DOSFILENAMELEN)  {
 	  s[i++] = ds->name[j];
 	  j++;
 	}
@@ -210,10 +235,55 @@ unsigned int cgetcalt(void)
 }
 
 void UpdateSectors(unsigned char drive, unsigned char side)  {
-  getDiskname(midnight[side]->drive, (char *) diskname[side]);
-  BAM2Attic(drive, side);
-  midnight[side]->blocksfree = FreeBlocks(side);
-  midnight[side]->entries = getdirent(drive, side);
+  unsigned char c;  // build up a string
+
+  if (midnight[side]->ismounted)  {
+    // This would actually only have to be done once for both drives:
+    hyppo_get_proc_desc();
+    /*
+    // https://stackoverflow.com/questions/1258550/why-should-you-use-strncpy-instead-of-strcpy
+    strncpy((char *) midnight[side]->curfile,
+            (drive ? (char *) taskblock->d81filename1 : (char *) taskblock->d81filename0),
+            (drive ? taskblock->d81filenamelength1 : taskblock->d81filenamelength0));
+*/
+    if (drive == 0)  {
+/*
+      strncpy(midnight[side]->curfile,
+              taskblock->d81filename0,
+              taskblock->d81filenamelength0);
+      midnight[side]->curfile[taskblock->d81filenamelength0] = 0;
+*/
+      c = 0;
+      while (taskblock->d81filename0[c] != 0 && c < taskblock->d81filenamelength0)  {
+        midnight[side]->curfile[c] = taskblock->d81filename0[c];
+        c++;
+      }
+      midnight[side]->curfile[c] = 0;
+    } else {
+/*
+      strncpy(midnight[side]->curfile,
+              taskblock->d81filename1,
+              taskblock->d81filenamelength1);
+      midnight[side]->curfile[taskblock->d81filenamelength1] = 0;
+*/
+      c = 0;
+      while (taskblock->d81filename1[c] != 0 && c < taskblock->d81filenamelength1)  {
+        midnight[side]->curfile[c] = taskblock->d81filename1[c];
+        c++;
+      }
+      midnight[side]->curfile[c] = 0;
+    }
+
+    getDiskname(drive, (char *) diskname[side]);
+    BAM2Attic(drive, side);
+    midnight[side]->blocksfree = FreeBlocks(side);
+    midnight[side]->entries = getdirent(drive, side);
+  } else {
+	strcopy("storage card", (char *) diskname[side], 16);
+	strcopy("storage card", (char *) midnight[side]->curfile, 16);
+	midnight[side]->blocksfree = UINT_MAX;
+    midnight[side]->entries = gethyppodirent(drive, side, FILEENTRIES);
+  }
 }
 
 unsigned char d81navi(unsigned char drive, unsigned char side)  {
@@ -221,24 +291,38 @@ unsigned char d81navi(unsigned char drive, unsigned char side)  {
   char pos = 0;
   unsigned char entries = 0;
   unsigned char attachresult;
+  char sa[5];
 
-  entries = getd81();
+  entries = getd81() - 1;
+//  snprintf( sa, 5, "%d", entries);
+//  messagebox(1, "got returned", sa, "entries.");
   while (1)  {
-    if (pos >= entries || filelist[pos][0] == 0)  pos = 0;
-    mcbox(8, 3, 8 + 65, 3 + 20, COLOUR_CYAN, BOX_STYLE_INNER, 1, 1);
+    shortcuts(0xFF); // inactivate key display
+	if (filelist[pos][0] == 0)  pos = 0;
+	if (pos > entries)  pos = entries;
+    mcbox(8, 2, 8 + 65, 2 + SDENTRIESPERSCREEN + 2, COLOUR_CYAN, BOX_STYLE_INNER, 1, 1);
     revers(1);
-    mcputsxy(12, 3, " Choose disk image file for drive ");
+    mcputsxy(12, 2, " Choose disk image file for drive ");
 	csputdec(midnight[side]->drive, 0, 0);
     msprintf(": ");
     revers(0);
-    listboxd81(10, 5, pos, entries);
-    c = cgetcalt();
+    listboxd81(10, 4, pos, entries);
+    c = cgetc();
     switch (c) {
-	  case 145: // Crsrup
+	  case 0x91: // Crsrup
+//	  case 0x291: // Shift Crsrup
 	    if (pos > 0)  pos--;
       break;
-	  case 17: // Crsrdown
+	  case 0x11: // Crsrdown
 	    pos++;
+      break;
+	  case 0x9d: // Left
+	  case 0x5f: // Left
+	    if (pos > 10)  pos -= 10;
+		else           pos = 0;
+      break;
+	  case 0x1d: // Right
+	    pos += 10;
       break;
 
 	  case 13: // return
@@ -282,19 +366,23 @@ void navi(unsigned char side)  {
   unsigned char leftx;
   unsigned char starttrack;
   unsigned char startsector;
+  unsigned char attachresult;
   unsigned char i;
   DIRENT* ds;
   
+  // initialising:
   for (i = 0; i <= 1; i++)  {
-    // @@ test
+    // @@ to be made variable maybe?
     midnight[i]->drive = i;
 
     // title of mcbox is .d81 file name, cannot be read at startup:
     strcpy((char *) midnight[i]->curfile, (char *) "already mounted");
     midnight[i]->pos = 0;
+    midnight[i]->ismounted = TRUE;
     progress("Initialising...", "reading disk drives", i * 40 + 40);
     UpdateSectors(midnight[i]->drive, i);
   }
+
   while (1)  {
     for (i = 0; i <= 1; i++)  {
       if (midnight[i]->pos > midnight[i]->entries)  {
@@ -306,28 +394,36 @@ void navi(unsigned char side)  {
       mcputsxy(leftx + 2, 0, " ");  // @@ to be string optimised as in listbox()
 	  msprintf((char *) diskname[i]);
 	  cputc(' ');
-      mcputsxy(wherex() + 1, 0, " ");
-      msprintf((char *) midnight[i]->curfile);
-	  cputc(' ');
+      if (midnight[i]->ismounted == TRUE)  {
+        mcputsxy(wherex() + 1, 0, " ");
+        msprintf((char *) midnight[i]->curfile);
+	    cputc(' ');
+	  }
       mcputsxy(leftx + 2, 23, " drv:");
       csputdec(midnight[i]->drive, 0, 0);
 	  cputc(' ');
-      mcputsxy(leftx + 12, 23, " ");
-      csputdec(midnight[i]->blocksfree, 0, 0);
-	  msprintf(" blocks free ");
+      if (midnight[i]->blocksfree != UINT_MAX)  {
+	    mcputsxy(leftx + 12, 23, " ");
+        csputdec(midnight[i]->blocksfree, 0, 0);
+	    msprintf(" blocks free ");
+	  }
       revers(0);
       listbox((side == i), i, leftx + 1, 1, midnight[i]->pos, midnight[i]->entries);
 	}
 
     c = cgetcalt();
+    bordercolor (COLOUR_BLACK); // to unset red error borders
     switch (c) {
-	  case 145: // Crsrup
+	  case 0x91: // Crsrup
+	  case 0x291: // Shift Crsrup
 	    if (midnight[side]->pos > 0)  midnight[side]->pos--;
       break;
-	  case 17: // Crsrdown
+	  case 0x11: // Crsrdown
 	    midnight[side]->pos++;
       break;
 	  case 0x9d: // Left
+	  case 0x19d:
+	  case 0x29d:
 	  case 0x5f: // Left
 	    if (midnight[side]->pos > 10)  midnight[side]->pos -= 10;
 		else                           midnight[side]->pos = 0;
@@ -341,84 +437,99 @@ void navi(unsigned char side)  {
 //		midnight[side]->entries = getdirent(midnight[side]->drive, side);
       break;
 
-	  case 0xf2: // Modifier and ASC_F1:
+	  case 0xf2: // Modifiers and ASC_F1:
+	  case 0x1f2:
+	  case 0x2f2:
+/*
 	    if (d81navi(midnight[side]->drive, side))  {
 	      UpdateSectors(midnight[side]->drive, side);
 		}
+*/
+        // Unconditional unmount:
+		midnight[side]->ismounted = !midnight[side]->ismounted;
+		UpdateSectors(midnight[side]->drive, side);
       break;
 
 	  case 0xf5: // ASC_F5 copy
-	  case 0xf8: // Modifier and ASC_F8 delete
-        // @@ message
-        ds = getdirententry(side, midnight[side]->pos);
-		if ((ds->type&0xf) != VAL_DOSFTYPE_CBM && ds->type != VAL_DOSFTYPE_DEL)  {
+	  case 0xf8: // Modifiers and ASC_F8 delete
+	  case 0x1f8:
+	  case 0x2f8:
+		if (midnight[side]->ismounted == FALSE)  {
+		  messagebox(0, "Copying/deleting storage files/folders", "is not supported.", " ");
+		} else {
+          ds = getdirententry(side, midnight[side]->pos);
+	  	  if ((ds->type&0xf) != VAL_DOSFTYPE_CBM && ds->type != VAL_DOSFTYPE_DEL)  {
 
 #ifdef DEBUG
-        msprintf("name: ");
-        msprintf(ds->name);
-        mprintf(" t=", ds->track);
-        mprintf(" s=", ds->sector);
-        mprintf(" type=", ds->type&0xf);
+            msprintf("name: ");
+            msprintf(ds->name);
+            mprintf(" t=", ds->track);
+            mprintf(" s=", ds->sector);
+            mprintf(" type=", ds->type&0xf);
 
 //  mh4printf("ATTICFILEBUFFER 32addr is: ", ATTICFILEBUFFER >> 16);
 //  mh4printf(" ", ATTICFILEBUFFER & 0xffff);
-	  cputln();
-		  mprintf("before copy/del type=", ds->type);
-	  cputln();
-	      cgetc();
+	        cputln();
+		    mprintf("before copy/del type=", ds->type);
+	        cputln();
+	        cgetc();
 #endif
-          if (c == 0xf5)  {  // copy
-            if (ds->size > midnight[side?0:1]->blocksfree)  {
-			  messagebox(0, "File copy,", "destination disk space insufficient", " ");
-			} else if (messagebox(0, "File copy,", ds->name,
-			           (side ? "from right to left" : "from left to right"))) {
-              progress("Reading...", "source file", 20);
-			  readblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side]->drive,
-                             ds->track, ds->sector);
-              progress("Reading...", "BAM", 30);
-              // write on opposing side disk:
-              GetBAM(side?0:1);
-              progress("Writing...", "destination file", 40);
-              writeblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side?0:1]->drive,
-		                      &starttrack, &startsector);
-              ds->track = starttrack;  // recycle src dirent for destination
-		      ds->sector = startsector;
+            if (c == 0xf5)  {  // copy
+              if (ds->size > midnight[side?0:1]->blocksfree)  {
+			    messagebox(0, "File copy,", "destination disk space insufficient", " ");
+			  } else if (messagebox(0, "File copy,", ds->name,
+			             (side ? "from right to left" : "from left to right"))) {
+                progress("Reading...", "source file", 20);
+			    readblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side]->drive,
+                               ds->track, ds->sector);
+                progress("Reading...", "BAM", 30);
+                // write on opposing side disk:
+                GetBAM(side?0:1);
+                progress("Writing...", "destination file", 40);
+                writeblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side?0:1]->drive,
+		                        &starttrack, &startsector);
+                ds->track = starttrack;  // recycle src dirent for destination
+		        ds->sector = startsector;
 
 #ifdef DEBUG
-		  mprintf("   before newds type=", ds->type);
-	  cputln();
-	      cgetc();
+		        mprintf("   before newds type=", ds->type);
+	            cputln();
+	            cgetc();
 #endif
-              progress("Writing...", "directory", 60);
-		      // load opposing side dirent block into Attic:
+                progress("Writing...", "directory", 60);
+		        // load opposing side dirent block into Attic:
 //		      midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
-		      writenewdirententry(midnight[side?0:1]->drive, side?0:1, ds);
-		      // re-read altered dirent on opposing side after entry added:
+		        writenewdirententry(midnight[side?0:1]->drive, side?0:1, ds);
+		        // re-read altered dirent on opposing side after entry added:
 //		      midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
-              progress("Writing...", "BAM", 80);
-		      PutBAM(midnight[side?0:1]->drive, side?0:1);
-	          UpdateSectors(midnight[side?0:1]->drive, side?0:1);
-			}
-		  } else if (ds->type != VAL_DOSFTYPE_DEL &&  // delete
-			         messagebox(0, "File delete,", ds->name,
-			                    (side ? "from right side" : "from left side")))  {
-            progress("Reading...", "BAM", 20);
-            ds->type = VAL_DOSFTYPE_DEL;
-            GetBAM(side);
-            progress("Writing...", "removing BAM entries", 40);
-            deletedirententry(midnight[side]->drive, side, midnight[side]->pos);
-            progress("Writing...", "updating BAM", 80);
-            PutBAM(midnight[side]->drive, side);
-            UpdateSectors(midnight[side]->drive, side);
+                progress("Writing...", "BAM", 80);
+		        PutBAM(midnight[side?0:1]->drive, side?0:1);
+	            UpdateSectors(midnight[side?0:1]->drive, side?0:1);
+			  }
+		    } else if (ds->type != VAL_DOSFTYPE_DEL &&  // delete
+			           messagebox(0, "File delete,", ds->name,
+			                      (side ? "from right side" : "from left side")))  {
+              progress("Reading...", "BAM", 20);
+              ds->type = VAL_DOSFTYPE_DEL;
+              GetBAM(side);
+              progress("Writing...", "removing BAM entries", 40);
+              deletedirententry(midnight[side]->drive, side, midnight[side]->pos);
+              progress("Writing...", "updating BAM", 80);
+              PutBAM(midnight[side]->drive, side);
+              UpdateSectors(midnight[side]->drive, side);
+		    }
 		  }
-		  midnight[side]->entries = getdirent(midnight[side]->drive, side);
 		}
       break;
 
 	  case 0x8f6: // Mega-F5
-	    if (messagebox(0, "Disk copy,", "destination disk will be OVERWRITTEN", " "))  {
-          copywholedisk(midnight[side]->drive, midnight[side?0:1]->drive);
-		  UpdateSectors(midnight[side?0:1]->drive, side?0:1);
+		if (midnight[side]->ismounted == FALSE)  {
+		  messagebox(0, "Copying full storage cards", "is not supported.", " ");
+		} else {
+	      if (messagebox(0, "Disk copy,", "destination disk will be OVERWRITTEN", " "))  {
+            copywholedisk(midnight[side]->drive, midnight[side?0:1]->drive);
+		    UpdateSectors(midnight[side?0:1]->drive, side?0:1);
+		  }
 		}
       break;
 
@@ -427,6 +538,45 @@ void navi(unsigned char side)  {
       break;
 
 	  case 13: // return
+        ds = getdirententry(side, midnight[side]->pos);
+
+		if (midnight[side]->ismounted == FALSE)  {
+		  if (ds->type & HYPPODIRENTATTRDIR)  {
+//			ds->name[2] = 77 | 0x80;
+//			ds->name[3] = 0;
+			hyppo_setname((char *) ds->name);
+			attachresult = hyppo_chdir();
+
+		    if (attachresult > 0xf)  {  // @@ better error handling in Hyppo reqd
+  		      messagebox(0, "Storage card change directory,", "open failed for",
+                         (char *) ds->name);
+		    } else {
+	          UpdateSectors(midnight[side]->drive, side);
+            }		
+		  } else {
+	        // @@ todo: choose drive
+		    if (midnight[side]->drive)  {
+		      hyppo_setname((char *) ds->name);
+		      attachresult = hyppo_d81attach1();
+		    } else {
+		      hyppo_setname((char *) ds->name);
+		      attachresult = hyppo_d81attach0();
+		    }
+//		hyppo_setname((char *) filelist[pos]);
+//		attachresult = (midnight[side]->drive ? hyppo_d81attach1() : hyppo_d81attach0());
+		    if (attachresult != 0)  {
+		      messagebox(0, "Storage card mounting,", "mount failed for", (char *) ds->name);
+		    } else {
+		      midnight[side]->ismounted = TRUE;
+	          UpdateSectors(midnight[side]->drive, side);
+            }		
+		  }
+		} else {
+		  messagebox(0, "This file type/directory", "is not yet implemented.", " ");
+		}
+      break;
+
+	  case 0x20: // Space
 	  case 0x1f: // HELP
 	  case 0xf1: // unused F keys
 	  case 0xf3:
@@ -434,11 +584,14 @@ void navi(unsigned char side)  {
 	  case 0xf6:
 	  case 0xf7:
 	  case 0xf9:
+	  case 0x415: // Ctrl-r
 		messagebox(0, "Some function keys,", "are not yet implemented.", " ");
       break;
 
 	  // case 0xF9: // ASC_F9:
-	  case 0xFA: // Modifier and ASC_F9:
+	  case 0xFA: // Modifiers and ASC_F9:
+	  case 0x1FA:
+	  case 0x2FA:
 	    if (getkeymodstate() == KEYMOD_RSHIFT || getkeymodstate() == KEYMOD_LSHIFT)  {
     	  return;
 	    }
@@ -449,7 +602,7 @@ void navi(unsigned char side)  {
 //    break;
 	
 	  default:
-	    mh4printf("val=", c);
+	    mh4printf("val=$", c);
 		cputc(' ');
    }
   }
