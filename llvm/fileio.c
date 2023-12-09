@@ -750,7 +750,7 @@ void copywholedisk(unsigned char srcdrive, unsigned char destdrive)  {
   }
 }
 
-// this is a mixture of SD card and C= file types:
+// this is a mixture of storage card and C= file types:
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i)  {
   if (type & HYPPODIRENTATTR)  {
     switch (type & (~HYPPODIRENTATTR)) {

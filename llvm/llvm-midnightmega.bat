@@ -54,7 +54,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.3.2-beta
+SET v=v0.4.0-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 REM DEL %TEMP%\*.o
@@ -84,7 +84,7 @@ IF ERRORLEVEL == 1 (
   %c1541% -attach %PRJ%.d81 -write %PRJ%.prg %PRJ%
   %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   ECHO this is a sequential file for testing.>%PRJ%.seq
-  %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0
+  %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s
   ECHO this is a relential file for testing.>%PRJ%.seq
   %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.1,l80,01,01
   ECHO this is a sequential file for testing.>%PRJ%.seq
@@ -126,13 +126,13 @@ IF ERRORLEVEL == 1 (
   XCOPY /Y %DATADISK%.d81 %HDOS%\
   attrib -a %HDOS%\%DATADISK%.d81
 
-  REM Put project into the SD card image file:
+  REM Put project into the storage card image file:
   SET "PRJ=%PRJ:~0,8%"
   DEL %HDOS%\!PRJ!.d81
   REN %HDOS%\%PRJ%.d81 !PRJ!.d81
 
   REM Create a stub disk to be loaded at CLI level from current host
-  REM directory to mount .d81 within virtual SD card image:
+  REM directory to mount .d81 within virtual storage card image:
   SET "PRJUPPER=!PRJ!"
   SET "DATADISKUPPER=!DATADISK!"
   for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (

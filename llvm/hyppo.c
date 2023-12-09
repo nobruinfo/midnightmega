@@ -384,7 +384,7 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
   unsigned char entries = 0;
   DIRENT* ds;
 
-  // @@ later to be changed to switch SD card drives according to
+  // @@ later to be changed to switch storage card drives according to
   // Lydon's undocumented traps 0xc0 and 0xc1:
   curdrv = hyppo_getcurrentdrive();
 
@@ -400,7 +400,12 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
 		// @@ add check to exclude non-.d81 and non-dir entries!
 		// @@ see #386, attributes for it in big book.
 		
-        if (readerr != 0x85 && readerr != 0xff) {
+        if (readerr != 0x85 && readerr != 0xff &&
+		    ((readdir_dirent->attr & HYPPODIRENTATTRDIR) ||
+			 ((readdir_dirent->sfn[8] == 'd' || readdir_dirent->sfn[8] == 'D') &&
+			  readdir_dirent->sfn[9] == '8' &&
+			  readdir_dirent->sfn[10] == '1')))
+		{
           msprintfd("filename is: ");
           msprintfd(getsfn()); // already null terminated
 		  cputlnd();
@@ -423,7 +428,7 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
 		  ds->name[0] = 32; ds->name[1] = 0;
 /*
 		  snprintf( filelist[i], 65, "%d", i);
-		  messagebox(1, "error on reading SD card entry",
+		  messagebox(1, "error at reading storage card entry",
                      filelist[i],
 			         "for current directory.");
 */

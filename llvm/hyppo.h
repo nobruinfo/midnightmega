@@ -47,7 +47,7 @@ struct HYPPODIRENT {
 #define HYPPODIRENTATTRVOL 0x08
 #define HYPPODIRENTATTRDIR 0x10
 #define HYPPODIRENTATTRARC 0x20
-#define HYPPODIRENTATTR    0x40 // denotes the type being from SD card
+#define HYPPODIRENTATTR    0x40 // denotes the type being from storage card
 
 extern struct TASKBLOCK* const taskblock;
 
