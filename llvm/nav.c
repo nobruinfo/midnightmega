@@ -21,78 +21,7 @@ MIDNIGHT* midnight[2] = { (MIDNIGHT*) MIDNIGHTLEFTPAGE,
 unsigned char diskname[2][DOSFILENAMELEN + 1]; // @@ change for pointer
 
 #define FILEENTRIES 32
-#define SDENTRIESPERSCREEN 18
 unsigned char filelist[FILEENTRIES][65];
-
-void listboxd81(unsigned char x, unsigned char y,
-             unsigned char currentitem, unsigned char nbritems)  {
-  unsigned int n;
-  unsigned int ofs = 0;
-
-  if (currentitem + 1 >= SDENTRIESPERSCREEN)  ofs = currentitem + 1 - SDENTRIESPERSCREEN;
-
-  for (n = 0; n < SDENTRIESPERSCREEN && n < nbritems; n++)  {
-	if (filelist[n + ofs][0] == 0)  break; // @@ maybe no longer needed
-	if (n + ofs == currentitem)  {
-	  revers(1);
-	  cputsxy(x, y + n, (const unsigned char*) "> ");
-	  cputs(filelist[n + ofs]);
-	  cputs((const unsigned char*) " <");
-	} else {
-      revers(0);
-	  cputsxy(x + 2, y + n, filelist[n + ofs]);
-	}
-  }
-  revers(0);
-  cputln();
-}
-
-unsigned char getd81(void)  {
-  unsigned char i;
-  unsigned char curdrv = 0;
-  unsigned char fd = 0xff;
-  unsigned char readerr = 0xff;
-  unsigned char entries = 0;
-
-  curdrv = hyppo_getcurrentdrive();
-
-  if (curdrv < 0xff)  {
-    fd = hyppo_opendir();
-
-    if (fd != 0x84 && fd != 0x87 && fd != 0xff) {
-      readerr = 0;
-      for (i = 0; i < FILEENTRIES; i++)  {
-        readerr = hyppo_readdir(fd);
-		
-		// @@ add check to exclude non-.d81 and non-dir entries!
-		// @@ see #386, attributes for it in big book.
-		
-        if (readerr != 0x85 && readerr != 0xff) {
-          msprintfd("filename is: ");
-          msprintfd(getsfn()); // already null terminated
-		  cputlnd();
-		  cgetcd();
-		  strcpy((char *) filelist[i], getsfn());
-		  entries++;
-        }
-		else  {
-		  // empty string usually crash when printed, so:
-		  filelist[i][0] = 32; filelist[i][1] = 0;
-/*
-		  snprintf( filelist[i], 65, "%d", i);
-		  messagebox(1, "error at reading storage card entry",
-                     filelist[i],
-			         "for current directory.");
-*/
-		}
-	  }
-	  hyppo_closedir(fd);
-	}
-  }
-//  snprintf( filelist[i], 65, "%d", entries);
-//  messagebox(1, "returning", filelist[i], "entries.");
-  return entries;
-}
 
 #define DIRENTPERSCREEN 22
 // @@ The in here present recognition of 0xa0 is also in conioextensions.c
@@ -237,7 +166,7 @@ unsigned int cgetcalt(void)
 void UpdateSectors(unsigned char drive, unsigned char side)  {
   unsigned char c;  // build up a string
 
-  if (midnight[side]->ismounted)  {
+  if (midnight[side]->flags & MIDNIGHTFLAGismounted)  {
     // This would actually only have to be done once for both drives:
     hyppo_get_proc_desc();
     /*
@@ -286,79 +215,6 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
   }
 }
 
-unsigned char d81navi(unsigned char drive, unsigned char side)  {
-  unsigned int c;
-  char pos = 0;
-  unsigned char entries = 0;
-  unsigned char attachresult;
-  char sa[5];
-
-  entries = getd81() - 1;
-//  snprintf( sa, 5, "%d", entries);
-//  messagebox(1, "got returned", sa, "entries.");
-  while (1)  {
-    shortcuts(0xFF); // inactivate key display
-	if (filelist[pos][0] == 0)  pos = 0;
-	if (pos > entries)  pos = entries;
-    mcbox(8, 2, 8 + 65, 2 + SDENTRIESPERSCREEN + 2, COLOUR_CYAN, BOX_STYLE_INNER, 1, 1);
-    revers(1);
-    mcputsxy(12, 2, " Choose disk image file for drive ");
-	csputdec(midnight[side]->drive, 0, 0);
-    msprintf(": ");
-    revers(0);
-    listboxd81(10, 4, pos, entries);
-    c = cgetc();
-    switch (c) {
-	  case 0x91: // Crsrup
-//	  case 0x291: // Shift Crsrup
-	    if (pos > 0)  pos--;
-      break;
-	  case 0x11: // Crsrdown
-	    pos++;
-      break;
-	  case 0x9d: // Left
-	  case 0x5f: // Left
-	    if (pos > 10)  pos -= 10;
-		else           pos = 0;
-      break;
-	  case 0x1d: // Right
-	    pos += 10;
-      break;
-
-	  case 13: // return
-	    // @@ todo: choose drive
-		if (midnight[side]->drive)  {
-		  hyppo_setname((char *) filelist[pos]);
-		  attachresult = hyppo_d81attach1();
-		} else {
-		  hyppo_setname((char *) filelist[pos]);
-		  attachresult = hyppo_d81attach0();
-		}
-//		hyppo_setname((char *) filelist[pos]);
-//		attachresult = (midnight[side]->drive ? hyppo_d81attach1() : hyppo_d81attach0());
-		if (attachresult != 0)  {
-		  messagebox(0, "Storage card mounting,", "mount failed for", (char *) filelist[pos]);
-		} else {
-	      UpdateSectors(midnight[side]->drive, side);
-		  // .d81 name goes here:
-		  strcpy((char *) midnight[side]->curfile, (char *) filelist[pos]);
-		  return TRUE;
-		}		
-      break;
-
-	  case 3:  // STOP
-	  case 27: // Esc
-	    return FALSE;
-      break;
-	
-	  default:
-	    mh4printf("val=", c);
-		cputc(' ');
-    }
-  }
-  return 0;
-}
-
 // unsigned char testtrack;
 // unsigned char testsector;
 void navi(unsigned char side)  {
@@ -378,7 +234,7 @@ void navi(unsigned char side)  {
     // title of mcbox is .d81 file name, cannot be read at startup:
     strcpy((char *) midnight[i]->curfile, (char *) "already mounted");
     midnight[i]->pos = 0;
-    midnight[i]->ismounted = TRUE;
+    midnight[i]->flags |= MIDNIGHTFLAGismounted;
     progress("Initialising...", "reading disk drives", i * 40 + 40);
     UpdateSectors(midnight[i]->drive, i);
   }
@@ -394,7 +250,7 @@ void navi(unsigned char side)  {
       mcputsxy(leftx + 2, 0, " ");  // @@ to be string optimised as in listbox()
 	  msprintf((char *) diskname[i]);
 	  cputc(' ');
-      if (midnight[i]->ismounted == TRUE)  {
+      if ((midnight[i]->flags & MIDNIGHTFLAGismounted) == TRUE)  {
         mcputsxy(wherex() + 1, 0, " ");
         msprintf((char *) midnight[i]->curfile);
 	    cputc(' ');
@@ -413,7 +269,7 @@ void navi(unsigned char side)  {
 
     c = cgetcalt();
     bordercolor (COLOUR_BLACK); // to unset red error borders
-    switch (c) {
+    switch (c) { // mega65-book.pdf#229
 	  case 0x91: // Crsrup
 	  case 0x291: // Shift Crsrup
 	    if (midnight[side]->pos > 0)  midnight[side]->pos--;
@@ -424,7 +280,6 @@ void navi(unsigned char side)  {
 	  case 0x9d: // Left
 	  case 0x19d:
 	  case 0x29d:
-	  case 0x5f: // Left
 	    if (midnight[side]->pos > 10)  midnight[side]->pos -= 10;
 		else                           midnight[side]->pos = 0;
       break;
@@ -446,7 +301,7 @@ void navi(unsigned char side)  {
 		}
 */
         // Unconditional unmount:
-		midnight[side]->ismounted = !midnight[side]->ismounted;
+		midnight[side]->flags ^= MIDNIGHTFLAGismounted;
 		UpdateSectors(midnight[side]->drive, side);
       break;
 
@@ -454,7 +309,7 @@ void navi(unsigned char side)  {
 	  case 0xf8: // Modifiers and ASC_F8 delete
 	  case 0x1f8:
 	  case 0x2f8:
-		if (midnight[side]->ismounted == FALSE)  {
+		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
 		  messagebox(0, "Copying/deleting storage files/folders", "is not supported.", " ");
 		} else {
           ds = getdirententry(side, midnight[side]->pos);
@@ -523,7 +378,7 @@ void navi(unsigned char side)  {
       break;
 
 	  case 0x8f6: // Mega-F5
-		if (midnight[side]->ismounted == FALSE)  {
+		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
 		  messagebox(0, "Copying full storage cards", "is not supported.", " ");
 		} else {
 	      if (messagebox(0, "Disk copy,", "destination disk will be OVERWRITTEN", " "))  {
@@ -537,10 +392,33 @@ void navi(unsigned char side)  {
 	    UpdateSectors(midnight[side]->drive, side);
       break;
 
+	  case 0x5f: // left (for updir)
+	  case 3:    // STOP
+	  case 27:   // Esc
+		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
+          for (i = 0; i <= midnight[side]->entries; i++)  {
+		    ds = getdirententry(side, i);
+			
+		    if ((ds->type & HYPPODIRENTATTRDIR) &&
+			    (ds->name[0] == '.' && ds->name[1] == '.'))  {
+			  hyppo_setname((char *) ds->name);
+			  attachresult = hyppo_chdir();
+
+		      if (attachresult > 0xf)  {  // @@ better error handling in Hyppo reqd
+  		        messagebox(0, "Storage card parent directory,", "open failed for",
+                           (char *) ds->name);
+		      } else {
+	            UpdateSectors(midnight[side]->drive, side);
+              }
+			}
+		  }
+		}
+      break;
+
 	  case 13: // return
         ds = getdirententry(side, midnight[side]->pos);
 
-		if (midnight[side]->ismounted == FALSE)  {
+		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
 		  if (ds->type & HYPPODIRENTATTRDIR)  {
 //			ds->name[2] = 77 | 0x80;
 //			ds->name[3] = 0;
@@ -567,7 +445,7 @@ void navi(unsigned char side)  {
 		    if (attachresult != 0)  {
 		      messagebox(0, "Storage card mounting,", "mount failed for", (char *) ds->name);
 		    } else {
-		      midnight[side]->ismounted = TRUE;
+		      midnight[side]->flags |= MIDNIGHTFLAGismounted;
 	          UpdateSectors(midnight[side]->drive, side);
             }		
 		  }
@@ -597,10 +475,6 @@ void navi(unsigned char side)  {
 	    }
       break;
 
-//	  case 27:
-//	    return;
-//    break;
-	
 	  default:
 	    mh4printf("val=$", c);
 		cputc(' ');

@@ -402,9 +402,9 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
 		
         if (readerr != 0x85 && readerr != 0xff &&
 		    ((readdir_dirent->attr & HYPPODIRENTATTRDIR) ||
-			 ((readdir_dirent->sfn[8] == 'd' || readdir_dirent->sfn[8] == 'D') &&
-			  readdir_dirent->sfn[9] == '8' &&
-			  readdir_dirent->sfn[10] == '1')))
+			 ((readdir_dirent->ext[0] == 'd' || readdir_dirent->ext[0] == 'D') &&
+			  readdir_dirent->ext[1] == '8' &&
+			  readdir_dirent->ext[2] == '1')))
 		{
           msprintfd("filename is: ");
           msprintfd(getsfn()); // already null terminated
