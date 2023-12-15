@@ -420,8 +420,6 @@ void navi(unsigned char side)  {
 
 		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
 		  if (ds->type & HYPPODIRENTATTRDIR)  {
-//			ds->name[2] = 77 | 0x80;
-//			ds->name[3] = 0;
 			hyppo_setname((char *) ds->name);
 			attachresult = hyppo_chdir();
 

@@ -804,20 +804,25 @@ unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i)  {
 
 DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
   unsigned char i;
+  unsigned char pos;
   DIRENT* ds;
   unsigned int max = ENTRIESPERBLOCK;
 
   _miniInit();
   ds = (DIRENT *) direntryblock[0]; // to be changed to smaller array
 
-  for (i = 0; i < max; i++)  {
+  for (i = 0, pos = 0; i < max; i++)  {
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
     lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
           (uint32_t) ds, DIRENTSIZE);
 
 	if (ds->track == 0)  return NULL; // no more entries
 	if (ds->chntrack > 0)  max += ENTRIESPERBLOCK; // more attic pages
-	if (i == entry)  return ds; // found
+	// if a non-deleted or a SD card file (hence this mask) ?
+	if (ds->type != VAL_DOSFTYPE_DEL)  {
+	  if (pos == entry)  return ds; // found
+	  pos++;
+	}
 
 #ifdef DEBUG
 	if (ds->track > 0)  {

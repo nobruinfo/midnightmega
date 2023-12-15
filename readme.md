@@ -24,6 +24,11 @@ of this development will **eat** your files.
 * [Mega][F5] copies each and every files of the selected side
   (left or right) to the opposite one, this will **overwrite** a
   whole disk (image) contents irrevocably
+* [&rarr;] can be used instead of the `..` directory entry to
+  climb to the parent directory
+* Currently the left pane is always drive 0 and the right one
+  drive 1, a later handling within the same drive is planned
+  allowing you to copy files within one disk
 
 # subfolders
 
@@ -58,6 +63,9 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
   [their syntax](https://llvm-mos.org/wiki/Character_set). Maybe
   check how PETSCII differs from screen codes/attributes. Otherwise
   use the cc65 approach.
+* Maybe reading of a setting file to get configurable personal
+  preferences a go, a seperate setup programme could be added to
+  the disk
 
 ## tasks
 
