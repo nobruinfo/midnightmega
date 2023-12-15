@@ -4976,38 +4976,41 @@ getdirententry:                         ; @getdirententry
 	jsr	__mulsi3
 	sta	mos8(.Lgetdirententry_zp_stk+3)
 	stx	mos8(.Lgetdirententry_zp_stk+4)
-	ldx	#0
-	ldy	__rc2
-	sty	mos8(.Lgetdirententry_zp_stk+5)
+	ldx	__rc2
+	stx	mos8(.Lgetdirententry_zp_stk+5)
 	lda	__rc3
-	ldy	#8
-	sty	mos8(.Lgetdirententry_zp_stk+10) ; 1-byte Folded Spill
+	ldx	#8
+	stx	mos8(.Lgetdirententry_zp_stk+9) ; 1-byte Folded Spill
 	ora	#8
 	sta	mos8(.Lgetdirententry_zp_stk+6)
+	ldx	#0
 	txa
-	stz	mos8(.Lgetdirententry_zp_stk+8)
-	tay
 .LBB12_1:                               ; =>This Inner Loop Header: Depth=1
-	sty	__rc2
+	phx
+	ply
+	sta	__rc2
+	ldx	#0
 	cpx	__rc2
 	bne	.LBB12_3
 ; %bb.2:                                ;   in Loop: Header=BB12_1 Depth=1
-	sty	mos8(.Lgetdirententry_zp_stk+9)
-	ldy	mos8(.Lgetdirententry_zp_stk+10) ; 1-byte Folded Reload
+	sty	__rc3
+	ldy	mos8(.Lgetdirententry_zp_stk+9) ; 1-byte Folded Reload
 	sty	__rc2
-	cmp	__rc2
+	ldy	__rc3
+	cpy	__rc2
 	bcc	.LBB12_4
-; %bb.15:
-	jmp	.LBB12_12
+; %bb.11:
+	jmp	.LBB12_10
 .LBB12_3:                               ;   in Loop: Header=BB12_1 Depth=1
-	sty	mos8(.Lgetdirententry_zp_stk+9)
-	sty	__rc2
+	sta	__rc2
 	cpx	__rc2
 	bcc	.LBB12_4
-; %bb.17:
-	jmp	.LBB12_12
+; %bb.13:
+	jmp	.LBB12_10
 .LBB12_4:                               ;   in Loop: Header=BB12_1 Depth=1
 	sta	mos8(.Lgetdirententry_zp_stk+7)
+	sty	mos8(.Lgetdirententry_zp_stk+8)
+	tya
 	lsr
 	tay
 	lda	#0
@@ -5041,41 +5044,34 @@ getdirententry:                         ; @getdirententry
 	lda	__rc11
 	jsr	lcopy
 	ldx	6659
-	beq	.LBB12_12
+	beq	.LBB12_10
 ; %bb.5:                                ;   in Loop: Header=BB12_1 Depth=1
 	ldx	6656
 	beq	.LBB12_7
 ; %bb.6:                                ;   in Loop: Header=BB12_1 Depth=1
 	clc
-	lda	mos8(.Lgetdirententry_zp_stk+10) ; 1-byte Folded Reload
+	lda	mos8(.Lgetdirententry_zp_stk+9) ; 1-byte Folded Reload
 	adc	#8
-	sta	mos8(.Lgetdirententry_zp_stk+10) ; 1-byte Folded Spill
-	lda	mos8(.Lgetdirententry_zp_stk+9)
+	sta	mos8(.Lgetdirententry_zp_stk+9) ; 1-byte Folded Spill
+	lda	mos8(.Lgetdirententry_zp_stk+7)
 	adc	#0
-	sta	mos8(.Lgetdirententry_zp_stk+9)
+	bra	.LBB12_8
 .LBB12_7:                               ;   in Loop: Header=BB12_1 Depth=1
 	lda	mos8(.Lgetdirententry_zp_stk+7)
-	ldx	6658
-	beq	.LBB12_10
-; %bb.8:                                ;   in Loop: Header=BB12_1 Depth=1
+.LBB12_8:                               ;   in Loop: Header=BB12_1 Depth=1
+	ldy	mos8(.Lgetdirententry_zp_stk+8)
 	ldx	mos8(.Lgetdirententry_zp_stk+8)
-	cpx	mos8(.Lgetdirententry_zp_stk+2)
-	beq	.LBB12_11
-; %bb.9:                                ;   in Loop: Header=BB12_1 Depth=1
 	inx
-	stx	mos8(.Lgetdirententry_zp_stk+8)
-.LBB12_10:                              ;   in Loop: Header=BB12_1 Depth=1
-	inc
-	ldx	#0
-	ldy	mos8(.Lgetdirententry_zp_stk+9)
-; %bb.13:                               ;   in Loop: Header=BB12_1 Depth=1
+	cpy	mos8(.Lgetdirententry_zp_stk+2)
+	beq	.LBB12_9
+; %bb.15:                               ;   in Loop: Header=BB12_1 Depth=1
 	jmp	.LBB12_1
-.LBB12_11:
+.LBB12_9:
 	ldx	#0
 	stx	mos8(.Lgetdirententry_zp_stk)
 	ldx	#26
 	stx	mos8(.Lgetdirententry_zp_stk+1)
-.LBB12_12:
+.LBB12_10:
 	ldx	mos8(.Lgetdirententry_zp_stk)
 	stx	__rc2
 	ldx	mos8(.Lgetdirententry_zp_stk+1)
@@ -12318,7 +12314,7 @@ BAMsector:
 
 	.type	.L.str.4.50,@object             ; @.str.4.50
 .L.str.4.50:
-	.asciz	"v0.4.2-beta"
+	.asciz	"v0.4.3-beta"
 	.size	.L.str.4.50, 12
 
 	.type	.L.str.5.51,@object             ; @.str.5.51
@@ -12802,7 +12798,7 @@ dmalist:
 .set .Lcputln_zp_stk, .Lzp_stack+4
 	.size	.Lcputln_zp_stk, 10
 .set .Lgetdirententry_zp_stk, .Lzp_stack
-	.size	.Lgetdirententry_zp_stk, 11
+	.size	.Lgetdirententry_zp_stk, 10
 .set .LBAMSectorUpdate_zp_stk, .Lzp_stack+7
 	.size	.LBAMSectorUpdate_zp_stk, 4
 .set .LfindnextBAMtracksector_zp_stk, .Lzp_stack

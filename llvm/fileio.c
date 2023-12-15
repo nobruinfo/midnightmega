@@ -819,7 +819,7 @@ DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
 	if (ds->track == 0)  return NULL; // no more entries
 	if (ds->chntrack > 0)  max += ENTRIESPERBLOCK; // more attic pages
 	// if a non-deleted or a SD card file (hence this mask) ?
-	if (ds->type != VAL_DOSFTYPE_DEL)  {
+	if (TRUE)  { // (ds->type != VAL_DOSFTYPE_DEL)  {
 	  if (pos == entry)  return ds; // found
 	  pos++;
 	}
