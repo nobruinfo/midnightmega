@@ -24,11 +24,14 @@ of this development will **eat** your files.
 * [Mega][F5] copies each and every files of the selected side
   (left or right) to the opposite one, this will **overwrite** a
   whole disk (image) contents irrevocably
-* [&rarr;] can be used instead of the `..` directory entry to
-  climb to the parent directory
+* [&larr;] in the upper left of your keyboard can be used instead
+  of the `..` directory entry to climb to the parent directory
 * Currently the left pane is always drive 0 and the right one
   drive 1, a later handling within the same drive is planned
   allowing you to copy files within one disk
+* [F2] ([Shift][F1] on the MEGA65 of course) is used for both
+  switching from a mounted .d81 to the selection within the
+  storage card and back
 
 # subfolders
 
@@ -47,16 +50,13 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
 ## not yet in progress
 
 * greyed out function keys will get implemented
-* more contextey display of function keys as show in the foot of
-  the screen
+* function keys in the foot of the screen will be showing more
+  modifier key combinations 
 * Hyppo SD card handling as far as possible (writing not yet
   implemented on Hyppo side)
 * Creation of .d81 image files currently unsopported by Hyppo
 * copying of ~~single~~/multiple files in between real/virtual drives,
   mounted images
-* Currently to exit from within a .d81 disk image file to the selection
-  of files on an SD card (storage card) pressing the [F2] key is used,
-  this might alternatively be done by another `..` directory entry
 * Handling of subdirectories (sub-partitions of file type `CBM`)
   inside diskettes
 * For `llvm` replace most fixed strings for screen output with
@@ -90,6 +90,8 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
   track chain
 * ✓ show a status feeter with number of blocks available
 * Involving the user to handle same name files/directories
+* `s[]` and `OPTION option` are maybe data to put to different
+  places, `s[]` could be the same pointer as `p2sbuf`
 
 ## bugs
 
@@ -98,11 +100,16 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
 * ✓ ~~Additional file blocks are also placed within track 40.~~
 * BAM and `dirent` blocks are read/written way too often. With the
   now cache for two disks (left and right) in place this can be
-  optimised.
+  optimised.<br />
+  A BAM flag could be used to only read it back in case disk
+  operation need access to it/alter it.
 * The disk controller always reads/writes two logical sectors
   at a time because of course it acts on physical 80 sectored
   dual sided media. The now abstraction make in no way optimal
-  use of that.
+  use of that.<br />
+  Either reading one sector could keep the other in a cache or
+  `UpdateSectors()` could be optimised to read them all at once
+  in a proper numeric order.
 * ✓ ~~`dirent` is currently not fully updated, additional sectors~~
   ~~are currently not added automatically.~~
 * `dirent` currently uses a full 255 bytes page of data which of
@@ -116,13 +123,15 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
   ~~therefore not yet covered.~~
 * ✓ ~~BAM is not yet in attic RAM, therefore multiple discs not~~
   ~~cached.~~
-* Improve handling of DEL type files.
+* ✓ ~~Improve handling of DEL type files.~~
 * ✓ ~~reading/writing .d81 always takes two logical sectors at once,~~
   ~~writing of a single one should first read its accompaigning one~~
 * ✓ ~~reading the last sector 39 results in side 1 and an invalid next~~
   ~~track~~
 * Modifier key handling could be improved/optimised to treat keys
   different that don't require modification at all
+* Flickering in Xemu when e.g. cursor up is performed multiple times
+  because of how modifier keys are currently handled
 
 # C environment
 

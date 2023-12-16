@@ -372,6 +372,17 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
   }
 }
 
+unsigned char valuesbox(unsigned char mode, char* message, char* message2, long val2,
+                        char* message3, long val3)  {
+  unsigned char ret = messagebox(mode, message, " ", " ");
+  gotoxy(12, 7);
+  mprintf(message2, val2);
+  gotoxy(12, 8);
+  mprintf(message3, val3);
+  cgetc();
+  return ret;
+}
+
 // used to be put over previously printed messagebox:
 void progress(char* message, char* message2, unsigned char progresspercent)  {
   unsigned char i;

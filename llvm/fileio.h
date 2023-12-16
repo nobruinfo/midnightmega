@@ -88,6 +88,18 @@ typedef struct structdatablock {
 #define DIRENTTRACK 40
 #define DIRENTSECT   3
 
+// Midnight Mega general setup options:
+#define OPTIONshowDEL 1
+#define OPTIONshow2   2
+#define OPTIONshow3   4
+#define OPTIONshow4   8
+#define OPTIONshow5   0x10
+#define OPTIONMAX     4
+typedef struct structOPTION {
+	unsigned char option;    // bitwise flags
+} OPTION;
+extern OPTION option;
+
 void GetBAM(unsigned char side);
 void PutBAM(unsigned char drive, unsigned char side);
 void BAM2Attic(unsigned char drive, unsigned char side);

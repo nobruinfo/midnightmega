@@ -37,7 +37,13 @@ int main() {
   
   // setscreensize(80, 50);  or 40 25
   setscreensize(80, 25);
-
+/*
+  setuppercase();
+  for (int i = 0; i <= 255; i++)  {
+	cputcxy(i % 40, i / 40, i);
+  }
+  cgetc();
+*/
   clrhome();
 
   mcputsxy(0, 22, "The function keys shown in the bottom line are ");

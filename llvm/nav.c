@@ -61,6 +61,8 @@ void listbox(unsigned char iscurrent, unsigned char side,
 	s[i++] = ' ';
 	
 	s[i++] = 0;
+	if (ds->type == VAL_DOSFTYPE_DEL)  textcolor (COLOUR_GREY2);
+    else                               textcolor (COLOUR_CYAN);
 	if ((n + ofs == currentitem) && iscurrent)  revers(1);
 	else  revers(0);
 	cputsxy(x, y + n, s);  // print what we've got so far
@@ -138,11 +140,106 @@ void shortcuts(unsigned char mod)  {
 	shortcutprint(FALSE, " 6",  "RenMov");
 	shortcutprint(FALSE, " 7",  "Mkdir ");
 	shortcutprint( TRUE, " 8",  "Delete");
-	shortcutprint(FALSE, " 9",  "Menu  ");
+	shortcutprint( TRUE, " 9",  "Menu  ");
 	shortcutprint( TRUE, " 10", "Quit ");
   }
 
   textcolor(COLOUR_CYAN);
+}
+
+void optionstring(unsigned char optionbyte, unsigned char optionbitmask,
+                   char* str, unsigned char tabpos, unsigned char pos)  {
+  unsigned char i;
+  unsigned char j;
+
+	i = 0;
+	if (optionbyte & optionbitmask)  s[i++] = '*'; // 81; // 113; // filled o
+	else                             s[i++] = 'o'; // 87; // 119; // empty o
+	s[i++] = ' ';
+	if (tabpos == pos)  s[i++] = '>';
+	else                s[i++] = ' ';
+	s[i++] = ' ';
+	j = 0;
+	while (str[j] != 0 && j < DOSFILENAMEANDTYPELEN)  {
+	  s[i++] = str[j];
+	  j++;
+	}
+	for ( ; j < DOSFILENAMELEN; j++)  s[i++] = ' ';
+	s[i++] = ' ';
+	if (tabpos == pos)  s[i++] = '<';
+	else                s[i++] = ' ';
+	
+	s[i++] = 0;
+	mcputsxy(12, 6 + pos, (char*) s);
+}
+
+unsigned char setupbox()  {
+  unsigned char clear = 1;
+  unsigned char shadow = 1;
+  char c;
+  unsigned char tabpos = 0;
+  unsigned char bitshifter = 1;
+
+  // Because of the additional messagebox we need to redraw all:
+  while(1)  {
+    mcbox(10, 4, 70, 20, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+  
+    revers(1);
+    mcputsxy(14, 4, " Midnight Mega ");
+    mcputsxy(31, 4, " Setup ");
+    mcputsxy(40, 4, " The MEGA65 file commander ");
+    revers(0);
+
+    mcputsxy(23, 16, "Use the spacebar to select/unselect.");
+    revers(1);
+    mcputsxy(36, 18, "   OK   ");
+//  mcputsxy(12, 18, "  Save  ");
+//  mcputsxy(60, 18, " Cancel ");
+    revers(0);
+
+//  while(1)  {
+	if (tabpos > OPTIONMAX)  {
+	  tabpos = OPTIONMAX;
+	}         // byte           bit                                     pos
+    optionstring(option.option, OPTIONshowDEL, "show DEL files", tabpos, 0);
+    optionstring(option.option, OPTIONshow2, "goes nowhere and does nothing", tabpos, 1);
+    optionstring(option.option, OPTIONshow3, "goes nowhere and does nothing", tabpos, 2);
+    optionstring(option.option, OPTIONshow4, "goes nowhere and does nothing", tabpos, 3);
+    optionstring(option.option, OPTIONshow5, "goes nowhere and does nothing", tabpos, 4);
+    c = cgetc();
+    switch (c) {
+	  case 0x91: // Crsrup
+	  case 0x9d: // Left
+	    if (tabpos > 0)  tabpos--;
+      break;
+	  case 0x11: // Crsrdown
+	  case 0x1d: // Right
+	    tabpos++;
+      break;
+
+	  case ' ':
+		option.option ^= (bitshifter << tabpos);
+//		valuesbox(0, "opt", "opt=", option.option,
+//                        "tabpos=", tabpos);
+      break;
+
+	  case 13: // RETURN
+	    return TRUE;
+      break;
+
+	  case 3:  // STOP
+	  case 27: // Esc
+	    messagebox(0, "Currently this option dialog cannot",
+                    "be quit unsaved. So use RETURN to",
+			        "accept.");
+//	    return FALSE;
+      break;
+
+	  default:
+//	    mprintf("val=", c);
+//		cputc(' ');
+	}
+  }
 }
 
 unsigned int cgetcalt(void)
@@ -388,6 +485,12 @@ void navi(unsigned char side)  {
 		}
       break;
 
+	  case 0xf9:
+	    setupbox();
+		UpdateSectors(midnight[side]->drive, side);
+		UpdateSectors(midnight[side?0:1]->drive, side?0:1);
+      break;
+
 	  case 0x412: // Ctrl-r
 	    UpdateSectors(midnight[side]->drive, side);
       break;
@@ -459,8 +562,7 @@ void navi(unsigned char side)  {
 	  case 0xf4:
 	  case 0xf6:
 	  case 0xf7:
-	  case 0xf9:
-	  case 0x415: // Ctrl-r
+	  case 0x415: // Ctrl-u
 		messagebox(0, "Some function keys,", "are not yet implemented.", " ");
       break;
 

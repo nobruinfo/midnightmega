@@ -48,6 +48,9 @@ unsigned char BAMside;
 unsigned char direntside;
 unsigned char dosfilename[DOSFILENAMELEN + 1]; // extra byte for nullterm
 
+// Midnight Mega general setup options:
+OPTION option;
+
 void _miniInit()  {
   // clear F011 Floppy Controller Registers
   POKE(0xd080U, 0);
@@ -818,8 +821,8 @@ DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
 
 	if (ds->track == 0)  return NULL; // no more entries
 	if (ds->chntrack > 0)  max += ENTRIESPERBLOCK; // more attic pages
-	// if a non-deleted or a SD card file (hence this mask) ?
-	if (TRUE)  { // (ds->type != VAL_DOSFTYPE_DEL)  {
+	// if a non-deleted or a SD card file (hence no mask) ?
+	if (ds->type != VAL_DOSFTYPE_DEL || (option.option & OPTIONshowDEL))  {
 	  if (pos == entry)  return ds; // found
 	  pos++;
 	}
@@ -1007,6 +1010,7 @@ void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)
 
 void deletedirententry(unsigned char drive, unsigned char side, unsigned char entry)  {
   unsigned char i;
+  unsigned char pos;
   DIRENT* ds;
   unsigned int max = ENTRIESPERBLOCK;
   unsigned char track = 40;
@@ -1019,7 +1023,7 @@ void deletedirententry(unsigned char drive, unsigned char side, unsigned char en
   ds = (DIRENT *) direntryblock[0]; // to be changed to smaller array
 
   // loop all entries:
-  for (i = 0; i < max; i++)  {
+  for (i = 0, pos = 0; i < max; i++)  {
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
     lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
 	      (uint32_t) ds, DIRENTSIZE);
@@ -1035,35 +1039,40 @@ void deletedirententry(unsigned char drive, unsigned char side, unsigned char en
 	  nextsector = ds->chnsector;
 	}
 
-	if (i == entry)  {
-	  //                           also clear upper bits:
-	  ds->type = VAL_DOSFTYPE_DEL; // + (ds->type & ~0xf);
-	  lcopy((uint32_t) ds, ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
-	        DIRENTSIZE);
+	// if a non-deleted or a SD card file (hence no mask) ?
+	if (ds->type != VAL_DOSFTYPE_DEL || (option.option & OPTIONshowDEL))  {
+	  if (pos == entry)  {
+//		valuesbox(0, "Deleting...", "i=", i, "pos=", pos);
+	    //                           also clear upper bits:
+	    ds->type = VAL_DOSFTYPE_DEL; // + (ds->type & ~0xf);
+	    lcopy((uint32_t) ds, ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+	          DIRENTSIZE);
 #ifdef DEBUG
-	  mprintf("deletedirententry i=", i);
-	  mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
-	  mprintf(" side=", side);
-	  mprintf(" track=", track);
-	  mprintf(" sector=", sector);
-	  mprintf(" nexttrack=", nexttrack);
-	  mprintf(" nextsector=", nextsector);
-	  mprintf(" type=", (ds->type&0xf));
-	  mh4printf(" ds addr=", (long) &ds);
-	  cputln();
-	  cgetc();
+	    mprintf("deletedirententry i=", i);
+	    mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
+	    mprintf(" side=", side);
+	    mprintf(" track=", track);
+	    mprintf(" sector=", sector);
+	    mprintf(" nexttrack=", nexttrack);
+	    mprintf(" nextsector=", nextsector);
+	    mprintf(" type=", (ds->type&0xf));
+	    mh4printf(" ds addr=", (long) &ds);
+	    cputln();
+	    cgetc();
 #endif
-	  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
-	          i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
-	        BLOCKDATALOW, BLOCKSIZE);
-	  PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
-	  deleteblockchain(drive, ds->track, ds->sector);
+	    lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
+	            i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
+	          BLOCKDATALOW, BLOCKSIZE);
+	    PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
+	    deleteblockchain(drive, ds->track, ds->sector);
 #ifdef DEBUG
-	  msprintf("deletedirententry done");
-	  cputln();
-	  cgetc();
+	    msprintf("deletedirententry done");
+	    cputln();
+	    cgetc();
 #endif
-	  return;
+	    return;
+	  }
+	  pos++;
 	}
 
 #ifdef DEBUG
