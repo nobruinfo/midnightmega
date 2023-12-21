@@ -400,11 +400,14 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
 		// @@ add check to exclude non-.d81 and non-dir entries!
 		// @@ see #386, attributes for it in big book.
 		
-        if (readerr != 0x85 && readerr != 0xff &&
-		    ((readdir_dirent->attr & HYPPODIRENTATTRDIR) ||
-			 ((readdir_dirent->sfn[8] == 'd' || readdir_dirent->sfn[8] == 'D') &&
-			  readdir_dirent->sfn[9] == '8' &&
-			  readdir_dirent->sfn[10] == '1')))
+        // No error apparent, must be a dir entry, a file with extension .d81
+		// and must not be a directory entry named ".":
+		if (readerr != 0x85 && readerr != 0xff &&
+		    (((readdir_dirent->attr & HYPPODIRENTATTRDIR) &&
+			  !(readdir_dirent->sfn[0] == '.' && readdir_dirent->sfn[1] == ' ')) ||
+			 ((readdir_dirent->ext[0] == 'd' || readdir_dirent->ext[0] == 'D') &&
+			  readdir_dirent->ext[1] == '8' &&
+			  readdir_dirent->ext[2] == '1')))
 		{
           msprintfd("filename is: ");
           msprintfd(getsfn()); // already null terminated
@@ -445,23 +448,7 @@ unsigned char gethyppodirent(unsigned char drive, unsigned char side,
                              unsigned char maxentries)  {
   unsigned char i;
 
-/*
-  msprintf("before readblockchain");
-  cputln();
-  cgetc();
-*/
   i = getallhyppoentries(drive, side, maxentries);
-//  readblockchain(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE,
-//                 DIRENTBLOCKS, drive, DIRENTTRACK, DIRENTSECT);
-/*
-  msprintf("after readblockchain");
-  cputln();
-  cgetc();
-*/
-//  for (i = ENTRIESPERBLOCK * DIRENTBLOCKS; i > 0; i--)  {
-//	if (getdirententry(side, i) != NULL)  return i;  // nbr of entries
-//  }
-//  return 0;
   return i;
 }
 

@@ -2,13 +2,15 @@
 // ***  nav.h Midnight Mega's window mgmt                ***
 // *********************************************************
 
+#define MIDNIGHTFLAGismounted 1
+
 typedef struct structMIDNIGHT {
 	unsigned char drive;     // 0 or 1
 	unsigned char pos;       // cursor bar
     unsigned char entries;   // nbr of list entries
     unsigned char curfile[65];  // currently mounted .d81 filename
 	unsigned int  blocksfree;
-	unsigned char ismounted;
+	unsigned char flags;     // see defines above
 	unsigned char dummy2;
 	unsigned char dummy3;
 	unsigned char inputstr[80];  // for conio text input
