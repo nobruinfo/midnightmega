@@ -448,23 +448,7 @@ unsigned char gethyppodirent(unsigned char drive, unsigned char side,
                              unsigned char maxentries)  {
   unsigned char i;
 
-/*
-  msprintf("before readblockchain");
-  cputln();
-  cgetc();
-*/
   i = getallhyppoentries(drive, side, maxentries);
-//  readblockchain(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE,
-//                 DIRENTBLOCKS, drive, DIRENTTRACK, DIRENTSECT);
-/*
-  msprintf("after readblockchain");
-  cputln();
-  cgetc();
-*/
-//  for (i = ENTRIESPERBLOCK * DIRENTBLOCKS; i > 0; i--)  {
-//	if (getdirententry(side, i) != NULL)  return i;  // nbr of entries
-//  }
-//  return 0;
   return i;
 }
 

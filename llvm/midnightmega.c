@@ -15,7 +15,6 @@
 // #include <conio-lines.h>
 
 // #include <cbmiec.h>
-#include <mega65.h>  // taken from KickC
 
 // #define DEBUG
 
@@ -44,6 +43,7 @@ int main() {
   }
   cgetc();
 */
+
   clrhome();
 
   mcputsxy(0, 22, "The function keys shown in the bottom line are ");

@@ -102,22 +102,21 @@ extern OPTION option;
 
 void GetBAM(unsigned char side);
 void PutBAM(unsigned char drive, unsigned char side);
-void BAM2Attic(unsigned char drive, unsigned char side);
+unsigned char BAM2Attic(unsigned char drive, unsigned char side);
 void BAMSectorUpdate(BAM* BAMsector, BAM* BAMsector2, char track, char sector, char set);
 unsigned int FreeBlocks(unsigned char drive);
 void getDiskname(unsigned char drive, char* diskname);
-void readblockchain(uint32_t destination_address, // attic RAM
-                    unsigned int maxblocks, unsigned char drive,
-                    unsigned char track, unsigned char sector);
-void BAM2Attic(unsigned char drive, unsigned char side);
+unsigned char readblockchain(uint32_t destination_address, // attic RAM
+                             unsigned int maxblocks, unsigned char drive,
+                             unsigned char track, unsigned char sector);
 void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector,
                             unsigned char track40);
 void writeblockchain(uint32_t source_address, // attic RAM
-                    unsigned int maxblocks, unsigned char drive,
-					unsigned char * starttrack, unsigned char * startsector);
-void deleteblockchain(unsigned char drive,
-                      unsigned char track, unsigned char sector);
-void copywholedisk(unsigned char srcdrive, unsigned char destdrive);
+                     unsigned int maxblocks, unsigned char drive,
+					 unsigned char * starttrack, unsigned char * startsector);
+unsigned char deleteblockchain(unsigned char drive,
+                               unsigned char track, unsigned char sector);
+unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive);
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i);
 DIRENT* getdirententry(unsigned char side, unsigned char entry);
 unsigned char getdirent(unsigned char drive, unsigned char side);

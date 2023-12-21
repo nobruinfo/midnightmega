@@ -91,11 +91,11 @@ unsigned char ReadSector(unsigned char drive, char track,
       // Turn on just the LED, this causes to blink:
 	  POKE(0xd080U, 0x40);
 	  bordercolor(COLOUR_RED);
-  mprintf("ReadSector. Track=", track);
-  mprintf(" Sector=", sector);
-  mhprintf(" $d082U=", PEEK(0xd082U));
-  cputln();
-  cgetc();
+  mprintfd("ReadSector. Track=", track);
+  mprintfd(" Sector=", sector);
+  mhprintfd(" $d082U=", PEEK(0xd082U));
+  cputlnd();
+  cgetcd();
 	  return 0xff;
 	}
 	// Make sure we can see the data, clear bit 7:
@@ -136,11 +136,11 @@ unsigned char WriteSector(unsigned char drive, char track,
       // Turn on just the LED, this causes to blink:
 	  POKE(0xd080U, 0x40);
 	  bordercolor(COLOUR_RED);
-  mprintf("WriteSector. Track=", track);
-  mprintf(" Sector=", sector);
-  mhprintf(" $d082U=", PEEK(0xd082U));
-  cputln();
-  cgetc();
+  mprintfd("WriteSector. Track=", track);
+  mprintfd(" Sector=", sector);
+  mhprintfd(" $d082U=", PEEK(0xd082U));
+  cputlnd();
+  cgetcd();
 	  return 0xff;
 	}
 	// Make sure we can see the data, clear bit 7:
@@ -326,11 +326,11 @@ void PutBAM(unsigned char drive, unsigned char side)  {
         ATTICBAMBUFFER + side * ATTICBAMBUFFERSIZE, ATTICBAMBUFFERSIZE);
 }
 
-void BAM2Attic(unsigned char drive, unsigned char side) {
+unsigned char BAM2Attic(unsigned char drive, unsigned char side) {
   _miniInit();
 
-  readblockchain(side?ATTICBAM2BUFFER:ATTICBAMBUFFER, BAMBLOCKS,
-                 drive, BAMTRACK, BAMSECT);
+  return readblockchain(side?ATTICBAM2BUFFER:ATTICBAMBUFFER, BAMBLOCKS,
+                        drive, BAMTRACK, BAMSECT);
 }
 
 // this expects data in sector buffer:
@@ -425,20 +425,23 @@ void getDiskname(unsigned char drive, char* diskname) {
 
   _miniInit();
 
-  GetOneSector(BAMsector[0], drive, HEADERTRACK, HEADERSECT);
-  hs = (HEADER*) BAMsector[0];
+  if (GetOneSector(BAMsector[0], drive, HEADERTRACK, HEADERSECT) < 2)  {
+    hs = (HEADER*) BAMsector[0];
 
-  i = 0;
-  while (hs->diskname[i] != 0xa0 && i < DOSFILENAMELEN)  {
-    diskname[i] = hs->diskname[i];
-	i++;
+    i = 0;
+    while (hs->diskname[i] != 0xa0 && i < DOSFILENAMELEN)  {
+      diskname[i] = hs->diskname[i];
+	  i++;
+    }
+    diskname[i] = 0;
+  } else {
+	strcopy("read error", (char *) diskname, 16);
   }
-  diskname[i] = 0;
 }
 
-void readblockchain(uint32_t destination_address, // attic RAM
-                    unsigned int maxblocks, unsigned char drive,
-                    unsigned char track, unsigned char sector)  {
+unsigned char readblockchain(uint32_t destination_address, // attic RAM
+                             unsigned int maxblocks, unsigned char drive,
+                             unsigned char track, unsigned char sector)  {
   unsigned int i;
   unsigned char nexttrack;
   unsigned char nextsector;
@@ -453,7 +456,9 @@ void readblockchain(uint32_t destination_address, // attic RAM
 #endif
 
   for (i = 0; i < maxblocks; i++)  {
-    /* workside = */ GetOneSector(worksectorasBAM[0], drive, nexttrack, nextsector);
+    if (GetOneSector(worksectorasBAM[0], drive, nexttrack, nextsector) > 1)  {
+	  return(0xff);
+	}
     DATABLOCK* ws = worksector[0];
 	nexttrack = ws->chntrack;
 	nextsector = ws->chnsector;
@@ -477,8 +482,9 @@ void readblockchain(uint32_t destination_address, // attic RAM
   }
   
   if (nexttrack > 0)  {
-	messagebox(0, "Reading file,", "number of sectors too big.", " ");
+	return(0xfe);
   }
+  return 0;
 }
 
 void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector,
@@ -654,16 +660,20 @@ void writeblockchain(uint32_t source_address, // attic RAM
 }
 
 // not physically deleting but BAM deallocating:
-void deleteblockchain(unsigned char drive,
-                      unsigned char track, unsigned char sector)  {
+unsigned char deleteblockchain(unsigned char drive,
+                               unsigned char track, unsigned char sector)  {
   unsigned char nexttrack;
   unsigned char nextsector;
   BAM* bs;
 
   _miniInit();
-  /* BAMside = */ GetOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
+  if (GetOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT) > 1)  {
+	return 0xff;
+  }
   bs = BAMsector[0];
-  GetOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
+  if (GetOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector) > 1)  {
+	return 0xfe;
+  }
 
   nexttrack = track;
   nextsector = sector;
@@ -695,6 +705,7 @@ void deleteblockchain(unsigned char drive,
   }
   PutOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
   PutOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
+  return 0;
 }
 
 extern unsigned char s[DOSFILENAMEANDTYPELEN];
@@ -726,7 +737,7 @@ char * tracksectorstring(unsigned char track, unsigned char sector)  {
   return (char*) s;
 }
 
-void copywholedisk(unsigned char srcdrive, unsigned char destdrive)  {
+unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive)  {
   unsigned char track;
   unsigned char sector;
   unsigned int  i;
@@ -736,7 +747,9 @@ void copywholedisk(unsigned char srcdrive, unsigned char destdrive)  {
   for (track = 1; track <= 80; track++)  {
 	for (sector = 0; sector < 40; sector++)  {
 	  progress("Reading...", tracksectorstring(track, sector), i / 64);
-	  GetOneSector(worksectorasBAM[0], srcdrive, track, sector);
+	  if (GetOneSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
+		return 0xff;
+	  }
 	  ws = worksector[0];
 	  lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE);
 	  i++;
@@ -751,6 +764,7 @@ void copywholedisk(unsigned char srcdrive, unsigned char destdrive)  {
 	  i++;
 	}
   }
+  return 0;
 }
 
 // this is a mixture of storage card and C= file types:
@@ -819,7 +833,7 @@ DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
     lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
           (uint32_t) ds, DIRENTSIZE);
 
-	if (ds->track == 0)  return NULL; // no more entries
+//	if (ds->track == 0)  return NULL; // no more entries
 	if (ds->chntrack > 0)  max += ENTRIESPERBLOCK; // more attic pages
 	// if a non-deleted or a SD card file (hence no mask) ?
 	if (ds->type != VAL_DOSFTYPE_DEL || (option.option & OPTIONshowDEL))  {
@@ -858,17 +872,19 @@ unsigned char getdirent(unsigned char drive, unsigned char side)  {
   cputln();
   cgetc();
 */
-  readblockchain(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE,
-                 DIRENTBLOCKS, drive, DIRENTTRACK, DIRENTSECT);
+  if (readblockchain(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE,
+                 DIRENTBLOCKS, drive, DIRENTTRACK, DIRENTSECT) > 1)  {
+    return 0xff;
+  }
 /*
   msprintf("after readblockchain");
   cputln();
   cgetc();
 */
-  for (i = ENTRIESPERBLOCK * DIRENTBLOCKS; i > 0; i--)  {
+  for (i = NBRENTRIES; i > 0; i--)  {
 	if (getdirententry(side, i) != NULL)  return i;  // nbr of entries
   }
-  return 0;
+  return 0xff;
 }
 
 // start track/sector must be present in newds:
@@ -878,8 +894,8 @@ void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)
   DIRENT* ds;
 //  DIRENT* newds;
   unsigned int max = ENTRIESPERBLOCK;
-  unsigned char track = 40;
-  unsigned char sector = 3;  // @@ to be changed for sector chained by t=40, s=0
+  unsigned char track = DIRENTTRACK;
+  unsigned char sector = DIRENTSECT;  // @@ to be changed for sector chained by t=40, s=0
   unsigned char nexttrack = 0;
   unsigned char nextsector = 0;
 
@@ -1013,8 +1029,8 @@ void deletedirententry(unsigned char drive, unsigned char side, unsigned char en
   unsigned char pos;
   DIRENT* ds;
   unsigned int max = ENTRIESPERBLOCK;
-  unsigned char track = 40;
-  unsigned char sector = 3;  // to be changed for sector chained by t=40, s=0
+  unsigned char track = DIRENTTRACK;
+  unsigned char sector = DIRENTSECT;  // @@ to be changed for sector chained by t=40, s=0
   unsigned char nexttrack = 0;
   unsigned char nextsector = 0;
 

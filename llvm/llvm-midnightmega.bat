@@ -4,7 +4,7 @@ REM This to have those !vars! at hand which aren't preset outside loops:
 setlocal enabledelayedexpansion
 
 SET VICE=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\2021
-SET VICE=%VICE%\GTK3VICE-3.6.1-win64\bin\
+SET VICE=%VICE%\GTK3VICE-3.7-win64\bin\
 SET c1541="%VICE%\c1541"
 SET PETCAT=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\
 SET PETCAT="%PETCAT%2021\GTK3VICE-3.6.1-win64\bin\petcat.exe"
@@ -30,7 +30,7 @@ SET libcfilesdir=..\mega65-libc\src
 SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%\hal.c
 SET libcfiles=%libcfiles% include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
-SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c
+SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c sid.c
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
 SET opts=--include-directory=.\include
 SET opts=%opts% --include-directory=..\mega65-libc\include
@@ -54,7 +54,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.4.4-beta
+SET v=v0.5.0-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 REM DEL %TEMP%\*.o
@@ -95,7 +95,48 @@ IF ERRORLEVEL == 1 (
   %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.4,d
   DEL %PRJ%.seq>NUL
 
+  REM Use in Xemu's out of the image file fs access:
+  XCOPY /Y %PRJ%.d81 %HDOS%\
+  attrib -a %HDOS%\%PRJ%.d81
+
+  REM Put project into the storage card image file:
+  SET "PRJSHORT=%PRJ:~0,8%"
+  DEL %HDOS%\!PRJSHORT!.d81
+  REN %HDOS%\%PRJ%.d81 !PRJSHORT!.d81
+
+  REM storage card files are uppercase:
+  SET "PRJUPPER=!PRJSHORT!"
+  SET "DATADISKUPPER=!DATADISK!"
+  for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+    set "PRJUPPER=!PRJUPPER:%%b=%%b!"
+    set "DATADISKUPPER=!DATADISKUPPER:%%b=%%b!"
+  )
+
   %c1541% -format disk%DATADISK%,id d81 %DATADISK%.d81
+
+  REM Only in the virtual storage card image file some directories are created:
+  "%MFTP%" -d %IMG% -c "put !DATADISKUPPER!.D81"
+  ECHO 0 REM *** %DATADISK% ***>mega65.bas
+  ECHO 1 MOUNT "%DATADISK%.D81">>mega65.bas
+  for /l %%j in (0, 1, 1) do (
+    ECHO 1%%j0 MKDIR "FOLDER %%j",L 11 >>mega65.bas
+    ECHO 1%%j1 MKDIR "SUBFOLDER %%j",L 4 >>mega65.bas
+    ECHO 1%%j5 CHDIR "/">>mega65.bas
+  )
+  ECHO 900 POKE $D6CF, $42>>mega65.bas
+
+  SET HEADLESS=-headless -sleepless -testing
+  XMEGA65 !HEADLESS! -importbas mega65.bas
+  "%MFTP%" -d %IMG% -c "get !DATADISKUPPER!.D81"
+
+  REM c1541 currently destroys neighbouring subpartitions if only 3 tracks of size:
+  for /l %%j in (0, 1, 1) do (
+    for /l %%i in (0, 1, 1) do (
+REM      %c1541% -attach %DATADISK%.d81 -@ "/%%j:folder %%j" -delete %PRJ%
+      %c1541% -attach %DATADISK%.d81 -@ "/0:folder %%j" -write %PRJ%.prg %%j%PRJ%.%%i
+    )
+  )
+
   %c1541% -attach %DATADISK%.d81 -delete %DATADISK%
   %c1541% -attach %DATADISK%.d81 -write regions.h regions.h,s
   for /l %%i in (1, 1, 2) do (
@@ -117,34 +158,19 @@ IF ERRORLEVEL == 1 (
   ECHO this is a deleted file for testing.>%DATADISK%.seq
   %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.4,d
   DEL %DATADISK%.seq>NUL
-  for /l %%i in (1, 1, 12) do (
-    %c1541% -attach %DATADISK%.d81 -write %PRJ%.prg _%PRJ%.%%i
-  )
-  REM Use in Xemu's out of the image file fs access:
-  XCOPY /Y %PRJ%.d81 %HDOS%\
-  attrib -a %HDOS%\%PRJ%.d81
+
   XCOPY /Y %DATADISK%.d81 %HDOS%\
   attrib -a %HDOS%\%DATADISK%.d81
 
-  REM Put project into the storage card image file:
-  SET "PRJ=%PRJ:~0,8%"
-  DEL %HDOS%\!PRJ!.d81
-  REN %HDOS%\%PRJ%.d81 !PRJ!.d81
-
-  REM Create a stub disk to be loaded at CLI level from current host
-  REM directory to mount .d81 within virtual storage card image:
-  SET "PRJUPPER=!PRJ!"
-  SET "DATADISKUPPER=!DATADISK!"
-  for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
-    set "PRJUPPER=!PRJUPPER:%%b=%%b!"
-    set "DATADISKUPPER=!DATADISKUPPER:%%b=%%b!"
-  )
-
-REM  "%MFTP%" -d %IMG% -c "del !PRJ!.d81"
+REM  "%MFTP%" -d %IMG% -c "del !PRJSHORT!.d81"
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/!PRJUPPER!.D81"
 REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/!DATADISKUPPER!.D81"
 
+  REM Create a stub disk to be loaded at CLI level from current host
+  REM directory to mount .d81 within virtual storage card image:
+
+  REM Mount the two disks from the virtual storage image:
   ECHO 10 REM SLEEP 1 >mega65.bas
   ECHO 20 MOUNT "!PRJUPPER!.D81">>mega65.bas
   ECHO 30 MOUNT "!DATADISKUPPER!.D81",U9>>mega65.bas
@@ -156,7 +182,7 @@ REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
     -hickup "%HICKUP%\HICKUP.M65" ^
 	-driveled
 REM    -hdosvirt -defd81fromsd
-REM    -8 !PRJ!.d81 -9 %DATADISK%.d81 -autoload
-  REM XMEGA65 -syscon -besure -prg %PRJ%.prg
+REM    -8 !PRJSHORT!.d81 -9 %DATADISK%.d81 -autoload
+  REM XMEGA65 -syscon -besure -prg !PRJSHORT!.prg
   DEL mega65.bas
 )

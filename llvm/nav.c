@@ -10,6 +10,7 @@
 #include "hyppo.h"
 #include "fileio.h"
 #include "nav.h"
+#include "sid.h"
 
 // *********************************************************
 // ***  nav.c Midnight Mega's window mgmt                ***
@@ -229,6 +230,7 @@ unsigned char setupbox()  {
 
 	  case 3:  // STOP
 	  case 27: // Esc
+        sidbong();
 	    messagebox(0, "Currently this option dialog cannot",
                     "be quit unsaved. So use RETURN to",
 			        "accept.");
@@ -236,8 +238,10 @@ unsigned char setupbox()  {
       break;
 
 	  default:
+        sidbong();
 //	    mprintf("val=", c);
 //		cputc(' ');
+      break;
 	}
   }
 }
@@ -301,7 +305,9 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
     }
 
     getDiskname(drive, (char *) diskname[side]);
-    BAM2Attic(drive, side);
+    if (BAM2Attic(drive, side) > 1)  {
+	  messagebox(0, "Reading file,", "read error.", " ");
+	}
     midnight[side]->blocksfree = FreeBlocks(side);
     midnight[side]->entries = getdirent(drive, side);
   } else {
@@ -354,21 +360,27 @@ void navi(unsigned char side)  {
 	  }
       mcputsxy(leftx + 2, 23, " drv:");
       csputdec(midnight[i]->drive, 0, 0);
-	  cputc(' ');
-      if (midnight[i]->blocksfree != UINT_MAX)  {
-	    mcputsxy(leftx + 12, 23, " ");
-        csputdec(midnight[i]->blocksfree, 0, 0);
-	    msprintf(" blocks free ");
+	  if (midnight[i]->entries == 0xff)  {
+	    mcputsxy(leftx + 17, 3, " empty ");
+		if (side == i)  mcputsxy(leftx + 12, 5, " > F2 to mount < ");
+	  } else {
+	    cputc(' ');
+        if (midnight[i]->blocksfree != UINT_MAX)  {
+	      mcputsxy(leftx + 12, 23, " ");
+          csputdec(midnight[i]->blocksfree, 0, 0);
+	      msprintf(" blocks free ");
+	    }
+        revers(0);
+        listbox((side == i), i, leftx + 1, 1, midnight[i]->pos, midnight[i]->entries);
 	  }
-      revers(0);
-      listbox((side == i), i, leftx + 1, 1, midnight[i]->pos, midnight[i]->entries);
 	}
 
     c = cgetcalt();
     bordercolor (COLOUR_BLACK); // to unset red error borders
     switch (c) { // mega65-book.pdf#229
 	  case 0x91: // Crsrup
-	  case 0x291: // Shift Crsrup
+	  case 0x191: // Shift Crsrup
+	  case 0x291:
 	    if (midnight[side]->pos > 0)  midnight[side]->pos--;
       break;
 	  case 0x11: // Crsrdown
@@ -384,7 +396,9 @@ void navi(unsigned char side)  {
 	    midnight[side]->pos += 10;
       break;
 
-	  case 9: // Tab
+	  case 0x9: // Tab
+	  case 0x109:
+	  case 0x209:
 	    side = (side ? 0 : 1);
 //		midnight[side]->entries = getdirent(midnight[side]->drive, side);
       break;
@@ -487,6 +501,7 @@ void navi(unsigned char side)  {
 
 	  case 0xf9:
 	    setupbox();
+		progress("Reading...", "BAM", 20);
 		UpdateSectors(midnight[side]->drive, side);
 		UpdateSectors(midnight[side?0:1]->drive, side?0:1);
       break;
@@ -551,6 +566,7 @@ void navi(unsigned char side)  {
             }		
 		  }
 		} else {
+		  sidbong();
 		  messagebox(0, "This file type/directory", "is not yet implemented.", " ");
 		}
       break;
@@ -558,12 +574,23 @@ void navi(unsigned char side)  {
 	  case 0x20: // Space
 	  case 0x1f: // HELP
 	  case 0xf1: // unused F keys
+	  case 0x1f1:
+	  case 0x2f1:
 	  case 0xf3:
+	  case 0x1f3:
+	  case 0x2f3:
 	  case 0xf4:
+	  case 0x1f4:
+	  case 0x2f4:
 	  case 0xf6:
+	  case 0x1f6:
+	  case 0x2f6:
 	  case 0xf7:
+	  case 0x1f7:
+	  case 0x2f7:
 	  case 0x415: // Ctrl-u
-		messagebox(0, "Some function keys,", "are not yet implemented.", " ");
+        sidbong();
+//		messagebox(0, "Some function keys,", "are not yet implemented.", " ");
       break;
 
 	  // case 0xF9: // ASC_F9:
@@ -576,8 +603,10 @@ void navi(unsigned char side)  {
       break;
 
 	  default:
-	    mh4printf("val=$", c);
-		cputc(' ');
+        sidbong();
+//	    mh4printf("val=$", c);
+//		cputc(' ');
+      break;
    }
   }
 }
