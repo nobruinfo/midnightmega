@@ -49,7 +49,7 @@ int main() {
   mcputsxy(0, 22, "The function keys shown in the bottom line are ");
   msprintf("meant to be used with ");
   mcputsxy(0, 23, "and without [Shift] and [Mega] after the messagebox is dismissed:");
-  shortcuts(16);
+  shortcuts(0, 0);
 
   // testing:
   // clrhome();

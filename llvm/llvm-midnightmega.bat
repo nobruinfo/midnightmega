@@ -54,7 +54,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.0-beta
+SET v=v0.5.1-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 REM DEL %TEMP%\*.o
@@ -185,4 +185,12 @@ REM    -hdosvirt -defd81fromsd
 REM    -8 !PRJSHORT!.d81 -9 %DATADISK%.d81 -autoload
   REM XMEGA65 -syscon -besure -prg !PRJSHORT!.prg
   DEL mega65.bas
+
+  MKDIR %TEMP%\Xemu 2>&1 >NUL
+  CHDIR /D %TEMP%\Xemu
+  "%MFTP%" -d %IMG% -c "get !PRJUPPER!.D81"
+  "%MFTP%" -d %IMG% -c "get !DATADISKUPPER!.D81"
+  "%MFTP%" -d %IMG% -c "get MEGA65.D81"
+  "%MFTP%" -d %IMG% -c "get EXTERNAL.D81"
+  START "Readback" /MIN .
 )

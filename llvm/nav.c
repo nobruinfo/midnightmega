@@ -68,7 +68,11 @@ void listbox(unsigned char iscurrent, unsigned char side,
 	else  revers(0);
 	cputsxy(x, y + n, s);  // print what we've got so far
 	// i = i + sprintf((char*) &s[i], "%4d", ds->size);
-	csputdec(ds->size, 5, 0);
+	if (ds->size > 0)  {
+	  csputdec(ds->size, 5, 0);
+	} else {
+      cputs((unsigned char*) "    ");
+	}
 	cputc(' '); // s[i++] = ' ';
 	if (n + ofs == currentitem)  cputc('<'); // s[i++] = '<';
 	else                   cputc(' '); // s[i++] = ' ';
@@ -92,7 +96,7 @@ void shortcutprint(unsigned char active, char* textbefore, char* textafter)  {
   revers(0);
 }
 
-void shortcuts(unsigned char mod)  {
+void shortcuts(unsigned char mod, unsigned char side)  {
   gotoxy(0, 24);
 
   // MODKEY, with 1 meaning the key was held during the event:
@@ -115,7 +119,8 @@ void shortcuts(unsigned char mod)  {
 	shortcutprint(FALSE, " 2",  "      ");
 	shortcutprint(FALSE, " 3",  "      ");
 	shortcutprint(FALSE, " 4",  "      ");
-	shortcutprint(TRUE , " 5",  "DskCpy");
+	shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
+                         " 5",  "DskCpy");
 	shortcutprint(FALSE, " 6",  "      ");
 	shortcutprint(FALSE, " 7",  "      ");
 	shortcutprint(FALSE, " 8",  "Format");
@@ -246,16 +251,16 @@ unsigned char setupbox()  {
   }
 }
 
-unsigned int cgetcalt(void)
+unsigned int cgetcalt(unsigned char side)
 {
     unsigned char k;
     unsigned char m, mbefore;
 	
-	shortcuts(0);
+	shortcuts(0, side);
     while ((k = PEEK(0xD610U)) == 0)  {
       m = getkeymodstate();
       if (m != mbefore)  {
-        shortcuts(m);
+        shortcuts(m, side);
 		mbefore = m;
 	  }
 	}
@@ -304,12 +309,12 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
       midnight[side]->curfile[c] = 0;
     }
 
-    getDiskname(drive, (char *) diskname[side]);
-    if (BAM2Attic(drive, side) > 1)  {
+    getDiskname(drive, midnight[side]->dirtrack, (char *) diskname[side]);
+    if (BAM2Attic(drive, side, midnight[side]->dirtrack) > 1)  {
 	  messagebox(0, "Reading file,", "read error.", " ");
 	}
-    midnight[side]->blocksfree = FreeBlocks(side);
-    midnight[side]->entries = getdirent(drive, side);
+    midnight[side]->blocksfree = FreeBlocks(side, midnight[side]->dirtrack);
+    midnight[side]->entries = getdirent(drive, side, midnight[side]->dirtrack);
   } else {
 	strcopy("storage card", (char *) diskname[side], 16);
 	strcopy("storage card", (char *) midnight[side]->curfile, 16);
@@ -336,6 +341,7 @@ void navi(unsigned char side)  {
 
     // title of mcbox is .d81 file name, cannot be read at startup:
     strcpy((char *) midnight[i]->curfile, (char *) "already mounted");
+	midnight[i]->dirtrack = HEADERTRACK;
     midnight[i]->pos = 0;
     midnight[i]->flags |= MIDNIGHTFLAGismounted;
     progress("Initialising...", "reading disk drives", i * 40 + 40);
@@ -343,7 +349,7 @@ void navi(unsigned char side)  {
   }
 
   while (1)  {
-    for (i = 0; i <= 1; i++)  {
+    for (i = 0; i < 2; i++)  {
       if (midnight[i]->pos > midnight[i]->entries)  {
         midnight[i]->pos = midnight[i]->entries;
       }
@@ -363,6 +369,7 @@ void navi(unsigned char side)  {
 	  if (midnight[i]->entries == 0xff)  {
 	    mcputsxy(leftx + 17, 3, " empty ");
 		if (side == i)  mcputsxy(leftx + 12, 5, " > F2 to mount < ");
+//		valuesbox(0, "empty list", "entries=", midnight[i]->entries, " ", 0);
 	  } else {
 	    cputc(' ');
         if (midnight[i]->blocksfree != UINT_MAX)  {
@@ -375,7 +382,7 @@ void navi(unsigned char side)  {
 	  }
 	}
 
-    c = cgetcalt();
+    c = cgetcalt(side);
     bordercolor (COLOUR_BLACK); // to unset red error borders
     switch (c) { // mega65-book.pdf#229
 	  case 0x91: // Crsrup
@@ -411,8 +418,9 @@ void navi(unsigned char side)  {
 	      UpdateSectors(midnight[side]->drive, side);
 		}
 */
-        // Unconditional unmount:
+        // Mount toggle and reset to root dirent:
 		midnight[side]->flags ^= MIDNIGHTFLAGismounted;
+		midnight[side]->dirtrack = HEADERTRACK;
 		UpdateSectors(midnight[side]->drive, side);
       break;
 
@@ -424,7 +432,8 @@ void navi(unsigned char side)  {
 		  messagebox(0, "Copying/deleting storage files/folders", "is not supported.", " ");
 		} else {
           ds = getdirententry(side, midnight[side]->pos);
-	  	  if ((ds->type&0xf) != VAL_DOSFTYPE_CBM && ds->type != VAL_DOSFTYPE_DEL)  {
+	  	  if ( /* (ds->type&0xf) != VAL_DOSFTYPE_CBM && */
+              (ds->type&0xf) != VAL_DOSFTYPE_DEL)  {
 
 #ifdef DEBUG
             msprintf("name: ");
@@ -450,10 +459,10 @@ void navi(unsigned char side)  {
                                ds->track, ds->sector);
                 progress("Reading...", "BAM", 30);
                 // write on opposing side disk:
-                GetBAM(side?0:1);
+                GetBAM(side?0:1, midnight[side?0:1]->dirtrack);
                 progress("Writing...", "destination file", 40);
                 writeblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side?0:1]->drive,
-		                        &starttrack, &startsector);
+		                        &starttrack, &startsector, midnight[side?0:1]->dirtrack);
                 ds->track = starttrack;  // recycle src dirent for destination
 		        ds->sector = startsector;
 
@@ -465,11 +474,12 @@ void navi(unsigned char side)  {
                 progress("Writing...", "directory", 60);
 		        // load opposing side dirent block into Attic:
 //		      midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
-		        writenewdirententry(midnight[side?0:1]->drive, side?0:1, ds);
+		        writenewdirententry(midnight[side?0:1]->drive, side?0:1,
+                                    midnight[side?0:1]->dirtrack, ds);
 		        // re-read altered dirent on opposing side after entry added:
 //		      midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
                 progress("Writing...", "BAM", 80);
-		        PutBAM(midnight[side?0:1]->drive, side?0:1);
+		        PutBAM(midnight[side?0:1]->drive, side?0:1, midnight[side?0:1]->dirtrack);
 	            UpdateSectors(midnight[side?0:1]->drive, side?0:1);
 			  }
 		    } else if (ds->type != VAL_DOSFTYPE_DEL &&  // delete
@@ -477,11 +487,12 @@ void navi(unsigned char side)  {
 			                      (side ? "from right side" : "from left side")))  {
               progress("Reading...", "BAM", 20);
               ds->type = VAL_DOSFTYPE_DEL;
-              GetBAM(side);
+              GetBAM(side, midnight[side]->dirtrack);
               progress("Writing...", "removing BAM entries", 40);
-              deletedirententry(midnight[side]->drive, side, midnight[side]->pos);
+              deletedirententry(midnight[side]->drive, side,
+                                midnight[side]->dirtrack, midnight[side]->pos);
               progress("Writing...", "updating BAM", 80);
-              PutBAM(midnight[side]->drive, side);
+              PutBAM(midnight[side]->drive, side, midnight[side]->dirtrack);
               UpdateSectors(midnight[side]->drive, side);
 		    }
 		  }
@@ -530,6 +541,9 @@ void navi(unsigned char side)  {
               }
 			}
 		  }
+		} else {
+		  midnight[side]->dirtrack = HEADERTRACK;
+		  UpdateSectors(midnight[side]->drive, side);
 		}
       break;
 
@@ -566,8 +580,16 @@ void navi(unsigned char side)  {
             }		
 		  }
 		} else {
-		  sidbong();
-		  messagebox(0, "This file type/directory", "is not yet implemented.", " ");
+		  if ((ds->type&0xf) == VAL_DOSFTYPE_CBM &&
+		      (midnight[side]->entries != 0xff))  {
+			midnight[side]->dirtrack = ds->track;
+			UpdateSectors(midnight[side]->drive, side);
+		  } else {
+		    sidbong();
+			if (midnight[side]->entries != 0xff)  {
+		      messagebox(0, "This file type/directory", "is not yet implemented.", " ");
+			}
+		  }
 		}
       break;
 
