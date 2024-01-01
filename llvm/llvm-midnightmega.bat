@@ -139,7 +139,7 @@ REM      %c1541% -attach %DATADISK%.d81 -@ "/%%j:folder %%j" -delete %PRJ%
 
   %c1541% -attach %DATADISK%.d81 -delete %DATADISK%
   %c1541% -attach %DATADISK%.d81 -write regions.h regions.h,s
-  for /l %%i in (1, 1, 2) do (
+  for /l %%i in (1, 1, 1) do (
     %c1541% -attach %DATADISK%.d81 -write %PRJ%.s asm%%i%PRJ%,s
   )
   ECHO this is a sequential file for testing.>%DATADISK%.seq

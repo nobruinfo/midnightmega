@@ -25,11 +25,6 @@ __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
 struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) FILENAMEPAGE;
 struct TASKBLOCK* const taskblock = (struct TASKBLOCK*) FILENAMEPAGE;
 
-extern DIRENT direntryleft[NBRENTRIES];
-extern DIRENT direntryright[NBRENTRIES];
-// eight entries per single block:
-extern SECTDIRENT * direntryblock[2];
-
 // https://stackoverflow.com/questions/8810390/how-to-use-a-global-variable-in-gcc-inline-assembly
 // define fnamehi (unsigned char)((unsigned int)hyppofn->name >> 8)
 static unsigned char __attribute__((used)) fnamehi;

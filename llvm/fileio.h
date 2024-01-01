@@ -29,6 +29,15 @@ typedef struct structdirent {
 typedef struct structsectdirent {
 	DIRENT entry[ENTRIESPERBLOCK];
 } SECTDIRENT;
+extern SECTDIRENT * direntryblock[2];
+
+#define DIRFLAGSisselected 1
+
+typedef struct structDIRFLAGS {
+	unsigned char flags;     // see defines above
+} DIRFLAGS; // for each of the two sides of the file navi
+extern DIRFLAGS direntflags[2][NBRENTRIES];
+// eight entries per single block:
 
 #define BLOCKSIZE 0x100UL  // regions.h needs unsigned long
 #define DIRENTSIZE 32

@@ -38,10 +38,10 @@ DATABLOCK * worksector[2] = { (DATABLOCK*) BLOCKDATALOW, (DATABLOCK*) BLOCKDATAH
 // eight entries per single block:
 BAM * worksectorasBAM[2] = { (BAM*) BLOCKDATALOW, (BAM*) BLOCKDATAHIGH };
 
-DIRENT direntryleft[NBRENTRIES];
-DIRENT direntryright[NBRENTRIES];
 // eight entries per single block:
 SECTDIRENT * direntryblock[2] = { (SECTDIRENT*) DIRENTPAGELOW, (SECTDIRENT*) DIRENTPAGEHIGH };
+
+DIRFLAGS direntflags[2][NBRENTRIES];
 
 // unsigned char workside;
 unsigned char BAMside;
@@ -1024,7 +1024,9 @@ void writenewdirententry(unsigned char drive, unsigned char side,
 void deletedirententry(unsigned char drive, unsigned char side,
                        unsigned char dirtrack, unsigned char entry)  {
   unsigned char i;
+  unsigned int s;
   unsigned char pos;
+  unsigned char filetypebefore;
   DIRENT* ds;
   unsigned int max = ENTRIESPERBLOCK;
   unsigned char track = dirtrack;
@@ -1058,6 +1060,7 @@ void deletedirententry(unsigned char drive, unsigned char side,
 	  if (pos == entry)  {
 //		valuesbox(0, "Deleting...", "i=", i, "pos=", pos);
 	    //                           also clear upper bits:
+		filetypebefore = ds->type;
 	    ds->type = VAL_DOSFTYPE_DEL; // + (ds->type & ~0xf);
 	    lcopy((uint32_t) ds, ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
 	          DIRENTSIZE);
@@ -1078,7 +1081,14 @@ void deletedirententry(unsigned char drive, unsigned char side,
 	            i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
 	          BLOCKDATALOW, BLOCKSIZE);
 	    PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
-	    deleteblockchain(drive, dirtrack, ds->track, ds->sector);
+		if ((filetypebefore&0xf) != VAL_DOSFTYPE_CBM)  {
+	      deleteblockchain(drive, dirtrack, ds->track, ds->sector);
+		} else {
+          for (s = 0; s < ds->size; s++)  {
+			BAMSectorUpdate(BAMsector[0], BAMsector[1],
+                            ds->track + (s / 40), ds->sector + (s % 40), 0); // 0=free up
+		  }
+		}
 #ifdef DEBUG
 	    msprintf("deletedirententry done");
 	    cputln();

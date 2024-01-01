@@ -7,6 +7,7 @@
 // *********************************************************
 
 // extern struct MOS6581_SID * const SID;
+struct MOS6581_SID * const SID3 = (struct MOS6581_SID *)0xd440;
 
 const int scale[] = {
 	0x1125,	0x133F,	0x159A,	0x16E3,	
@@ -52,7 +53,14 @@ void sidbong(void) {
 	
 	SID->CH1_FREQ  = 0x1125;	// Frequency 
 	SID->CH1_CONTROL  = 0x11;	// Control voice 1
+	
+	SID3->CH1_PULSE_WIDTH      = 0x1F; 	// Volume
+	SID3->CH1_ATTACK_DECAY    = 0x09; 	// Attack/decay voice 1
+	
+	SID3->CH1_FREQ  = 0x159A;	// Frequency 
+	SID3->CH1_CONTROL  = 0x11;	// Control voice 1
+
 	usleep(200000); // microseconds
 	SID->CH1_CONTROL  = 0x10;
+	SID3->CH1_CONTROL  = 0x10;
 }
-

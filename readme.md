@@ -33,7 +33,7 @@ of this development will **eat** your files.
   switching from a mounted .d81 to the selection within the
   storage card and back
 
-# subfolders
+# project subfolders
 
 ## llvm
 
@@ -51,14 +51,12 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
 
 * greyed out function keys will get implemented
 * function keys in the foot of the screen will be showing more
-  modifier key combinations 
+  modifier key combinations
+* storage card and file entry flags need to be handled outside
+  of the dirent to further support illegal dirent attributes
 * Hyppo SD card handling as far as possible (writing not yet
   implemented on Hyppo side)
 * Creation of .d81 image files currently unsopported by Hyppo
-* copying of ~~single~~/multiple files in between real/virtual drives,
-  mounted images
-* Handling of subdirectories (sub-partitions of file type `CBM`)
-  inside diskettes
 * For `llvm` replace most fixed strings for screen output with
   [their syntax](https://llvm-mos.org/wiki/Character_set). Maybe
   check how PETSCII differs from screen codes/attributes. Otherwise
@@ -66,12 +64,19 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
 * Maybe reading of a setting file to get configurable personal
   preferences a go, a seperate setup programme could be added to
   the disk
+* [F1][Help] need to load a text file from the diskette and show
+  the user, same routines to be used as for [F3]
 
 ## tasks
 
 * ✓ Text based GUI, Midnight/Norton Commander oriented
 * ✓ copying of complete disk images, real diskettes respectively
 * ✓ proof of concept accessing .d81 mount handling
+* copying of ~~single~~/multiple files in between real/virtual drives,
+  mounted images
+* message boxes for errors and warnings in different colours/sounds?
+* Handling of subdirectories (sub-partitions of file type `CBM`)
+  inside diskettes
 * [Ctrl][u] to swap mount situation
 * ability to use the same drive number on both sides of the commander
   to copy files onto the same disk
@@ -98,6 +103,10 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
 * ✓ ~~Additional `dirent` blocks are placed outside track 40~~
   ~~and this is not what Commodore did.~~
 * ✓ ~~Additional file blocks are also placed within track 40.~~
+* Updir within disk root folder unecessarily re-reads the headers
+* After file delete BAM seems to be written in the according
+  function as well as in nav.c<br />
+  better check with DEBUG on
 * BAM and `dirent` blocks are read/written way too often. With the
   now cache for two disks (left and right) in place this can be
   optimised.<br />
