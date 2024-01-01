@@ -13246,7 +13246,7 @@ BAMsector:
 
 	.type	.L.str.4.48,@object             ; @.str.4.48
 .L.str.4.48:
-	.asciz	"v0.5.1-beta"
+	.asciz	"v0.5.2-beta"
 	.size	.L.str.4.48, 12
 
 	.type	.L.str.5.49,@object             ; @.str.5.49

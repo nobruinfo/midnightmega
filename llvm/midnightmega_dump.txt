@@ -3196,9 +3196,9 @@ Disassembly of section .text:
     36a3: 86 06        	stx	$6                      ; 0x6 <__rc4>
     36a5: a2 76        	ldx	#$76
     36a7: 86 07        	stx	$7                      ; 0x7 <__rc5>
-    36a9: a2 02        	ldx	#$2
+    36a9: a2 f6        	ldx	#$f6
     36ab: 86 08        	stx	$8                      ; 0x8 <__rc6>
-    36ad: a2 74        	ldx	#$74
+    36ad: a2 73        	ldx	#$73
     36af: 86 09        	stx	$9                      ; 0x9 <__rc7>
     36b1: 20 ba 5d     	jsr	$5dba <messagebox>
     36b4: aa           	tax
@@ -3224,7 +3224,7 @@ Disassembly of section .text:
     36db: 85 05        	sta	$5                      ; 0x5 <__rc3>
     36dd: 98           	tya
     36de: 92 16        	sta	($16),z                 ; 0x16 <__rc20>
-    36e0: a2 f2        	ldx	#$f2
+    36e0: a2 e6        	ldx	#$e6
     36e2: 86 06        	stx	$6                      ; 0x6 <__rc4>
     36e4: a2 73        	ldx	#$73
     36e6: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -3241,11 +3241,11 @@ Disassembly of section .text:
     36fc: a0 01        	ldy	#$1
     36fe: a9 00        	lda	#$0
     3700: 91 16        	sta	($16),y                 ; 0x16 <__rc20>
-    3702: a2 c0        	ldx	#$c0
+    3702: a2 b4        	ldx	#$b4
     3704: 86 04        	stx	$4                      ; 0x4 <__rc2>
     3706: a2 73        	ldx	#$73
     3708: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    370a: a2 ec        	ldx	#$ec
+    370a: a2 e0        	ldx	#$e0
     370c: 86 06        	stx	$6                      ; 0x6 <__rc4>
     370e: a2 72        	ldx	#$72
     3710: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -3437,7 +3437,7 @@ Disassembly of section .text:
     388a: 18           	clc
     388b: a5 1e        	lda	$1e                     ; 0x1e <__rc28>
     388d: 69 0c        	adc	#$c
-    388f: a2 a5        	ldx	#$a5
+    388f: a2 99        	ldx	#$99
     3891: 86 04        	stx	$4                      ; 0x4 <__rc2>
     3893: a2 74        	ldx	#$74
     3895: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -3986,7 +3986,7 @@ Disassembly of section .text:
     3cce: 86 06        	stx	$6                      ; 0x6 <__rc4>
     3cd0: a2 75        	ldx	#$75
     3cd2: 86 07        	stx	$7                      ; 0x7 <__rc5>
-    3cd4: a2 95        	ldx	#$95
+    3cd4: a2 89        	ldx	#$89
     3cd6: 86 08        	stx	$8                      ; 0x8 <__rc6>
     3cd8: a2 73        	ldx	#$73
     3cda: 86 09        	stx	$9                      ; 0x9 <__rc7>
@@ -4014,14 +4014,14 @@ Disassembly of section .text:
     3d07: a9 20        	lda	#$20
     3d09: 05 2b        	ora	$2b                     ; 0x2b <g_curTextColor>
     3d0b: 85 2b        	sta	$2b                     ; 0x2b <g_curTextColor>
-    3d0d: a2 8d        	ldx	#$8d
+    3d0d: a2 81        	ldx	#$81
     3d0f: 86 04        	stx	$4                      ; 0x4 <__rc2>
     3d11: a2 72        	ldx	#$72
     3d13: 86 05        	stx	$5                      ; 0x5 <__rc3>
     3d15: a2 04        	ldx	#$4
     3d17: a9 0e        	lda	#$e
     3d19: 20 1a 5c     	jsr	$5c1a <mcputsxy>
-    3d1c: a2 33        	ldx	#$33
+    3d1c: a2 27        	ldx	#$27
     3d1e: 86 04        	stx	$4                      ; 0x4 <__rc2>
     3d20: a2 74        	ldx	#$74
     3d22: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -4038,7 +4038,7 @@ Disassembly of section .text:
     3d3a: a9 df        	lda	#$df
     3d3c: 25 2b        	and	$2b                     ; 0x2b <g_curTextColor>
     3d3e: 85 2b        	sta	$2b                     ; 0x2b <g_curTextColor>
-    3d40: a2 3b        	ldx	#$3b
+    3d40: a2 2f        	ldx	#$2f
     3d42: 86 04        	stx	$4                      ; 0x4 <__rc2>
     3d44: a2 74        	ldx	#$74
     3d46: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -4048,7 +4048,7 @@ Disassembly of section .text:
     3d4f: a9 20        	lda	#$20
     3d51: 05 2b        	ora	$2b                     ; 0x2b <g_curTextColor>
     3d53: 85 2b        	sta	$2b                     ; 0x2b <g_curTextColor>
-    3d55: a2 e9        	ldx	#$e9
+    3d55: a2 dd        	ldx	#$dd
     3d57: 86 04        	stx	$4                      ; 0x4 <__rc2>
     3d59: a2 73        	ldx	#$73
     3d5b: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -4063,7 +4063,7 @@ Disassembly of section .text:
     3d6e: 90 02        	bcc	$3d72 <main+0x7f6>
     3d70: a0 04        	ldy	#$4
     3d72: a5 54        	lda	$54                     ; 0x54 <option.0>
-    3d74: a2 a7        	ldx	#$a7
+    3d74: a2 9b        	ldx	#$9b
     3d76: 86 04        	stx	$4                      ; 0x4 <__rc2>
     3d78: a2 73        	ldx	#$73
     3d7a: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -4073,7 +4073,7 @@ Disassembly of section .text:
     3d82: 84 17        	sty	$17                     ; 0x17 <__rc21>
     3d84: 20 3f 63     	jsr	$633f <optionstring>
     3d87: a5 54        	lda	$54                     ; 0x54 <option.0>
-    3d89: a2 77        	ldx	#$77
+    3d89: a2 6b        	ldx	#$6b
     3d8b: 86 04        	stx	$4                      ; 0x4 <__rc2>
     3d8d: a2 73        	ldx	#$73
     3d8f: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -4443,7 +4443,7 @@ Disassembly of section .text:
     406f: 86 04        	stx	$4                      ; 0x4 <__rc2>
     4071: a2 77        	ldx	#$77
     4073: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    4075: a2 d0        	ldx	#$d0
+    4075: a2 c4        	ldx	#$c4
     4077: 86 06        	stx	$6                      ; 0x6 <__rc4>
     4079: a2 73        	ldx	#$73
     407b: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -4635,7 +4635,7 @@ Disassembly of section .text:
     41e4: a5 04        	lda	$4                      ; 0x4 <__rc2>
     41e6: d0 03        	bne	$41eb <donehyp1att0+0x8>
     41e8: 4c eb 4f     	jmp	$4feb <donehyp0att3+0x4>
-    41eb: a2 2b        	ldx	#$2b
+    41eb: a2 1f        	ldx	#$1f
     41ed: 86 04        	stx	$4                      ; 0x4 <__rc2>
     41ef: a2 73        	ldx	#$73
     41f1: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -4805,7 +4805,7 @@ Disassembly of section .text:
     4340: 69 f6        	adc	#$f6
     4342: 91 04        	sta	($4),y                  ; 0x4 <__rc2>
     4344: 4c 45 37     	jmp	$3745 <main+0x1c9>
-    4347: a2 aa        	ldx	#$aa
+    4347: a2 9e        	ldx	#$9e
     4349: 86 08        	stx	$8                      ; 0x8 <__rc6>
     434b: a2 72        	ldx	#$72
     434d: 86 09        	stx	$9                      ; 0x9 <__rc7>
@@ -5006,7 +5006,7 @@ Disassembly of section .text:
     44bd: 86 04        	stx	$4                      ; 0x4 <__rc2>
     44bf: a2 76        	ldx	#$76
     44c1: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    44c3: a2 b9        	ldx	#$b9
+    44c3: a2 ad        	ldx	#$ad
     44c5: 86 06        	stx	$6                      ; 0x6 <__rc4>
     44c7: a2 72        	ldx	#$72
     44c9: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -5065,7 +5065,7 @@ Disassembly of section .text:
     452b: 86 04        	stx	$4                      ; 0x4 <__rc2>
     452d: a2 77        	ldx	#$77
     452f: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    4531: a2 d0        	ldx	#$d0
+    4531: a2 c4        	ldx	#$c4
     4533: 86 06        	stx	$6                      ; 0x6 <__rc4>
     4535: a2 73        	ldx	#$73
     4537: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -5117,13 +5117,13 @@ Disassembly of section .text:
     4594: c5 05        	cmp	$5                      ; 0x5 <__rc3>
     4596: 90 03        	bcc	$459b <donehyp1att0+0x3b8>
     4598: 4c 0f 40     	jmp	$400f <main+0xa93>
-    459b: a2 51        	ldx	#$51
+    459b: a2 45        	ldx	#$45
     459d: 86 04        	stx	$4                      ; 0x4 <__rc2>
     459f: a2 73        	ldx	#$73
     45a1: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    45a3: a2 00        	ldx	#$0
+    45a3: a2 f4        	ldx	#$f4
     45a5: 86 06        	stx	$6                      ; 0x6 <__rc4>
-    45a7: a2 73        	ldx	#$73
+    45a7: a2 72        	ldx	#$72
     45a9: 4c 07 3f     	jmp	$3f07 <main+0x98b>
     45ac: 29 0f        	and	#$f
     45ae: c9 05        	cmp	#$5
@@ -5179,7 +5179,7 @@ Disassembly of section .text:
     4617: c9 ff        	cmp	#$ff
     4619: d0 03        	bne	$461e <donehyp1att0+0x43b>
     461b: 4c 45 37     	jmp	$3745 <main+0x1c9>
-    461e: a2 70        	ldx	#$70
+    461e: a2 64        	ldx	#$64
     4620: 86 04        	stx	$4                      ; 0x4 <__rc2>
     4622: a2 74        	ldx	#$74
     4624: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -5324,11 +5324,11 @@ Disassembly of section .text:
     4736: e0 10        	cpx	#$10
     4738: b0 03        	bcs	$473d <donehypchdir1+0xa>
     473a: 4c af 4e     	jmp	$4eaf <donehypchdir2+0x723>
-    473d: a2 c6        	ldx	#$c6
+    473d: a2 ba        	ldx	#$ba
     473f: 86 04        	stx	$4                      ; 0x4 <__rc2>
     4741: a2 72        	ldx	#$72
     4743: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    4745: a2 60        	ldx	#$60
+    4745: a2 54        	ldx	#$54
     4747: 86 06        	stx	$6                      ; 0x6 <__rc4>
     4749: a2 74        	ldx	#$74
     474b: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -5375,7 +5375,7 @@ Disassembly of section .text:
     4798: 86 04        	stx	$4                      ; 0x4 <__rc2>
     479a: a2 77        	ldx	#$77
     479c: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    479e: a2 60        	ldx	#$60
+    479e: a2 54        	ldx	#$54
     47a0: 86 06        	stx	$6                      ; 0x6 <__rc4>
     47a2: a2 74        	ldx	#$74
     47a4: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -5390,7 +5390,7 @@ Disassembly of section .text:
     47b8: 86 08        	stx	$8                      ; 0x8 <__rc6>
     47ba: a2 74        	ldx	#$74
     47bc: 86 09        	stx	$9                      ; 0x9 <__rc7>
-    47be: a2 51        	ldx	#$51
+    47be: a2 45        	ldx	#$45
     47c0: 86 04        	stx	$4                      ; 0x4 <__rc2>
     47c2: a2 73        	ldx	#$73
     47c4: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -5583,7 +5583,7 @@ Disassembly of section .text:
     4933: c8           	iny
     4934: b1 02        	lda	($2),y                  ; 0x2 <__rc0>
     4936: 85 05        	sta	$5                      ; 0x5 <__rc3>
-    4938: a2 d0        	ldx	#$d0
+    4938: a2 c4        	ldx	#$c4
     493a: 86 06        	stx	$6                      ; 0x6 <__rc4>
     493c: a2 73        	ldx	#$73
     493e: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -5596,7 +5596,7 @@ Disassembly of section .text:
     494e: 86 04        	stx	$4                      ; 0x4 <__rc2>
     4950: a2 76        	ldx	#$76
     4952: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    4954: a2 7c        	ldx	#$7c
+    4954: a2 70        	ldx	#$70
     4956: 86 06        	stx	$6                      ; 0x6 <__rc4>
     4958: a2 72        	ldx	#$72
     495a: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -6259,7 +6259,7 @@ Disassembly of section .text:
     4e40: 86 04        	stx	$4                      ; 0x4 <__rc2>
     4e42: a2 76        	ldx	#$76
     4e44: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    4e46: a2 d0        	ldx	#$d0
+    4e46: a2 c4        	ldx	#$c4
     4e48: 86 06        	stx	$6                      ; 0x6 <__rc4>
     4e4a: a2 73        	ldx	#$73
     4e4c: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -6407,7 +6407,7 @@ Disassembly of section .text:
     4f62: 20 e3 63     	jsr	$63e3 <UpdateSectors>
     4f65: 4c 45 37     	jmp	$3745 <main+0x1c9>
     4f68: 20 ae 5b     	jsr	$5bae <clrhome>
-    4f6b: a2 5c        	ldx	#$5c
+    4f6b: a2 50        	ldx	#$50
     4f6d: 86 04        	stx	$4                      ; 0x4 <__rc2>
     4f6f: a2 73        	ldx	#$73
     4f71: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -6829,7 +6829,7 @@ Disassembly of section .text:
     5298: a5 17        	lda	$17                     ; 0x17 <__rc21>
     529a: 20 28 54     	jsr	$5428 <PutOneSector>
     529d: 4c bb 44     	jmp	$44bb <donehyp1att0+0x2d8>
-    52a0: a2 d4        	ldx	#$d4
+    52a0: a2 c8        	ldx	#$c8
     52a2: 86 04        	stx	$4                      ; 0x4 <__rc2>
     52a4: a2 73        	ldx	#$73
     52a6: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -8355,7 +8355,7 @@ Disassembly of section .text:
     5def: 05 2b        	ora	$2b                     ; 0x2b <g_curTextColor>
     5df1: 85 2b        	sta	$2b                     ; 0x2b <g_curTextColor>
     5df3: a9 0e        	lda	#$e
-    5df5: a2 8d        	ldx	#$8d
+    5df5: a2 81        	ldx	#$81
     5df7: 86 04        	stx	$4                      ; 0x4 <__rc2>
     5df9: a2 72        	ldx	#$72
     5dfb: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -8395,7 +8395,7 @@ Disassembly of section .text:
     5e4a: a9 20        	lda	#$20
     5e4c: 05 2b        	ora	$2b                     ; 0x2b <g_curTextColor>
     5e4e: 85 2b        	sta	$2b                     ; 0x2b <g_curTextColor>
-    5e50: a2 e9        	ldx	#$e9
+    5e50: a2 dd        	ldx	#$dd
     5e52: 86 04        	stx	$4                      ; 0x4 <__rc2>
     5e54: a2 73        	ldx	#$73
     5e56: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -8403,7 +8403,7 @@ Disassembly of section .text:
     5e5a: a9 0c        	lda	#$c
     5e5c: 20 1a 5c     	jsr	$5c1a <mcputsxy>
     5e5f: a9 3c        	lda	#$3c
-    5e61: a2 2a        	ldx	#$2a
+    5e61: a2 1e        	ldx	#$1e
     5e63: 86 04        	stx	$4                      ; 0x4 <__rc2>
     5e65: a2 74        	ldx	#$74
     5e67: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -8415,14 +8415,14 @@ Disassembly of section .text:
     5e74: a6 6d        	ldx	$6d                     ; 0x6d <__zp_bss_size+0x2c>
     5e76: f0 1e        	beq	$5e96 <messagebox+0xdc>
     5e78: a9 02        	lda	#$2
-    5e7a: a2 69        	ldx	#$69
+    5e7a: a2 ab        	ldx	#$ab
     5e7c: 86 04        	stx	$4                      ; 0x4 <__rc2>
-    5e7e: a2 72        	ldx	#$72
+    5e7e: a2 74        	ldx	#$74
     5e80: 86 05        	stx	$5                      ; 0x5 <__rc3>
     5e82: a2 01        	ldx	#$1
     5e84: 20 1a 5c     	jsr	$5c1a <mcputsxy>
     5e87: a9 3a        	lda	#$3a
-    5e89: a2 89        	ldx	#$89
+    5e89: a2 7d        	ldx	#$7d
     5e8b: 86 04        	stx	$4                      ; 0x4 <__rc2>
     5e8d: a2 74        	ldx	#$74
     5e8f: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -8583,7 +8583,7 @@ Disassembly of section .text:
     5fbd: 29 14        	and	#$14
     5fbf: d0 03        	bne	$5fc4 <shortcuts+0xe>
     5fc1: 4c 92 60     	jmp	$6092 <shortcuts+0xdc>
-    5fc4: a2 9d        	ldx	#$9d
+    5fc4: a2 91        	ldx	#$91
     5fc6: 86 04        	stx	$4                      ; 0x4 <__rc2>
     5fc8: a2 73        	ldx	#$73
     5fca: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -8593,11 +8593,11 @@ Disassembly of section .text:
     5fd2: 86 07        	stx	$7                      ; 0x7 <__rc5>
     5fd4: a9 00        	lda	#$0
     5fd6: 20 75 5f     	jsr	$5f75 <shortcutprint>
-    5fd9: a2 42        	ldx	#$42
+    5fd9: a2 36        	ldx	#$36
     5fdb: 86 04        	stx	$4                      ; 0x4 <__rc2>
     5fdd: a2 73        	ldx	#$73
     5fdf: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    5fe1: a2 24        	ldx	#$24
+    5fe1: a2 18        	ldx	#$18
     5fe3: 86 06        	stx	$6                      ; 0x6 <__rc4>
     5fe5: a2 73        	ldx	#$73
     5fe7: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8607,17 +8607,17 @@ Disassembly of section .text:
     5ff0: 86 04        	stx	$4                      ; 0x4 <__rc2>
     5ff2: a2 75        	ldx	#$75
     5ff4: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    5ff6: a2 a0        	ldx	#$a0
+    5ff6: a2 94        	ldx	#$94
     5ff8: 86 06        	stx	$6                      ; 0x6 <__rc4>
     5ffa: a2 73        	ldx	#$73
     5ffc: 86 07        	stx	$7                      ; 0x7 <__rc5>
     5ffe: a9 00        	lda	#$0
     6000: 20 75 5f     	jsr	$5f75 <shortcutprint>
-    6003: a2 e6        	ldx	#$e6
+    6003: a2 da        	ldx	#$da
     6005: 86 04        	stx	$4                      ; 0x4 <__rc2>
     6007: a2 73        	ldx	#$73
     6009: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    600b: a2 9e        	ldx	#$9e
+    600b: a2 92        	ldx	#$92
     600d: 86 06        	stx	$6                      ; 0x6 <__rc4>
     600f: a2 74        	ldx	#$74
     6011: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8627,13 +8627,13 @@ Disassembly of section .text:
     601a: 86 04        	stx	$4                      ; 0x4 <__rc2>
     601c: a2 72        	ldx	#$72
     601e: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    6020: a2 e5        	ldx	#$e5
+    6020: a2 d9        	ldx	#$d9
     6022: 86 06        	stx	$6                      ; 0x6 <__rc4>
     6024: a2 72        	ldx	#$72
     6026: 86 07        	stx	$7                      ; 0x7 <__rc5>
     6028: a9 00        	lda	#$0
     602a: 20 75 5f     	jsr	$5f75 <shortcutprint>
-    602d: a2 b6        	ldx	#$b6
+    602d: a2 aa        	ldx	#$aa
     602f: 86 04        	stx	$4                      ; 0x4 <__rc2>
     6031: a2 73        	ldx	#$73
     6033: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -8647,7 +8647,7 @@ Disassembly of section .text:
     6044: 86 04        	stx	$4                      ; 0x4 <__rc2>
     6046: a2 76        	ldx	#$76
     6048: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    604a: a2 75        	ldx	#$75
+    604a: a2 69        	ldx	#$69
     604c: 86 06        	stx	$6                      ; 0x6 <__rc4>
     604e: a2 72        	ldx	#$72
     6050: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8689,21 +8689,21 @@ Disassembly of section .text:
     609b: 29 03        	and	#$3
     609d: d0 03        	bne	$60a2 <shortcuts+0xec>
     609f: 4c 6d 62     	jmp	$626d <shortcuts+0x2b7>
-    60a2: a2 9d        	ldx	#$9d
+    60a2: a2 91        	ldx	#$91
     60a4: 86 04        	stx	$4                      ; 0x4 <__rc2>
     60a6: a2 73        	ldx	#$73
     60a8: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    60aa: a2 24        	ldx	#$24
+    60aa: a2 18        	ldx	#$18
     60ac: 86 06        	stx	$6                      ; 0x6 <__rc4>
     60ae: a2 73        	ldx	#$73
     60b0: 86 07        	stx	$7                      ; 0x7 <__rc5>
     60b2: a9 01        	lda	#$1
     60b4: 20 75 5f     	jsr	$5f75 <shortcutprint>
-    60b7: a2 42        	ldx	#$42
+    60b7: a2 36        	ldx	#$36
     60b9: 86 04        	stx	$4                      ; 0x4 <__rc2>
     60bb: a2 73        	ldx	#$73
     60bd: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    60bf: a2 df        	ldx	#$df
+    60bf: a2 d3        	ldx	#$d3
     60c1: 86 06        	stx	$6                      ; 0x6 <__rc4>
     60c3: a2 73        	ldx	#$73
     60c5: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8713,17 +8713,17 @@ Disassembly of section .text:
     60ce: 86 04        	stx	$4                      ; 0x4 <__rc2>
     60d0: a2 75        	ldx	#$75
     60d2: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    60d4: a2 9e        	ldx	#$9e
+    60d4: a2 92        	ldx	#$92
     60d6: 86 06        	stx	$6                      ; 0x6 <__rc4>
     60d8: a2 74        	ldx	#$74
     60da: 86 07        	stx	$7                      ; 0x7 <__rc5>
     60dc: a9 00        	lda	#$0
     60de: 20 75 5f     	jsr	$5f75 <shortcutprint>
-    60e1: a2 e6        	ldx	#$e6
+    60e1: a2 da        	ldx	#$da
     60e3: 86 04        	stx	$4                      ; 0x4 <__rc2>
     60e5: a2 73        	ldx	#$73
     60e7: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    60e9: a2 df        	ldx	#$df
+    60e9: a2 d3        	ldx	#$d3
     60eb: 86 06        	stx	$6                      ; 0x6 <__rc4>
     60ed: a2 73        	ldx	#$73
     60ef: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8739,11 +8739,11 @@ Disassembly of section .text:
     6104: 86 07        	stx	$7                      ; 0x7 <__rc5>
     6106: a9 00        	lda	#$0
     6108: 20 75 5f     	jsr	$5f75 <shortcutprint>
-    610b: a2 b6        	ldx	#$b6
+    610b: a2 aa        	ldx	#$aa
     610d: 86 04        	stx	$4                      ; 0x4 <__rc2>
     610f: a2 73        	ldx	#$73
     6111: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    6113: a2 df        	ldx	#$df
+    6113: a2 d3        	ldx	#$d3
     6115: 86 06        	stx	$6                      ; 0x6 <__rc4>
     6117: a2 73        	ldx	#$73
     6119: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8763,7 +8763,7 @@ Disassembly of section .text:
     6137: 86 04        	stx	$4                      ; 0x4 <__rc2>
     6139: a2 76        	ldx	#$76
     613b: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    613d: a2 df        	ldx	#$df
+    613d: a2 d3        	ldx	#$d3
     613f: 86 06        	stx	$6                      ; 0x6 <__rc4>
     6141: a2 73        	ldx	#$73
     6143: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8781,20 +8781,20 @@ Disassembly of section .text:
     615c: 4c 4c 62     	jmp	$624c <shortcuts+0x296>
     615f: a9 00        	lda	#$0
     6161: 8e ff 7b     	stx	$7bff                   ; 0x7bff <__data_load_start+0x401>
-    6164: a2 9d        	ldx	#$9d
+    6164: a2 91        	ldx	#$91
     6166: 86 04        	stx	$4                      ; 0x4 <__rc2>
     6168: a2 73        	ldx	#$73
     616a: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    616c: a2 df        	ldx	#$df
+    616c: a2 d3        	ldx	#$d3
     616e: 86 06        	stx	$6                      ; 0x6 <__rc4>
     6170: a2 73        	ldx	#$73
     6172: 86 07        	stx	$7                      ; 0x7 <__rc5>
     6174: 20 75 5f     	jsr	$5f75 <shortcutprint>
-    6177: a2 42        	ldx	#$42
+    6177: a2 36        	ldx	#$36
     6179: 86 04        	stx	$4                      ; 0x4 <__rc2>
     617b: a2 73        	ldx	#$73
     617d: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    617f: a2 df        	ldx	#$df
+    617f: a2 d3        	ldx	#$d3
     6181: 86 06        	stx	$6                      ; 0x6 <__rc4>
     6183: a2 73        	ldx	#$73
     6185: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8804,17 +8804,17 @@ Disassembly of section .text:
     618e: 86 04        	stx	$4                      ; 0x4 <__rc2>
     6190: a2 75        	ldx	#$75
     6192: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    6194: a2 df        	ldx	#$df
+    6194: a2 d3        	ldx	#$d3
     6196: 86 06        	stx	$6                      ; 0x6 <__rc4>
     6198: a2 73        	ldx	#$73
     619a: 86 07        	stx	$7                      ; 0x7 <__rc5>
     619c: a9 00        	lda	#$0
     619e: 20 75 5f     	jsr	$5f75 <shortcutprint>
-    61a1: a2 e6        	ldx	#$e6
+    61a1: a2 da        	ldx	#$da
     61a3: 86 04        	stx	$4                      ; 0x4 <__rc2>
     61a5: a2 73        	ldx	#$73
     61a7: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    61a9: a2 df        	ldx	#$df
+    61a9: a2 d3        	ldx	#$d3
     61ab: 86 06        	stx	$6                      ; 0x6 <__rc4>
     61ad: a2 73        	ldx	#$73
     61af: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8849,16 +8849,16 @@ Disassembly of section .text:
     61ea: 86 04        	stx	$4                      ; 0x4 <__rc2>
     61ec: a2 72        	ldx	#$72
     61ee: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    61f0: a2 b9        	ldx	#$b9
+    61f0: a2 ad        	ldx	#$ad
     61f2: 86 06        	stx	$6                      ; 0x6 <__rc4>
     61f4: a2 73        	ldx	#$73
     61f6: 86 07        	stx	$7                      ; 0x7 <__rc5>
     61f8: 20 75 5f     	jsr	$5f75 <shortcutprint>
-    61fb: a2 b6        	ldx	#$b6
+    61fb: a2 aa        	ldx	#$aa
     61fd: 86 04        	stx	$4                      ; 0x4 <__rc2>
     61ff: a2 73        	ldx	#$73
     6201: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    6203: a2 df        	ldx	#$df
+    6203: a2 d3        	ldx	#$d3
     6205: 86 06        	stx	$6                      ; 0x6 <__rc4>
     6207: a2 73        	ldx	#$73
     6209: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8868,7 +8868,7 @@ Disassembly of section .text:
     6212: 86 04        	stx	$4                      ; 0x4 <__rc2>
     6214: a2 76        	ldx	#$76
     6216: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    6218: a2 df        	ldx	#$df
+    6218: a2 d3        	ldx	#$d3
     621a: 86 06        	stx	$6                      ; 0x6 <__rc4>
     621c: a2 73        	ldx	#$73
     621e: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8888,7 +8888,7 @@ Disassembly of section .text:
     623c: 86 04        	stx	$4                      ; 0x4 <__rc2>
     623e: a2 75        	ldx	#$75
     6240: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    6242: a2 df        	ldx	#$df
+    6242: a2 d3        	ldx	#$d3
     6244: 86 06        	stx	$6                      ; 0x6 <__rc4>
     6246: a2 73        	ldx	#$73
     6248: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8909,7 +8909,7 @@ Disassembly of section .text:
     6268: 09 03        	ora	#$3
     626a: 85 2b        	sta	$2b                     ; 0x2b <g_curTextColor>
     626c: 60           	rts
-    626d: a2 9d        	ldx	#$9d
+    626d: a2 91        	ldx	#$91
     626f: 86 04        	stx	$4                      ; 0x4 <__rc2>
     6271: a2 73        	ldx	#$73
     6273: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -8919,11 +8919,11 @@ Disassembly of section .text:
     627b: 86 07        	stx	$7                      ; 0x7 <__rc5>
     627d: a9 00        	lda	#$0
     627f: 20 75 5f     	jsr	$5f75 <shortcutprint>
-    6282: a2 42        	ldx	#$42
+    6282: a2 36        	ldx	#$36
     6284: 86 04        	stx	$4                      ; 0x4 <__rc2>
     6286: a2 73        	ldx	#$73
     6288: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    628a: a2 24        	ldx	#$24
+    628a: a2 18        	ldx	#$18
     628c: 86 06        	stx	$6                      ; 0x6 <__rc4>
     628e: a2 73        	ldx	#$73
     6290: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8933,17 +8933,17 @@ Disassembly of section .text:
     6299: 86 04        	stx	$4                      ; 0x4 <__rc2>
     629b: a2 75        	ldx	#$75
     629d: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    629f: a2 a0        	ldx	#$a0
+    629f: a2 94        	ldx	#$94
     62a1: 86 06        	stx	$6                      ; 0x6 <__rc4>
     62a3: a2 73        	ldx	#$73
     62a5: 86 07        	stx	$7                      ; 0x7 <__rc5>
     62a7: a9 00        	lda	#$0
     62a9: 20 75 5f     	jsr	$5f75 <shortcutprint>
-    62ac: a2 e6        	ldx	#$e6
+    62ac: a2 da        	ldx	#$da
     62ae: 86 04        	stx	$4                      ; 0x4 <__rc2>
     62b0: a2 73        	ldx	#$73
     62b2: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    62b4: a2 9e        	ldx	#$9e
+    62b4: a2 92        	ldx	#$92
     62b6: 86 06        	stx	$6                      ; 0x6 <__rc4>
     62b8: a2 74        	ldx	#$74
     62ba: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -8953,13 +8953,13 @@ Disassembly of section .text:
     62c3: 86 04        	stx	$4                      ; 0x4 <__rc2>
     62c5: a2 72        	ldx	#$72
     62c7: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    62c9: a2 e5        	ldx	#$e5
+    62c9: a2 d9        	ldx	#$d9
     62cb: 86 06        	stx	$6                      ; 0x6 <__rc4>
     62cd: a2 72        	ldx	#$72
     62cf: 86 07        	stx	$7                      ; 0x7 <__rc5>
     62d1: a9 01        	lda	#$1
     62d3: 20 75 5f     	jsr	$5f75 <shortcutprint>
-    62d6: a2 b6        	ldx	#$b6
+    62d6: a2 aa        	ldx	#$aa
     62d8: 86 04        	stx	$4                      ; 0x4 <__rc2>
     62da: a2 73        	ldx	#$73
     62dc: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -8973,7 +8973,7 @@ Disassembly of section .text:
     62ed: 86 04        	stx	$4                      ; 0x4 <__rc2>
     62ef: a2 76        	ldx	#$76
     62f1: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    62f3: a2 75        	ldx	#$75
+    62f3: a2 69        	ldx	#$69
     62f5: 86 06        	stx	$6                      ; 0x6 <__rc4>
     62f7: a2 72        	ldx	#$72
     62f9: 86 07        	stx	$7                      ; 0x7 <__rc5>
@@ -9182,7 +9182,7 @@ Disassembly of section .text:
     646e: a9 78        	lda	#$78
     6470: 65 05        	adc	$5                      ; 0x5 <__rc3>
     6472: 85 07        	sta	$7                      ; 0x7 <__rc5>
-    6474: a2 9d        	ldx	#$9d
+    6474: a2 91        	ldx	#$91
     6476: 86 04        	stx	$4                      ; 0x4 <__rc2>
     6478: a2 72        	ldx	#$72
     647a: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -9194,7 +9194,7 @@ Disassembly of section .text:
     6486: a5 1e        	lda	$1e                     ; 0x1e <__rc28>
     6488: 69 00        	adc	#$0
     648a: 85 07        	sta	$7                      ; 0x7 <__rc5>
-    648c: a2 9d        	ldx	#$9d
+    648c: a2 91        	ldx	#$91
     648e: 86 04        	stx	$4                      ; 0x4 <__rc2>
     6490: a2 72        	ldx	#$72
     6492: 86 05        	stx	$5                      ; 0x5 <__rc3>
@@ -9562,7 +9562,7 @@ Disassembly of section .text:
     6758: 86 04        	stx	$4                      ; 0x4 <__rc2>
     675a: a2 75        	ldx	#$75
     675c: 86 05        	stx	$5                      ; 0x5 <__rc3>
-    675e: a2 45        	ldx	#$45
+    675e: a2 39        	ldx	#$39
     6760: 86 06        	stx	$6                      ; 0x6 <__rc4>
     6762: a2 73        	ldx	#$73
     6764: 86 07        	stx	$7                      ; 0x7 <__rc5>
