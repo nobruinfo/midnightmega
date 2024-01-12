@@ -476,7 +476,8 @@ void navi(unsigned char side)  {
 		} else {
           // @@ does only current file:
  /* @@ */ ds = getdirententry(side, midnight[side]->pos);
- /* @@ */ if ( /* (ds->type&0xf) != VAL_DOSFTYPE_CBM && */
+// /* @@ */ if ( /* (ds->type&0xf) != VAL_DOSFTYPE_CBM && */
+ /* @@ */ if ((ds->type&0xf) != VAL_DOSFTYPE_CBM &&
  /* @@ */     (ds->type&0xf) != VAL_DOSFTYPE_DEL)  {
           // @@ has to go to sizeselectcurrentifnone()
 
@@ -556,6 +557,9 @@ void navi(unsigned char side)  {
               UpdateSectors(midnight[side]->drive, side);
 		      Deselect(side);
 		    }
+		  } else {
+			messagebox(0, "File type for", ds->name,
+			              "unsupported");
 		  }
 		}
       break;
@@ -705,5 +709,79 @@ void navi(unsigned char side)  {
 //		cputc(' ');
       break;
    }
+  }
+}
+
+// $ffd2  jmp (ibsout)  output to channel
+unsigned char chrout(unsigned char c)  {
+	unsigned char retval;
+
+  asm volatile(
+//	"lda c\n"
+	"jsr $ffd2\n"
+	"bcc errchrout%=\n"
+    "lda 0\n"
+    "sta %0\n"
+	"jmp donechrout%=\n"
+"errchrout%=:\n"
+    "lda $ff\n"
+	"sta %0\n"
+"donechrout%=:\n"
+    "nop\n"
+  : "=r"(retval) : "a"(c) : "a");
+  return retval;
+}
+
+/*
+typedef struct structdatablock {
+	unsigned char chntrack;
+	unsigned char chnsector;
+	unsigned char data[254];
+} DATABLOCK;
+*/
+
+
+extern DATABLOCK * worksector[2];
+void test()  {
+  DIRENT* ds;
+  DATABLOCK* ws;
+  unsigned char i;
+  unsigned char entries;
+  unsigned char success;
+
+//  clrhome();
+  entries = getdirent(0, 0, HEADERTRACK);
+  success = FALSE;
+  for (i = 0; i <= entries; i++)  {
+    ds = getdirententry(0, i);
+	if (strncmp(ds->name, "HELP.SEQ", 8) == 0)  {
+	  success = TRUE;
+	  break;
+	}
+  }
+  if (success)  {
+//	mcputsxy(0, 0, ds->name);
+    readblockchain(ATTICFILEBUFFER, DATABLOCKS, 0, ds->track, ds->sector);
+	_miniInit();
+    ws = worksector[0];
+    lcopy(ATTICFILEBUFFER, (uint32_t) ws, BLOCKSIZE);
+//    valuesbox(0, "data", "len=", ws->chnsector,
+//                 "val=", ws->data[0]);
+    ws->data[ws->chnsector - 1] = 0x0; // string termination
+//  chrout(2);  chrout(0xcd);  chrout(0x49);  chrout(0x44);
+//  mcputsxy(0, 2, (char *) ws->data);
+//  cgetc();
+//  cputln();
+//  cgetc();
+    chrout(147); // Clrhome
+    for (i = 0; ws->data[i] != 0; i++)  {
+	  chrout(ws->data[i]);
+    }
+    mcputsxy(0, 12, "done.");
+    cgetc();
+  } else {
+    messagebox(0, "Help files not found.",
+				  "Retry after insertion of Midnight Mega disk.",
+				  " ");
   }
 }

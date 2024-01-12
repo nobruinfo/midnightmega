@@ -25,6 +25,8 @@
 
 // char* inputstr = (char*) INPUTSTRPAGE;
 
+extern void test();
+
 // KickC calls conio_mega65_init() before doing main():
 int main() {
   conioinit();
@@ -43,6 +45,8 @@ int main() {
   }
   cgetc();
 */
+
+//  test();
 
   clrhome();
 
