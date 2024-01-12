@@ -66,6 +66,8 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
   the disk
 * [F1][Help] need to load a text file from the diskette and show
   the user, same routines to be used as for [F3]
+* GEOS VLIR filenames and file types are not displayed correctly,
+  neither are they supported nor rejected
 
 ## tasks
 
@@ -77,7 +79,8 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
 * message boxes for errors and warnings in different colours/sounds?
 * Handling of subdirectories (sub-partitions of file type `CBM`)
   inside diskettes
-* [Ctrl][u] to swap mount situation
+* [Ctrl][u] to swap mount situation, mind swapping the complete
+  attic too &#x2639;
 * ability to use the same drive number on both sides of the commander
   to copy files onto the same disk
 * Unmounting to gain full access to the underlying real floppy drive
@@ -100,6 +103,8 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
 
 ## bugs
 
+* The help file display routine is currently limited to one
+  block of data instead of four for a full screen.
 * ✓ ~~Additional `dirent` blocks are placed outside track 40~~
   ~~and this is not what Commodore did.~~
 * ✓ ~~Additional file blocks are also placed within track 40.~~
@@ -128,19 +133,21 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
   ~~sector 0.~~
 * ✓ ~~The yet state of development only uses the left file list so~~
   ~~*copy* actually only duplicates files on the same disk~~
-* ✓ ~~BAM is only supported for one sector, tracks 41 to 80~~
+* ✓ ~~BAM is only supported for one sector, tracks 41 to 80.~~
   ~~therefore not yet covered.~~
 * ✓ ~~BAM is not yet in attic RAM, therefore multiple discs not~~
   ~~cached.~~
 * ✓ ~~Improve handling of DEL type files.~~
 * ✓ ~~reading/writing .d81 always takes two logical sectors at once,~~
-  ~~writing of a single one should first read its accompaigning one~~
-* ✓ ~~reading the last sector 39 results in side 1 and an invalid next~~
-  ~~track~~
+  ~~writing of a single one should first read its accompaigning one.~~
+* ✓ ~~reading the last sector 39 results in side 1 and an invalid~~
+  ~~next track.~~
 * Modifier key handling could be improved/optimised to treat keys
-  different that don't require modification at all
+  different that don't require modification at all.
 * Flickering in Xemu when e.g. cursor up is performed multiple times
-  because of how modifier keys are currently handled
+  because of how modifier keys are currently handled.
+* If a file is only read the drive's LED doesn't switch back off. It
+  seems this is done by _miniinit() which needs to be checked anyway.
 
 # C environment
 

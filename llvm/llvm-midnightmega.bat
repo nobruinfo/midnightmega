@@ -54,7 +54,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.2-beta
+SET v=v0.5.3-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 REM DEL %TEMP%\*.o
@@ -94,6 +94,16 @@ IF ERRORLEVEL == 1 (
   ECHO this is a deleted file for testing.>%PRJ%.seq
   %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.4,d
   DEL %PRJ%.seq>NUL
+  %petcat% -w65 -o ht2.src.prg -- ht2.src.bas
+  %c1541% -attach %PRJ%.d81 -write ht2.src.prg ht2.src
+  
+  REM Helpfile with control codes and colours:
+  REM https://mega65.atlassian.net/wiki/x/AYCjAQ
+  REM https://dansanderson.com/mega65/petscii-codes/ section "PETSCII control codes"
+  REM https://vice-emu.sourceforge.io/vice_toc.html#TOC391
+  REM https://www.c64-wiki.de/wiki/Petcat#Nicht_druckbare_Zeichen
+  %petcat% -text -c -w2 -o help.seq -- help.txt
+  %c1541% -attach %PRJ%.d81 -write help.seq help.seq,s
 
   REM Use in Xemu's out of the image file fs access:
   XCOPY /Y %PRJ%.d81 %HDOS%\
