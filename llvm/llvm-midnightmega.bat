@@ -22,6 +22,7 @@ CD /D %~dp0
 
 SET PRJ=midnightmega
 SET DATADISK=datadisk
+SET versions=..\versions.txt
 
 set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
 set LLVM_BAT=%LLVM_HOME%\bin\mos-mega65-clang.bat
@@ -54,8 +55,27 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.3-beta
+SET v=v0.5.4-beta
 SET opts=%opts% -DVERSION=\"%v%\"
+
+ECHO versions for Midnight Mega %v%>%versions%
+ECHO:>>%versions%
+%c1541% -version>>%versions%
+ECHO:>>%versions%
+%PETCAT% -version>>%versions%
+ECHO:>>%versions%
+"%MFTP%" -xyz>>arghh.tmp 2>&1
+TYPE arghh.tmp | find /i "cross-development">>%versions%
+TYPE arghh.tmp | find /i "version">>%versions%
+DEL arghh.tmp > NUL 2> NUL
+ECHO:>>%versions%
+%LLVM_HOME%\bin\mos-clang.exe --version>>%versions%
+ECHO:>>%versions%
+%LLVM_HOME%\bin\llvm-objdump.exe --version>>%versions%
+ECHO:>>%versions%
+REM Xemu uses an additional console window that cannot be GREPped:
+REM XMEGA65 -version -headless>>%versions%
+ECHO:>>%versions%
 
 REM DEL %TEMP%\*.o
 CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %cfiles% %libcfiles%
@@ -68,6 +88,8 @@ IF ERRORLEVEL == 1 (
   REM  -Wall
   CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %cfiles% %libcfiles%
   SET opts=%opts% -DDISKDEBUG
+  CALL %LLVM_BAT% -Os -o dbg%PRJ%.prg !opts! %cfiles% %libcfiles%
+  SET opts=!opts! -DDELAYDEBUG
   CALL %LLVM_BAT% -Os -o emu%PRJ%.prg !opts! %cfiles% %libcfiles%
 
   for /f "tokens=1* delims=?" %%i in ('DIR /B /O:DN "%TEMP%\*.o"') do (
@@ -82,28 +104,31 @@ IF ERRORLEVEL == 1 (
   %c1541% -format disk%PRJ%,id d81 %PRJ%.d81
   %c1541% -attach %PRJ%.d81 -delete %PRJ%
   %c1541% -attach %PRJ%.d81 -write %PRJ%.prg %PRJ%
+  %c1541% -attach %PRJ%.d81 -write dbg%PRJ%.prg dbg%PRJ%
   %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
-  ECHO this is a sequential file for testing.>%PRJ%.seq
-  %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s
-  ECHO this is a relential file for testing.>%PRJ%.seq
-  %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.1,l80,01,01
-  ECHO this is a sequential file for testing.>%PRJ%.seq
-  %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.2,s
-  ECHO this is a sequential file for testing.>%PRJ%.seq
-  %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.3,s
-  ECHO this is a deleted file for testing.>%PRJ%.seq
-  %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.4,d
-  DEL %PRJ%.seq>NUL
-  %petcat% -w65 -o ht2.src.prg -- ht2.src.bas
-  %c1541% -attach %PRJ%.d81 -write ht2.src.prg ht2.src
-  
-  REM Helpfile with control codes and colours:
-  REM https://mega65.atlassian.net/wiki/x/AYCjAQ
-  REM https://dansanderson.com/mega65/petscii-codes/ section "PETSCII control codes"
-  REM https://vice-emu.sourceforge.io/vice_toc.html#TOC391
-  REM https://www.c64-wiki.de/wiki/Petcat#Nicht_druckbare_Zeichen
-  %petcat% -text -c -w2 -o help.seq -- help.txt
-  %c1541% -attach %PRJ%.d81 -write help.seq help.seq,s
+  IF 1 == 2 (
+    ECHO this is a sequential file for testing.>%PRJ%.seq
+    %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s
+    ECHO this is a relential file for testing.>%PRJ%.seq
+    %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.1,l80,01,01
+    ECHO this is a sequential file for testing.>%PRJ%.seq
+    %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.2,s
+    ECHO this is a sequential file for testing.>%PRJ%.seq
+    %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.3,s
+    ECHO this is a deleted file for testing.>%PRJ%.seq
+    %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.4,d
+    DEL %PRJ%.seq>NUL
+    %petcat% -w65 -o ht2.src.prg -- ht2.src.bas
+    %c1541% -attach %PRJ%.d81 -write ht2.src.prg ht2.src
+    
+    REM Helpfile with control codes and colours:
+    REM https://mega65.atlassian.net/wiki/x/AYCjAQ
+    REM https://dansanderson.com/mega65/petscii-codes/ section "PETSCII control codes"
+    REM https://vice-emu.sourceforge.io/vice_toc.html#TOC391
+    REM https://www.c64-wiki.de/wiki/Petcat#Nicht_druckbare_Zeichen
+    %petcat% -text -c -w2 -o help.seq -- help.txt
+    %c1541% -attach %PRJ%.d81 -write help.seq help.seq,s
+  )
 
   REM Use in Xemu's out of the image file fs access:
   XCOPY /Y %PRJ%.d81 %HDOS%\

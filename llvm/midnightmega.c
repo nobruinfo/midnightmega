@@ -46,14 +46,12 @@ int main() {
   cgetc();
 */
 
-//  test();
-
   clrhome();
 
   mcputsxy(0, 22, "The function keys shown in the bottom line are ");
   msprintf("meant to be used with ");
   mcputsxy(0, 23, "and without [Shift] and [Mega] after the messagebox is dismissed:");
-  shortcuts(0, 0);
+  shortcuts(20, 0);
 
   // testing:
   // clrhome();

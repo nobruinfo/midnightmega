@@ -178,11 +178,15 @@ void ShowAccess(unsigned char drive,
     cputc(' ');
   }
   revers(0);
+#ifdef DELAYDEBUG
   usleep(800000); // microseconds
+#endif
   textcolor(COLOUR_CYAN);
   mcputsxy(SHOWACCESSX, SHOWACCESSY, " D");
   hline(SHOWACCESSX, SHOWACCESSY, 12, 32); // 64);  // 64 is the horizontal line
+#ifdef DELAYDEBUG
   usleep(20000); // microseconds
+#endif
 #endif
 }
 
