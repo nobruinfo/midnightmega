@@ -1461,9 +1461,9 @@ main:                                   ; @main
 ; %bb.410:                              ;   in Loop: Header=BB0_36 Depth=3
 	jmp	.LBB0_64
 .LBB0_143:                              ;   in Loop: Header=BB0_36 Depth=3
-	ldx	#mos16lo(.L.str.56)
+	ldx	#mos16lo(.L.str.55)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.56)
+	ldx	#mos16hi(.L.str.55)
 	stx	__rc3
 	jsr	cputs
 ; %bb.412:                              ;   in Loop: Header=BB0_36 Depth=3
@@ -1791,16 +1791,16 @@ main:                                   ; @main
 	ldx	#mos16hi(.L.str.42)
 	stx	__rc3
 	jsr	msprintf
-	ldx	#mos16lo(.L.str.43)
+	ldx	#mos16lo(.L.str.43.73)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.43)
+	ldx	#mos16hi(.L.str.43.73)
 	stx	__rc3
 	ldx	#4
 	lda	#6
 	jsr	mcputsxy
-	ldx	#mos16lo(.L.str.44.75)
+	ldx	#mos16lo(.L.str.44)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.44.75)
+	ldx	#mos16hi(.L.str.44)
 	stx	__rc3
 	ldx	#5
 	lda	#6
@@ -1924,16 +1924,16 @@ main:                                   ; @main
 	ldx	#mos16hi(.L.str.54)
 	stx	__rc3
 	jsr	msprintf
-	ldx	#mos16lo(.L.str.55)
+	ldx	#mos16lo(.L.str.55.74)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.55)
+	ldx	#mos16hi(.L.str.55.74)
 	stx	__rc3
 	ldx	#14
 	lda	#6
 	jsr	mcputsxy
-	ldx	#mos16lo(.L.str.56.76)
+	ldx	#mos16lo(.L.str.56)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.56.76)
+	ldx	#mos16hi(.L.str.56)
 	stx	__rc3
 	ldx	#15
 	lda	#6
@@ -3645,13 +3645,13 @@ donehypchdir2:
 	lda	__rc29
 	beq	.LBB0_304
 ; %bb.303:                              ;   in Loop: Header=BB0_290 Depth=2
-	ldx	#mos16lo(.L.str.15)
+	ldx	#mos16lo(.L.str.13)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.15)
+	ldx	#mos16hi(.L.str.13)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.16)
+	ldx	#mos16lo(.L.str.14)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.16)
+	ldx	#mos16hi(.L.str.14)
 	stx	__rc5
 	ldx	#mos16lo(.L.str.37)
 	stx	__rc6
@@ -5170,33 +5170,29 @@ ReadSector:                             ; @ReadSector
 	beq	.LBB3_3
 ; %bb.1:
 	ldy	__rc2
-	sty	mos8(.LReadSector_zp_stk)       ; 1-byte Folded Spill
-	ldy	#32
-	clc
-	adc	#32
-	sta	53376
-	sty	53377
-	dex
-	stx	53380
-	ldx	#20
-	lda	__rc2
-	jsr	__umodqi3
-	lsr
-	inc
-	sta	53381
-	ldy	mos8(.LReadSector_zp_stk)       ; 1-byte Folded Reload
 	cpy	#20
 	bcc	.LBB3_4
 ; %bb.2:
-	ldx	#1
+	clc
+	adc	#40
 	bra	.LBB3_5
 .LBB3_3:
 	lda	#252
 	rts
 .LBB3_4:
-	ldx	#0
+	clc
+	adc	#32
 .LBB3_5:
-	stx	53382
+	sta	53376
+	ldy	#32
+	sty	53377
+	dex
+	stx	53380
+	lda	__rc2
+	lsr
+	inc
+	sta	53381
+	stz	53382
 	ldx	#65
 	stx	53377
 .LBB3_6:                                ; =>This Inner Loop Header: Depth=1
@@ -5218,7 +5214,7 @@ ReadSector:                             ; @ReadSector
 	lda	54921
 	and	#127
 	sta	54921
-	tya
+	lda	__rc2
 	and	#1
 	rts
 .Lfunc_end3:
@@ -5277,26 +5273,22 @@ GetOneSector:                           ; @GetOneSector
 	.type	PutOneSector,@function          ; -- Begin function PutOneSector
 PutOneSector:                           ; @PutOneSector
 ; %bb.0:
-	sta	__rc5
 	ldy	__rc4
-	lda	__rc2
-	sta	mos8(.LPutOneSector_zp_stk)
-	lda	__rc3
-	sta	mos8(.LPutOneSector_zp_stk+1)
-	lda	__rc4
-	and	#1
-	sta	mos8(.LPutOneSector_zp_stk+2)
 	sty	mos8(.LPutOneSector_zp_stk+4)
+	ldy	__rc2
+	sty	mos8(.LPutOneSector_zp_stk)
+	ldy	__rc3
+	sty	mos8(.LPutOneSector_zp_stk+1)
+	ldy	__rc4
 	sty	__rc2
-	stx	mos8(.LPutOneSector_zp_stk+5)
-	ldy	__rc5
-	sty	mos8(.LPutOneSector_zp_stk+3)
-	lda	__rc5
+	stx	mos8(.LPutOneSector_zp_stk+2)
+	sta	mos8(.LPutOneSector_zp_stk+3)
 	jsr	ReadSector
 	ldy	#108
-	stz	__rc4
-	lda	mos8(.LPutOneSector_zp_stk+2)
-	beq	.LBB5_2
+	ldx	mos8(.LPutOneSector_zp_stk+4)
+	stx	mos8(.LPutOneSector_zp_stk+5)
+	lsr	mos8(.LPutOneSector_zp_stk+4)
+	bcc	.LBB5_2
 ; %bb.1:
 	ldy	#109
 .LBB5_2:
@@ -5306,6 +5298,7 @@ PutOneSector:                           ; @PutOneSector
 	sty	__rc6
 	stz	__rc2
 	stz	__rc3
+	stz	__rc4
 	ldy	#15
 	sty	__rc7
 	stz	__rc8
@@ -5313,67 +5306,52 @@ PutOneSector:                           ; @PutOneSector
 	ldx	mos8(.LPutOneSector_zp_stk+1)
 	lda	mos8(.LPutOneSector_zp_stk)
 	jsr	lcopy
-	lda	mos8(.LPutOneSector_zp_stk+4)
-	and	#254
-	cmp	#20
-	sta	__rc2
-	ldx	#1
-	bcs	.LBB5_4
+	lda	mos8(.LPutOneSector_zp_stk+2)
+	beq	.LBB5_11
 ; %bb.3:
-	ldx	#0
-.LBB5_4:
-	stx	mos8(.LPutOneSector_zp_stk)
+	ldy	mos8(.LPutOneSector_zp_stk+2)
+	ldx	mos8(.LPutOneSector_zp_stk+5)
 	lda	mos8(.LPutOneSector_zp_stk+3)
-	bcc	.LBB5_6
-; %bb.5:
+	cpx	#20
+	bcc	.LBB5_5
+; %bb.4:
 	clc
 	adc	#40
-	bra	.LBB5_7
-.LBB5_6:
+	bra	.LBB5_6
+.LBB5_5:
 	clc
 	adc	#32
-.LBB5_7:
-	ldy	mos8(.LPutOneSector_zp_stk+5)
+.LBB5_6:
 	sta	53376
 	ldx	#32
 	stx	53377
 	dey
 	sty	53380
-	ldx	#20
-	lda	__rc2
-	jsr	__umodqi3
-	lsr
-	inc
-	sta	53381
-	lda	mos8(.LPutOneSector_zp_stk)
-	beq	.LBB5_9
-; %bb.8:
-	ldx	#1
-	bra	.LBB5_10
-.LBB5_9:
-	ldx	#0
-.LBB5_10:
-	stx	53382
+	ldx	mos8(.LPutOneSector_zp_stk+4)
+	inx
+	stx	53381
+	stz	53382
 	ldx	#132
 	stx	53377
-.LBB5_11:                               ; =>This Inner Loop Header: Depth=1
+.LBB5_7:                                ; =>This Inner Loop Header: Depth=1
 	ldx	53378
-	bmi	.LBB5_11
-; %bb.12:
+	bmi	.LBB5_7
+; %bb.8:
 	lda	53378
 	and	#24
-	beq	.LBB5_14
-; %bb.13:
+	beq	.LBB5_10
+; %bb.9:
 	ldx	#64
 	stx	53376
 	ldx	#2
 	stx	53280
 	ldx	53378
 	rts
-.LBB5_14:
+.LBB5_10:
 	lda	54921
 	and	#127
 	sta	54921
+.LBB5_11:
 	rts
 .Lfunc_end5:
 	.size	PutOneSector, .Lfunc_end5-PutOneSector
@@ -6912,9 +6890,9 @@ messagebox:                             ; @messagebox
 	lda	#12
 	jsr	mcputsxy
 	lda	#60
-	ldx	#mos16lo(.L.str.3.47)
+	ldx	#mos16lo(.L.str.3.46)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.3.47)
+	ldx	#mos16hi(.L.str.3.46)
 	stx	__rc3
 	ldx	#10
 	jsr	mcputsxy
@@ -6932,9 +6910,9 @@ messagebox:                             ; @messagebox
 	ldx	#1
 	jsr	mcputsxy
 	lda	#58
-	ldx	#mos16lo(.L.str.5.49)
+	ldx	#mos16lo(.L.str.5.48)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.5.49)
+	ldx	#mos16hi(.L.str.5.48)
 	stx	__rc3
 	ldx	#1
 	jsr	mcputsxy
@@ -7050,16 +7028,16 @@ progress:                               ; @progress
 	lda	#37
 	jsr	cputc
 	lda	#12
-	ldx	#mos16lo(.L.str.7.53)
+	ldx	#mos16lo(.L.str.7.52)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.7.53)
+	ldx	#mos16hi(.L.str.7.52)
 	stx	__rc3
 	ldx	#10
 	jsr	mcputsxy
 	lda	#60
-	ldx	#mos16lo(.L.str.7.53)
+	ldx	#mos16lo(.L.str.7.52)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.7.53)
+	ldx	#mos16hi(.L.str.7.52)
 	stx	__rc3
 	ldx	#10
 	jsr	mcputsxy
@@ -7126,39 +7104,39 @@ shortcuts:                              ; @shortcuts
 ; %bb.18:
 	jmp	.LBB23_2
 .LBB23_1:
-	ldx	#mos16lo(.L.str.1.59)
+	ldx	#mos16lo(.L.str.1.58)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.1.59)
+	ldx	#mos16hi(.L.str.1.58)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.2.60)
+	ldx	#mos16lo(.L.str.2.59)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.2.60)
+	ldx	#mos16hi(.L.str.2.59)
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.3.61)
+	ldx	#mos16lo(.L.str.3.60)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.3.61)
+	ldx	#mos16hi(.L.str.3.60)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.4.62)
+	ldx	#mos16lo(.L.str.4.61)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.4.62)
+	ldx	#mos16hi(.L.str.4.61)
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.5.63)
+	ldx	#mos16lo(.L.str.5.62)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.5.63)
+	ldx	#mos16hi(.L.str.5.62)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.6.64)
+	ldx	#mos16lo(.L.str.6.63)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.6.64)
+	ldx	#mos16hi(.L.str.6.63)
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.7.65)
+	ldx	#mos16lo(.L.str.7.64)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.7.65)
+	ldx	#mos16hi(.L.str.7.64)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.8)
 	stx	__rc4
@@ -7166,9 +7144,9 @@ shortcuts:                              ; @shortcuts
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.9)
+	ldx	#mos16lo(.L.str.9.65)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.9)
+	ldx	#mos16hi(.L.str.9.65)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.10.66)
 	stx	__rc4
@@ -7206,13 +7184,13 @@ shortcuts:                              ; @shortcuts
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.17.73)
+	ldx	#mos16lo(.L.str.17)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.17.73)
+	ldx	#mos16hi(.L.str.17)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.18.74)
+	ldx	#mos16lo(.L.str.18)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.18.74)
+	ldx	#mos16hi(.L.str.18)
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
@@ -7238,19 +7216,19 @@ shortcuts:                              ; @shortcuts
 ; %bb.22:
 	jmp	.LBB23_11
 .LBB23_4:
-	ldx	#mos16lo(.L.str.1.59)
+	ldx	#mos16lo(.L.str.1.58)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.1.59)
+	ldx	#mos16hi(.L.str.1.58)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.4.62)
+	ldx	#mos16lo(.L.str.4.61)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.4.62)
+	ldx	#mos16hi(.L.str.4.61)
 	stx	__rc5
 	lda	#1
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.3.61)
+	ldx	#mos16lo(.L.str.3.60)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.3.61)
+	ldx	#mos16hi(.L.str.3.60)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.21)
 	stx	__rc4
@@ -7258,9 +7236,9 @@ shortcuts:                              ; @shortcuts
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.5.63)
+	ldx	#mos16lo(.L.str.5.62)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.5.63)
+	ldx	#mos16hi(.L.str.5.62)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.8)
 	stx	__rc4
@@ -7268,9 +7246,9 @@ shortcuts:                              ; @shortcuts
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.7.65)
+	ldx	#mos16lo(.L.str.7.64)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.7.65)
+	ldx	#mos16hi(.L.str.7.64)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.21)
 	stx	__rc4
@@ -7278,9 +7256,9 @@ shortcuts:                              ; @shortcuts
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.9)
+	ldx	#mos16lo(.L.str.9.65)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.9)
+	ldx	#mos16hi(.L.str.9.65)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.12.68)
 	stx	__rc4
@@ -7318,9 +7296,9 @@ shortcuts:                              ; @shortcuts
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.17.73)
+	ldx	#mos16lo(.L.str.17)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.17.73)
+	ldx	#mos16hi(.L.str.17)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.25)
 	stx	__rc4
@@ -7332,28 +7310,18 @@ shortcuts:                              ; @shortcuts
 .LBB23_5:
 	lda	#0
 	stx	.Lshortcuts_sstk                ; 1-byte Folded Spill
-	ldx	#mos16lo(.L.str.1.59)
+	ldx	#mos16lo(.L.str.1.58)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.1.59)
+	ldx	#mos16hi(.L.str.1.58)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.21)
 	stx	__rc4
 	ldx	#mos16hi(.L.str.21)
 	stx	__rc5
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.3.61)
+	ldx	#mos16lo(.L.str.3.60)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.3.61)
-	stx	__rc3
-	ldx	#mos16lo(.L.str.21)
-	stx	__rc4
-	ldx	#mos16hi(.L.str.21)
-	stx	__rc5
-	lda	#0
-	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.5.63)
-	stx	__rc2
-	ldx	#mos16hi(.L.str.5.63)
+	ldx	#mos16hi(.L.str.3.60)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.21)
 	stx	__rc4
@@ -7361,9 +7329,19 @@ shortcuts:                              ; @shortcuts
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.7.65)
+	ldx	#mos16lo(.L.str.5.62)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.7.65)
+	ldx	#mos16hi(.L.str.5.62)
+	stx	__rc3
+	ldx	#mos16lo(.L.str.21)
+	stx	__rc4
+	ldx	#mos16hi(.L.str.21)
+	stx	__rc5
+	lda	#0
+	jsr	shortcutprint
+	ldx	#mos16lo(.L.str.7.64)
+	stx	__rc2
+	ldx	#mos16hi(.L.str.7.64)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.21)
 	stx	__rc4
@@ -7398,9 +7376,9 @@ shortcuts:                              ; @shortcuts
 ; %bb.6:
 	lda	#0
 .LBB23_7:
-	ldx	#mos16lo(.L.str.9)
+	ldx	#mos16lo(.L.str.9.65)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.9)
+	ldx	#mos16hi(.L.str.9.65)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.22)
 	stx	__rc4
@@ -7437,9 +7415,9 @@ shortcuts:                              ; @shortcuts
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.17.73)
+	ldx	#mos16lo(.L.str.17)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.17.73)
+	ldx	#mos16hi(.L.str.17)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.21)
 	stx	__rc4
@@ -7466,39 +7444,39 @@ shortcuts:                              ; @shortcuts
 	sta	mos8(g_curTextColor)
 	rts
 .LBB23_11:
-	ldx	#mos16lo(.L.str.1.59)
+	ldx	#mos16lo(.L.str.1.58)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.1.59)
+	ldx	#mos16hi(.L.str.1.58)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.2.60)
+	ldx	#mos16lo(.L.str.2.59)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.2.60)
+	ldx	#mos16hi(.L.str.2.59)
 	stx	__rc5
 	lda	#1
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.3.61)
+	ldx	#mos16lo(.L.str.3.60)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.3.61)
+	ldx	#mos16hi(.L.str.3.60)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.4.62)
+	ldx	#mos16lo(.L.str.4.61)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.4.62)
+	ldx	#mos16hi(.L.str.4.61)
 	stx	__rc5
 	lda	#1
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.5.63)
+	ldx	#mos16lo(.L.str.5.62)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.5.63)
+	ldx	#mos16hi(.L.str.5.62)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.6.64)
+	ldx	#mos16lo(.L.str.6.63)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.6.64)
+	ldx	#mos16hi(.L.str.6.63)
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.7.65)
+	ldx	#mos16lo(.L.str.7.64)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.7.65)
+	ldx	#mos16hi(.L.str.7.64)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.8)
 	stx	__rc4
@@ -7506,9 +7484,9 @@ shortcuts:                              ; @shortcuts
 	stx	__rc5
 	lda	#0
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.9)
+	ldx	#mos16lo(.L.str.9.65)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.9)
+	ldx	#mos16hi(.L.str.9.65)
 	stx	__rc3
 	ldx	#mos16lo(.L.str.10.66)
 	stx	__rc4
@@ -7546,13 +7524,13 @@ shortcuts:                              ; @shortcuts
 	stx	__rc5
 	lda	#1
 	jsr	shortcutprint
-	ldx	#mos16lo(.L.str.17.73)
+	ldx	#mos16lo(.L.str.17)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.17.73)
+	ldx	#mos16hi(.L.str.17)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.18.74)
+	ldx	#mos16lo(.L.str.18)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.18.74)
+	ldx	#mos16hi(.L.str.18)
 	stx	__rc5
 	lda	#1
 	jsr	shortcutprint
@@ -8155,9 +8133,9 @@ donegetproc8:
 	sta	(__rc24),y
 	bra	.LBB25_35
 .LBB25_34:
-	ldx	#mos16lo(.L.str.14)
+	ldx	#mos16lo(.L.str.12)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.14)
+	ldx	#mos16hi(.L.str.12)
 	stx	__rc3
 	ldx	__rc24
 	stx	__rc4
@@ -13692,11 +13670,11 @@ BAMsector:
 	.short	5888
 	.size	BAMsector, 4
 
-	.type	.L.str.14,@object               ; @.str.14
+	.type	.L.str.12,@object               ; @.str.12
 	.section	.rodata.str1.1,"aMS",@progbits,1
-.L.str.14:
+.L.str.12:
 	.asciz	"read error"
-	.size	.L.str.14, 11
+	.size	.L.str.12, 11
 
 	.type	.L__const.findnextBAMtracksector.strategy,@object ; @__const.findnextBAMtracksector.strategy
 	.section	.rodata..L__const.findnextBAMtracksector.strategy,"a",@progbits
@@ -13704,26 +13682,26 @@ BAMsector:
 	.ascii	"&)(*%+$,#-\".!/ 0\0371\0362\0353\0344\0335\0326\0317\0308\0279\026:\025;\024<\023=\022>\021?\020@\017A\016B\rC\fD\013E\nF\tG\bH\007I\006J\005K\004L\003M\002N\001O\000'"
 	.size	.L__const.findnextBAMtracksector.strategy, 80
 
-	.type	.L.str.15,@object               ; @.str.15
+	.type	.L.str.13,@object               ; @.str.13
 	.section	.rodata.str1.1,"aMS",@progbits,1
-.L.str.15:
+.L.str.13:
 	.asciz	"Writing file,"
-	.size	.L.str.15, 14
+	.size	.L.str.13, 14
 
-	.type	.L.str.16,@object               ; @.str.16
-.L.str.16:
+	.type	.L.str.14,@object               ; @.str.14
+.L.str.14:
 	.asciz	"number of sectors too big"
-	.size	.L.str.16, 26
+	.size	.L.str.14, 26
 
-	.type	.L.str.3.47,@object             ; @.str.3.47
-.L.str.3.47:
+	.type	.L.str.3.46,@object             ; @.str.3.46
+.L.str.3.46:
 	.asciz	" Cancel "
-	.size	.L.str.3.47, 9
+	.size	.L.str.3.46, 9
 
-	.type	.L.str.5.49,@object             ; @.str.5.49
-.L.str.5.49:
+	.type	.L.str.5.48,@object             ; @.str.5.48
+.L.str.5.48:
 	.asciz	"github.com/nobruinfo"
-	.size	.L.str.5.49, 21
+	.size	.L.str.5.48, 21
 
 	.type	.L__const.progress.rc,@object   ; @__const.progress.rc
 	.section	.rodata.cst4,"aM",@progbits,4
@@ -13734,11 +13712,11 @@ BAMsector:
 	.byte	8                               ; 0x8
 	.size	.L__const.progress.rc, 4
 
-	.type	.L.str.7.53,@object             ; @.str.7.53
+	.type	.L.str.7.52,@object             ; @.str.7.52
 	.section	.rodata.str1.1,"aMS",@progbits,1
-.L.str.7.53:
+.L.str.7.52:
 	.asciz	"        "
-	.size	.L.str.7.53, 9
+	.size	.L.str.7.52, 9
 
 	.type	.Lswitch.table.asciitoscreencode,@object ; @switch.table.asciitoscreencode
 	.section	.zp.rodata..Lswitch.table.asciitoscreencode,"a",@progbits
@@ -13765,56 +13743,56 @@ direntflags:
 	.zero	224
 	.size	direntflags, 224
 
-	.type	.L.str.56,@object               ; @.str.56
+	.type	.L.str.55,@object               ; @.str.55
 	.section	.rodata.str1.1,"aMS",@progbits,1
-.L.str.56:
+.L.str.55:
 	.asciz	"    "
-	.size	.L.str.56, 5
+	.size	.L.str.55, 5
 
-	.type	.L.str.1.59,@object             ; @.str.1.59
-.L.str.1.59:
+	.type	.L.str.1.58,@object             ; @.str.1.58
+.L.str.1.58:
 	.asciz	" 1"
-	.size	.L.str.1.59, 3
+	.size	.L.str.1.58, 3
 
-	.type	.L.str.2.60,@object             ; @.str.2.60
-.L.str.2.60:
+	.type	.L.str.2.59,@object             ; @.str.2.59
+.L.str.2.59:
 	.asciz	"Help  "
-	.size	.L.str.2.60, 7
+	.size	.L.str.2.59, 7
 
-	.type	.L.str.3.61,@object             ; @.str.3.61
-.L.str.3.61:
+	.type	.L.str.3.60,@object             ; @.str.3.60
+.L.str.3.60:
 	.asciz	" 2"
-	.size	.L.str.3.61, 3
+	.size	.L.str.3.60, 3
 
-	.type	.L.str.4.62,@object             ; @.str.4.62
-.L.str.4.62:
+	.type	.L.str.4.61,@object             ; @.str.4.61
+.L.str.4.61:
 	.asciz	"Mount "
-	.size	.L.str.4.62, 7
+	.size	.L.str.4.61, 7
 
-	.type	.L.str.5.63,@object             ; @.str.5.63
-.L.str.5.63:
+	.type	.L.str.5.62,@object             ; @.str.5.62
+.L.str.5.62:
 	.asciz	" 3"
-	.size	.L.str.5.63, 3
+	.size	.L.str.5.62, 3
 
-	.type	.L.str.6.64,@object             ; @.str.6.64
-.L.str.6.64:
+	.type	.L.str.6.63,@object             ; @.str.6.63
+.L.str.6.63:
 	.asciz	"View  "
-	.size	.L.str.6.64, 7
+	.size	.L.str.6.63, 7
 
-	.type	.L.str.7.65,@object             ; @.str.7.65
-.L.str.7.65:
+	.type	.L.str.7.64,@object             ; @.str.7.64
+.L.str.7.64:
 	.asciz	" 4"
-	.size	.L.str.7.65, 3
+	.size	.L.str.7.64, 3
 
 	.type	.L.str.8,@object                ; @.str.8
 .L.str.8:
 	.asciz	"Edit  "
 	.size	.L.str.8, 7
 
-	.type	.L.str.9,@object                ; @.str.9
-.L.str.9:
+	.type	.L.str.9.65,@object             ; @.str.9.65
+.L.str.9.65:
 	.asciz	" 5"
-	.size	.L.str.9, 3
+	.size	.L.str.9.65, 3
 
 	.type	.L.str.10.66,@object            ; @.str.10.66
 .L.str.10.66:
@@ -13851,15 +13829,15 @@ direntflags:
 	.asciz	"Delete"
 	.size	.L.str.16.72, 7
 
-	.type	.L.str.17.73,@object            ; @.str.17.73
-.L.str.17.73:
+	.type	.L.str.17,@object               ; @.str.17
+.L.str.17:
 	.asciz	" 9"
-	.size	.L.str.17.73, 3
+	.size	.L.str.17, 3
 
-	.type	.L.str.18.74,@object            ; @.str.18.74
-.L.str.18.74:
+	.type	.L.str.18,@object               ; @.str.18
+.L.str.18:
 	.asciz	"Menu  "
-	.size	.L.str.18.74, 7
+	.size	.L.str.18, 7
 
 	.type	.L.str.19,@object               ; @.str.19
 .L.str.19:
@@ -13965,7 +13943,7 @@ option.0:
 
 	.type	.L.str.38,@object               ; @.str.38
 .L.str.38:
-	.asciz	"v0.5.4-beta"
+	.asciz	"v0.5.5-beta"
 	.size	.L.str.38, 12
 
 	.type	.L.str.39,@object               ; @.str.39
@@ -13988,15 +13966,15 @@ option.0:
 	.asciz	" to rescan current file panel (left or right)."
 	.size	.L.str.42, 47
 
-	.type	.L.str.43,@object               ; @.str.43
-.L.str.43:
+	.type	.L.str.43.73,@object            ; @.str.43.73
+.L.str.43.73:
 	.asciz	"Due to Hypervisor limitations .d81 image files can neither be copied"
-	.size	.L.str.43, 69
+	.size	.L.str.43.73, 69
 
-	.type	.L.str.44.75,@object            ; @.str.44.75
-.L.str.44.75:
+	.type	.L.str.44,@object               ; @.str.44
+.L.str.44:
 	.asciz	"as a whole nor be created, use the MEGA65 freezer menu to do so."
-	.size	.L.str.44.75, 65
+	.size	.L.str.44, 65
 
 	.type	.L.str.45,@object               ; @.str.45
 .L.str.45:
@@ -14048,15 +14026,15 @@ option.0:
 	.asciz	" directory entry to climb to the parent directory."
 	.size	.L.str.54, 51
 
-	.type	.L.str.55,@object               ; @.str.55
-.L.str.55:
+	.type	.L.str.55.74,@object            ; @.str.55.74
+.L.str.55.74:
 	.asciz	"Currently the left pane is always drive 0 and the right one drive 1,"
-	.size	.L.str.55, 69
+	.size	.L.str.55.74, 69
 
-	.type	.L.str.56.76,@object            ; @.str.56.76
-.L.str.56.76:
+	.type	.L.str.56,@object               ; @.str.56
+.L.str.56:
 	.asciz	"a later handling within the same drive is planned allowing you"
-	.size	.L.str.56.76, 63
+	.size	.L.str.56, 63
 
 	.type	.L.str.57,@object               ; @.str.57
 .L.str.57:
@@ -14415,8 +14393,6 @@ dmalist:
 	.size	.Lmemset_zp_stk, 2
 .set .Lmemmove_zp_stk, .Lzp_stack
 	.size	.Lmemmove_zp_stk, 2
-.set .LReadSector_zp_stk, .Lzp_stack+14
-	.size	.LReadSector_zp_stk, 1
 .set .LGetOneSector_zp_stk, .Lzp_stack+11
 	.size	.LGetOneSector_zp_stk, 3
 .set .Lreadblockchain_zp_stk, .Lzp_stack

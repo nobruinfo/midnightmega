@@ -67,8 +67,9 @@ unsigned char ReadSector(unsigned char drive, char track,
 
 	if (track == 0)  return 0xFC;
 	drive += 0x20;   // #$60 drive 0
-    mprintfd("Begin ReadSector t=", track);
-    mprintfd(" s=", sector);
+	if (sector >= 20)  {
+		drive += 0x08; // second side of disk
+	}
 	
 	// Turn on motor + led (which causes led to light solid):
 	POKE(0xd080U, drive);
@@ -77,9 +78,11 @@ unsigned char ReadSector(unsigned char drive, char track,
 	// Track (start at 0):
 	POKE(0xd084U, track - 1);
 	// Sector (only side 0 ones):
-	POKE(0xd085U, (sector) % 20 / 2 + 1);
+	POKE(0xd085U, sector / 2 + 1);
+//	POKE(0xd085U, (sector) % 20 / 2 + 1);
 	// Side:
-	POKE(0xd086U, (sector >= 20 ? 1 : 0));
+	POKE(0xd086U, 0);
+//	POKE(0xd086U, (sector >= 20 ? 1 : 0));
 	// Flag which side we need:
 	retval = sector % 2;
 	// Read:
@@ -109,6 +112,7 @@ unsigned char WriteSector(unsigned char drive, char track,
                                                char sector) {
 	unsigned char retval;
 
+	if (track == 0)  return 0xFC;
 	drive += 0x20;   // #$60 drive 0
 	if (sector >= 20)  {
 		drive += 0x08; // second side of disk
@@ -122,9 +126,11 @@ unsigned char WriteSector(unsigned char drive, char track,
 	POKE(0xd084U, track - 1);
 	// Sector (only side 0 ones):
 	// Sectors start at 1   mega65-book.pdf#3f0
-	POKE(0xd085U, (sector) % 20 / 2 + 1);
+	POKE(0xd085U, sector / 2 + 1);
+//	POKE(0xd085U, (sector) % 20 / 2 + 1);
 	// Side:
-	POKE(0xd086U, (sector >= 20 ? 1 : 0));
+	POKE(0xd086U, 0);
+//	POKE(0xd086U, (sector >= 20 ? 1 : 0));
 	// Flag which side we need:
 	retval = sector % 2;
 	// Write:
