@@ -23,12 +23,21 @@ typedef struct structdirent {
 	unsigned char sector;
              char name[DOSFILENAMELEN]; /* File name in PetSCII, limited to 16 chars */
 	unsigned char dummy[9];
-    unsigned int  size;
+    unsigned int  size;      // in blocks, also for subpartitions
     unsigned char access;
 } DIRENT;
 typedef struct structsectdirent {
 	DIRENT entry[ENTRIESPERBLOCK];
 } SECTDIRENT;
+extern SECTDIRENT * direntryblock[2];
+
+#define DIRFLAGSisselected 1
+
+typedef struct structDIRFLAGS {
+	unsigned char flags;     // see defines above
+} DIRFLAGS; // for each of the two sides of the file navi
+extern DIRFLAGS direntflags[2][NBRENTRIES];
+// eight entries per single block:
 
 #define BLOCKSIZE 0x100UL  // regions.h needs unsigned long
 #define DIRENTSIZE 32
@@ -100,25 +109,28 @@ typedef struct structOPTION {
 } OPTION;
 extern OPTION option;
 
-void GetBAM(unsigned char side);
-void PutBAM(unsigned char drive, unsigned char side);
-unsigned char BAM2Attic(unsigned char drive, unsigned char side);
+void GetBAM(unsigned char side, unsigned char dirtrack);
+void PutBAM(unsigned char drive, unsigned char side, unsigned char dirtrack);
+unsigned char BAM2Attic(unsigned char drive, unsigned char side, unsigned char dirtrack);
 void BAMSectorUpdate(BAM* BAMsector, BAM* BAMsector2, char track, char sector, char set);
-unsigned int FreeBlocks(unsigned char drive);
-void getDiskname(unsigned char drive, char* diskname);
+unsigned int FreeBlocks(unsigned char drive, unsigned char dirtrack);
+void getDiskname(unsigned char drive, unsigned char dirtrack, char* diskname);
 unsigned char readblockchain(uint32_t destination_address, // attic RAM
                              unsigned int maxblocks, unsigned char drive,
                              unsigned char track, unsigned char sector);
 void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector,
-                            unsigned char track40);
+                            unsigned char track40, unsigned char dirtrack);
 void writeblockchain(uint32_t source_address, // attic RAM
                      unsigned int maxblocks, unsigned char drive,
-					 unsigned char * starttrack, unsigned char * startsector);
-unsigned char deleteblockchain(unsigned char drive,
+					 unsigned char * starttrack, unsigned char * startsector,
+					 unsigned char dirtrack);
+unsigned char deleteblockchain(unsigned char drive, unsigned char dirtrack,
                                unsigned char track, unsigned char sector);
 unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive);
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i);
 DIRENT* getdirententry(unsigned char side, unsigned char entry);
-unsigned char getdirent(unsigned char drive, unsigned char side);
-void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds);
-void deletedirententry(unsigned char drive, unsigned char side, unsigned char entry);
+unsigned char getdirent(unsigned char drive, unsigned char side, unsigned char dirtrack);
+void writenewdirententry(unsigned char drive, unsigned char side,
+                         unsigned char dirtrack, DIRENT* newds);
+void deletedirententry(unsigned char drive, unsigned char side,
+                       unsigned char dirtrack,  unsigned char entry);

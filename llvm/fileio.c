@@ -38,10 +38,10 @@ DATABLOCK * worksector[2] = { (DATABLOCK*) BLOCKDATALOW, (DATABLOCK*) BLOCKDATAH
 // eight entries per single block:
 BAM * worksectorasBAM[2] = { (BAM*) BLOCKDATALOW, (BAM*) BLOCKDATAHIGH };
 
-DIRENT direntryleft[NBRENTRIES];
-DIRENT direntryright[NBRENTRIES];
 // eight entries per single block:
 SECTDIRENT * direntryblock[2] = { (SECTDIRENT*) DIRENTPAGELOW, (SECTDIRENT*) DIRENTPAGEHIGH };
+
+DIRFLAGS direntflags[2][NBRENTRIES];
 
 // unsigned char workside;
 unsigned char BAMside;
@@ -77,9 +77,9 @@ unsigned char ReadSector(unsigned char drive, char track,
 	// Track (start at 0):
 	POKE(0xd084U, track - 1);
 	// Sector (only side 0 ones):
-	POKE(0xd085U, sector / 2 + 1);
+	POKE(0xd085U, (sector) % 20 / 2 + 1);
 	// Side:
-	POKE(0xd086U, 0);
+	POKE(0xd086U, (sector >= 20 ? 1 : 0));
 	// Flag which side we need:
 	retval = sector % 2;
 	// Read:
@@ -122,9 +122,9 @@ unsigned char WriteSector(unsigned char drive, char track,
 	POKE(0xd084U, track - 1);
 	// Sector (only side 0 ones):
 	// Sectors start at 1   mega65-book.pdf#3f0
-	POKE(0xd085U, sector / 2 + 1);
+	POKE(0xd085U, (sector) % 20 / 2 + 1);
 	// Side:
-	POKE(0xd086U, 0);
+	POKE(0xd086U, (sector >= 20 ? 1 : 0));
 	// Flag which side we need:
 	retval = sector % 2;
 	// Write:
@@ -303,34 +303,28 @@ unsigned char driveled(unsigned char errorcode)  {
 	return errorcode;
 }
 
-void GetBAM(unsigned char side)  {
+void GetBAM(unsigned char side, unsigned char dirtrack)  {
   BAM* bs;
-/*
-  _miniInit();
-  / * BAMside = * / GetOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
-  bs = BAMsector[0];
-  GetOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
-*/
 
   bs = BAMsector[0];
   lcopy(ATTICBAMBUFFER + side * ATTICBAMBUFFERSIZE,
         (uint32_t) bs, ATTICBAMBUFFERSIZE);
 }
-void PutBAM(unsigned char drive, unsigned char side)  {
+void PutBAM(unsigned char drive, unsigned char side, unsigned char dirtrack)  {
   BAM* bs;
 
-  PutOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
+  PutOneSector(BAMsector[0], drive, dirtrack, BAMSECT);
   bs = BAMsector[0];
   PutOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
   lcopy((uint32_t) bs,
         ATTICBAMBUFFER + side * ATTICBAMBUFFERSIZE, ATTICBAMBUFFERSIZE);
 }
 
-unsigned char BAM2Attic(unsigned char drive, unsigned char side) {
+unsigned char BAM2Attic(unsigned char drive, unsigned char side, unsigned char dirtrack) {
   _miniInit();
 
   return readblockchain(side?ATTICBAM2BUFFER:ATTICBAMBUFFER, BAMBLOCKS,
-                        drive, BAMTRACK, BAMSECT);
+                        drive, dirtrack, BAMSECT);
 }
 
 // this expects data in sector buffer:
@@ -414,18 +408,18 @@ unsigned int BAMSectorsFreeBlocks(BAM* BAMsector, BAM* BAMsector2) {
   return free;
 }
 
-unsigned int FreeBlocks(unsigned char side) {
-  GetBAM(side);
+unsigned int FreeBlocks(unsigned char side, unsigned char dirtrack) {
+  GetBAM(side, dirtrack);
   return BAMSectorsFreeBlocks(BAMsector[0], BAMsector[1]);
 }
 
-void getDiskname(unsigned char drive, char* diskname) {
+void getDiskname(unsigned char drive, unsigned char dirtrack, char* diskname) {
   HEADER* hs;
   unsigned char i;
 
   _miniInit();
 
-  if (GetOneSector(BAMsector[0], drive, HEADERTRACK, HEADERSECT) < 2)  {
+  if (GetOneSector(BAMsector[0], drive, dirtrack, HEADERSECT) < 2)  {
     hs = (HEADER*) BAMsector[0];
 
     i = 0;
@@ -488,7 +482,7 @@ unsigned char readblockchain(uint32_t destination_address, // attic RAM
 }
 
 void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector,
-                            unsigned char track40)  {
+                            unsigned char track40, unsigned char dirtrack)  {
   unsigned char bitshifter = 1;
   unsigned char track80;
   unsigned char track;
@@ -612,7 +606,8 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
 // ignores start track and sector upon call but gives them back:
 void writeblockchain(uint32_t source_address, // attic RAM
                     unsigned int maxblocks, unsigned char drive,
-					unsigned char * starttrack, unsigned char * startsector)  {
+					unsigned char * starttrack, unsigned char * startsector,
+					unsigned char dirtrack)  {
   unsigned int i;
   unsigned char nexttrack = 0;
   unsigned char nextsector = 0xff;
@@ -623,7 +618,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
   DATABLOCK* ws = worksector[0];
 
   // get a first sector anyway:
-  findnextBAMtracksector(&track, &sector, FALSE);
+  findnextBAMtracksector(&track, &sector, FALSE, dirtrack);
   *starttrack = track;  // to later write dirent
   *startsector = sector;
   
@@ -643,7 +638,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
 
 	// replace chain with available ones or leave 0 if last datablock:
 	if (ws->chntrack > 0)  {
-      findnextBAMtracksector(&nexttrack, &nextsector, FALSE);
+      findnextBAMtracksector(&nexttrack, &nextsector, FALSE, dirtrack);
       ws->chntrack = nexttrack;
       ws->chnsector = nextsector;
 	}
@@ -660,14 +655,14 @@ void writeblockchain(uint32_t source_address, // attic RAM
 }
 
 // not physically deleting but BAM deallocating:
-unsigned char deleteblockchain(unsigned char drive,
+unsigned char deleteblockchain(unsigned char drive, unsigned char dirtrack,
                                unsigned char track, unsigned char sector)  {
   unsigned char nexttrack;
   unsigned char nextsector;
   BAM* bs;
 
   _miniInit();
-  if (GetOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT) > 1)  {
+  if (GetOneSector(BAMsector[0], drive, dirtrack, BAMSECT) > 1)  {
 	return 0xff;
   }
   bs = BAMsector[0];
@@ -703,7 +698,7 @@ unsigned char deleteblockchain(unsigned char drive,
 	nexttrack = ws->chntrack;
 	nextsector = ws->chnsector;
   }
-  PutOneSector(BAMsector[0], drive, BAMTRACK, BAMSECT);
+  PutOneSector(BAMsector[0], drive, dirtrack, BAMSECT);
   PutOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
   return 0;
 }
@@ -863,8 +858,8 @@ DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
 //  cgetc();
   return NULL;
 }
-unsigned char getdirent(unsigned char drive, unsigned char side)  {
-  unsigned char i;
+unsigned char getdirent(unsigned char drive, unsigned char side, unsigned char dirtrack)  {
+  signed int i;
 
   _miniInit();
 /*
@@ -873,7 +868,7 @@ unsigned char getdirent(unsigned char drive, unsigned char side)  {
   cgetc();
 */
   if (readblockchain(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE,
-                 DIRENTBLOCKS, drive, DIRENTTRACK, DIRENTSECT) > 1)  {
+                 DIRENTBLOCKS, drive, dirtrack, DIRENTSECT) > 1)  {
     return 0xff;
   }
 /*
@@ -881,20 +876,22 @@ unsigned char getdirent(unsigned char drive, unsigned char side)  {
   cputln();
   cgetc();
 */
-  for (i = NBRENTRIES; i > 0; i--)  {
+  for (i = NBRENTRIES; i >= 0; i--)  {
+//	if (i < 10)  valuesbox(0, "loop entries", "i=", i, " ", 0);
 	if (getdirententry(side, i) != NULL)  return i;  // nbr of entries
   }
   return 0xff;
 }
 
 // start track/sector must be present in newds:
-void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)  {
+void writenewdirententry(unsigned char drive, unsigned char side,
+                         unsigned char dirtrack, DIRENT* newds)  {
   unsigned char i;
   unsigned char topdirent = 0;  // keep number of first dirent of current sector
   DIRENT* ds;
 //  DIRENT* newds;
   unsigned int max = ENTRIESPERBLOCK;
-  unsigned char track = DIRENTTRACK;
+  unsigned char track = dirtrack;
   unsigned char sector = DIRENTSECT;  // @@ to be changed for sector chained by t=40, s=0
   unsigned char nexttrack = 0;
   unsigned char nextsector = 0;
@@ -989,7 +986,7 @@ void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)
 	    (uint32_t) ds, DIRENTSIZE);
   // dirent already full, establish an additional sector:
   // @@ sector strategy needed
-  findnextBAMtracksector(&nexttrack, &nextsector, TRUE);
+  findnextBAMtracksector(&nexttrack, &nextsector, TRUE, dirtrack);
   ds->chntrack = nexttrack;
   ds->chnsector = nextsector;
   // write new chain:
@@ -1024,12 +1021,15 @@ void writenewdirententry(unsigned char drive, unsigned char side, DIRENT* newds)
 //  messagebox(0, "directory entries exhausted");
 }
 
-void deletedirententry(unsigned char drive, unsigned char side, unsigned char entry)  {
+void deletedirententry(unsigned char drive, unsigned char side,
+                       unsigned char dirtrack, unsigned char entry)  {
   unsigned char i;
+  unsigned int s;
   unsigned char pos;
+  unsigned char filetypebefore;
   DIRENT* ds;
   unsigned int max = ENTRIESPERBLOCK;
-  unsigned char track = DIRENTTRACK;
+  unsigned char track = dirtrack;
   unsigned char sector = DIRENTSECT;  // @@ to be changed for sector chained by t=40, s=0
   unsigned char nexttrack = 0;
   unsigned char nextsector = 0;
@@ -1060,6 +1060,7 @@ void deletedirententry(unsigned char drive, unsigned char side, unsigned char en
 	  if (pos == entry)  {
 //		valuesbox(0, "Deleting...", "i=", i, "pos=", pos);
 	    //                           also clear upper bits:
+		filetypebefore = ds->type;
 	    ds->type = VAL_DOSFTYPE_DEL; // + (ds->type & ~0xf);
 	    lcopy((uint32_t) ds, ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
 	          DIRENTSIZE);
@@ -1080,7 +1081,14 @@ void deletedirententry(unsigned char drive, unsigned char side, unsigned char en
 	            i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
 	          BLOCKDATALOW, BLOCKSIZE);
 	    PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
-	    deleteblockchain(drive, ds->track, ds->sector);
+		if ((filetypebefore&0xf) != VAL_DOSFTYPE_CBM)  {
+	      deleteblockchain(drive, dirtrack, ds->track, ds->sector);
+		} else {
+          for (s = 0; s < ds->size; s++)  {
+			BAMSectorUpdate(BAMsector[0], BAMsector[1],
+                            ds->track + (s / 40), ds->sector + (s % 40), 0); // 0=free up
+		  }
+		}
 #ifdef DEBUG
 	    msprintf("deletedirententry done");
 	    cputln();

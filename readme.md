@@ -33,7 +33,7 @@ of this development will **eat** your files.
   switching from a mounted .d81 to the selection within the
   storage card and back
 
-# subfolders
+# project subfolders
 
 ## llvm
 
@@ -51,14 +51,12 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
 
 * greyed out function keys will get implemented
 * function keys in the foot of the screen will be showing more
-  modifier key combinations 
+  modifier key combinations
+* storage card and file entry flags need to be handled outside
+  of the dirent to further support illegal dirent attributes
 * Hyppo SD card handling as far as possible (writing not yet
   implemented on Hyppo side)
 * Creation of .d81 image files currently unsopported by Hyppo
-* copying of ~~single~~/multiple files in between real/virtual drives,
-  mounted images
-* Handling of subdirectories (sub-partitions of file type `CBM`)
-  inside diskettes
 * For `llvm` replace most fixed strings for screen output with
   [their syntax](https://llvm-mos.org/wiki/Character_set). Maybe
   check how PETSCII differs from screen codes/attributes. Otherwise
@@ -66,13 +64,23 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
 * Maybe reading of a setting file to get configurable personal
   preferences a go, a seperate setup programme could be added to
   the disk
+* [F1][Help] need to load a text file from the diskette and show
+  the user, same routines to be used as for [F3]
+* GEOS VLIR filenames and file types are not displayed correctly,
+  neither are they supported nor rejected
 
 ## tasks
 
 * ✓ Text based GUI, Midnight/Norton Commander oriented
 * ✓ copying of complete disk images, real diskettes respectively
 * ✓ proof of concept accessing .d81 mount handling
-* [Ctrl][u] to swap mount situation
+* copying of ~~single~~/multiple files in between real/virtual drives,
+  mounted images
+* message boxes for errors and warnings in different colours/sounds?
+* Handling of subdirectories (sub-partitions of file type `CBM`)
+  inside diskettes
+* [Ctrl][u] to swap mount situation, mind swapping the complete
+  attic too &#x2639;
 * ability to use the same drive number on both sides of the commander
   to copy files onto the same disk
 * Unmounting to gain full access to the underlying real floppy drive
@@ -95,9 +103,15 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
 
 ## bugs
 
+* The help file display routine is currently limited to one
+  block of data instead of four for a full screen.
 * ✓ ~~Additional `dirent` blocks are placed outside track 40~~
   ~~and this is not what Commodore did.~~
 * ✓ ~~Additional file blocks are also placed within track 40.~~
+* Updir within disk root folder unecessarily re-reads the headers
+* After file delete BAM seems to be written in the according
+  function as well as in nav.c<br />
+  better check with DEBUG on
 * BAM and `dirent` blocks are read/written way too often. With the
   now cache for two disks (left and right) in place this can be
   optimised.<br />
@@ -119,19 +133,21 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
   ~~sector 0.~~
 * ✓ ~~The yet state of development only uses the left file list so~~
   ~~*copy* actually only duplicates files on the same disk~~
-* ✓ ~~BAM is only supported for one sector, tracks 41 to 80~~
+* ✓ ~~BAM is only supported for one sector, tracks 41 to 80.~~
   ~~therefore not yet covered.~~
 * ✓ ~~BAM is not yet in attic RAM, therefore multiple discs not~~
   ~~cached.~~
 * ✓ ~~Improve handling of DEL type files.~~
 * ✓ ~~reading/writing .d81 always takes two logical sectors at once,~~
-  ~~writing of a single one should first read its accompaigning one~~
-* ✓ ~~reading the last sector 39 results in side 1 and an invalid next~~
-  ~~track~~
+  ~~writing of a single one should first read its accompaigning one.~~
+* ✓ ~~reading the last sector 39 results in side 1 and an invalid~~
+  ~~next track.~~
 * Modifier key handling could be improved/optimised to treat keys
-  different that don't require modification at all
+  different that don't require modification at all.
 * Flickering in Xemu when e.g. cursor up is performed multiple times
-  because of how modifier keys are currently handled
+  because of how modifier keys are currently handled.
+* If a file is only read the drive's LED doesn't switch back off. It
+  seems this is done by _miniinit() which needs to be checked anyway.
 
 # C environment
 

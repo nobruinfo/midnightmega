@@ -366,8 +366,9 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
       break;
 
 	  default:
-	    mprintf("val=", c);
-		cputc(' ');
+//	    mprintf("val=", c);
+//		cputc(' ');
+	  break;
 	}
   }
 }
