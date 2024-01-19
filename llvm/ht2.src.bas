@@ -33,7 +33,7 @@
    75 if x$="3" then 3000
    80 if x$="4" then 4000
    85 if x$="9" then 9000
-   90 if x$="0" then poke 808,237:print"{clr}";:end
+   90 if x$="0" then end rem poke 808,237:print"{clr}";:end
    95 goto 60
   199 rem *** zahlen-input-routine ***
   200 input "{down}{wht}Seite";s
@@ -47,12 +47,12 @@
   315 if x<>63 then print"{clr}{wht}";x;x$:poke 808,237:end
   320 open1,8,2,"page"+str$(s)+".b,p,r"
   325 get#1,x$,x$
-  330 for i=55376 to 56295
+  330 for i=$ff80000 to $ff80000 + 919 rem 55376 to 56295
   335 get#1,x$:poke i,asc(x$)
   340 next i:close 1
   350 open1,8,2,"page"+str$(s)+".a,p,r"
   355 get#1,x$,x$
-  360 for i=52304 to 53223
+  360 for i=$800 to $800 + 919 rem 52304 to 53223
   365 get#1,x$:poke i,asc(x$)
   370 next i:close 1
   375 return
@@ -61,12 +61,12 @@
   405 close1
   410 open1,8,2,"page"+str$(s)+".a,p,w"
   415 print#1,chr$(80);chr$(204);
-  420 for i=52304 to 53223
+  420 for i=$800 to $800 + 919 rem 52304 to 53223
   425 print#1,chr$(peek(i));
   430 next i:close1
   440 open1,8,2,"page"+str$(s)+".b,p,w"
   445 print#1,chr$(80);chr$(216);
-  450 for i=55376 to 56295
+  450 for i=$ff80000 to $ff80000 + 919 rem 55376 to 56295
   455 print#1,chr$(peek(i));
   460 next i:close1
   465 return

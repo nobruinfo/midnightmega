@@ -68,6 +68,8 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
   the user, same routines to be used as for [F3]
 * GEOS VLIR filenames and file types are not displayed correctly,
   neither are they supported nor rejected
+* In addition to `.prg` and `.d81` create a ROM file with the
+  programme to be used like so.
 
 ## tasks
 

@@ -1,5 +1,14 @@
 @ECHO OFF
 
+REM  _            _                 _       
+REM | |_ ___  ___| |_    ___  _ __ | |_   _ 
+REM | __/ _ \/ __| __|  / _ \| '_ \| | | | |
+REM | ||  __/\__ \ |_  | (_) | | | | | |_| |
+REM  \__\___||___/\__|  \___/|_| |_|_|\__, |
+REM                                   |___/ 
+REM This is in competition with the original
+REM .bat file.
+
 REM This to have those !vars! at hand which aren't preset outside loops:
 setlocal enabledelayedexpansion
 

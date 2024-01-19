@@ -140,7 +140,7 @@ void shortcuts(unsigned char mod, unsigned char side)  {
 	shortcutprint( TRUE, " 9",  "Quit  ");
 	shortcutprint(FALSE, " 10", "     ");
   } else {
-	shortcutprint(FALSE, " 1",  "Help  ");
+	shortcutprint( TRUE, " 1",  "Help  ");
 	shortcutprint( TRUE, " 2",  "Mount ");
 	shortcutprint(FALSE, " 3",  "View  ");
 	shortcutprint(FALSE, " 4",  "Edit  ");
@@ -242,6 +242,109 @@ unsigned char setupbox()  {
                     "be quit unsaved. So use RETURN to",
 			        "accept.");
 //	    return FALSE;
+      break;
+
+	  default:
+        sidbong();
+//	    mprintf("val=", c);
+//		cputc(' ');
+      break;
+	}
+  }
+}
+
+unsigned char helpbox()  {
+  unsigned char clear = 1;
+  unsigned char shadow = 1;
+  char c;
+
+  // Because of the additional messagebox we need to redraw all:
+  while(1)  {
+    mcbox(4, 0, 76, 24, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+  
+    revers(1);
+    mcputsxy(14, 0, " Midnight Mega ");
+    mcputsxy(31, 0, " Help ");
+    mcputsxy(40, 0, " The MEGA65 file commander ");
+    revers(0);
+
+    mcputsxy(7, 24, " ");
+	msprintf(VERSION);
+	msprintf(" ");
+    mcputsxy(52, 24, " github.com/nobruinfo ");
+
+    revers(1);
+    mcputsxy(6,  2, " Ctrl ");
+    revers(0);
+	msprintf(" ");
+    revers(1);
+	msprintf(" r ");
+    revers(0);
+	msprintf(" to rescan current file panel (left or right).");
+
+    mcputsxy(6,  4, "Due to Hypervisor limitations .d81 image files can neither be copied");
+    mcputsxy(6,  5, "as a whole nor be created, use the MEGA65 freezer menu to do so.");
+
+    revers(1);
+    mcputsxy(6,  7, " Mega ");
+    revers(0);
+	msprintf(" ");
+    revers(1);
+	msprintf(" F5 ");
+    revers(0);
+	msprintf(" copies each and every files of the selected side (left");
+    mcputsxy(6,  8, "or right) to the opposite one, this will ");
+    highlight(1);
+    msprintf("overwrite");
+    highlight(0);
+    msprintf(" a whole disk");
+    mcputsxy(6,  9, "(image) contents irrevocably.");
+
+    revers(1);
+    mcputsxy(6, 11, " ");
+	cputc(31);  // left arrow character
+	msprintf(" ");
+    revers(0);
+	msprintf(" in the upper left of your keyboard can be used instead of the");
+    revers(1);
+	mcputsxy(6, 12, " .. ");
+    revers(0);
+	msprintf(" directory entry to climb to the parent directory.");
+
+    mcputsxy(6, 14, "Currently the left pane is always drive 0 and the right one drive 1,");
+    mcputsxy(6, 15, "a later handling within the same drive is planned allowing you");
+    mcputsxy(6, 16, " to copy files within one disk.");
+
+    revers(1);
+    mcputsxy(6, 18, " F2 ");
+    revers(0);
+	msprintf(" (");
+    revers(1);
+	msprintf(" Shift ");
+    revers(0);
+	msprintf(" ");
+    revers(1);
+	msprintf(" F1 ");
+    revers(0);
+
+    msprintf(" on the MEGA65 of course) is used for both swit-");
+    mcputsxy(6, 19, "ching from a mounted .d81 to the selection within the storage");
+    mcputsxy(6, 20, "card and back.");
+
+    revers(1);
+    mcputsxy(36, 22, "   OK   ");
+    revers(0);
+
+    c = cgetc();
+    switch (c) {
+	  case ' ':
+	  case 13: // RETURN
+	    return TRUE;
+      break;
+
+	  case 3:  // STOP
+	  case 27: // Esc
+	    return FALSE;
       break;
 
 	  default:
@@ -576,6 +679,7 @@ void navi(unsigned char side)  {
       break;
 
 	  case 0xf9:
+	    shortcuts(20, 0);
 	    setupbox();
 		progress("Reading...", "BAM", 20);
 		UpdateSectors(midnight[side]->drive, side);
@@ -677,6 +781,10 @@ void navi(unsigned char side)  {
 	  case 0xf1: // unused F keys
 	  case 0x1f1:
 	  case 0x2f1:
+	    shortcuts(20, 0);
+	    helpbox();
+      break;
+
 	  case 0xf3:
 	  case 0x1f3:
 	  case 0x2f3:
@@ -709,79 +817,5 @@ void navi(unsigned char side)  {
 //		cputc(' ');
       break;
    }
-  }
-}
-
-// $ffd2  jmp (ibsout)  output to channel
-unsigned char chrout(unsigned char c)  {
-	unsigned char retval;
-
-  asm volatile(
-//	"lda c\n"
-	"jsr $ffd2\n"
-	"bcc errchrout%=\n"
-    "lda 0\n"
-    "sta %0\n"
-	"jmp donechrout%=\n"
-"errchrout%=:\n"
-    "lda $ff\n"
-	"sta %0\n"
-"donechrout%=:\n"
-    "nop\n"
-  : "=r"(retval) : "a"(c) : "a");
-  return retval;
-}
-
-/*
-typedef struct structdatablock {
-	unsigned char chntrack;
-	unsigned char chnsector;
-	unsigned char data[254];
-} DATABLOCK;
-*/
-
-
-extern DATABLOCK * worksector[2];
-void test()  {
-  DIRENT* ds;
-  DATABLOCK* ws;
-  unsigned char i;
-  unsigned char entries;
-  unsigned char success;
-
-//  clrhome();
-  entries = getdirent(0, 0, HEADERTRACK);
-  success = FALSE;
-  for (i = 0; i <= entries; i++)  {
-    ds = getdirententry(0, i);
-	if (strncmp(ds->name, "HELP.SEQ", 8) == 0)  {
-	  success = TRUE;
-	  break;
-	}
-  }
-  if (success)  {
-//	mcputsxy(0, 0, ds->name);
-    readblockchain(ATTICFILEBUFFER, DATABLOCKS, 0, ds->track, ds->sector);
-	_miniInit();
-    ws = worksector[0];
-    lcopy(ATTICFILEBUFFER, (uint32_t) ws, BLOCKSIZE);
-//    valuesbox(0, "data", "len=", ws->chnsector,
-//                 "val=", ws->data[0]);
-    ws->data[ws->chnsector - 1] = 0x0; // string termination
-//  chrout(2);  chrout(0xcd);  chrout(0x49);  chrout(0x44);
-//  mcputsxy(0, 2, (char *) ws->data);
-//  cgetc();
-//  cputln();
-//  cgetc();
-    chrout(147); // Clrhome
-    for (i = 0; ws->data[i] != 0; i++)  {
-	  chrout(ws->data[i]);
-    }
-    mcputsxy(0, 12, "done.");
-    cgetc();
-  } else {
-    messagebox(0, "Help files not found.",
-				  "Retry after insertion of Midnight Mega disk.",
-				  " ");
   }
 }
