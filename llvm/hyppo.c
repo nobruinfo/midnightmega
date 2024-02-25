@@ -375,7 +375,7 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
   unsigned char i;
   unsigned char curdrv = 0;
   unsigned char fd = 0xff;
-  unsigned char readerr = 0xff;
+  unsigned char readerr;
   unsigned char entries = 0;
   DIRENT* ds;
 
@@ -388,7 +388,9 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
 
     if (fd != 0x84 && fd != 0x87 && fd != 0xff) {
       readerr = 0;
-      for (i = 0; i < maxentries; i++)  {
+	  i = 0;
+	  // @@ 255 because "i" is a byte, error $85 is bad cluster meaning end of dir:
+      while (entries < maxentries && i < 255 && readerr != 0x85) {
         ds = (DIRENT *) direntryblock[0]; // to be changed to smaller array
         readerr = hyppo_readdir(fd);
 		
@@ -431,6 +433,7 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
 			         "for current directory.");
 */
 		}
+		i++;
 	  }
 	  hyppo_closedir(fd);
 	}

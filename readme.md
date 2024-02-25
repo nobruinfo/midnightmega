@@ -10,11 +10,32 @@ Try only with **backed up** disks and .d81 ! The current state
 of this development will **eat** your files.
 
 * Check the project out and dive into folder `llvm`.
-* Use `MOUNT "midnightmega.d81"` as programme disk.
-* Optionally use `MOUNT "datadisk.d81",U9` as a torture disk. Or
+* Use `MOUNT "MIDNIGHT.D81"` as programme disk.
+* Optionally use `MOUNT "DATADISK.D81",U9` as a torture disk. Or
   use **copies** of your own disks.
 
+# start
+
+Use one of the following files within `MIDNIGHT.D81`:
+
+* `MIDNIGHTMEGA` PRG as the regular programme.
+* `DBGMIDNIGHTMEGA` PRG to see an additionak
+  disk/track/sector/read/write in the lower left of the screen.
+* `EMUMIDNIGHTMEGA` PRG same as `DBGMIDNIGHTMEGA` but with
+  additional delays for each sector read and written. Can be used
+  to examine `.d81` on storage card behaviours which otherwise
+  would be quite fast.
+
+The additional output shows like `D1T40S1 R` where `D1` is the
+chosen disk drive number (currently 0 for the left screen pane
+and 1 for the righthand one). `T40` is the track, `S1` the sector
+number currently in operation. So `R` is reading while `W` is
+writing the disk (image).
+
 # operation
+
+The following keymapping is also shown when opened by pressing
+the [F1] key.
 
 * Most keys are shown in the feeter bar
 * [Ctrl][r] to rescan current file panel (left or right)

@@ -234,9 +234,9 @@ main:                                   ; @main
 	sta	__rc3
 	tya
 	sta	(__rc20)
-	ldx	#mos16lo(.L.str.70)
+	ldx	#mos16lo(.L.str.72)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.70)
+	ldx	#mos16hi(.L.str.72)
 	stx	__rc5
 	ldx	#0
 	lda	#16
@@ -251,13 +251,13 @@ main:                                   ; @main
 	ldy	#1
 	lda	#0
 	sta	(__rc20),y
-	ldx	#mos16lo(.L.str.71)
+	ldx	#mos16lo(.L.str.73)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.71)
+	ldx	#mos16hi(.L.str.73)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.72)
+	ldx	#mos16lo(.L.str.74)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.72)
+	ldx	#mos16hi(.L.str.74)
 	stx	__rc5
 	ldy	#27
 	lda	(__rc0),y                       ; 1-byte Folded Reload
@@ -419,9 +419,9 @@ main:                                   ; @main
 	lda	#32
 	jsr	cputc
 .LBB0_25:                               ;   in Loop: Header=BB0_19 Depth=2
-	ldx	#mos16lo(.L.str.73)
+	ldx	#mos16lo(.L.str.75)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.73)
+	ldx	#mos16hi(.L.str.75)
 	stx	__rc3
 	ldx	#23
 	lda	__rc24
@@ -467,9 +467,9 @@ main:                                   ; @main
 	lda	__rc30
 	clc
 	adc	#17
-	ldx	#mos16lo(.L.str.74)
+	ldx	#mos16lo(.L.str.76)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.74)
+	ldx	#mos16hi(.L.str.76)
 	stx	__rc3
 	ldx	#3
 	jsr	mcputsxy
@@ -489,9 +489,9 @@ main:                                   ; @main
 	clc
 	lda	__rc30
 	adc	#12
-	ldx	#mos16lo(.L.str.75)
+	ldx	#mos16lo(.L.str.77)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.75)
+	ldx	#mos16hi(.L.str.77)
 	stx	__rc3
 	ldx	#5
 	jsr	mcputsxy
@@ -525,9 +525,9 @@ main:                                   ; @main
 	tax
 	lda	__rc5
 	jsr	csputdec
-	ldx	#mos16lo(.L.str.76)
+	ldx	#mos16lo(.L.str.78)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.76)
+	ldx	#mos16hi(.L.str.78)
 	stx	__rc3
 	jsr	msprintf
 	ldy	#1
@@ -1511,14 +1511,14 @@ main:                                   ; @main
 ; %bb.594:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_159
 .LBB0_148:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.77)
+	ldx	#mos16lo(.L.str.79)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.77)
+	ldx	#mos16hi(.L.str.79)
 .LBB0_149:                              ;   in Loop: Header=BB0_18 Depth=1
 	stx	__rc3
-	ldx	#mos16lo(.L.str.78)
+	ldx	#mos16lo(.L.str.80)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.78)
+	ldx	#mos16hi(.L.str.80)
 .LBB0_150:                              ;   in Loop: Header=BB0_18 Depth=1
 	stx	__rc5
 	ldx	#mos16lo(.L.str.37)
@@ -1619,13 +1619,13 @@ main:                                   ; @main
 	lda	__rc21
 	adc	#0
 	sta	__rc5
-	ldx	#mos16lo(.L.str.94)
+	ldx	#mos16lo(.L.str.96)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.94)
+	ldx	#mos16hi(.L.str.96)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.95)
+	ldx	#mos16lo(.L.str.97)
 	stx	__rc6
-	ldx	#mos16hi(.L.str.95)
+	ldx	#mos16hi(.L.str.97)
 .LBB0_162:                              ;   in Loop: Header=BB0_18 Depth=1
 	stx	__rc7
 	lda	#0
@@ -2048,13 +2048,13 @@ main:                                   ; @main
 .LBB0_428:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_18
 .LBB0_172:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.83)
-	stx	__rc2
-	ldx	#mos16hi(.L.str.83)
-	stx	__rc3
 	ldx	#mos16lo(.L.str.85)
-	stx	__rc4
+	stx	__rc2
 	ldx	#mos16hi(.L.str.85)
+	stx	__rc3
+	ldx	#mos16lo(.L.str.87)
+	stx	__rc4
+	ldx	#mos16hi(.L.str.87)
 	stx	__rc5
 	lda	#20
 	jsr	progress
@@ -2272,13 +2272,13 @@ donehyp1att0:
 ; %bb.624:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_339
 .LBB0_187:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.102)
+	ldx	#mos16lo(.L.str.104)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.102)
+	ldx	#mos16hi(.L.str.104)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.103)
+	ldx	#mos16lo(.L.str.105)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.103)
+	ldx	#mos16hi(.L.str.105)
 ; %bb.442:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_280
 .LBB0_188:                              ;   in Loop: Header=BB0_18 Depth=1
@@ -2399,9 +2399,9 @@ donehyp1att0:
 ; %bb.638:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_285
 .LBB0_200:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.81)
+	ldx	#mos16lo(.L.str.83)
 	stx	__rc6
-	ldx	#mos16hi(.L.str.81)
+	ldx	#mos16hi(.L.str.83)
 ; %bb.446:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_286
 .LBB0_201:                              ;   in Loop: Header=BB0_18 Depth=1
@@ -2511,9 +2511,9 @@ donehyp1att0:
 ; %bb.652:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_241
 .LBB0_218:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.90)
+	ldx	#mos16lo(.L.str.92)
 	stx	__rc6
-	ldx	#mos16hi(.L.str.90)
+	ldx	#mos16hi(.L.str.92)
 ; %bb.450:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_242
 .LBB0_219:                              ;   in Loop: Header=BB0_18 Depth=1
@@ -2583,9 +2583,9 @@ donehyp1att0:
 	rol
 	clc
 	adc	#50
-	ldx	#mos16lo(.L.str.86)
+	ldx	#mos16lo(.L.str.88)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.86)
+	ldx	#mos16hi(.L.str.88)
 	stx	__rc3
 	ldx	#mos8(s)
 	stx	__rc4
@@ -2724,14 +2724,14 @@ donehyp1att0:
 ; %bb.456:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_214
 .LBB0_241:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.91)
+	ldx	#mos16lo(.L.str.93)
 	stx	__rc6
-	ldx	#mos16hi(.L.str.91)
+	ldx	#mos16hi(.L.str.93)
 .LBB0_242:                              ;   in Loop: Header=BB0_18 Depth=1
 	stx	__rc7
-	ldx	#mos16lo(.L.str.89)
+	ldx	#mos16lo(.L.str.91)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.89)
+	ldx	#mos16hi(.L.str.91)
 	stx	__rc3
 	lda	#0
 	jsr	messagebox
@@ -2951,13 +2951,13 @@ donehyp1att0:
 ; %bb.686:                              ;   in Loop: Header=BB0_255 Depth=3
 	jmp	.LBB0_245
 .LBB0_257:                              ;   in Loop: Header=BB0_260 Depth=2
-	ldx	#mos16lo(.L.str.86)
+	ldx	#mos16lo(.L.str.88)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.86)
+	ldx	#mos16hi(.L.str.88)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.93)
+	ldx	#mos16lo(.L.str.95)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.93)
+	ldx	#mos16hi(.L.str.95)
 	stx	__rc5
 	lda	#80
 	jsr	progress
@@ -3017,13 +3017,13 @@ donehyp1att0:
 	stx	__rc22
 	ldx	__rc3
 	stx	__rc23
-	ldx	#mos16lo(.L.str.83)
-	stx	__rc2
-	ldx	#mos16hi(.L.str.83)
-	stx	__rc3
 	ldx	#mos16lo(.L.str.85)
-	stx	__rc4
+	stx	__rc2
 	ldx	#mos16hi(.L.str.85)
+	stx	__rc3
+	ldx	#mos16lo(.L.str.87)
+	stx	__rc4
+	ldx	#mos16hi(.L.str.87)
 	stx	__rc5
 	lda	#20
 	jsr	progress
@@ -3033,13 +3033,13 @@ donehyp1att0:
 	sta	(__rc22),y
 	lda	__rc28
 	jsr	GetBAM
-	ldx	#mos16lo(.L.str.86)
+	ldx	#mos16lo(.L.str.88)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.86)
+	ldx	#mos16hi(.L.str.88)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.92)
+	ldx	#mos16lo(.L.str.94)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.92)
+	ldx	#mos16hi(.L.str.94)
 	stx	__rc5
 	lda	#40
 	jsr	progress
@@ -3154,13 +3154,13 @@ donehyp1att0:
 ; %bb.698:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_18
 .LBB0_273:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.104)
+	ldx	#mos16lo(.L.str.106)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.104)
+	ldx	#mos16hi(.L.str.106)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.69)
+	ldx	#mos16lo(.L.str.71)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.69)
+	ldx	#mos16hi(.L.str.71)
 ; %bb.466:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_150
 .LBB0_274:                              ;   in Loop: Header=BB0_18 Depth=1
@@ -3169,13 +3169,13 @@ donehyp1att0:
 ; %bb.700:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_199
 .LBB0_275:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.79)
+	ldx	#mos16lo(.L.str.81)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.79)
+	ldx	#mos16hi(.L.str.81)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.80)
+	ldx	#mos16lo(.L.str.82)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.80)
+	ldx	#mos16hi(.L.str.82)
 ; %bb.468:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_150
 .LBB0_276:                              ;   in Loop: Header=BB0_205 Depth=2
@@ -3214,13 +3214,13 @@ donehypchdir1:
 ; %bb.702:                              ;   in Loop: Header=BB0_205 Depth=2
 	jmp	.LBB0_284
 .LBB0_277:                              ;   in Loop: Header=BB0_205 Depth=2
-	ldx	#mos16lo(.L.str.99)
+	ldx	#mos16lo(.L.str.101)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.99)
+	ldx	#mos16hi(.L.str.101)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.100)
+	ldx	#mos16lo(.L.str.102)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.100)
+	ldx	#mos16hi(.L.str.102)
 	stx	__rc5
 	ldx	__rc20
 	stx	__rc6
@@ -3266,13 +3266,13 @@ donehypchdir2:
 ; %bb.704:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_215
 .LBB0_279:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.101)
+	ldx	#mos16lo(.L.str.103)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.101)
+	ldx	#mos16hi(.L.str.103)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.100)
+	ldx	#mos16lo(.L.str.102)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.100)
+	ldx	#mos16hi(.L.str.102)
 .LBB0_280:                              ;   in Loop: Header=BB0_18 Depth=1
 	stx	__rc5
 	ldx	__rc20
@@ -3309,14 +3309,14 @@ donehypchdir2:
 ; %bb.478:                              ;   in Loop: Header=BB0_205 Depth=2
 	jmp	.LBB0_211
 .LBB0_285:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.82)
+	ldx	#mos16lo(.L.str.84)
 	stx	__rc6
-	ldx	#mos16hi(.L.str.82)
+	ldx	#mos16hi(.L.str.84)
 .LBB0_286:                              ;   in Loop: Header=BB0_18 Depth=1
 	stx	__rc7
-	ldx	#mos16lo(.L.str.79)
+	ldx	#mos16lo(.L.str.81)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.79)
+	ldx	#mos16hi(.L.str.81)
 	stx	__rc3
 	lda	#0
 	jsr	messagebox
@@ -3404,9 +3404,9 @@ donehypchdir2:
 	stx	__rc20
 	ldx	__rc3
 	stx	__rc21
-	ldx	#mos16lo(.L.str.83)
+	ldx	#mos16lo(.L.str.85)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.83)
+	ldx	#mos16hi(.L.str.85)
 	stx	__rc3
                                         ; kill: def $rs1 killed $rs1
 	lda	__rc2
@@ -3421,9 +3421,9 @@ donehypchdir2:
 	iny
 	lda	(__rc0),y                       ; 1-byte Folded Reload
 	sta	__rc3
-	ldx	#mos16lo(.L.str.84)
+	ldx	#mos16lo(.L.str.86)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.84)
+	ldx	#mos16hi(.L.str.86)
 	stx	__rc5
 	lda	#20
 	jsr	progress
@@ -3460,22 +3460,22 @@ donehypchdir2:
 	iny
 	lda	(__rc0),y                       ; 1-byte Folded Reload
 	sta	__rc3
-	ldx	#mos16lo(.L.str.85)
+	ldx	#mos16lo(.L.str.87)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.85)
+	ldx	#mos16hi(.L.str.87)
 	stx	__rc5
 	lda	#30
 	jsr	progress
 	ldy	#20
 	lda	(__rc0),y                       ; 1-byte Folded Reload
 	jsr	GetBAM
-	ldx	#mos16lo(.L.str.86)
+	ldx	#mos16lo(.L.str.88)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.86)
+	ldx	#mos16hi(.L.str.88)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.87)
+	ldx	#mos16lo(.L.str.89)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.87)
+	ldx	#mos16hi(.L.str.89)
 	stx	__rc5
 	lda	#40
 	jsr	progress
@@ -3686,13 +3686,13 @@ donehypchdir2:
 	txa
 	ldy	#17
 	sta	(__rc0),y                       ; 1-byte Folded Spill
-	ldx	#mos16lo(.L.str.86)
-	stx	__rc2
-	ldx	#mos16hi(.L.str.86)
-	stx	__rc3
 	ldx	#mos16lo(.L.str.88)
-	stx	__rc4
+	stx	__rc2
 	ldx	#mos16hi(.L.str.88)
+	stx	__rc3
+	ldx	#mos16lo(.L.str.90)
+	stx	__rc4
+	ldx	#mos16hi(.L.str.90)
 	stx	__rc5
 	lda	#60
 	jsr	progress
@@ -4185,13 +4185,13 @@ donehypchdir2:
 	lda	__rc27
 .LBB0_323:                              ;   in Loop: Header=BB0_290 Depth=2
 	jsr	PutOneSector
-	ldx	#mos16lo(.L.str.86)
+	ldx	#mos16lo(.L.str.88)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.86)
+	ldx	#mos16hi(.L.str.88)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.85)
+	ldx	#mos16lo(.L.str.87)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.85)
+	ldx	#mos16hi(.L.str.87)
 	stx	__rc5
 	lda	#80
 	jsr	progress
@@ -4354,9 +4354,9 @@ donehypchdir2:
 	rol
 	asl	__rc2
 	rol
-	ldx	#mos16lo(.L.str.83)
+	ldx	#mos16lo(.L.str.85)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.83)
+	ldx	#mos16hi(.L.str.85)
 	stx	__rc3
 	ldx	#mos8(s)
 	stx	__rc4
@@ -4514,9 +4514,9 @@ donehyp0att3:
 	and	#1
 	bne	.LBB0_350
 ; %bb.343:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.96)
+	ldx	#mos16lo(.L.str.98)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.96)
+	ldx	#mos16hi(.L.str.98)
 ; %bb.502:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_149
 .LBB0_344:                              ;   in Loop: Header=BB0_18 Depth=1
@@ -4566,13 +4566,13 @@ donehyp0att3:
 .LBB0_506:                              ;   in Loop: Header=BB0_18 Depth=1
 	jmp	.LBB0_146
 .LBB0_350:                              ;   in Loop: Header=BB0_18 Depth=1
-	ldx	#mos16lo(.L.str.97)
+	ldx	#mos16lo(.L.str.99)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.97)
+	ldx	#mos16hi(.L.str.99)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.98)
+	ldx	#mos16lo(.L.str.100)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.98)
+	ldx	#mos16hi(.L.str.100)
 	stx	__rc5
 	ldx	#mos16lo(.L.str.37)
 	stx	__rc6
@@ -5166,43 +5166,65 @@ getsfn:                                 ; @getsfn
 	.type	ReadSector,@function            ; -- Begin function ReadSector
 ReadSector:                             ; @ReadSector
 ; %bb.0:
+	phx
+	ply
 	cpx	#0
-	beq	.LBB3_3
+	beq	.LBB3_5
 ; %bb.1:
-	ldy	__rc2
-	cpy	#20
-	bcc	.LBB3_4
+	ldx	__rc2
+	sty	__rc2
+	stx	mos8(.LReadSector_zp_stk)       ; 1-byte Folded Spill
+	cpx	#20
+	ldy	#1
+	bcs	.LBB3_3
 ; %bb.2:
+	ldy	#0
+.LBB3_3:
+                                        ; kill: def $ylsb killed $ylsb def $y
+	sty	mos8(.LReadSector_zp_stk+1)     ; 1-byte Folded Spill
+	bcc	.LBB3_6
+; %bb.4:
 	clc
 	adc	#40
-	bra	.LBB3_5
-.LBB3_3:
+	bra	.LBB3_7
+.LBB3_5:
 	lda	#252
 	rts
-.LBB3_4:
+.LBB3_6:
 	clc
 	adc	#32
-.LBB3_5:
+.LBB3_7:
 	sta	53376
 	ldy	#32
 	sty	53377
+	ldx	__rc2
 	dex
 	stx	53380
-	lda	__rc2
+	ldx	#20
+	lda	mos8(.LReadSector_zp_stk)       ; 1-byte Folded Reload
+	jsr	__umodqi3
 	lsr
 	inc
 	sta	53381
-	stz	53382
-	ldx	#65
-	stx	53377
-.LBB3_6:                                ; =>This Inner Loop Header: Depth=1
-	ldx	53378
-	bmi	.LBB3_6
-; %bb.7:
-	lda	53378
-	and	#24
+	ldx	mos8(.LReadSector_zp_stk+1)     ; 1-byte Folded Reload
 	beq	.LBB3_9
 ; %bb.8:
+	ldx	#1
+	bra	.LBB3_10
+.LBB3_9:
+	ldx	#0
+.LBB3_10:
+	stx	53382
+	ldx	#65
+	stx	53377
+.LBB3_11:                               ; =>This Inner Loop Header: Depth=1
+	ldx	53378
+	bmi	.LBB3_11
+; %bb.12:
+	lda	53378
+	and	#24
+	beq	.LBB3_14
+; %bb.13:
 	lda	#255
 	ldx	#64
 	stx	53376
@@ -5210,11 +5232,11 @@ ReadSector:                             ; @ReadSector
 	stx	53280
 	ldx	53378
 	rts
-.LBB3_9:
+.LBB3_14:
 	lda	54921
 	and	#127
 	sta	54921
-	lda	__rc2
+	lda	mos8(.LReadSector_zp_stk)       ; 1-byte Folded Reload
 	and	#1
 	rts
 .Lfunc_end3:
@@ -5273,22 +5295,28 @@ GetOneSector:                           ; @GetOneSector
 	.type	PutOneSector,@function          ; -- Begin function PutOneSector
 PutOneSector:                           ; @PutOneSector
 ; %bb.0:
-	ldy	__rc4
-	sty	mos8(.LPutOneSector_zp_stk+4)
-	ldy	__rc2
-	sty	mos8(.LPutOneSector_zp_stk)
-	ldy	__rc3
-	sty	mos8(.LPutOneSector_zp_stk+1)
-	ldy	__rc4
-	sty	__rc2
+	tay
+	stx	__rc5
+	ldx	__rc4
+	lda	__rc2
+	sta	mos8(.LPutOneSector_zp_stk)
+	lda	__rc3
+	sta	mos8(.LPutOneSector_zp_stk+1)
+	lda	__rc4
+	and	#1
+	sta	mos8(.LPutOneSector_zp_stk+4)
 	stx	mos8(.LPutOneSector_zp_stk+2)
-	sta	mos8(.LPutOneSector_zp_stk+3)
+	stx	__rc2
+	ldx	__rc5
+	stx	mos8(.LPutOneSector_zp_stk+3)
+	ldx	__rc5
+	sty	mos8(.LPutOneSector_zp_stk+5)
+	tya
 	jsr	ReadSector
 	ldy	#108
-	ldx	mos8(.LPutOneSector_zp_stk+4)
-	stx	mos8(.LPutOneSector_zp_stk+5)
-	lsr	mos8(.LPutOneSector_zp_stk+4)
-	bcc	.LBB5_2
+	stz	__rc4
+	lda	mos8(.LPutOneSector_zp_stk+4)
+	beq	.LBB5_2
 ; %bb.1:
 	ldy	#109
 .LBB5_2:
@@ -5298,7 +5326,6 @@ PutOneSector:                           ; @PutOneSector
 	sty	__rc6
 	stz	__rc2
 	stz	__rc3
-	stz	__rc4
 	ldy	#15
 	sty	__rc7
 	stz	__rc8
@@ -5306,52 +5333,73 @@ PutOneSector:                           ; @PutOneSector
 	ldx	mos8(.LPutOneSector_zp_stk+1)
 	lda	mos8(.LPutOneSector_zp_stk)
 	jsr	lcopy
-	lda	mos8(.LPutOneSector_zp_stk+2)
-	beq	.LBB5_11
-; %bb.3:
-	ldy	mos8(.LPutOneSector_zp_stk+2)
-	ldx	mos8(.LPutOneSector_zp_stk+5)
 	lda	mos8(.LPutOneSector_zp_stk+3)
-	cpx	#20
-	bcc	.LBB5_5
+	bne	.LBB5_3
+; %bb.17:
+	jmp	.LBB5_16
+.LBB5_3:
+	ldy	mos8(.LPutOneSector_zp_stk+3)
+	lda	mos8(.LPutOneSector_zp_stk+2)
+	and	#254
+	cmp	#20
+	ldx	#1
+	bcs	.LBB5_5
 ; %bb.4:
+	ldx	#0
+.LBB5_5:
+	stx	mos8(.LPutOneSector_zp_stk)
+	sta	__rc2
+	lda	mos8(.LPutOneSector_zp_stk+5)
+	bcc	.LBB5_7
+; %bb.6:
 	clc
 	adc	#40
-	bra	.LBB5_6
-.LBB5_5:
+	bra	.LBB5_8
+.LBB5_7:
 	clc
 	adc	#32
-.LBB5_6:
+.LBB5_8:
 	sta	53376
 	ldx	#32
 	stx	53377
 	dey
 	sty	53380
-	ldx	mos8(.LPutOneSector_zp_stk+4)
-	inx
-	stx	53381
-	stz	53382
-	ldx	#132
-	stx	53377
-.LBB5_7:                                ; =>This Inner Loop Header: Depth=1
-	ldx	53378
-	bmi	.LBB5_7
-; %bb.8:
-	lda	53378
-	and	#24
+	ldx	#20
+	lda	__rc2
+	jsr	__umodqi3
+	lsr
+	inc
+	sta	53381
+	lda	mos8(.LPutOneSector_zp_stk)
 	beq	.LBB5_10
 ; %bb.9:
+	ldx	#1
+	bra	.LBB5_11
+.LBB5_10:
+	ldx	#0
+.LBB5_11:
+	stx	53382
+	ldx	#132
+	stx	53377
+.LBB5_12:                               ; =>This Inner Loop Header: Depth=1
+	ldx	53378
+	bmi	.LBB5_12
+; %bb.13:
+	lda	53378
+	and	#24
+	beq	.LBB5_15
+; %bb.14:
 	ldx	#64
 	stx	53376
 	ldx	#2
 	stx	53280
 	ldx	53378
 	rts
-.LBB5_10:
+.LBB5_15:
 	lda	54921
 	and	#127
 	sta	54921
-.LBB5_11:
+.LBB5_16:
 	rts
 .Lfunc_end5:
 	.size	PutOneSector, .Lfunc_end5-PutOneSector
@@ -7731,8 +7779,8 @@ UpdateSectors:                          ; @UpdateSectors
 	lda	#1
 	and	(__rc26),y
 	beq	.LBB25_1
-; %bb.60:
-	jmp	.LBB25_19
+; %bb.68:
+	jmp	.LBB25_24
 .LBB25_1:
 	ldy	#17
 	stz	__rc3
@@ -7749,9 +7797,9 @@ UpdateSectors:                          ; @UpdateSectors
 	lda	#mos16hi(diskname)
 	adc	__rc3
 	sta	__rc5
-	ldx	#mos16lo(.L.str.67)
+	ldx	#mos16lo(.L.str.69)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.67)
+	ldx	#mos16hi(.L.str.69)
 	stx	__rc3
 	jsr	strcopy
 	lda	__rc29
@@ -7761,9 +7809,9 @@ UpdateSectors:                          ; @UpdateSectors
 	lda	__rc28
 	adc	#0
 	sta	__rc5
-	ldx	#mos16lo(.L.str.67)
+	ldx	#mos16lo(.L.str.69)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.67)
+	ldx	#mos16hi(.L.str.69)
 	stx	__rc3
 	jsr	strcopy
 	clc
@@ -7795,8 +7843,8 @@ donegetcurdrv5:
 	ldx	__rc2
 	cpx	#255
 	bne	.LBB25_2
-; %bb.62:
-	jmp	.LBB25_48
+; %bb.70:
+	jmp	.LBB25_56
 .LBB25_2:
 	;APP
 	ldx	#0
@@ -7816,19 +7864,19 @@ donehypopendir6:
 	ldx	__rc2
 	cpx	#132
 	bne	.LBB25_3
-; %bb.64:
-	jmp	.LBB25_48
+; %bb.72:
+	jmp	.LBB25_56
 .LBB25_3:
 	cpx	#135
 	bne	.LBB25_4
-; %bb.66:
-	jmp	.LBB25_48
+; %bb.74:
+	jmp	.LBB25_56
 .LBB25_4:
 	lda	#255
 	cpx	#255
 	bne	.LBB25_5
-; %bb.68:
-	jmp	.LBB25_57
+; %bb.76:
+	jmp	.LBB25_65
 .LBB25_5:
 	stx	__rc24
 	stz	__rc21
@@ -7842,23 +7890,43 @@ donehypopendir6:
 	ldx	#0
 	lda	__rc20
 	jsr	__mulsi3
+	ldy	#255
 	sta	__rc20
 	stx	__rc22
-	ldy	__rc24
 	ldx	__rc2
-	stx	__rc25
+	stx	__rc28
 	lda	__rc3
 	ora	#8
-	sta	__rc28
-	ldx	#32
+	sta	__rc29
+	stz	__rc30
 	stz	__rc23
 .LBB25_6:                               ; =>This Inner Loop Header: Depth=1
+	ldx	#1
 	txa
-	bne	.LBB25_7
-; %bb.70:
-	jmp	.LBB25_55
-.LBB25_7:                               ;   in Loop: Header=BB25_6 Depth=1
-	stx	__rc29
+	sty	__rc25
+	cpy	#0
+	beq	.LBB25_8
+; %bb.7:                                ;   in Loop: Header=BB25_6 Depth=1
+	lda	#0
+.LBB25_8:                               ;   in Loop: Header=BB25_6 Depth=1
+	ldy	__rc23
+	cpy	#112
+	bcs	.LBB25_10
+; %bb.9:                                ;   in Loop: Header=BB25_6 Depth=1
+	tax
+.LBB25_10:                              ;   in Loop: Header=BB25_6 Depth=1
+	txa
+	beq	.LBB25_11
+; %bb.78:
+	jmp	.LBB25_64
+.LBB25_11:                              ;   in Loop: Header=BB25_6 Depth=1
+	ldy	__rc30
+	cpy	#133
+	bne	.LBB25_12
+; %bb.80:
+	jmp	.LBB25_64
+.LBB25_12:                              ;   in Loop: Header=BB25_6 Depth=1
+	ldy	__rc24
 	;APP
 	phx
 	ldx	#0
@@ -7887,48 +7955,49 @@ donehypreaddir7:
 	ldx	6720
 	stz	6656,x
 	cpy	#133
-	beq	.LBB25_9
-; %bb.8:                                ;   in Loop: Header=BB25_6 Depth=1
+	beq	.LBB25_14
+; %bb.13:                               ;   in Loop: Header=BB25_6 Depth=1
 	cpy	#255
-	bne	.LBB25_11
-.LBB25_9:                               ;   in Loop: Header=BB25_6 Depth=1
+	bne	.LBB25_16
+.LBB25_14:                              ;   in Loop: Header=BB25_6 Depth=1
+	sty	__rc30
 	ldx	#32
 	stx	6661
 	stz	6662
-.LBB25_10:                              ;   in Loop: Header=BB25_6 Depth=1
-	ldx	__rc29
-	dex
-	ldy	__rc24
+.LBB25_15:                              ;   in Loop: Header=BB25_6 Depth=1
+	ldy	__rc25
+	dey
 	bra	.LBB25_6
-.LBB25_11:                              ;   in Loop: Header=BB25_6 Depth=1
+.LBB25_16:                              ;   in Loop: Header=BB25_6 Depth=1
 	lda	#16
 	and	6742
-	bne	.LBB25_16
-.LBB25_12:                              ;   in Loop: Header=BB25_6 Depth=1
+	bne	.LBB25_21
+.LBB25_17:                              ;   in Loop: Header=BB25_6 Depth=1
 	ldx	6729
 	cpx	#100
-	beq	.LBB25_14
-; %bb.13:                               ;   in Loop: Header=BB25_6 Depth=1
+	beq	.LBB25_19
+; %bb.18:                               ;   in Loop: Header=BB25_6 Depth=1
 	cpx	#68
-	bne	.LBB25_9
-.LBB25_14:                              ;   in Loop: Header=BB25_6 Depth=1
+	bne	.LBB25_14
+.LBB25_19:                              ;   in Loop: Header=BB25_6 Depth=1
 	ldx	6730
 	cpx	#56
-	bne	.LBB25_9
-; %bb.15:                               ;   in Loop: Header=BB25_6 Depth=1
+	bne	.LBB25_14
+; %bb.20:                               ;   in Loop: Header=BB25_6 Depth=1
 	ldx	6731
 	cpx	#49
-	bne	.LBB25_9
-	bra	.LBB25_18
-.LBB25_16:                              ;   in Loop: Header=BB25_6 Depth=1
+	bne	.LBB25_14
+	bra	.LBB25_23
+.LBB25_21:                              ;   in Loop: Header=BB25_6 Depth=1
 	ldx	6721
 	cpx	#46
-	bne	.LBB25_18
-; %bb.17:                               ;   in Loop: Header=BB25_6 Depth=1
+	bne	.LBB25_23
+; %bb.22:                               ;   in Loop: Header=BB25_6 Depth=1
 	ldx	6722
 	cpx	#32
-	beq	.LBB25_12
-.LBB25_18:                              ;   in Loop: Header=BB25_6 Depth=1
+	beq	.LBB25_17
+.LBB25_23:                              ;   in Loop: Header=BB25_6 Depth=1
+	sty	__rc30
 	jsr	getsfn
 	jsr	getsfn
 	ldx	#5
@@ -7984,10 +8053,10 @@ donehypreaddir7:
 	lda	__rc2
 	adc	__rc22
 	sta	__rc5
-	lda	__rc25
+	lda	__rc28
 	adc	#0
 	sta	__rc6
-	lda	__rc28
+	lda	__rc29
 	adc	#0
 	stz	6688
 	stz	__rc2
@@ -8000,9 +8069,9 @@ donehypreaddir7:
 	lda	#0
 	jsr	lcopy
 	inc	__rc23
-; %bb.58:                               ;   in Loop: Header=BB25_6 Depth=1
-	jmp	.LBB25_10
-.LBB25_19:
+; %bb.66:                               ;   in Loop: Header=BB25_6 Depth=1
+	jmp	.LBB25_15
+.LBB25_24:
 	ldx	#0
 	stx	__rc22
 	ldx	#22
@@ -8025,12 +8094,12 @@ donegetproc8:
 
 	;NO_APP
 	lda	__rc21
-	beq	.LBB25_24
-; %bb.20:
+	beq	.LBB25_29
+; %bb.25:
 	stz	__rc2
 	ldy	#3
-	bra	.LBB25_22
-.LBB25_21:                              ;   in Loop: Header=BB25_22 Depth=1
+	bra	.LBB25_27
+.LBB25_26:                              ;   in Loop: Header=BB25_27 Depth=1
 	tax
 	lda	__rc29
 	clc
@@ -8042,20 +8111,20 @@ donegetproc8:
 	txa
 	sta	(__rc4),y
 	inc	__rc2
-.LBB25_22:                              ; =>This Inner Loop Header: Depth=1
+.LBB25_27:                              ; =>This Inner Loop Header: Depth=1
 	ldx	__rc2
 	lda	7221,x
-	beq	.LBB25_28
-; %bb.23:                               ;   in Loop: Header=BB25_22 Depth=1
+	beq	.LBB25_33
+; %bb.28:                               ;   in Loop: Header=BB25_27 Depth=1
 	ldx	__rc2
 	cpx	7188
-	bcc	.LBB25_21
-	bra	.LBB25_28
-.LBB25_24:
+	bcc	.LBB25_26
+	bra	.LBB25_33
+.LBB25_29:
 	stz	__rc2
 	ldy	#3
-	bra	.LBB25_26
-.LBB25_25:                              ;   in Loop: Header=BB25_26 Depth=1
+	bra	.LBB25_31
+.LBB25_30:                              ;   in Loop: Header=BB25_31 Depth=1
 	tax
 	lda	__rc29
 	clc
@@ -8067,15 +8136,15 @@ donegetproc8:
 	txa
 	sta	(__rc4),y
 	inc	__rc2
-.LBB25_26:                              ; =>This Inner Loop Header: Depth=1
+.LBB25_31:                              ; =>This Inner Loop Header: Depth=1
 	ldx	__rc2
 	lda	7189,x
-	beq	.LBB25_28
-; %bb.27:                               ;   in Loop: Header=BB25_26 Depth=1
+	beq	.LBB25_33
+; %bb.32:                               ;   in Loop: Header=BB25_31 Depth=1
 	ldx	__rc2
 	cpx	7187
-	bcc	.LBB25_25
-.LBB25_28:
+	bcc	.LBB25_30
+.LBB25_33:
 	clc
 	lda	__rc29
 	adc	__rc2
@@ -8114,25 +8183,25 @@ donegetproc8:
 	lda	__rc21
 	jsr	GetOneSector
 	cmp	#2
-	bcs	.LBB25_34
-; %bb.29:
+	bcs	.LBB25_39
+; %bb.34:
 	ldy	#0
-	bra	.LBB25_31
-.LBB25_30:                              ;   in Loop: Header=BB25_31 Depth=1
+	bra	.LBB25_36
+.LBB25_35:                              ;   in Loop: Header=BB25_36 Depth=1
 	sta	(__rc24),y
 	iny
-.LBB25_31:                              ; =>This Inner Loop Header: Depth=1
+.LBB25_36:                              ; =>This Inner Loop Header: Depth=1
 	lda	5636,y
 	cmp	#160
-	beq	.LBB25_33
-; %bb.32:                               ;   in Loop: Header=BB25_31 Depth=1
+	beq	.LBB25_38
+; %bb.37:                               ;   in Loop: Header=BB25_36 Depth=1
 	cpy	#16
-	bcc	.LBB25_30
-.LBB25_33:
+	bcc	.LBB25_35
+.LBB25_38:
 	lda	#0
 	sta	(__rc24),y
-	bra	.LBB25_35
-.LBB25_34:
+	bra	.LBB25_40
+.LBB25_39:
 	ldx	#mos16lo(.L.str.12)
 	stx	__rc2
 	ldx	#mos16hi(.L.str.12)
@@ -8142,18 +8211,18 @@ donegetproc8:
 	ldx	__rc25
 	stx	__rc5
 	jsr	strcopy
-.LBB25_35:
+.LBB25_40:
 	ldy	#71
 	lda	(__rc26),y
 	stz	53376
 	ldx	__rc20
-	beq	.LBB25_37
-; %bb.36:
+	beq	.LBB25_42
+; %bb.41:
 	ldx	#30
-	bra	.LBB25_38
-.LBB25_37:
+	bra	.LBB25_43
+.LBB25_42:
 	ldx	#28
-.LBB25_38:
+.LBB25_43:
 	stz	__rc5
 	ldy	#8
 	sty	__rc3
@@ -8168,38 +8237,48 @@ donegetproc8:
 	lda	#0
 	jsr	readblockchain
 	cmp	#2
-	bcc	.LBB25_40
-; %bb.39:
+	bcc	.LBB25_48
+; %bb.44:
+	lda	__rc21
+	beq	.LBB25_46
+; %bb.45:
+	ldx	#mos16lo(.L.str.66)
+	stx	__rc4
+	ldx	#mos16hi(.L.str.66)
+	bra	.LBB25_47
+.LBB25_46:
+	ldx	#mos16lo(.L.str.67)
+	stx	__rc4
+	ldx	#mos16hi(.L.str.67)
+.LBB25_47:
+	stx	__rc5
 	lda	#0
 	ldx	#mos16lo(.L.str.65)
 	stx	__rc2
 	ldx	#mos16hi(.L.str.65)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.66)
-	stx	__rc4
-	ldx	#mos16hi(.L.str.66)
-	stx	__rc5
-	ldx	#mos16lo(.L.str.37)
+	ldx	#mos16lo(.L.str.68)
 	stx	__rc6
-	ldx	#mos16hi(.L.str.37)
+	ldx	#mos16hi(.L.str.68)
 	stx	__rc7
 	jsr	messagebox
-.LBB25_40:
+.LBB25_48:
 	lda	__rc20
 	jsr	GetBAM
 	ldx	#0
 	stz	__rc25
 	stz	__rc24
 	ldy	__rc28
-	bra	.LBB25_44
-.LBB25_41:                              ;   in Loop: Header=BB25_44 Depth=1
+	bra	.LBB25_52
+.LBB25_49:                              ;   in Loop: Header=BB25_52 Depth=1
 	clc
+	txa
 	adc	#216
 	ldy	#0
 	sty	__rc22
 	ldy	#23
 	sty	__rc23
-.LBB25_42:                              ;   in Loop: Header=BB25_44 Depth=1
+.LBB25_50:                              ;   in Loop: Header=BB25_52 Depth=1
 	stx	__rc30
 	ldx	#6
 	stx	__rc2
@@ -8223,21 +8302,21 @@ donegetproc8:
 	lda	__rc24
 	adc	#0
 	sta	__rc24
-.LBB25_43:                              ;   in Loop: Header=BB25_44 Depth=1
+.LBB25_51:                              ;   in Loop: Header=BB25_52 Depth=1
 	ldy	__rc28
 	inx
-.LBB25_44:                              ; =>This Inner Loop Header: Depth=1
+.LBB25_52:                              ; =>This Inner Loop Header: Depth=1
 	cpx	#80
-	beq	.LBB25_47
-; %bb.45:                               ;   in Loop: Header=BB25_44 Depth=1
-	txa
+	beq	.LBB25_55
+; %bb.53:                               ;   in Loop: Header=BB25_52 Depth=1
 	cpx	#40
-	bcs	.LBB25_41
-; %bb.46:                               ;   in Loop: Header=BB25_44 Depth=1
+	bcs	.LBB25_49
+; %bb.54:                               ;   in Loop: Header=BB25_52 Depth=1
+	txa
 	cpx	#39
-	bne	.LBB25_42
-	bra	.LBB25_43
-.LBB25_47:
+	bne	.LBB25_50
+	bra	.LBB25_51
+.LBB25_55:
 	clc
 	lda	__rc29
 	adc	#68
@@ -8282,11 +8361,11 @@ donegetproc8:
 	tya
 	jsr	readblockchain
 	cmp	#2
-	bcc	.LBB25_49
-.LBB25_48:
+	bcc	.LBB25_57
+.LBB25_56:
 	lda	#255
-	bra	.LBB25_57
-.LBB25_49:
+	bra	.LBB25_65
+.LBB25_57:
 	lda	#113
 	ldx	#112
 	ldy	#0
@@ -8294,10 +8373,10 @@ donegetproc8:
 	ldy	#0
 	sty	__rc25
 	stx	__rc21
-.LBB25_50:                              ; =>This Inner Loop Header: Depth=1
+.LBB25_58:                              ; =>This Inner Loop Header: Depth=1
 	ldx	__rc22
-	bmi	.LBB25_48
-; %bb.51:                               ;   in Loop: Header=BB25_50 Depth=1
+	bmi	.LBB25_56
+; %bb.59:                               ;   in Loop: Header=BB25_58 Depth=1
 	dec
 	sta	__rc23
 	tax
@@ -8307,20 +8386,24 @@ donegetproc8:
 	ldy	__rc21
 	dec	__rc21
 	cpy	#0
-	bne	.LBB25_53
-; %bb.52:                               ;   in Loop: Header=BB25_50 Depth=1
+	bne	.LBB25_61
+; %bb.60:                               ;   in Loop: Header=BB25_58 Depth=1
 	dec	__rc22
-.LBB25_53:                              ;   in Loop: Header=BB25_50 Depth=1
+.LBB25_61:                              ;   in Loop: Header=BB25_58 Depth=1
 	cpx	__rc25
-	bne	.LBB25_56
-; %bb.54:                               ;   in Loop: Header=BB25_50 Depth=1
+	bne	.LBB25_63
+; %bb.62:                               ;   in Loop: Header=BB25_58 Depth=1
 	ldx	__rc2
 	lda	__rc23
 	cpx	__rc24
-	beq	.LBB25_50
-	bra	.LBB25_57
-.LBB25_55:
-	dec	__rc23
+	beq	.LBB25_58
+	bra	.LBB25_65
+.LBB25_63:
+	lda	__rc23
+	bra	.LBB25_65
+.LBB25_64:
+	ldy	__rc23
+	dey
 	ldx	__rc24
 	;APP
 	lda	#22
@@ -8335,9 +8418,8 @@ donehypclosedir9:
 	nop
 
 	;NO_APP
-.LBB25_56:
-	lda	__rc23
-.LBB25_57:
+	tya
+.LBB25_65:
 	ldy	#2
 	sta	(__rc26),y
 	ldy	#0
@@ -8494,13 +8576,13 @@ sizeselectcurrentifnone:                ; @sizeselectcurrentifnone
 	bne	.LBB27_1
 ; %bb.5:
 	lda	#0
-	ldx	#mos16lo(.L.str.68)
+	ldx	#mos16lo(.L.str.70)
 	stx	__rc2
-	ldx	#mos16hi(.L.str.68)
+	ldx	#mos16hi(.L.str.70)
 	stx	__rc3
-	ldx	#mos16lo(.L.str.69)
+	ldx	#mos16lo(.L.str.71)
 	stx	__rc4
-	ldx	#mos16hi(.L.str.69)
+	ldx	#mos16hi(.L.str.71)
 	stx	__rc5
 	ldx	#mos16lo(.L.str.37)
 	stx	__rc6
@@ -13943,7 +14025,7 @@ option.0:
 
 	.type	.L.str.38,@object               ; @.str.38
 .L.str.38:
-	.asciz	"v0.5.5-beta"
+	.asciz	"v0.5.6-beta"
 	.size	.L.str.38, 12
 
 	.type	.L.str.39,@object               ; @.str.39
@@ -14038,8 +14120,8 @@ option.0:
 
 	.type	.L.str.57,@object               ; @.str.57
 .L.str.57:
-	.asciz	" to copy files within one disk."
-	.size	.L.str.57, 32
+	.asciz	"to copy files within one disk."
+	.size	.L.str.57, 31
 
 	.type	.L.str.58,@object               ; @.str.58
 .L.str.58:
@@ -14085,203 +14167,213 @@ diskname:
 	.type	.L.str.65,@object               ; @.str.65
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .L.str.65:
-	.asciz	"Reading file,"
-	.size	.L.str.65, 14
+	.asciz	"Reading BAM error"
+	.size	.L.str.65, 18
 
 	.type	.L.str.66,@object               ; @.str.66
 .L.str.66:
-	.asciz	"read error."
-	.size	.L.str.66, 12
+	.asciz	"drive 1"
+	.size	.L.str.66, 8
 
 	.type	.L.str.67,@object               ; @.str.67
 .L.str.67:
-	.asciz	"storage card"
-	.size	.L.str.67, 13
+	.asciz	"drive 0"
+	.size	.L.str.67, 8
 
 	.type	.L.str.68,@object               ; @.str.68
 .L.str.68:
-	.asciz	"Copying subdirectories"
-	.size	.L.str.68, 23
+	.asciz	"probably unmounted"
+	.size	.L.str.68, 19
 
 	.type	.L.str.69,@object               ; @.str.69
 .L.str.69:
-	.asciz	"is not yet implemented."
-	.size	.L.str.69, 24
+	.asciz	"storage card"
+	.size	.L.str.69, 13
 
 	.type	.L.str.70,@object               ; @.str.70
 .L.str.70:
-	.asciz	"already mounted"
-	.size	.L.str.70, 16
+	.asciz	"Copying subdirectories"
+	.size	.L.str.70, 23
 
 	.type	.L.str.71,@object               ; @.str.71
 .L.str.71:
-	.asciz	"Initialising..."
-	.size	.L.str.71, 16
+	.asciz	"is not yet implemented."
+	.size	.L.str.71, 24
 
 	.type	.L.str.72,@object               ; @.str.72
 .L.str.72:
-	.asciz	"reading disk drives"
-	.size	.L.str.72, 20
+	.asciz	"already mounted"
+	.size	.L.str.72, 16
 
 	.type	.L.str.73,@object               ; @.str.73
 .L.str.73:
-	.asciz	" drv:"
-	.size	.L.str.73, 6
+	.asciz	"Initialising..."
+	.size	.L.str.73, 16
 
 	.type	.L.str.74,@object               ; @.str.74
 .L.str.74:
-	.asciz	" empty "
-	.size	.L.str.74, 8
+	.asciz	"reading disk drives"
+	.size	.L.str.74, 20
 
 	.type	.L.str.75,@object               ; @.str.75
 .L.str.75:
-	.asciz	" > F2 to mount < "
-	.size	.L.str.75, 18
+	.asciz	" drv:"
+	.size	.L.str.75, 6
 
 	.type	.L.str.76,@object               ; @.str.76
 .L.str.76:
-	.asciz	" blocks free "
-	.size	.L.str.76, 14
+	.asciz	" empty "
+	.size	.L.str.76, 8
 
 	.type	.L.str.77,@object               ; @.str.77
 .L.str.77:
-	.asciz	"Copying/deleting storage files/folders"
-	.size	.L.str.77, 39
+	.asciz	" > F2 to mount < "
+	.size	.L.str.77, 18
 
 	.type	.L.str.78,@object               ; @.str.78
 .L.str.78:
-	.asciz	"is not supported."
-	.size	.L.str.78, 18
+	.asciz	" blocks free "
+	.size	.L.str.78, 14
 
 	.type	.L.str.79,@object               ; @.str.79
 .L.str.79:
-	.asciz	"File copy,"
-	.size	.L.str.79, 11
+	.asciz	"Copying/deleting storage files/folders"
+	.size	.L.str.79, 39
 
 	.type	.L.str.80,@object               ; @.str.80
 .L.str.80:
-	.asciz	"destination disk space insufficient"
-	.size	.L.str.80, 36
+	.asciz	"is not supported."
+	.size	.L.str.80, 18
 
 	.type	.L.str.81,@object               ; @.str.81
 .L.str.81:
-	.asciz	"from right to left"
-	.size	.L.str.81, 19
+	.asciz	"File copy,"
+	.size	.L.str.81, 11
 
 	.type	.L.str.82,@object               ; @.str.82
 .L.str.82:
-	.asciz	"from left to right"
-	.size	.L.str.82, 19
+	.asciz	"destination disk space insufficient"
+	.size	.L.str.82, 36
 
 	.type	.L.str.83,@object               ; @.str.83
 .L.str.83:
-	.asciz	"Reading..."
-	.size	.L.str.83, 11
+	.asciz	"from right to left"
+	.size	.L.str.83, 19
 
 	.type	.L.str.84,@object               ; @.str.84
 .L.str.84:
-	.asciz	"source file"
-	.size	.L.str.84, 12
+	.asciz	"from left to right"
+	.size	.L.str.84, 19
 
 	.type	.L.str.85,@object               ; @.str.85
 .L.str.85:
-	.asciz	"BAM"
-	.size	.L.str.85, 4
+	.asciz	"Reading..."
+	.size	.L.str.85, 11
 
 	.type	.L.str.86,@object               ; @.str.86
 .L.str.86:
-	.asciz	"Writing..."
-	.size	.L.str.86, 11
+	.asciz	"source file"
+	.size	.L.str.86, 12
 
 	.type	.L.str.87,@object               ; @.str.87
 .L.str.87:
-	.asciz	"destination file"
-	.size	.L.str.87, 17
+	.asciz	"BAM"
+	.size	.L.str.87, 4
 
 	.type	.L.str.88,@object               ; @.str.88
 .L.str.88:
-	.asciz	"directory"
-	.size	.L.str.88, 10
+	.asciz	"Writing..."
+	.size	.L.str.88, 11
 
 	.type	.L.str.89,@object               ; @.str.89
 .L.str.89:
-	.asciz	"File delete,"
-	.size	.L.str.89, 13
+	.asciz	"destination file"
+	.size	.L.str.89, 17
 
 	.type	.L.str.90,@object               ; @.str.90
 .L.str.90:
-	.asciz	"from right side"
-	.size	.L.str.90, 16
+	.asciz	"directory"
+	.size	.L.str.90, 10
 
 	.type	.L.str.91,@object               ; @.str.91
 .L.str.91:
-	.asciz	"from left side"
-	.size	.L.str.91, 15
+	.asciz	"File delete,"
+	.size	.L.str.91, 13
 
 	.type	.L.str.92,@object               ; @.str.92
 .L.str.92:
-	.asciz	"removing BAM entries"
-	.size	.L.str.92, 21
+	.asciz	"from right side"
+	.size	.L.str.92, 16
 
 	.type	.L.str.93,@object               ; @.str.93
 .L.str.93:
-	.asciz	"updating BAM"
-	.size	.L.str.93, 13
+	.asciz	"from left side"
+	.size	.L.str.93, 15
 
 	.type	.L.str.94,@object               ; @.str.94
 .L.str.94:
-	.asciz	"File type for"
-	.size	.L.str.94, 14
+	.asciz	"removing BAM entries"
+	.size	.L.str.94, 21
 
 	.type	.L.str.95,@object               ; @.str.95
 .L.str.95:
-	.asciz	"unsupported"
-	.size	.L.str.95, 12
+	.asciz	"updating BAM"
+	.size	.L.str.95, 13
 
 	.type	.L.str.96,@object               ; @.str.96
 .L.str.96:
-	.asciz	"Copying full storage cards"
-	.size	.L.str.96, 27
+	.asciz	"File type for"
+	.size	.L.str.96, 14
 
 	.type	.L.str.97,@object               ; @.str.97
 .L.str.97:
-	.asciz	"Disk copy,"
-	.size	.L.str.97, 11
+	.asciz	"unsupported"
+	.size	.L.str.97, 12
 
 	.type	.L.str.98,@object               ; @.str.98
 .L.str.98:
-	.asciz	"destination disk will be OVERWRITTEN"
-	.size	.L.str.98, 37
+	.asciz	"Copying full storage cards"
+	.size	.L.str.98, 27
 
 	.type	.L.str.99,@object               ; @.str.99
 .L.str.99:
-	.asciz	"Storage card parent directory,"
-	.size	.L.str.99, 31
+	.asciz	"Disk copy,"
+	.size	.L.str.99, 11
 
 	.type	.L.str.100,@object              ; @.str.100
 .L.str.100:
-	.asciz	"open failed for"
-	.size	.L.str.100, 16
+	.asciz	"destination disk will be OVERWRITTEN"
+	.size	.L.str.100, 37
 
 	.type	.L.str.101,@object              ; @.str.101
 .L.str.101:
-	.asciz	"Storage card change directory,"
+	.asciz	"Storage card parent directory,"
 	.size	.L.str.101, 31
 
 	.type	.L.str.102,@object              ; @.str.102
 .L.str.102:
-	.asciz	"Storage card mounting,"
-	.size	.L.str.102, 23
+	.asciz	"open failed for"
+	.size	.L.str.102, 16
 
 	.type	.L.str.103,@object              ; @.str.103
 .L.str.103:
-	.asciz	"mount failed for"
-	.size	.L.str.103, 17
+	.asciz	"Storage card change directory,"
+	.size	.L.str.103, 31
 
 	.type	.L.str.104,@object              ; @.str.104
 .L.str.104:
+	.asciz	"Storage card mounting,"
+	.size	.L.str.104, 23
+
+	.type	.L.str.105,@object              ; @.str.105
+.L.str.105:
+	.asciz	"mount failed for"
+	.size	.L.str.105, 17
+
+	.type	.L.str.106,@object              ; @.str.106
+.L.str.106:
 	.asciz	"This file type/directory"
-	.size	.L.str.104, 25
+	.size	.L.str.106, 25
 
 	.type	g_curScreenW,@object            ; @g_curScreenW
 	.section	.zp.bss.g_curScreenW,"aw",@nobits
@@ -14393,6 +14485,8 @@ dmalist:
 	.size	.Lmemset_zp_stk, 2
 .set .Lmemmove_zp_stk, .Lzp_stack
 	.size	.Lmemmove_zp_stk, 2
+.set .LReadSector_zp_stk, .Lzp_stack+14
+	.size	.LReadSector_zp_stk, 2
 .set .LGetOneSector_zp_stk, .Lzp_stack+11
 	.size	.LGetOneSector_zp_stk, 3
 .set .Lreadblockchain_zp_stk, .Lzp_stack
