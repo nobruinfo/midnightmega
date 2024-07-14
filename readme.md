@@ -4,7 +4,7 @@ A simple file commander and disk mounting programme.
 
 Work in progress.
 
-# installation
+# Installation
 
 Try only with **backed up** disks and .d81 ! The current state
 of this development will **eat** your files.
@@ -14,7 +14,7 @@ of this development will **eat** your files.
 * Optionally use `MOUNT "DATADISK.D81",U9` as a torture disk. Or
   use **copies** of your own disks.
 
-# start
+# Start
 
 Use one of the following files within `MIDNIGHT.D81`:
 
@@ -32,7 +32,7 @@ and 1 for the righthand one). `T40` is the track, `S1` the sector
 number currently in operation. So `R` is reading while `W` is
 writing the disk (image).
 
-# operation
+# Operation
 
 The following keymapping is also shown when opened by pressing
 the [F1] key.
@@ -54,7 +54,7 @@ the [F1] key.
   switching from a mounted .d81 to the selection within the
   storage card and back
 
-# project subfolders
+# Project subfolders here in Github
 
 ## llvm
 
@@ -66,33 +66,51 @@ Please be aware currently Midnight Mega is in an unstable state, it
 might handle your .d81 and real disk drive inserted diskettes
 maliciously. Expect data loss. Feedback welcome as issue tickets.
 
-# requirements, project
+# Tools and experiments
 
-## not yet in progress
+Also in subfolder `llvm` you find a script `xemu-image.bat`. This
+is currently used to populate an empty storage card image file to
+be used in Xemu. Upon receival of the MEGA65 it is planned to also
+choose in between image files and real seriel/network connections
+towards the hardware of course. You may want to look into to get
+some ideas for your own setup.
 
-* greyed out function keys will get implemented
+All the files beginning `ht2...` are a BASIC handler for screen memory
+based text outputs to be saved as SEQ files. This is eightees project
+of mine when I was simulating a Teletext on a C64. I thought this
+might be an idea to create the help pages for Midnight Mega but am
+now considering a different approach. Still using a SEQ file but
+no longer oriented on a full screen I could maybe save all the
+project's strings into a single SEQ file. Meaning to also include
+all message box texts and so on. This is not yet begun.
+
+# Requirements, project
+
+## Not yet in progress
+
+* greyed out function keys will get implemented.
 * function keys in the foot of the screen will be showing more
-  modifier key combinations
+  modifier key combinations.
 * storage card and file entry flags need to be handled outside
-  of the dirent to further support illegal dirent attributes
+  of the dirent to further support illegal dirent attributes.
 * Hyppo SD card handling as far as possible (writing not yet
-  implemented on Hyppo side)
-* Creation of .d81 image files currently unsopported by Hyppo
+  implemented on Hyppo side).
+* Creation of .d81 image files currently unsopported by Hyppo.
 * For `llvm` replace most fixed strings for screen output with
   [their syntax](https://llvm-mos.org/wiki/Character_set). Maybe
   check how PETSCII differs from screen codes/attributes. Otherwise
   use the cc65 approach.
 * Maybe reading of a setting file to get configurable personal
   preferences a go, a seperate setup programme could be added to
-  the disk
+  the disk.
 * [F1][Help] need to load a text file from the diskette and show
-  the user, same routines to be used as for [F3]
+  the user, same routines to be used as for [F3].
 * GEOS VLIR filenames and file types are not displayed correctly,
-  neither are they supported nor rejected
+  neither are they supported nor rejected.
 * In addition to `.prg` and `.d81` create a ROM file with the
   programme to be used like so.
 
-## tasks
+## Tasks
 
 * ✓ Text based GUI, Midnight/Norton Commander oriented
 * ✓ copying of complete disk images, real diskettes respectively
@@ -124,7 +142,7 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
 * `s[]` and `OPTION option` are maybe data to put to different
   places, `s[]` could be the same pointer as `p2sbuf`
 
-## bugs
+## Bugs
 
 * The help file display routine is currently limited to one
   block of data instead of four for a full screen.
@@ -174,17 +192,17 @@ maliciously. Expect data loss. Feedback welcome as issue tickets.
 
 # C environment
 
-## additions to `mega65-libc`
+## Additions to `mega65-libc`
 
 * are in file `llvm/conioextensions.h` and are quirky because of most
   in `conio.c` being `static`
 * the full removal of `KickC` based include files from folder
   `llvm/include`
 
-## additions to llvm-mos
+## Additions to llvm-mos
 
-* The following line do autodeclare `DIRENTPAGELOW` in case it
-  is not defined elsewhere. It's value then is indetermined.
+* The following line does autodeclare `DIRENTPAGELOW` in case it
+  is not defined elsewhere. Its value would be indetermined.
 
 ```c
 #define readdir_direntasm DIRENTPAGELOW

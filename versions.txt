@@ -7,17 +7,8 @@ petcat (VICE 3.6.1)
 MEGA65 cross-development tool for FTP-like access to MEGA65 SD card via serial monitor interface
 version: 20221209.13-refact-d84088f
 
-clang version 18.0.0 (https://github.com/llvm-mos/llvm-mos e0380cf4b8a252e7032622846436ede2f1bf9165)
-Target: mos
-Thread model: posix
-InstalledDir: F:\Entwicklungsprojekte\github-nobru\midnightmega\llvm\..\..\..\Mega65\llvm-mos\llvm-mos\bin
+Calypsi ISO C compiler for 6502 version 5.2
 
-LLVM (http://llvm.org/):
-  LLVM version 18.0.0git
-  Optimized build.
-
-
-  Registered Targets:
-    mos - MOS Technologies 65xx and variants
+Calypsi assembler for 6502 version 5.2
 
 

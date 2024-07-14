@@ -22,7 +22,8 @@ typedef struct structdirent {
 	unsigned char track;
 	unsigned char sector;
              char name[DOSFILENAMELEN]; /* File name in PetSCII, limited to 16 chars */
-	unsigned char dummy[9];
+	unsigned char dummy[9];  // see bytes $15..$1D of
+	                         // http://justsolve.archiveteam.org/wiki/GEOS_VLIR
     unsigned int  size;      // in blocks, also for subpartitions
     unsigned char access;
 } DIRENT;

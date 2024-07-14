@@ -119,7 +119,7 @@ unsigned char hyppo_selectdrive(unsigned char nb)  {
     "nop\n"
     : "=r"(retval)  // output
     : "x"(nb)       // input
-	: "a","x"       // clobber
+	: "a"           // clobber
 	);
 
   return retval;
@@ -332,7 +332,7 @@ unsigned char hyppo_readdir(unsigned char filedescriptor)  {
 	"sta %0\n"
 "donehypreaddir%=:\n"
     "nop\n"
-  : "=r"(retval) : "y"(filedescriptor) : "a", "x", "y");
+  : "=r"(retval) : "y"(filedescriptor) : "a", "x");
 
   readdir_dirent->lfn[readdir_dirent->length] = 0; // put str terminate null
 
@@ -468,7 +468,7 @@ void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
 	"clv\n"
 	                                                  // llvm doesn't know the z reg
   : "=a" (*majorhyppo), "=x" (*minorhyppo), "=y" (*majorHDOS) // , "=z" (*minorHDOS)
-  :  : "a", "x", "y" /* , "z" */ );
+  :  : /*  "a", "x", "y", "z" */ );
 }
 
 // ******************************************
