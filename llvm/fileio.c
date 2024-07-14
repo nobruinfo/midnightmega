@@ -491,6 +491,88 @@ unsigned char readblockchain(uint32_t destination_address, // attic RAM
   return 0;
 }
 
+unsigned char isallocatedBAMtracksector(unsigned char track,
+                                        unsigned char sector,
+                                        unsigned char dirtrack)  {
+  unsigned char bitshifter = 1;
+  BAM* bs;
+
+  track--;  // zero based array access
+  if (track < 40)  {
+    bs = BAMsector[0];
+  } else {
+    track = track - 40;
+    bs = BAMsector[1];
+  }
+  if (sector < 8)  {
+    if (!(bs->entry[track].alloc1 & (bitshifter << sector)))  {
+#ifdef DEBUG
+		gotoxy(42, 7);
+		mprintf("t=", track);
+		mprintf(" s=", sector);
+		mprintf(" nt=", bs->chntrack);
+		mprintf(" ns=", bs->chnsector);
+		mprintf(" a1=", bs->entry[track].alloc1);
+		cgetc();
+#endif
+      return TRUE;
+    }
+  }
+  else if (sector < 16)  {
+    if (!(bs->entry[track].alloc2 & (bitshifter << (sector - 8))))  {
+#ifdef DEBUG
+		gotoxy(42, 8);
+		mprintf("t=", track);
+		mprintf(" s=", sector);
+		mprintf(" nt=", bs->chntrack);
+		mprintf(" ns=", bs->chnsector);
+		cgetc();
+#endif
+      return TRUE;
+    }
+  }
+  else if (sector < 24)  {
+    if (!(bs->entry[track].alloc3 & (bitshifter << (sector - 16))))  {
+#ifdef DEBUG
+		gotoxy(42, 9);
+		mprintf("t=", track);
+		mprintf(" s=", sector);
+		mprintf(" nt=", bs->chntrack);
+		mprintf(" ns=", bs->chnsector);
+		cgetc();
+#endif
+      return TRUE;
+    }
+  }
+  else if (sector < 32)  {
+    if (!(bs->entry[track].alloc4 & (bitshifter << (sector - 24))))  {
+#ifdef DEBUG
+		gotoxy(42, 10);
+		mprintf("t=", track);
+		mprintf(" s=", sector);
+		mprintf(" nt=", bs->chntrack);
+		mprintf(" ns=", bs->chnsector);
+		cgetc();
+#endif
+      return TRUE;
+    }
+  }
+  else  {
+    if (!(bs->entry[track].alloc5 & (bitshifter << (sector - 32))))  {
+#ifdef DEBUG
+		gotoxy(42, 11);
+		mprintf("t=", track);
+		mprintf(" s=", sector);
+		mprintf(" nt=", bs->chntrack);
+		mprintf(" ns=", bs->chnsector);
+		cgetc();
+#endif
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
 void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector,
                             unsigned char track40, unsigned char dirtrack)  {
   unsigned char bitshifter = 1;
@@ -742,32 +824,56 @@ char * tracksectorstring(unsigned char track, unsigned char sector)  {
   return (char*) s;
 }
 
-unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive)  {
+unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive,
+                            unsigned char side, unsigned char dirtrack)  {
   unsigned char track;
   unsigned char sector;
   unsigned int  i;
   DATABLOCK* ws;
 
-  i = 0;
-  for (track = 1; track <= 80; track++)  {
-	for (sector = 0; sector < 40; sector++)  {
-	  progress("Reading...", tracksectorstring(track, sector), i / 64);
-	  if (GetOneSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
-		return 0xff;
+  // if setting allocated BAM blocks only:
+  if ((option.option & OPTIONshowALO))  {
+    i = 0;
+	GetBAM(side, dirtrack);
+    for (track = 1; track <= 80; track++)  {
+	  for (sector = 0; sector < 40; sector++)  {
+		if (isallocatedBAMtracksector(track, sector, dirtrack))  {
+	      progress("Reading...", tracksectorstring(track, sector), i / 64);
+	      if (GetOneSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
+		    return 0xff;
+	      }
+	      ws = worksector[0];
+	      lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE);
+
+	      progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
+          lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
+	      PutOneSector((BAM *) ws, destdrive, track, sector);
+		}
+	    i++;
 	  }
-	  ws = worksector[0];
-	  lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE);
-	  i++;
-	}
-  }
-  i = 0;
-  for (track = 1; track <= 80; track++)  {
-	for (sector = 0; sector < 40; sector++)  {
-	  progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
-	  lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
-	  PutOneSector((BAM *) ws, destdrive, track, sector);
-	  i++;
-	}
+    }
+  } else  {
+    i = 0;
+    for (track = 1; track <= 80; track++)  {
+	  for (sector = 0; sector < 40; sector++)  {
+	    progress("Reading...", tracksectorstring(track, sector), i / 64);
+	    if (GetOneSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
+		  return 0xff;
+	    }
+	    ws = worksector[0];
+	    lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE);
+	    i++;
+	  }
+    }
+    i = 0;
+    for (track = 1; track <= 80; track++)  {
+	  for (sector = 0; sector < 40; sector++)  {
+	    progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
+        lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
+	    PutOneSector((BAM *) ws, destdrive, track, sector);
+	    i++;
+	  }
+    }
   }
   return 0;
 }

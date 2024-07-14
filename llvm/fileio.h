@@ -99,8 +99,8 @@ typedef struct structdatablock {
 #define DIRENTSECT   3
 
 // Midnight Mega general setup options:
-#define OPTIONshowDEL 1
-#define OPTIONshow2   2
+#define OPTIONshowDEL 1  // show deleted files as type DEL
+#define OPTIONshowALO 2  // copy allocated BAM blocks only
 #define OPTIONshow3   4
 #define OPTIONshow4   8
 #define OPTIONshow5   0x10
@@ -127,7 +127,8 @@ void writeblockchain(uint32_t source_address, // attic RAM
 					 unsigned char dirtrack);
 unsigned char deleteblockchain(unsigned char drive, unsigned char dirtrack,
                                unsigned char track, unsigned char sector);
-unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive);
+unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive,
+                            unsigned char side, unsigned char dirtrack);
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i);
 DIRENT* getdirententry(unsigned char side, unsigned char entry);
 unsigned char getdirent(unsigned char drive, unsigned char side, unsigned char dirtrack);

@@ -1,14 +1,23 @@
-versions for Midnight Mega v0.5.6-beta
+versions for Midnight Mega v0.5.8-beta
 
-c1541 (VICE 3.7)
+c1541 (VICE 3.8)
 
-petcat (VICE 3.6.1)
+petcat (VICE 3.8)
 
 MEGA65 cross-development tool for FTP-like access to MEGA65 SD card via serial monitor interface
-version: 20221209.13-refact-d84088f
+version: 20240216.10-develo-4bbf901
 
-Calypsi ISO C compiler for 6502 version 5.2
+clang version 19.0.0git (https://github.com/llvm-mos/llvm-mos 9c3a71b6966a8a116129dc89e0e38dd767d4e6c4)
+Target: mos
+Thread model: posix
+InstalledDir: F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin
 
-Calypsi assembler for 6502 version 5.2
+LLVM (http://llvm.org/):
+  LLVM version 19.0.0git
+  Optimized build.
+
+
+  Registered Targets:
+    mos - MOS Technologies 65xx and variants
 
 

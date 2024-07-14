@@ -209,7 +209,7 @@ unsigned char setupbox()  {
 	  tabpos = OPTIONMAX;
 	}         // byte           bit                                     pos
     optionstring(option.option, OPTIONshowDEL, "show DEL files", tabpos, 0);
-    optionstring(option.option, OPTIONshow2, "goes nowhere and does nothing", tabpos, 1);
+    optionstring(option.option, OPTIONshowALO, "copy allocated BAM blocks only", tabpos, 1);
     optionstring(option.option, OPTIONshow3, "goes nowhere and does nothing", tabpos, 2);
     optionstring(option.option, OPTIONshow4, "goes nowhere and does nothing", tabpos, 3);
     optionstring(option.option, OPTIONshow5, "goes nowhere and does nothing", tabpos, 4);
@@ -672,7 +672,8 @@ void navi(unsigned char side)  {
 		  messagebox(0, "Copying full storage cards", "is not supported.", " ");
 		} else {
 	      if (messagebox(0, "Disk copy,", "destination disk will be OVERWRITTEN", " "))  {
-            copywholedisk(midnight[side]->drive, midnight[side?0:1]->drive);
+            copywholedisk(midnight[side]->drive, midnight[side?0:1]->drive,
+                          side, midnight[side]->dirtrack);
 		    UpdateSectors(midnight[side?0:1]->drive, side?0:1);
 		  }
 		}

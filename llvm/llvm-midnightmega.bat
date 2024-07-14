@@ -9,7 +9,7 @@ SET c1541="%VICE%\c1541"
 SET PETCAT=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\
 SET PETCAT="%PETCAT%2021\GTK3VICE-3.8-win64\bin\petcat.exe"
 
-SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Connect\M65Connect Resources\mega65_ftp.exe
+SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Connect\M65Connect\M65Connect Resources\mega65_ftp.exe
 SET HICKUP=D:\Game Collections\C64\Mega65\Xemu
 SET XMEGA65=%HICKUP%\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos
@@ -60,7 +60,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.7-beta
+SET v=v0.5.8-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
