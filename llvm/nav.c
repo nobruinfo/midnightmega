@@ -21,8 +21,7 @@ MIDNIGHT* midnight[2] = { (MIDNIGHT*) MIDNIGHTLEFTPAGE,
                           (MIDNIGHT*) MIDNIGHTRIGHTPAGE };
 unsigned char diskname[2][DOSFILENAMELEN + 1]; // @@ change for pointer
 
-#define FILEENTRIES 32
-unsigned char filelist[FILEENTRIES][65];
+#define FILEENTRIES (8 * DIRENTBLOCKS)
 
 #define DIRENTPERSCREEN 22
 // @@ The in here present recognition of 0xa0 is also in conioextensions.c
@@ -210,7 +209,7 @@ unsigned char setupbox()  {
 	  tabpos = OPTIONMAX;
 	}         // byte           bit                                     pos
     optionstring(option.option, OPTIONshowDEL, "show DEL files", tabpos, 0);
-    optionstring(option.option, OPTIONshow2, "goes nowhere and does nothing", tabpos, 1);
+    optionstring(option.option, OPTIONshowALO, "copy allocated BAM blocks only", tabpos, 1);
     optionstring(option.option, OPTIONshow3, "goes nowhere and does nothing", tabpos, 2);
     optionstring(option.option, OPTIONshow4, "goes nowhere and does nothing", tabpos, 3);
     optionstring(option.option, OPTIONshow5, "goes nowhere and does nothing", tabpos, 4);
@@ -313,7 +312,7 @@ unsigned char helpbox()  {
 
     mcputsxy(6, 14, "Currently the left pane is always drive 0 and the right one drive 1,");
     mcputsxy(6, 15, "a later handling within the same drive is planned allowing you");
-    mcputsxy(6, 16, " to copy files within one disk.");
+    mcputsxy(6, 16, "to copy files within one disk.");
 
     revers(1);
     mcputsxy(6, 18, " F2 ");
@@ -416,7 +415,8 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
 
     getDiskname(drive, midnight[side]->dirtrack, (char *) diskname[side]);
     if (BAM2Attic(drive, side, midnight[side]->dirtrack) > 1)  {
-	  messagebox(0, "Reading file,", "read error.", " ");
+	  messagebox(0, "Reading BAM error", (drive ? "drive 1" : "drive 0"),
+	                "probably unmounted");
 	}
     midnight[side]->blocksfree = FreeBlocks(side, midnight[side]->dirtrack);
     midnight[side]->entries = getdirent(drive, side, midnight[side]->dirtrack);
@@ -672,7 +672,8 @@ void navi(unsigned char side)  {
 		  messagebox(0, "Copying full storage cards", "is not supported.", " ");
 		} else {
 	      if (messagebox(0, "Disk copy,", "destination disk will be OVERWRITTEN", " "))  {
-            copywholedisk(midnight[side]->drive, midnight[side?0:1]->drive);
+            copywholedisk(midnight[side]->drive, midnight[side?0:1]->drive,
+                          side, midnight[side]->dirtrack);
 		    UpdateSectors(midnight[side?0:1]->drive, side?0:1);
 		  }
 		}

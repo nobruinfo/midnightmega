@@ -4,12 +4,12 @@ REM This to have those !vars! at hand which aren't preset outside loops:
 setlocal enabledelayedexpansion
 
 SET VICE=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\2021
-SET VICE=%VICE%\GTK3VICE-3.7-win64\bin\
+SET VICE=%VICE%\GTK3VICE-3.8-win64\bin\
 SET c1541="%VICE%\c1541"
 SET PETCAT=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\
-SET PETCAT="%PETCAT%2021\GTK3VICE-3.6.1-win64\bin\petcat.exe"
+SET PETCAT="%PETCAT%2021\GTK3VICE-3.8-win64\bin\petcat.exe"
 
-SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Connect\M65Connect Resources\mega65_ftp.exe
+SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Connect\M65Connect\M65Connect Resources\mega65_ftp.exe
 SET HICKUP=D:\Game Collections\C64\Mega65\Xemu
 SET XMEGA65=%HICKUP%\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos
@@ -32,6 +32,7 @@ SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%\hal.
 SET libcfiles=%libcfiles% include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
 SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c sid.c
+
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
 SET opts=--include-directory=.\include
 SET opts=%opts% --include-directory=..\mega65-libc\include
@@ -39,7 +40,11 @@ SET opts=%opts% -ferror-limit=1 -Wno-error=implicit-function-declaration
 REM https://courses.washington.edu/cp105/GCC/Removing%20unused%20functions%20and%20dead%20code.html
 REM SET opts=%opts% -Wl,-static -fdata-sections -ffunction-sections
 REM SET opts=%opts% -Wl,--gc-sections -Wl,-s
+REM https://www.c64-wiki.com/wiki/llvm-mos -Oz gives "size at all costs":
 SET opts=%opts% -Oz
+REM You can pass -mreserve-zp= to tell the compiler to reduce
+REM its ZP spend by that amount:
+REM SET opts=%opts% -mreserve-zp=2
 SET opts=%opts% -Wl,-Map=%PRJ%.map
 SET opts=%opts% -Wl,-trace
 REM SET opts=%opts% -Wl,--reproduce=reproduce.tar
@@ -55,7 +60,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.5-beta
+SET v=v0.5.8-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
@@ -161,7 +166,7 @@ IF ERRORLEVEL == 1 (
   ECHO 900 POKE $D6CF, $42>>mega65.bas
 
   SET HEADLESS=-headless -sleepless -testing
-  XMEGA65 !HEADLESS! -importbas mega65.bas
+  XMEGA65 !HEADLESS! -hickup "%HICKUP%\HICKUP.M65" -importbas mega65.bas
   "%MFTP%" -d %IMG% -c "get !DATADISKUPPER!.D81"
 
   REM c1541 currently destroys neighbouring subpartitions if only 3 tracks of size:
