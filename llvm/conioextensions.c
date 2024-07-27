@@ -348,27 +348,29 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
   mcputsxy(60, 10, " Cancel ");
   revers(0);
 //  gotoxy(1, 10);
-  if (mode)  {
+  if (mode == 1)  {
     mcputsxy(2, 1, VERSION);
     mcputsxy(58, 1, "github.com/nobruinfo");
   }
   
-  while(1)  {
-    c = cgetc();
-    switch (c) {
-	  case 13: // RETURN
-	    return TRUE;
-      break;
+  if (mode != 2)  {
+    while(1)  {
+      c = cgetc();
+      switch (c) {
+	    case 13: // RETURN
+	      return TRUE;
+        break;
 
-	  case 3:  // STOP
-	  case 27: // Esc
-	    return FALSE;
-      break;
+	    case 3:  // STOP
+	    case 27: // Esc
+	      return FALSE;
+        break;
 
-	  default:
-//	    mprintf("val=", c);
-//		cputc(' ');
-	  break;
+	    default:
+//	      mprintf("val=", c);
+//		  cputc(' ');
+	    break;
+	  }
 	}
   }
 }
@@ -411,8 +413,8 @@ void progress(char* message, char* message2, unsigned char progresspercent)  {
 }
 
 char* inputbox(char* inputstr, char* message)  {
-  messagebox(0, message, "", "");
-  gotoxy(12, 6);
+  messagebox(2, message, "", "");
+  gotoxy(12, 8);
   cinput2((unsigned char*) inputstr, 56, CINPUT_ACCEPT_ALL); // | CINPUT_NO_AUTOTRANSLATE);
 
   gotoxy(1, 10);

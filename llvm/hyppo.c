@@ -428,7 +428,7 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
 		  ds->name[0] = 32; ds->name[1] = 0;
 /*
 		  snprintf( filelist[i], 65, "%d", i);
-		  messagebox(1, "error at reading storage card entry",
+		  messagebox(0, "error at reading storage card entry",
                      filelist[i],
 			         "for current directory.");
 */
@@ -438,8 +438,9 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
 	  hyppo_closedir(fd);
 	}
   }
+
   // snprintf( ds->name, 65, "%d", entries);
-//  messagebox(1, "returning", ds->name, "entries.");
+//  messagebox(0, "returning", ds->name, "entries.");
   return entries - 1;
 }
 unsigned char gethyppodirent(unsigned char drive, unsigned char side,

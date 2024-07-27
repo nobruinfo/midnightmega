@@ -4,12 +4,24 @@ REM This to have those !vars! at hand which aren't preset outside loops:
 setlocal enabledelayedexpansion
 
 SET VICE=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\2021
+SET VICE=%VICE%\GTK3VICE-3.6.1-win64\bin\
+SET c1541="%VICE%\c1541"
+
+SET PETCAT=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\
+SET PETCAT="%PETCAT%2021\GTK3VICE-3.6.1-win64\bin\petcat.exe"
+
+
+
+SET VICE=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\2021
 SET VICE=%VICE%\GTK3VICE-3.8-win64\bin\
 SET c1541="%VICE%\c1541"
 SET PETCAT=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\
 SET PETCAT="%PETCAT%2021\GTK3VICE-3.8-win64\bin\petcat.exe"
 
-SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Connect\M65Connect\M65Connect Resources\mega65_ftp.exe
+SET M65DBG=F:\Entwicklungsprojekte\github-nobru\m65dbg\m65dbg\m65dbg.exe
+SET MTOO=D:\Game Collections\C64\Mega65\Tools\M65Tools\
+SET MFTP=%MTOO%m65tools-develo-165-c2b03a-windows\mega65_ftp.exe
+SET ETHL=%MTOO%m65tools-develo-165-c2b03a-windows\etherload.exe
 SET HICKUP=D:\Game Collections\C64\Mega65\Xemu
 SET XMEGA65=%HICKUP%\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos
@@ -60,7 +72,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.8-beta
+SET v=v0.5.9-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
@@ -134,6 +146,21 @@ IF ERRORLEVEL == 1 (
     %petcat% -text -c -w2 -o help.seq -- help.txt
     %c1541% -attach %PRJ%.d81 -write help.seq help.seq,s
   )
+  ECHO 10 POKE $D080,$20>F011.BAS
+  ECHO 20 POKE $D081,$20>>F011.BAS
+  ECHO 30 POKE $D084,41>>F011.BAS
+  ECHO 40 POKE $D085,1>>F011.BAS
+  ECHO 50 POKE $D086,0>>F011.BAS
+  ECHO 60 POKE $D081,$41>>F011.BAS
+  ECHO 65 SLEEP 1>>F011.BAS
+  ECHO 70 PRINT PEEK^($D082^)>>F011.BAS
+  ECHO 80 PRINT PEEK^($D689^)>>F011.BAS
+  ECHO 90 POKE $D689,0>>F011.BAS
+  ECHO 110 POKE $D080,0>>F011.BAS
+  %petcat% -w65 -o F011.prg -- F011.bas
+  %c1541% -attach %PRJ%.d81 -write F011.prg f011readsect
+  DEL F011.bas>NUL
+  DEL F011.prg>NUL
 
   REM Use in Xemu's out of the image file fs access:
   XCOPY /Y %PRJ%.d81 %HDOS%\
@@ -153,7 +180,6 @@ IF ERRORLEVEL == 1 (
   )
 
   %c1541% -format disk%DATADISK%,id d81 %DATADISK%.d81
-
   REM Only in the virtual storage card image file some directories are created:
   "%MFTP%" -d %IMG% -c "put !DATADISKUPPER!.D81"
   ECHO 0 REM *** %DATADISK% ***>mega65.bas
@@ -195,17 +221,31 @@ REM      %c1541% -attach %DATADISK%.d81 -@ "/%%j:folder %%j" -delete %PRJ%
   %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.2,s
   ECHO this is a sequential file for testing.>%DATADISK%.seq
   %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.3,s
+  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.4,s
+  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.5,s
+  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.6,s
+  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.7,s
+  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.8,s
   ECHO this is a deleted file for testing.>%DATADISK%.seq
-  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.4,d
+  %c1541% -attach %DATADISK%.d81 -write %DATADISK%.seq %DATADISK%.9,d
   DEL %DATADISK%.seq>NUL
 
   XCOPY /Y %DATADISK%.d81 %HDOS%\
   attrib -a %HDOS%\%DATADISK%.d81
+  XCOPY /Y FAKEDISK.d81 %HDOS%\
+  attrib -a %HDOS%\FAKEDISK.d81
 
 REM  "%MFTP%" -d %IMG% -c "del !PRJSHORT!.d81"
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/!PRJUPPER!.D81"
+  "%MFTP%" -e -c "put %HDOSSLASH%/!PRJUPPER!.D81"
 REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/!DATADISKUPPER!.D81"
+  "%MFTP%" -e -c "put %HDOSSLASH%/!DATADISKUPPER!.D81"
+  "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/FAKEDISK.D81"
+  "%MFTP%" -e -c "put %HDOSSLASH%/FAKEDISK.D81"
+
+  TIMEOUT 1
+  "%ETHL%" --run %PRJ%.prg
 
   REM Create a stub disk to be loaded at CLI level from current host
   REM directory to mount .d81 within virtual storage card image:
@@ -233,4 +273,7 @@ REM    -8 !PRJSHORT!.d81 -9 %DATADISK%.d81 -autoload
   "%MFTP%" -d %IMG% -c "get MEGA65.D81"
   "%MFTP%" -d %IMG% -c "get EXTERNAL.D81"
   START "Readback" /MIN .
+  
+REM  "%M65DBG%" -l tcp
+REM  pause
 )
