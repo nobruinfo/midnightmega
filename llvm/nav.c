@@ -26,7 +26,7 @@ unsigned char diskname[2][DOSFILENAMELEN + 1]; // @@ change for pointer
 #define DIRENTPERSCREEN 22
 // @@ The in here present recognition of 0xa0 is also in conioextensions.c
 // @@ string build-up may be used elsewhere
-unsigned char s[DOSFILENAMEANDTYPELEN];
+unsigned char s[2 * DOSFILENAMEANDTYPELEN]; // @@@@
 void listbox(unsigned char iscurrent, unsigned char side,
              unsigned char x, unsigned char y,
              unsigned char currentitem, unsigned char nbritems)  {
@@ -116,7 +116,7 @@ void shortcuts(unsigned char mod, unsigned char side)  {
 	shortcutprint(FALSE, " 9",  "Menu  ");
 	shortcutprint(FALSE, " 10", "Quit ");
   } else if (mod & 8)  {  // MEGA key, C=
-	shortcutprint(FALSE, " 1",  "      ");
+	shortcutprint( TRUE, " 1",  "UMntAl"); // @@@@
 	shortcutprint(FALSE, " 2",  "      ");
 	shortcutprint(FALSE, " 3",  "      ");
 	shortcutprint(FALSE, " 4",  "      ");
@@ -207,7 +207,7 @@ unsigned char setupbox()  {
 //  while(1)  {
 	if (tabpos > OPTIONMAX)  {
 	  tabpos = OPTIONMAX;
-	}         // byte           bit                                     pos
+	}         // byte           bit          2 * DOSFILENAMEANDTYPELEN  pos
     optionstring(option.option, OPTIONshowDEL, "show DEL files", tabpos, 0);
     optionstring(option.option, OPTIONshowALO, "copy allocated BAM blocks only", tabpos, 1);
     optionstring(option.option, OPTIONshow3, "goes nowhere and does nothing", tabpos, 2);
@@ -375,6 +375,8 @@ unsigned int cgetcalt(unsigned char side)
 
 void UpdateSectors(unsigned char drive, unsigned char side)  {
   unsigned char c;  // build up a string
+  unsigned char sethyppo;  // failures set "storage selection dirent mode"
+
 
   if (midnight[side]->flags & MIDNIGHTFLAGismounted)  {
     // This would actually only have to be done once for both drives:
@@ -417,10 +419,19 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
     if (BAM2Attic(drive, side, midnight[side]->dirtrack) > 1)  {
 	  messagebox(0, "Reading BAM error", (drive ? "drive 1" : "drive 0"),
 	                "probably unmounted");
+      strcopy("read error", (char *) diskname, 16);
+	  midnight[side]->flags &= (~MIDNIGHTFLAGismounted);
+	  sethyppo = TRUE;
+	} else {
+      midnight[side]->blocksfree = FreeBlocks(side, midnight[side]->dirtrack);
+      midnight[side]->entries = getdirent(drive, side, midnight[side]->dirtrack);
+	  sethyppo = FALSE;
 	}
-    midnight[side]->blocksfree = FreeBlocks(side, midnight[side]->dirtrack);
-    midnight[side]->entries = getdirent(drive, side, midnight[side]->dirtrack);
   } else {
+    sethyppo = TRUE;
+  }
+  
+  if (sethyppo == TRUE)  {
 	strcopy("storage card", (char *) diskname[side], 16);
 	strcopy("storage card", (char *) midnight[side]->curfile, 16);
 	midnight[side]->blocksfree = UINT_MAX;
@@ -478,6 +489,8 @@ void navi(unsigned char side)  {
   unsigned int i;
   DIRENT* ds;
   
+  option.option = OPTIONshowALO;
+  
   // initialising:
   for (i = 0; i < 2; i++)  {
     // @@ to be made variable maybe?
@@ -494,7 +507,9 @@ void navi(unsigned char side)  {
   }
 
   while (1)  {
-    for (i = 0; i < 2; i++)  {
+    // end running drive access:
+	_miniInit();
+	for (i = 0; i < 2; i++)  {
       if (midnight[i]->pos > midnight[i]->entries)  {
         midnight[i]->pos = midnight[i]->entries;
       }
@@ -552,22 +567,27 @@ void navi(unsigned char side)  {
 	  case 0x109:
 	  case 0x209:
 	    side = (side ? 0 : 1);
-//		midnight[side]->entries = getdirent(midnight[side]->drive, side);
       break;
 
 	  case 0xf2: // Modifiers and ASC_F1:
 	  case 0x1f2:
 	  case 0x2f2:
-/*
-	    if (d81navi(midnight[side]->drive, side))  {
-	      UpdateSectors(midnight[side]->drive, side);
-		}
-*/
         // Mount toggle and reset to root dirent:
 		midnight[side]->flags ^= MIDNIGHTFLAGismounted;
 		midnight[side]->dirtrack = HEADERTRACK;
 		UpdateSectors(midnight[side]->drive, side);
 		Deselect(side);
+      break;
+
+	  case 0x8f2: // Mega-F2
+		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
+		  messagebox(0, "Unmount", "not supported in mount mode.", " ");
+		} else {
+	      if (messagebox(0, "Unmount,", "all drives will be unmounted", " "))  {
+            hyppo_d81detach();
+		    UpdateSectors(midnight[side?0:1]->drive, side?0:1);
+		  }
+		}
       break;
 
 	  case 0xf5: // ASC_F5 copy
@@ -672,7 +692,8 @@ void navi(unsigned char side)  {
 		  messagebox(0, "Copying full storage cards", "is not supported.", " ");
 		} else {
 	      if (messagebox(0, "Disk copy,", "destination disk will be OVERWRITTEN", " "))  {
-            copywholedisk(midnight[side]->drive, midnight[side?0:1]->drive,
+            GetBAM(side, midnight[side]->dirtrack);
+			copywholedisk(midnight[side]->drive, midnight[side?0:1]->drive,
                           side, midnight[side]->dirtrack);
 		    UpdateSectors(midnight[side?0:1]->drive, side?0:1);
 		  }

@@ -64,25 +64,31 @@ void _miniInit()  {
 unsigned char ReadSector(unsigned char drive, char track,
                                               char sector) {
 	unsigned char retval;
+	unsigned char s;
 
 	if (track == 0)  return 0xFC;
 	drive += 0x20;   // #$60 drive 0
-	if (sector >= 20)  {
+	if (sector < 20)  {
 		drive += 0x08; // second side of disk
 	}
 	
 	// Turn on motor + led (which causes led to light solid):
 	POKE(0xd080U, drive);
-	// Wait for ready:
+	// Spinup for ready:
 	POKE(0xd081U, 0x20);
+	// Wait while busy:
+	while (PEEK(0xd082U) & 0x80) {}
 	// Track (start at 0):
 	POKE(0xd084U, track - 1);
 	// Sector (only side 0 ones):
 //	POKE(0xd085U, sector / 2 + 1);
-	POKE(0xd085U, (sector) % 20 / 2 + 1);
+	POKE(0xd085U, (((sector) % 20) / 2) + 1);
+//    if (sector < 20)  s = (sector / 2) + 1;
+//	else              s = ((sector - 20) / 2) + 1;
+//    POKE(0xd085U, s);
 	// Side:
 //	POKE(0xd086U, 0);
-	POKE(0xd086U, (sector >= 20 ? 1 : 0));
+	POKE(0xd086U, ((sector >= 20) ? 1 : 0)); // side
 	// Flag which side we need:
 	retval = sector % 2;
 	// Read:
@@ -114,29 +120,31 @@ unsigned char WriteSector(unsigned char drive, char track,
 
 	if (track == 0)  return 0xFC;
 	drive += 0x20;   // #$60 drive 0
-	if (sector >= 20)  {
+	if (sector < 20)  {
 		drive += 0x08; // second side of disk
 	}
 
 	// Turn on motor + led (which causes led to light solid):
 	POKE(0xd080U, drive);
-	// Wait for ready:
+	// Spinup for ready:
 	POKE(0xd081U, 0x20);
+	// Wait while busy:
+	while (PEEK(0xd082U) & 0x80) {}
 	// Track (start at 0):
 	POKE(0xd084U, track - 1);
 	// Sector (only side 0 ones):
 	// Sectors start at 1   mega65-book.pdf#3f0
 //	POKE(0xd085U, sector / 2 + 1);
-	POKE(0xd085U, (sector) % 20 / 2 + 1);
+	POKE(0xd085U, (((sector) % 20) / 2) + 1);
 	// Side:
-//	POKE(0xd086U, 0);
 	POKE(0xd086U, (sector >= 20 ? 1 : 0));
 	// Flag which side we need:
 	retval = sector % 2;
 	// Write:
 	POKE(0xd081U, 0x84);
-	// Wait while busy:
-	while (PEEK(0xd082U) & 0x80) {}
+	// Wait while busy and writing:
+	while ((PEEK(0xd082U) & 0x80) ||
+	       (PEEK(0xd083U) & 0x10))  {}
 	// Check for error:
 	if (PEEK(0xd082U) & 0x18) {
       // Turn on just the LED, this causes to blink:
@@ -229,7 +237,7 @@ unsigned char GetOneSector(BAM* entry, unsigned char drive,
 #ifdef DEBUG
   mprintf("GetOneSector before ReadSector. Track=", track);
   mprintf(" Sector=", sector);
-  mh4printf(" p=", (long) p);
+  // mh4printf(" p=", (long) p);
   cputln();
   cgetc();
 #endif
@@ -247,7 +255,7 @@ unsigned char GetOneSector(BAM* entry, unsigned char drive,
   ShowAccess(drive, track, sector, READ);
   return side;
 }
-unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
+unsigned char PutWholeSector(BAM* entry, unsigned char side,
                     unsigned char drive, char track, char sector)  {
   BAM* ws = entry;   // later to be DATABLOCK*
 
@@ -331,7 +339,7 @@ void PutBAM(unsigned char drive, unsigned char side, unsigned char dirtrack)  {
 }
 
 unsigned char BAM2Attic(unsigned char drive, unsigned char side, unsigned char dirtrack) {
-  _miniInit();
+  // _miniInit();
 
   return readblockchain(side?ATTICBAM2BUFFER:ATTICBAMBUFFER, BAMBLOCKS,
                         drive, dirtrack, BAMSECT);
@@ -427,7 +435,7 @@ void getDiskname(unsigned char drive, unsigned char dirtrack, char* diskname) {
   HEADER* hs;
   unsigned char i;
 
-  _miniInit();
+  // _miniInit();
 
   if (GetOneSector(BAMsector[0], drive, dirtrack, HEADERSECT) < 2)  {
     hs = (HEADER*) BAMsector[0];
@@ -450,7 +458,7 @@ unsigned char readblockchain(uint32_t destination_address, // attic RAM
   unsigned char nexttrack;
   unsigned char nextsector;
 
-  _miniInit();
+  // _miniInit();
   nexttrack = track;
   nextsector = sector;
 #ifdef DEBUG
@@ -492,8 +500,7 @@ unsigned char readblockchain(uint32_t destination_address, // attic RAM
 }
 
 unsigned char isallocatedBAMtracksector(unsigned char track,
-                                        unsigned char sector,
-                                        unsigned char dirtrack)  {
+                                        unsigned char sector)  {
   unsigned char bitshifter = 1;
   BAM* bs;
 
@@ -706,7 +713,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
   unsigned char track;
   unsigned char sector;
 
-  _miniInit();
+  // _miniInit();
   DATABLOCK* ws = worksector[0];
 
   // get a first sector anyway:
@@ -753,7 +760,7 @@ unsigned char deleteblockchain(unsigned char drive, unsigned char dirtrack,
   unsigned char nextsector;
   BAM* bs;
 
-  _miniInit();
+  // _miniInit();
   if (GetOneSector(BAMsector[0], drive, dirtrack, BAMSECT) > 1)  {
 	return 0xff;
   }
@@ -795,7 +802,7 @@ unsigned char deleteblockchain(unsigned char drive, unsigned char dirtrack,
   return 0;
 }
 
-extern unsigned char s[DOSFILENAMEANDTYPELEN];
+extern unsigned char s[]; // @@@@
 char * tracksectorstring(unsigned char track, unsigned char sector)  {
   unsigned int  i;
 
@@ -830,14 +837,14 @@ unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive,
   unsigned char sector;
   unsigned int  i;
   DATABLOCK* ws;
-
+/*
   // if setting allocated BAM blocks only:
   if ((option.option & OPTIONshowALO))  {
     i = 0;
 	GetBAM(side, dirtrack);
     for (track = 1; track <= 80; track++)  {
 	  for (sector = 0; sector < 40; sector++)  {
-		if (isallocatedBAMtracksector(track, sector, dirtrack))  {
+		if (isallocatedBAMtracksector(track, sector))  {
 	      progress("Reading...", tracksectorstring(track, sector), i / 64);
 	      if (GetOneSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
 		    return 0xff;
@@ -853,28 +860,35 @@ unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive,
 	  }
     }
   } else  {
+*/
     i = 0;
     for (track = 1; track <= 80; track++)  {
 	  for (sector = 0; sector < 40; sector++)  {
-	    progress("Reading...", tracksectorstring(track, sector), i / 64);
-	    if (GetOneSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
-		  return 0xff;
-	    }
-	    ws = worksector[0];
-	    lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE);
-	    i++;
+		if (!(option.option & OPTIONshowALO) ||
+		    isallocatedBAMtracksector(track, sector))  {
+	      progress("Reading...", tracksectorstring(track, sector), i / 64);
+	      if (GetOneSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
+		    return 0xff;
+	      }
+	      ws = worksector[0];
+	      lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE);
+	      i++;
+		}
 	  }
     }
     i = 0;
     for (track = 1; track <= 80; track++)  {
 	  for (sector = 0; sector < 40; sector++)  {
-	    progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
-        lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
-	    PutOneSector((BAM *) ws, destdrive, track, sector);
-	    i++;
+		if (!(option.option & OPTIONshowALO) ||
+		    isallocatedBAMtracksector(track, sector))  {
+	      progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
+          lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
+	      PutOneSector((BAM *) ws, destdrive, track, sector);
+	      i++;
+		}
 	  }
     }
-  }
+//  }
   return 0;
 }
 
@@ -936,7 +950,6 @@ DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
   DIRENT* ds;
   unsigned int max = ENTRIESPERBLOCK;
 
-  _miniInit();
   ds = (DIRENT *) direntryblock[0]; // to be changed to smaller array
 
   for (i = 0, pos = 0; i < max; i++)  {
@@ -977,7 +990,7 @@ DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
 unsigned char getdirent(unsigned char drive, unsigned char side, unsigned char dirtrack)  {
   signed int i;
 
-  _miniInit();
+  // _miniInit();
 /*
   msprintf("before readblockchain");
   cputln();
@@ -1012,7 +1025,7 @@ void writenewdirententry(unsigned char drive, unsigned char side,
   unsigned char nexttrack = 0;
   unsigned char nextsector = 0;
 
-  _miniInit();
+  // _miniInit();
 
   // blatantly misuse the unfilled DIRENT buffer:
   ds = (DIRENT *) direntryblock[1]; // to be changed to smaller array
@@ -1150,7 +1163,7 @@ void deletedirententry(unsigned char drive, unsigned char side,
   unsigned char nexttrack = 0;
   unsigned char nextsector = 0;
 
-  _miniInit();
+  // _miniInit();
 
   ds = (DIRENT *) direntryblock[0]; // to be changed to smaller array
 
