@@ -101,7 +101,7 @@ typedef struct structdatablock {
 // Midnight Mega general setup options:
 #define OPTIONshowDEL 1  // show deleted files as type DEL
 #define OPTIONshowALO 2  // copy allocated BAM blocks only
-#define OPTIONshow3   4
+#define OPTIONshowIGN 4
 #define OPTIONshow4   8
 #define OPTIONshow5   0x10
 #define OPTIONMAX     4

@@ -109,8 +109,6 @@ unsigned char ReadSector(unsigned char drive, char track,
 	}
 	// Make sure we can see the data, clear bit 7:
 	POKE(0xd689U, PEEK(0xd689U) & ~0x80);
-	// Turn off motor + led:
-	POKE(0xd080U, 0);
 
 	return retval;
 }
@@ -161,8 +159,6 @@ unsigned char WriteSector(unsigned char drive, char track,
 	}
 	// Make sure we can see the data, clear bit 7:
 	POKE(0xd689U, PEEK(0xd689U) & ~0x80);
-	// Turn off motor + led:
-	POKE(0xd080U, 0);
 
 	return retval;
 }
@@ -259,7 +255,7 @@ unsigned char GetOneSector(BAM* entry, unsigned char drive,
   ShowAccess(drive, track, sector, READ);
   return side;
 }
-unsigned char PutWholeSector(/*struct*/ BAM* entry, unsigned char side,
+unsigned char PutWholeSector(BAM* entry, unsigned char side,
                     unsigned char drive, char track, char sector)  {
   BAM* ws = entry;   // later to be DATABLOCK*
 
@@ -343,7 +339,7 @@ void PutBAM(unsigned char drive, unsigned char side, unsigned char dirtrack)  {
 }
 
 unsigned char BAM2Attic(unsigned char drive, unsigned char side, unsigned char dirtrack) {
-  _miniInit();
+  // _miniInit();
 
   return readblockchain(side?ATTICBAM2BUFFER:ATTICBAMBUFFER, BAMBLOCKS,
                         drive, dirtrack, BAMSECT);
@@ -439,7 +435,7 @@ void getDiskname(unsigned char drive, unsigned char dirtrack, char* diskname) {
   HEADER* hs;
   unsigned char i;
 
-  _miniInit();
+  // _miniInit();
 
   if (GetOneSector(BAMsector[0], drive, dirtrack, HEADERSECT) < 2)  {
     hs = (HEADER*) BAMsector[0];
@@ -462,7 +458,7 @@ unsigned char readblockchain(uint32_t destination_address, // attic RAM
   unsigned char nexttrack;
   unsigned char nextsector;
 
-  _miniInit();
+  // _miniInit();
   nexttrack = track;
   nextsector = sector;
 #ifdef DEBUG
@@ -717,7 +713,7 @@ void writeblockchain(uint32_t source_address, // attic RAM
   unsigned char track;
   unsigned char sector;
 
-  _miniInit();
+  // _miniInit();
   DATABLOCK* ws = worksector[0];
 
   // get a first sector anyway:
@@ -764,7 +760,7 @@ unsigned char deleteblockchain(unsigned char drive, unsigned char dirtrack,
   unsigned char nextsector;
   BAM* bs;
 
-  _miniInit();
+  // _miniInit();
   if (GetOneSector(BAMsector[0], drive, dirtrack, BAMSECT) > 1)  {
 	return 0xff;
   }
@@ -806,7 +802,7 @@ unsigned char deleteblockchain(unsigned char drive, unsigned char dirtrack,
   return 0;
 }
 
-extern unsigned char s[DOSFILENAMEANDTYPELEN];
+extern unsigned char s[]; // @@@@
 char * tracksectorstring(unsigned char track, unsigned char sector)  {
   unsigned int  i;
 
@@ -954,7 +950,6 @@ DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
   DIRENT* ds;
   unsigned int max = ENTRIESPERBLOCK;
 
-  _miniInit();
   ds = (DIRENT *) direntryblock[0]; // to be changed to smaller array
 
   for (i = 0, pos = 0; i < max; i++)  {
@@ -995,7 +990,7 @@ DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
 unsigned char getdirent(unsigned char drive, unsigned char side, unsigned char dirtrack)  {
   signed int i;
 
-  _miniInit();
+  // _miniInit();
 /*
   msprintf("before readblockchain");
   cputln();
@@ -1030,7 +1025,7 @@ void writenewdirententry(unsigned char drive, unsigned char side,
   unsigned char nexttrack = 0;
   unsigned char nextsector = 0;
 
-  _miniInit();
+  // _miniInit();
 
   // blatantly misuse the unfilled DIRENT buffer:
   ds = (DIRENT *) direntryblock[1]; // to be changed to smaller array
@@ -1168,7 +1163,7 @@ void deletedirententry(unsigned char drive, unsigned char side,
   unsigned char nexttrack = 0;
   unsigned char nextsector = 0;
 
-  _miniInit();
+  // _miniInit();
 
   ds = (DIRENT *) direntryblock[0]; // to be changed to smaller array
 

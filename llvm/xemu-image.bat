@@ -16,6 +16,8 @@ SET XMEGA65=D:\Game Collections\C64\Mega65\Xemu\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos\
 SET D81=D:\Game Collections\C64\Mega65\disks
 SET D81INTRO=D:\Game Collections\C64\Mega65\disks unsorted\Intro\ALL_INTROS\sdcard-files
+SET D81FNX=D:\Game Collections\C64\FNX1591\disks
+SET D81C64=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme
 SET INTRODEST=INTRO
 SET IMG=%APPDATA%\xemu-lgb\mega65\mega65.img
 SET PATH=%PATH%;%VICE%;%XMEGA65%
@@ -35,19 +37,23 @@ echo ==========================
 echo (m) do stuff manually
 echo (d) populate "disks"
 echo (i) populate "intro"
+echo (f) populate "FNX1591"
+echo (6) populate "C64"
 echo (a) populate "autoboot"
 echo (h) show ftp command list
 echo (c) execute ftp dir command
 echo (s) change destination ethernet/Xemu
 echo (q) quit
 echo ==========================
-choice /c mdiahcsq /n /m "Type key of option to be executed: "
+choice /c mdif6ahcsq /n /m "Type key of option to be executed: "
 
-if errorlevel 8 goto end
-if errorlevel 7 goto doswap
-if errorlevel 6 goto dodir
-if errorlevel 5 goto dohelp
-if errorlevel 4 goto doautoboot
+if errorlevel 10 goto end
+if errorlevel 9 goto doswap
+if errorlevel 8 goto dodir
+if errorlevel 7 goto dohelp
+if errorlevel 6 goto doautoboot
+if errorlevel 5 goto doc64
+if errorlevel 4 goto dofnx
 if errorlevel 3 goto dointro
 if errorlevel 2 goto dodisks
 if errorlevel 1 goto doprompt
@@ -129,6 +135,54 @@ for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N "!prefix!"') do (
 "%MFTP%" %DEST% -c "dir"|more
 pause
 CD /D "%D81%"
+goto menu
+
+:dofnx
+title MEGA65_FTP populating disks
+CD /D "%D81FNX%"
+SET FOLDER=FNX1591
+SET "prefix1=*.d81"
+SET "prefix2=*.d64"
+SET "prefix3=*.prg"
+SET "prefix="!prefix1!" "!prefix2!" "!prefix3!""
+ECHO !prefix!
+"%MFTP%" %DEST% -c "mkdir %FOLDER%"
+for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
+  ECHO CD=!CD!  D81=!DISKUPPER!
+  SET "FOLDERSLASH=!FOLDER:\=/!"
+  "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
+  SET "DISKUPPER=%%i"
+  for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+    set "DISKUPPER=!DISKUPPER:%%b=%%b!"
+  )
+  "%MFTP%" %DEST% -c "cd !FOLDERSLASH!" -c "put '!DISKUPPER!'"
+)
+"%MFTP%" %DEST% -c "dir"|more
+pause
+goto menu
+
+:doc64
+title MEGA65_FTP populating disks
+CD /D "%D81C64%"
+SET FOLDER=C64
+SET "prefix1=*.d81"
+SET "prefix2=*.d64"
+SET "prefix3=*.prg"
+SET "prefix="!prefix1!" "!prefix2!" "!prefix3!""
+ECHO !prefix!
+"%MFTP%" %DEST% -c "mkdir %FOLDER%"
+for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
+  ECHO CD=!CD!  D81=!DISKUPPER!
+  SET "FOLDERSLASH=!FOLDER:\=/!"
+  "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
+  SET "DISKUPPER=%%i"
+  for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+    set "DISKUPPER=!DISKUPPER:%%b=%%b!"
+  )
+  "%MFTP%" %DEST% -c "cd !FOLDERSLASH!" -c "put '!DISKUPPER!'"
+)
+"%MFTP%" %DEST% -c "dir"|more
+pause
 goto menu
 
 :doautoboot
