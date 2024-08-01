@@ -697,23 +697,24 @@ void navi(unsigned char side)  {
 		    } else if (ds->type != VAL_DOSFTYPE_DEL &&  // delete
 			           messagebox(0, "File delete,", ds->name,
 			                      (side ? "from right side" : "from left side"), 0))  {
-              sizeselectcurrentifnone(side);  // size returned doesn't matter to delete
-			  for (i = 0; i < NBRENTRIES; i++)  {
-                if (direntflags[side][i].flags & DIRFLAGSisselected)  {
-                  ds = getdirententry(side, i);
+              if (sizeselectcurrentifnone(side) != UINT_MAX)  {  // size returned doesn't matter to delete
+			    for (i = NBRENTRIES; i > 0; i--)  {
+                  if (direntflags[side][i - 1].flags & DIRFLAGSisselected)  {
+                    ds = getdirententry(side, i - 1);
 
-			      progress("Reading...", "BAM", 20);
-                  ds->type = VAL_DOSFTYPE_DEL;
-                  GetBAM(side, midnight[side]->dirtrack);
-                  progress("Writing...", "removing BAM entries", 40);
-                  deletedirententry(midnight[side]->drive, side,
-                                    midnight[side]->dirtrack, midnight[side]->pos);
-                  progress("Writing...", "updating BAM", 80);
-                  PutBAM(midnight[side]->drive, side, midnight[side]->dirtrack);
-				}
+			        progress("Reading...", "BAM", 20);
+                    ds->type = VAL_DOSFTYPE_DEL;
+                    GetBAM(side, midnight[side]->dirtrack);
+                    progress("Writing...", "removing BAM entries", 40);
+                    deletedirententry(midnight[side]->drive, side,
+                                      midnight[side]->dirtrack, i - 1); // midnight[side]->pos);
+                    progress("Writing...", "updating BAM", 80);
+                    PutBAM(midnight[side]->drive, side, midnight[side]->dirtrack);
+				  }
+			    }
+                UpdateSectors(midnight[side]->drive, side);
+		        Deselect(side);
 			  }
-              UpdateSectors(midnight[side]->drive, side);
-		      Deselect(side);
 		    }
 		  } else {
 			messagebox(0, "File type for", ds->name,

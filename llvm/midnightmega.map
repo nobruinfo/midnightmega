@@ -56,7 +56,7 @@
       46       46        0     1 __zp_bss_size = SIZEOF ( .zp.bss )
       46       46       3d     1 .zp
       46       46       3d     1         midnightmega.prg.lto.o:(.zp.noinit)
-    2021     2021     4b5d     1 .text
+    2021     2021     4aed     1 .text
     2021     2021        0     1         _init = .
     2021     2021        0     1         _start = .
     2021     2021        e     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\unmap-basic.o:(.init.010)
@@ -76,7 +76,7 @@
     204b     204b        0     1         _fini = .
     204b     204b        a     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\unmap-basic.o:(.fini.990)
     2055     2055        1     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/common/lib\crt0.o:(.fini_rts)
-    2056     2056       79     1         C:\Users\SUPERU~1\AppData\Local\Temp\memory_asm-a0bd98.o:(.text)
+    2056     2056       79     1         C:\Users\SUPERU~1\AppData\Local\Temp\memory_asm-555f2e.o:(.text)
     2056     2056        0     1                 fourbytes
     205a     205a        0     1                 lpstore
     2075     2075        0     1                 lprestore
@@ -90,172 +90,172 @@
     20ec     20ec       13     1                 __zero_zp_bss
     20ff     20ff       17     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(copy-zp-data.c.obj):(.text.__copy_zp_data)
     20ff     20ff       17     1                 __copy_zp_data
-    2116     2116     23b8     1         midnightmega.prg.lto.o:(.text.main)
-    2116     2116     23b8     1                 main
-    3c85     3c85        0     1                 errhyp1att0
-    3c89     3c89        0     1                 donehyp1att0
-    3ea6     3ea6        0     1                 errhypchdir1
-    3eaa     3eaa        0     1                 donehypchdir1
-    3efb     3efb        0     1                 errhypchdir2
-    3eff     3eff        0     1                 donehypchdir2
-    41b0     41b0        0     1                 errhyp0att3
-    41b4     41b4        0     1                 donehyp0att3
-    4430     4430        0     1                 errhypd81detach4
-    4434     4434        0     1                 donehypd81detach4
-    44ce     44ce       30     1         midnightmega.prg.lto.o:(.text.hyppo_setname)
-    44ce     44ce       30     1                 hyppo_setname
-    44f8     44f8        0     1                 errhypsetnam5
-    44fc     44fc        0     1                 donehypsetnam5
-    44fe     44fe       63     1         midnightmega.prg.lto.o:(.text.getsfn)
-    44fe     44fe       63     1                 getsfn
-    4561     4561      175     1         midnightmega.prg.lto.o:(.text.ShowAccess)
-    4561     4561      175     1                 ShowAccess
-    46d6     46d6       9e     1         midnightmega.prg.lto.o:(.text.ReadSector)
-    46d6     46d6       9e     1                 ReadSector
-    4774     4774       43     1         midnightmega.prg.lto.o:(.text.GetOneSector)
-    4774     4774       43     1                 GetOneSector
-    47b7     47b7       e2     1         midnightmega.prg.lto.o:(.text.PutOneSector)
-    47b7     47b7       e2     1                 PutOneSector
-    4899     4899       39     1         midnightmega.prg.lto.o:(.text.GetBAM)
-    4899     4899       39     1                 GetBAM
-    48d2     48d2       5c     1         midnightmega.prg.lto.o:(.text.PutBAM)
-    48d2     48d2       5c     1                 PutBAM
-    492e     492e       9a     1         midnightmega.prg.lto.o:(.text.readblockchain)
-    492e     492e       9a     1                 readblockchain
-    49c8     49c8      302     1         midnightmega.prg.lto.o:(.text.BAMSectorUpdate)
-    49c8     49c8      302     1                 BAMSectorUpdate
-    4cca     4cca      1a0     1         midnightmega.prg.lto.o:(.text.isallocatedBAMtracksector)
-    4cca     4cca      1a0     1                 isallocatedBAMtracksector
-    4e6a     4e6a      119     1         midnightmega.prg.lto.o:(.text.findnextBAMtracksector)
-    4e6a     4e6a      119     1                 findnextBAMtracksector
-    4f83     4f83       8c     1         midnightmega.prg.lto.o:(.text.tracksectorstring)
-    4f83     4f83       8c     1                 tracksectorstring
-    500f     500f       e0     1         midnightmega.prg.lto.o:(.text.getdirententry)
-    500f     500f       e0     1                 getdirententry
-    50ef     50ef       14     1         midnightmega.prg.lto.o:(.text.strcopy)
-    50ef     50ef       14     1                 strcopy
-    5103     5103       c6     1         midnightmega.prg.lto.o:(.text.csputdec)
-    5103     5103       c6     1                 csputdec
-    51c9     51c9       51     1         midnightmega.prg.lto.o:(.text.asciitoscreencode_s)
-    51c9     51c9       51     1                 asciitoscreencode_s
-    521a     521a       5e     1         midnightmega.prg.lto.o:(.text.clrhome)
-    521a     521a       5e     1                 clrhome
-    5278     5278        e     1         midnightmega.prg.lto.o:(.text.msprintf)
-    5278     5278        e     1                 msprintf
-    5286     5286       16     1         midnightmega.prg.lto.o:(.text.mcputsxy)
-    5286     5286       16     1                 mcputsxy
-    529c     529c      18b     1         midnightmega.prg.lto.o:(.text.mcbox)
-    529c     529c      18b     1                 mcbox
-    5427     5427      15b     1         midnightmega.prg.lto.o:(.text.messagebox)
-    5427     5427      15b     1                 messagebox
-    5582     5582       c0     1         midnightmega.prg.lto.o:(.text.progress)
-    5582     5582       c0     1                 progress
-    5642     5642       41     1         midnightmega.prg.lto.o:(.text.shortcutprint)
-    5642     5642       41     1                 shortcutprint
-    5683     5683      388     1         midnightmega.prg.lto.o:(.text.shortcuts)
-    5683     5683      388     1                 shortcuts
-    5a0b     5a0b       9f     1         midnightmega.prg.lto.o:(.text.optionstring)
-    5a0b     5a0b       9f     1                 optionstring
-    5aaa     5aaa      665     1         midnightmega.prg.lto.o:(.text.UpdateSectors)
-    5aaa     5aaa      665     1                 UpdateSectors
-    5ba6     5ba6        0     1                 errgetproc6
-    5baa     5baa        0     1                 donegetproc6
-    5ce4     5ce4        0     1                 errgetcurdrv7
-    5ce8     5ce8        0     1                 donegetcurdrv7
-    5d01     5d01        0     1                 errhypopendir8
-    5d05     5d05        0     1                 donehypopendir8
-    5dab     5dab        0     1                 hypreaddirloop9
-    5dc3     5dc3        0     1                 errhypreaddir9
-    5dc5     5dc5        0     1                 donehypreaddir9
-    6089     6089        0     1                 errhypclosedir10
-    608b     608b        0     1                 donehypclosedir10
-    610f     610f       46     1         midnightmega.prg.lto.o:(.text.Deselect)
-    610f     610f       46     1                 Deselect
-    6155     6155      147     1         midnightmega.prg.lto.o:(.text.sizeselectcurrentifnone)
-    6155     6155      147     1                 sizeselectcurrentifnone
-    629c     629c       46     1         midnightmega.prg.lto.o:(.text.sidbong)
-    629c     629c       46     1                 sidbong
-    62e2     62e2        1     1         midnightmega.prg.lto.o:(.text.escNOP)
-    62e2     62e2        1     1                 escNOP
-    62e3     62e3        9     1         midnightmega.prg.lto.o:(.text.cputc)
-    62e3     62e3        9     1                 cputc
-    62ec     62ec       a1     1         midnightmega.prg.lto.o:(.text.cputcxy)
-    62ec     62ec       a1     1                 cputcxy
-    638d     638d        7     1         midnightmega.prg.lto.o:(.text.cputs)
-    638d     638d        7     1                 cputs
-    6394     6394       db     1         midnightmega.prg.lto.o:(.text.cputsxy)
-    6394     6394       db     1                 cputsxy
-    646f     646f       aa     1         midnightmega.prg.lto.o:(.text.fillrect)
-    646f     646f       aa     1                 fillrect
-    6519     6519        9     1         midnightmega.prg.lto.o:(.text.cgetc)
-    6519     6519        9     1                 cgetc
-    6522     6522       27     1         midnightmega.prg.lto.o:(.text.do_dma)
-    6522     6522       27     1                 do_dma
-    6549     6549       67     1         midnightmega.prg.lto.o:(.text.lcopy)
-    6549     6549       67     1                 lcopy
-    65b0     65b0       50     1         midnightmega.prg.lto.o:(.text.lfill)
-    65b0     65b0       50     1                 lfill
-    6600     6600       5c     1         midnightmega.prg.lto.o:(.text.usleep)
-    6600     6600       5c     1                 usleep
-    665c     665c       3e     1         midnightmega.prg.lto.o:(.text.strcpy)
-    665c     665c       3e     1                 strcpy
-    669a     669a       3c     1         midnightmega.prg.lto.o:(.text.strlen)
-    669a     669a       3c     1                 strlen
-    66d6     66d6        b     1         midnightmega.prg.lto.o:(.text.__ashlqi3)
-    66d6     66d6        b     1                 __ashlqi3
-    66e1     66e1       13     1         midnightmega.prg.lto.o:(.text.__ashlhi3)
-    66e1     66e1       13     1                 __ashlhi3
-    66f4     66f4       32     1         midnightmega.prg.lto.o:(.text.__mulhi3)
-    66f4     66f4       32     1                 __mulhi3
-    6726     6726       c1     1         midnightmega.prg.lto.o:(.text.__udivhi3)
-    6726     6726       c1     1                 __udivhi3
-    67e7     67e7       45     1         midnightmega.prg.lto.o:(.text.__umodqi3)
-    67e7     67e7       45     1                 __umodqi3
-    682c     682c       70     1         midnightmega.prg.lto.o:(.text.__udivmodqi4)
-    682c     682c       70     1                 __udivmodqi4
-    689c     689c       dc     1         midnightmega.prg.lto.o:(.text.__udivmodhi4)
-    689c     689c       dc     1                 __udivmodhi4
-    6978     6978       2c     1         midnightmega.prg.lto.o:(.text.memcpy)
-    6978     6978       2c     1                 memcpy
-    69a4     69a4       20     1         midnightmega.prg.lto.o:(.text.__memset)
-    69a4     69a4       20     1                 __memset
-    69c4     69c4      1ba     1         midnightmega.prg.lto.o:(.text.__udivmodsi4)
-    69c4     69c4      1ba     1                 __udivmodsi4
-    6b7e     6b7e        0     1         __init_array_start = .
-    6b7e     6b7e        0     1         __init_array_end = .
-    6b7e     6b7e        0     1         __fini_array_start = .
-    6b7e     6b7e        0     1         __fini_array_end = .
-    6b7e     6b7e      a79     1 .rodata
-    6b7e     6b7e       70     1         midnightmega.prg.lto.o:(.rodata.main)
-    6bee     6bee      9a1     1         <internal>:(.rodata.str1.1)
-    758f     758f        8     1         <internal>:(.rodata.cst4)
-    7597     7597       50     1         midnightmega.prg.lto.o:(.rodata..L__const.findnextBAMtracksector.strategy)
-    75e7     75e7       10     1         <internal>:(.rodata.cst16)
-    75f7     75f7        0     1 .data
-    75f7     75f7        0     1         __data_start = .
-    75f7     75f7        0     1         __data_end = .
-    75f7     75f7        0     1 __data_load_start = LOADADDR ( .data )
-    75f7     75f7        0     1 __data_size = SIZEOF ( .data )
-    75f7     75f7      4b0     1 .bss
-    75f7     75f7        0     1         __bss_start = .
-    75f7     75f7       21     1         midnightmega.prg.lto.o:(.bss.direntryblock2)
-    75f7     75f7       21     1                 direntryblock2
-    7618     7618       50     1         midnightmega.prg.lto.o:(.bss.s)
-    7618     7618       50     1                 s
-    7668     7668       e0     1         midnightmega.prg.lto.o:(.bss.direntflags)
-    7668     7668       e0     1                 direntflags
-    7748     7748       22     1         midnightmega.prg.lto.o:(.bss.diskname)
-    7748     7748       22     1                 diskname
-    776a     776a       40     1         midnightmega.prg.lto.o:(.bss.lfnname)
-    776a     776a       40     1                 lfnname
-    77aa     77aa      2fd     1         midnightmega.prg.lto.o:(.bss.escapeCode)
-    77aa     77aa      2fd     1                 escapeCode
-    7aa7     7aa7        0     1         __bss_end = .
-    7aa7     7aa7        0     1 __bss_size = SIZEOF ( .bss )
-    7aa7     7aa7        1     1 .noinit
-    7aa7     7aa7        1     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(exit-return.c.obj):(.noinit..Lstatic_stack)
-    7aa8     7aa8        0     1         __heap_start = ALIGN ( . , 2 )
-    7aa8     7aa8        0     1 __stack = 0xd000
+    2116     2116     2348     1         midnightmega.prg.lto.o:(.text.main)
+    2116     2116     2348     1                 main
+    30f1     30f1        0     1                 errhyp1att0
+    30f5     30f5        0     1                 donehyp1att0
+    3b18     3b18        0     1                 errhypchdir1
+    3b1c     3b1c        0     1                 donehypchdir1
+    3b6d     3b6d        0     1                 errhypchdir2
+    3b71     3b71        0     1                 donehypchdir2
+    41b7     41b7        0     1                 errhyp0att3
+    41bb     41bb        0     1                 donehyp0att3
+    43c0     43c0        0     1                 errhypd81detach4
+    43c4     43c4        0     1                 donehypd81detach4
+    445e     445e       30     1         midnightmega.prg.lto.o:(.text.hyppo_setname)
+    445e     445e       30     1                 hyppo_setname
+    4488     4488        0     1                 errhypsetnam5
+    448c     448c        0     1                 donehypsetnam5
+    448e     448e       63     1         midnightmega.prg.lto.o:(.text.getsfn)
+    448e     448e       63     1                 getsfn
+    44f1     44f1      175     1         midnightmega.prg.lto.o:(.text.ShowAccess)
+    44f1     44f1      175     1                 ShowAccess
+    4666     4666       9e     1         midnightmega.prg.lto.o:(.text.ReadSector)
+    4666     4666       9e     1                 ReadSector
+    4704     4704       43     1         midnightmega.prg.lto.o:(.text.GetOneSector)
+    4704     4704       43     1                 GetOneSector
+    4747     4747       e2     1         midnightmega.prg.lto.o:(.text.PutOneSector)
+    4747     4747       e2     1                 PutOneSector
+    4829     4829       39     1         midnightmega.prg.lto.o:(.text.GetBAM)
+    4829     4829       39     1                 GetBAM
+    4862     4862       5c     1         midnightmega.prg.lto.o:(.text.PutBAM)
+    4862     4862       5c     1                 PutBAM
+    48be     48be       9a     1         midnightmega.prg.lto.o:(.text.readblockchain)
+    48be     48be       9a     1                 readblockchain
+    4958     4958      302     1         midnightmega.prg.lto.o:(.text.BAMSectorUpdate)
+    4958     4958      302     1                 BAMSectorUpdate
+    4c5a     4c5a      1a0     1         midnightmega.prg.lto.o:(.text.isallocatedBAMtracksector)
+    4c5a     4c5a      1a0     1                 isallocatedBAMtracksector
+    4dfa     4dfa      119     1         midnightmega.prg.lto.o:(.text.findnextBAMtracksector)
+    4dfa     4dfa      119     1                 findnextBAMtracksector
+    4f13     4f13       8c     1         midnightmega.prg.lto.o:(.text.tracksectorstring)
+    4f13     4f13       8c     1                 tracksectorstring
+    4f9f     4f9f       e0     1         midnightmega.prg.lto.o:(.text.getdirententry)
+    4f9f     4f9f       e0     1                 getdirententry
+    507f     507f       14     1         midnightmega.prg.lto.o:(.text.strcopy)
+    507f     507f       14     1                 strcopy
+    5093     5093       c6     1         midnightmega.prg.lto.o:(.text.csputdec)
+    5093     5093       c6     1                 csputdec
+    5159     5159       51     1         midnightmega.prg.lto.o:(.text.asciitoscreencode_s)
+    5159     5159       51     1                 asciitoscreencode_s
+    51aa     51aa       5e     1         midnightmega.prg.lto.o:(.text.clrhome)
+    51aa     51aa       5e     1                 clrhome
+    5208     5208        e     1         midnightmega.prg.lto.o:(.text.msprintf)
+    5208     5208        e     1                 msprintf
+    5216     5216       16     1         midnightmega.prg.lto.o:(.text.mcputsxy)
+    5216     5216       16     1                 mcputsxy
+    522c     522c      18b     1         midnightmega.prg.lto.o:(.text.mcbox)
+    522c     522c      18b     1                 mcbox
+    53b7     53b7      15b     1         midnightmega.prg.lto.o:(.text.messagebox)
+    53b7     53b7      15b     1                 messagebox
+    5512     5512       c0     1         midnightmega.prg.lto.o:(.text.progress)
+    5512     5512       c0     1                 progress
+    55d2     55d2       41     1         midnightmega.prg.lto.o:(.text.shortcutprint)
+    55d2     55d2       41     1                 shortcutprint
+    5613     5613      388     1         midnightmega.prg.lto.o:(.text.shortcuts)
+    5613     5613      388     1                 shortcuts
+    599b     599b       9f     1         midnightmega.prg.lto.o:(.text.optionstring)
+    599b     599b       9f     1                 optionstring
+    5a3a     5a3a      665     1         midnightmega.prg.lto.o:(.text.UpdateSectors)
+    5a3a     5a3a      665     1                 UpdateSectors
+    5b36     5b36        0     1                 errgetproc6
+    5b3a     5b3a        0     1                 donegetproc6
+    5c74     5c74        0     1                 errgetcurdrv7
+    5c78     5c78        0     1                 donegetcurdrv7
+    5c91     5c91        0     1                 errhypopendir8
+    5c95     5c95        0     1                 donehypopendir8
+    5d3b     5d3b        0     1                 hypreaddirloop9
+    5d53     5d53        0     1                 errhypreaddir9
+    5d55     5d55        0     1                 donehypreaddir9
+    6019     6019        0     1                 errhypclosedir10
+    601b     601b        0     1                 donehypclosedir10
+    609f     609f       46     1         midnightmega.prg.lto.o:(.text.Deselect)
+    609f     609f       46     1                 Deselect
+    60e5     60e5      147     1         midnightmega.prg.lto.o:(.text.sizeselectcurrentifnone)
+    60e5     60e5      147     1                 sizeselectcurrentifnone
+    622c     622c       46     1         midnightmega.prg.lto.o:(.text.sidbong)
+    622c     622c       46     1                 sidbong
+    6272     6272        1     1         midnightmega.prg.lto.o:(.text.escNOP)
+    6272     6272        1     1                 escNOP
+    6273     6273        9     1         midnightmega.prg.lto.o:(.text.cputc)
+    6273     6273        9     1                 cputc
+    627c     627c       a1     1         midnightmega.prg.lto.o:(.text.cputcxy)
+    627c     627c       a1     1                 cputcxy
+    631d     631d        7     1         midnightmega.prg.lto.o:(.text.cputs)
+    631d     631d        7     1                 cputs
+    6324     6324       db     1         midnightmega.prg.lto.o:(.text.cputsxy)
+    6324     6324       db     1                 cputsxy
+    63ff     63ff       aa     1         midnightmega.prg.lto.o:(.text.fillrect)
+    63ff     63ff       aa     1                 fillrect
+    64a9     64a9        9     1         midnightmega.prg.lto.o:(.text.cgetc)
+    64a9     64a9        9     1                 cgetc
+    64b2     64b2       27     1         midnightmega.prg.lto.o:(.text.do_dma)
+    64b2     64b2       27     1                 do_dma
+    64d9     64d9       67     1         midnightmega.prg.lto.o:(.text.lcopy)
+    64d9     64d9       67     1                 lcopy
+    6540     6540       50     1         midnightmega.prg.lto.o:(.text.lfill)
+    6540     6540       50     1                 lfill
+    6590     6590       5c     1         midnightmega.prg.lto.o:(.text.usleep)
+    6590     6590       5c     1                 usleep
+    65ec     65ec       3e     1         midnightmega.prg.lto.o:(.text.strcpy)
+    65ec     65ec       3e     1                 strcpy
+    662a     662a       3c     1         midnightmega.prg.lto.o:(.text.strlen)
+    662a     662a       3c     1                 strlen
+    6666     6666        b     1         midnightmega.prg.lto.o:(.text.__ashlqi3)
+    6666     6666        b     1                 __ashlqi3
+    6671     6671       13     1         midnightmega.prg.lto.o:(.text.__ashlhi3)
+    6671     6671       13     1                 __ashlhi3
+    6684     6684       32     1         midnightmega.prg.lto.o:(.text.__mulhi3)
+    6684     6684       32     1                 __mulhi3
+    66b6     66b6       c1     1         midnightmega.prg.lto.o:(.text.__udivhi3)
+    66b6     66b6       c1     1                 __udivhi3
+    6777     6777       45     1         midnightmega.prg.lto.o:(.text.__umodqi3)
+    6777     6777       45     1                 __umodqi3
+    67bc     67bc       70     1         midnightmega.prg.lto.o:(.text.__udivmodqi4)
+    67bc     67bc       70     1                 __udivmodqi4
+    682c     682c       dc     1         midnightmega.prg.lto.o:(.text.__udivmodhi4)
+    682c     682c       dc     1                 __udivmodhi4
+    6908     6908       2c     1         midnightmega.prg.lto.o:(.text.memcpy)
+    6908     6908       2c     1                 memcpy
+    6934     6934       20     1         midnightmega.prg.lto.o:(.text.__memset)
+    6934     6934       20     1                 __memset
+    6954     6954      1ba     1         midnightmega.prg.lto.o:(.text.__udivmodsi4)
+    6954     6954      1ba     1                 __udivmodsi4
+    6b0e     6b0e        0     1         __init_array_start = .
+    6b0e     6b0e        0     1         __init_array_end = .
+    6b0e     6b0e        0     1         __fini_array_start = .
+    6b0e     6b0e        0     1         __fini_array_end = .
+    6b0e     6b0e      a79     1 .rodata
+    6b0e     6b0e       70     1         midnightmega.prg.lto.o:(.rodata.main)
+    6b7e     6b7e      9a1     1         <internal>:(.rodata.str1.1)
+    751f     751f        8     1         <internal>:(.rodata.cst4)
+    7527     7527       50     1         midnightmega.prg.lto.o:(.rodata..L__const.findnextBAMtracksector.strategy)
+    7577     7577       10     1         <internal>:(.rodata.cst16)
+    7587     7587        0     1 .data
+    7587     7587        0     1         __data_start = .
+    7587     7587        0     1         __data_end = .
+    7587     7587        0     1 __data_load_start = LOADADDR ( .data )
+    7587     7587        0     1 __data_size = SIZEOF ( .data )
+    7587     7587      4b0     1 .bss
+    7587     7587        0     1         __bss_start = .
+    7587     7587       21     1         midnightmega.prg.lto.o:(.bss.direntryblock2)
+    7587     7587       21     1                 direntryblock2
+    75a8     75a8       50     1         midnightmega.prg.lto.o:(.bss.s)
+    75a8     75a8       50     1                 s
+    75f8     75f8       e0     1         midnightmega.prg.lto.o:(.bss.direntflags)
+    75f8     75f8       e0     1                 direntflags
+    76d8     76d8       22     1         midnightmega.prg.lto.o:(.bss.diskname)
+    76d8     76d8       22     1                 diskname
+    76fa     76fa       40     1         midnightmega.prg.lto.o:(.bss.lfnname)
+    76fa     76fa       40     1                 lfnname
+    773a     773a      2fd     1         midnightmega.prg.lto.o:(.bss.escapeCode)
+    773a     773a      2fd     1                 escapeCode
+    7a37     7a37        0     1         __bss_end = .
+    7a37     7a37        0     1 __bss_size = SIZEOF ( .bss )
+    7a37     7a37        1     1 .noinit
+    7a37     7a37        1     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(exit-return.c.obj):(.noinit..Lstatic_stack)
+    7a38     7a38        0     1         __heap_start = ALIGN ( . , 2 )
+    7a38     7a38        0     1 __stack = 0xd000
        0        0       7c     1 .comment
        0        0       7c     1         <internal>:(.comment)
        0        0     1040     4 .symtab
