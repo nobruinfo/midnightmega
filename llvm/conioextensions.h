@@ -47,7 +47,7 @@ unsigned char cinput2(
 void mcbox(unsigned char left, unsigned char top, unsigned char right, unsigned char bottom,
     unsigned char color, unsigned char style, unsigned char clear, unsigned char shadow);
 unsigned char messagebox(unsigned char mode, char* message, char* message2,
-                         char* message3);
+                         char* message3, long n);
 unsigned char valuesbox(unsigned char mode, char* message, char* message2, long val2,
                         char* message3, long val3);
 void progress(char* message, char* message2, unsigned char progresspercent);

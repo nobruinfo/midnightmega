@@ -5,6 +5,7 @@
 #include <limits.h>
 #include <mega65/conio.h>  // llvm instead of <printf.h>
 #include <mega65/memory.h>  // mega65-libc
+#include <mega65/hal.h>  // mega65-libc
 #include "regions.h"
 #include "conioextensions.h"
 #include "hyppo.h"
@@ -20,6 +21,7 @@
 MIDNIGHT* midnight[2] = { (MIDNIGHT*) MIDNIGHTLEFTPAGE,
                           (MIDNIGHT*) MIDNIGHTRIGHTPAGE };
 unsigned char diskname[2][DOSFILENAMELEN + 1]; // @@ change for pointer
+unsigned char lfnname[LFNFILENAMELEN];         // @@ change for pointer
 
 #define FILEENTRIES (8 * DIRENTBLOCKS)
 
@@ -118,7 +120,7 @@ void shortcuts(unsigned char mod, unsigned char side)  {
   } else if (mod & 8)  {  // MEGA key, C=
 	shortcutprint( TRUE, " 1",  "UMntAl"); // @@@@
 	shortcutprint(FALSE, " 2",  "      ");
-	shortcutprint(FALSE, " 3",  "      ");
+	shortcutprint( TRUE, " 3",  "Freezr");
 	shortcutprint(FALSE, " 4",  "      ");
 	shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
                          " 5",  "DskCpy");
@@ -210,7 +212,7 @@ unsigned char setupbox()  {
 	}         // byte           bit          2 * DOSFILENAMEANDTYPELEN  pos
     optionstring(option.option, OPTIONshowDEL, "show DEL files", tabpos, 0);
     optionstring(option.option, OPTIONshowALO, "copy allocated BAM blocks only", tabpos, 1);
-    optionstring(option.option, OPTIONshow3, "goes nowhere and does nothing", tabpos, 2);
+    optionstring(option.option, OPTIONshowDRV, "show drive access overlay", tabpos, 2);
     optionstring(option.option, OPTIONshow4, "goes nowhere and does nothing", tabpos, 3);
     optionstring(option.option, OPTIONshow5, "goes nowhere and does nothing", tabpos, 4);
     c = cgetc();
@@ -239,7 +241,7 @@ unsigned char setupbox()  {
         sidbong();
 	    messagebox(0, "Currently this option dialog cannot",
                     "be quit unsaved. So use RETURN to",
-			        "accept.");
+			        "accept.", 0);
 //	    return FALSE;
       break;
 
@@ -373,6 +375,9 @@ unsigned int cgetcalt(unsigned char side)
     return (m << 8) + k;
 }
 
+#define SETHYPPOOFF       0
+#define SETHYPPOON        1
+#define SETHYPPOONBYERROR 2
 void UpdateSectors(unsigned char drive, unsigned char side)  {
   unsigned char c;  // build up a string
   unsigned char sethyppo;  // failures set "storage selection dirent mode"
@@ -416,26 +421,31 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
     }
 
     getDiskname(drive, midnight[side]->dirtrack, (char *) diskname[side]);
-    if (BAM2Attic(drive, side, midnight[side]->dirtrack) > 1)  {
-	  messagebox(0, "Reading BAM error", (drive ? "drive 1" : "drive 0"),
-	                "probably unmounted");
+	c = BAM2Attic(drive, side, midnight[side]->dirtrack);
+    if (c > 1)  {
+/*
+	  messagebox(3, "Reading BAM error, probably unmounted",
+                    (drive ? "drive 1" : "drive 0"),
+	                "error=", (long) c);
       strcopy("read error", (char *) diskname, 16);
+*/
 	  midnight[side]->flags &= (~MIDNIGHTFLAGismounted);
-	  sethyppo = TRUE;
+	  sethyppo = SETHYPPOONBYERROR;
 	} else {
       midnight[side]->blocksfree = FreeBlocks(side, midnight[side]->dirtrack);
       midnight[side]->entries = getdirent(drive, side, midnight[side]->dirtrack);
-	  sethyppo = FALSE;
+	  sethyppo = SETHYPPOOFF;
 	}
   } else {
-    sethyppo = TRUE;
+    sethyppo = SETHYPPOON;
   }
   
-  if (sethyppo == TRUE)  {
+  if (sethyppo != SETHYPPOOFF)  {
 	strcopy("storage card", (char *) diskname[side], 16);
 	strcopy("storage card", (char *) midnight[side]->curfile, 16);
-	midnight[side]->blocksfree = UINT_MAX;
     midnight[side]->entries = gethyppodirent(drive, side, FILEENTRIES);
+	midnight[side]->blocksfree = UINT_MAX;
+    if (sethyppo == SETHYPPOONBYERROR)  midnight[side]->blocksfree = UINT_MAX - 1;
   }
 }
 
@@ -464,7 +474,8 @@ unsigned int sizeselectcurrentifnone(unsigned char side)  {
 	  
 	  // @@ momentary workaround:
 	  if ((ds->type&0xf) == VAL_DOSFTYPE_CBM)  {
-	    messagebox(0, "Copying subdirectories", "is not yet implemented.", " ");
+	    messagebox(0, "Copying subdirectories", "is not yet implemented.",
+                      " ", 0);
 		return UINT_MAX;
 	  }
 	}
@@ -489,7 +500,7 @@ void navi(unsigned char side)  {
   unsigned int i;
   DIRENT* ds;
   
-  option.option = OPTIONshowALO;
+  option.option = OPTIONshowALO | OPTIONshowDRV;
   
   // initialising:
   for (i = 0; i < 2; i++)  {
@@ -528,11 +539,19 @@ void navi(unsigned char side)  {
       csputdec(midnight[i]->drive, 0, 0);
 	  if (midnight[i]->entries == 0xff)  {
 	    mcputsxy(leftx + 17, 3, " empty ");
-		if (side == i)  mcputsxy(leftx + 12, 5, " > F2 to mount < ");
+//		if (side == i)  mcputsxy(leftx + 12, 5, " > F2 to mount < ");
 //		valuesbox(0, "empty list", "entries=", midnight[i]->entries, " ", 0);
 	  } else {
 	    cputc(' ');
-        if (midnight[i]->blocksfree != UINT_MAX)  {
+        if (midnight[i]->blocksfree == (UINT_MAX - 1))  {
+		  blink(TRUE);
+		  textcolor(COLOUR_ORANGE);
+		  mcputsxy(leftx + 12, 23, " disk access error ");
+		  blink(FALSE);
+		  sidbong();
+		  midnight[i]->blocksfree = UINT_MAX;
+		}
+        else if (midnight[i]->blocksfree != UINT_MAX)  {
 	      mcputsxy(leftx + 12, 23, " ");
           csputdec(midnight[i]->blocksfree, 0, 0);
 	      msprintf(" blocks free ");
@@ -579,12 +598,25 @@ void navi(unsigned char side)  {
 		Deselect(side);
       break;
 
-	  case 0x8f2: // Mega-F2
+	  case 0x8f2: // Mega-F1
 		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
-		  messagebox(0, "Unmount", "not supported in mount mode.", " ");
+		  messagebox(0, "Unmount", "not supported in mount mode.", " ", 0);
 		} else {
-	      if (messagebox(0, "Unmount,", "all drives will be unmounted", " "))  {
+	      if (messagebox(0, "Unmount", "all drives will be unmounted", " ", 0))  {
             hyppo_d81detach();
+		    UpdateSectors(midnight[side?0:1]->drive, side?0:1);
+		  }
+		}
+      break;
+
+	  case 0x8f4: // Mega-F3
+		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
+		  messagebox(0, "Freezer", "not supported in mount mode.", " ", 0);
+		} else {
+	      if (messagebox(0, "Freezer", "did you save your work?", " ", 0))  {
+			hyppo_freeze_self();
+            progress("Reading...", "BAM", 30);
+            usleep(2000000); // microseconds
 		    UpdateSectors(midnight[side?0:1]->drive, side?0:1);
 		  }
 		}
@@ -594,8 +626,10 @@ void navi(unsigned char side)  {
 	  case 0xf8: // Modifiers and ASC_F8 delete
 	  case 0x1f8:
 	  case 0x2f8:
-		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
-		  messagebox(0, "Copying/deleting storage files/folders", "is not supported.", " ");
+		if (((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE) ||
+			((midnight[side?0:1]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
+		  messagebox(0, "Copying/deleting storage card files/folders", "is not supported.",
+                        " ", 0);
 		} else {
           // @@ does only current file:
  /* @@ */ ds = getdirententry(side, midnight[side]->pos);
@@ -621,9 +655,10 @@ void navi(unsigned char side)  {
             if (c == 0xf5)  {  // copy
               // @@ these "if"s need to be swapped:
 			  if (sizeselectcurrentifnone(side) > midnight[side?0:1]->blocksfree)  {
-			    messagebox(0, "File copy,", "destination disk space insufficient", " ");
+			    messagebox(0, "File copy,", "destination disk space insufficient",
+                              " ", 0);
 			  } else if (messagebox(0, "File copy,", ds->name,
-			             (side ? "from right to left" : "from left to right"))) {
+			             (side ? "from right to left" : "from left to right"), 0)) {
 				for (i = 0; i < NBRENTRIES; i++)  {
                   if (direntflags[side][i].flags & DIRFLAGSisselected)  {
                     ds = getdirententry(side, i);
@@ -661,37 +696,40 @@ void navi(unsigned char side)  {
 			  }
 		    } else if (ds->type != VAL_DOSFTYPE_DEL &&  // delete
 			           messagebox(0, "File delete,", ds->name,
-			                      (side ? "from right side" : "from left side")))  {
-              sizeselectcurrentifnone(side);  // size returned doesn't matter to delete
-			  for (i = 0; i < NBRENTRIES; i++)  {
-                if (direntflags[side][i].flags & DIRFLAGSisselected)  {
-                  ds = getdirententry(side, i);
+			                      (side ? "from right side" : "from left side"), 0))  {
+              if (sizeselectcurrentifnone(side) != UINT_MAX)  {  // size returned doesn't matter to delete
+			    for (i = NBRENTRIES; i > 0; i--)  {
+                  if (direntflags[side][i - 1].flags & DIRFLAGSisselected)  {
+                    ds = getdirententry(side, i - 1);
 
-			      progress("Reading...", "BAM", 20);
-                  ds->type = VAL_DOSFTYPE_DEL;
-                  GetBAM(side, midnight[side]->dirtrack);
-                  progress("Writing...", "removing BAM entries", 40);
-                  deletedirententry(midnight[side]->drive, side,
-                                    midnight[side]->dirtrack, midnight[side]->pos);
-                  progress("Writing...", "updating BAM", 80);
-                  PutBAM(midnight[side]->drive, side, midnight[side]->dirtrack);
-				}
+			        progress("Reading...", "BAM", 20);
+                    ds->type = VAL_DOSFTYPE_DEL;
+                    GetBAM(side, midnight[side]->dirtrack);
+                    progress("Writing...", "removing BAM entries", 40);
+                    deletedirententry(midnight[side]->drive, side,
+                                      midnight[side]->dirtrack, i - 1); // midnight[side]->pos);
+                    progress("Writing...", "updating BAM", 80);
+                    PutBAM(midnight[side]->drive, side, midnight[side]->dirtrack);
+				  }
+			    }
+                UpdateSectors(midnight[side]->drive, side);
+		        Deselect(side);
 			  }
-              UpdateSectors(midnight[side]->drive, side);
-		      Deselect(side);
 		    }
 		  } else {
 			messagebox(0, "File type for", ds->name,
-			              "unsupported");
+			              "unsupported", 0);
 		  }
 		}
       break;
 
 	  case 0x8f6: // Mega-F5
-		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
-		  messagebox(0, "Copying full storage cards", "is not supported.", " ");
+		if (((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE) ||
+			((midnight[side?0:1]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
+		  messagebox(0, "Copying from/to storage cards", "is not supported.", " ", 0);
 		} else {
-	      if (messagebox(0, "Disk copy,", "destination disk will be OVERWRITTEN", " "))  {
+	      if (messagebox(0, "Disk copy,", "destination disk will be OVERWRITTEN",
+                            " ", 0))  {
             GetBAM(side, midnight[side]->dirtrack);
 			copywholedisk(midnight[side]->drive, midnight[side?0:1]->drive,
                           side, midnight[side]->dirtrack);
@@ -703,6 +741,7 @@ void navi(unsigned char side)  {
 	  case 0xf9:
 	    shortcuts(20, 0);
 	    setupbox();
+		messagebox(2, " ", " ", " ", 0);
 		progress("Reading...", "BAM", 20);
 		UpdateSectors(midnight[side]->drive, side);
 		Deselect(side);
@@ -711,6 +750,8 @@ void navi(unsigned char side)  {
       break;
 
 	  case 0x412: // Ctrl-r
+		midnight[side]->flags |= MIDNIGHTFLAGismounted;
+		midnight[side]->dirtrack = HEADERTRACK;
 	    UpdateSectors(midnight[side]->drive, side);
 		Deselect(side);
       break;
@@ -729,7 +770,7 @@ void navi(unsigned char side)  {
 
 		      if (attachresult > 0xf)  {  // @@ better error handling in Hyppo reqd
   		        messagebox(0, "Storage card parent directory,", "open failed for",
-                           (char *) ds->name);
+                           (char *) ds->name, 0);
 		      } else {
 	            UpdateSectors(midnight[side]->drive, side);
 		        Deselect(side);
@@ -752,15 +793,18 @@ void navi(unsigned char side)  {
 
 	  case 13: // return
         ds = getdirententry(side, midnight[side]->pos);
+        lcopy(ATTICLFNBUFFER + side * ATTICLFNBUFFERSIZE + midnight[side]->pos * LFNFILENAMELEN,
+		     (uint32_t) lfnname,
+	         LFNFILENAMELEN);
 
 		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
 		  if (ds->type & HYPPODIRENTATTRDIR)  {
-			hyppo_setname((char *) ds->name);
+			hyppo_setname(lfnname);  // ds->name);
 			attachresult = hyppo_chdir();
 
 		    if (attachresult > 0xf)  {  // @@ better error handling in Hyppo reqd
   		      messagebox(0, "Storage card change directory,", "open failed for",
-                         (char *) ds->name);
+                         (char *) ds->name, 0);
 		    } else {
 	          UpdateSectors(midnight[side]->drive, side);
 		      Deselect(side);
@@ -768,16 +812,17 @@ void navi(unsigned char side)  {
 		  } else {
 	        // @@ todo: choose drive
 		    if (midnight[side]->drive)  {
-		      hyppo_setname((char *) ds->name);
+		      hyppo_setname(lfnname); // (char *) ds->name);
 		      attachresult = hyppo_d81attach1();
 		    } else {
-		      hyppo_setname((char *) ds->name);
+		      hyppo_setname(lfnname); // (char *) ds->name);
 		      attachresult = hyppo_d81attach0();
 		    }
 //		hyppo_setname((char *) filelist[pos]);
 //		attachresult = (midnight[side]->drive ? hyppo_d81attach1() : hyppo_d81attach0());
 		    if (attachresult != 0)  {
-		      messagebox(0, "Storage card mounting,", "mount failed for", (char *) ds->name);
+		      messagebox(0, "Storage card mounting,", "mount failed for",
+                            (char *) lfnname, 0); // ds->name, 0);
 		    } else {
 		      midnight[side]->flags |= MIDNIGHTFLAGismounted;
 	          UpdateSectors(midnight[side]->drive, side);
@@ -793,7 +838,8 @@ void navi(unsigned char side)  {
 		  } else {
 		    sidbong();
 			if (midnight[side]->entries != 0xff)  {
-		      messagebox(0, "This file type/directory", "is not yet implemented.", " ");
+		      messagebox(0, "This file type/directory", "is not yet implemented.",
+                            " ", 0);
 			}
 		  }
 		}
