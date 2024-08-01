@@ -14,11 +14,14 @@
 // need to be at a page frame border, CAREFUL as this define does not throw warnings:
 #define readdir_direntasm DIRENTPAGELOW
 struct HYPPODIRENT* const __attribute__((used)) readdir_dirent = (struct HYPPODIRENT*) DIRENTPAGELOW;
+
 // static char * __attribute__((used)) HTRAP00asm = HTRAP00;
 #define HTRAP00asm $d640
+#define HTRAP3Fasm $d67f
 #define STR(x) #x
 #define XSTR(s) STR(s)
 __asm__(".set HTRAP00, " XSTR(HTRAP00asm) );
+__asm__(".set HTRAP3F, " XSTR(HTRAP3Fasm) );
 __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
 
 // please be aware the following structures are the same RAM page:
@@ -334,7 +337,11 @@ unsigned char hyppo_readdir(unsigned char filedescriptor)  {
     "nop\n"
   : "=r"(retval) : "y"(filedescriptor) : "a", "x");
 
-  readdir_dirent->lfn[readdir_dirent->length] = 0; // put str terminate null
+  if (readdir_dirent->length >= LFNFILENAMELEN)  {
+    readdir_dirent->lfn[LFNFILENAMELEN - 1] = 0;     // cut last character :(
+  } else {
+    readdir_dirent->lfn[readdir_dirent->length] = 0; // put str terminate null
+  }
 
   return retval;
 }
@@ -369,6 +376,7 @@ char * getlfn() {
   return readdir_dirent->lfn;
 }
 
+DIRENT direntryblock2; // @@@@ to be changed to an own array
 // misuse a DOS dirent to store Hyppo dirent:
 unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
                                  unsigned char maxentries)  {
@@ -377,7 +385,7 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
   unsigned char fd = 0xff;
   unsigned char readerr;
   unsigned char entries = 0;
-  DIRENT* ds;
+//  DIRENT* ds;
 
   // @@ later to be changed to switch storage card drives according to
   // Lydon's undocumented traps 0xc0 and 0xc1:
@@ -391,7 +399,7 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
 	  i = 0;
 	  // @@ 255 because "i" is a byte, error $85 is bad cluster meaning end of dir:
       while (entries < maxentries && i < 255 && readerr != 0x85) {
-        ds = (DIRENT *) direntryblock[0]; // to be changed to smaller array
+//        ds = (DIRENT *) direntryblock2;
         readerr = hyppo_readdir(fd);
 		
 		// @@ add check to exclude non-.d81 and non-dir entries!
@@ -410,22 +418,25 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
           msprintfd(getsfn()); // already null terminated
 		  cputlnd();
 		  cgetcd();
-		  strcpy((char *) ds->name, getsfn());
-		  ds->chntrack = (readdir_dirent->clusternumber >> 24) | 0x80; // Highest bit set
-		  ds->chnsector = (readdir_dirent->clusternumber >> 16) & 0xff;
-		  ds->track = (readdir_dirent->clusternumber >> 8) & 0xff | 0x80; // Highest bit set
-		  ds->sector = readdir_dirent->clusternumber & 0xff;
-		  ds->type = readdir_dirent->attr | HYPPODIRENTATTR; // to determine from mounted
-		  ds->size = readdir_dirent->size / 1024; // kB
-		  ds->access = 0;
-	      lcopy((uint32_t) ds,
+		  strcpy((char *) direntryblock2.name, getsfn());
+		  direntryblock2.chntrack = (readdir_dirent->clusternumber >> 24) | 0x80; // Highest bit set
+		  direntryblock2.chnsector = (readdir_dirent->clusternumber >> 16) & 0xff;
+		  direntryblock2.track = (readdir_dirent->clusternumber >> 8) & 0xff | 0x80; // Highest bit set
+		  direntryblock2.sector = readdir_dirent->clusternumber & 0xff;
+		  direntryblock2.type = readdir_dirent->attr | HYPPODIRENTATTR; // to determine from mounted
+		  direntryblock2.size = readdir_dirent->size / 1024; // kB
+		  direntryblock2.access = 0;
+	      lcopy((uint32_t) &direntryblock2,
 	            ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + entries * DIRENTSIZE,
 			    DIRENTSIZE);
+	      lcopy((uint32_t) readdir_dirent->lfn,
+	            ATTICLFNBUFFER + side * ATTICLFNBUFFERSIZE + entries * LFNFILENAMELEN,
+			    LFNFILENAMELEN);
 		  entries++;
         }
 		else  {
 		  // empty string usually crash when printed, so:
-		  ds->name[0] = 32; ds->name[1] = 0;
+		  direntryblock2.name[0] = 32; direntryblock2.name[1] = 0;
 /*
 		  snprintf( filelist[i], 65, "%d", i);
 		  messagebox(0, "error at reading storage card entry",
@@ -455,6 +466,14 @@ void hyppo_reset(void)  {
   asm volatile(
     "lda #$7E\n"
 	"sta HTRAP00\n"
+	"clv\n"
+  :  :  : "a");
+}
+
+void hyppo_freeze_self(void)  {
+  asm volatile(
+    "lda #$00\n"     // book says value is "xx"
+	"sta HTRAP3F\n"  // mind the different trap
 	"clv\n"
   :  :  : "a");
 }

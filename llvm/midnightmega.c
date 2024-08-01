@@ -80,7 +80,7 @@ int main() {
 
   if (messagebox(1, "is currently beta and may destroy data structures on",
                     ".d81 and real disks! Please work on backed up media.",
-			        "Press RETURN to continue, STOP to halt."))  {
+			        "Press RETURN to continue, STOP to halt.", 0))  {
     navi(0);
 /*
     unsigned char track = 1;

@@ -327,7 +327,7 @@ void mcbox(unsigned char left, unsigned char top, unsigned char right, unsigned 
 }
 
 unsigned char messagebox(unsigned char mode, char* message, char* message2,
-                         char* message3)  {
+                         char* message3, long n)  {
   unsigned char clear = 1;
   unsigned char shadow = 1;
   char c;
@@ -342,6 +342,9 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
   mcputsxy(12, 6, message);
   mcputsxy(12, 7, message2);
   mcputsxy(12, 8, message3);
+  if (mode == 3)  {
+	mhprintf("=", n);
+  }
 
   revers(1);
   mcputsxy(12, 10, "   OK   ");
@@ -377,7 +380,7 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
 
 unsigned char valuesbox(unsigned char mode, char* message, char* message2, long val2,
                         char* message3, long val3)  {
-  unsigned char ret = messagebox(mode, message, " ", " ");
+  unsigned char ret = messagebox(mode, message, " ", " ", 0);
   gotoxy(12, 7);
   mprintf(message2, val2);
   gotoxy(12, 8);
@@ -413,7 +416,7 @@ void progress(char* message, char* message2, unsigned char progresspercent)  {
 }
 
 char* inputbox(char* inputstr, char* message)  {
-  messagebox(2, message, "", "");
+  messagebox(2, message, "", "", 0);
   gotoxy(12, 8);
   cinput2((unsigned char*) inputstr, 56, CINPUT_ACCEPT_ALL); // | CINPUT_NO_AUTOTRANSLATE);
 

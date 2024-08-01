@@ -101,7 +101,7 @@ typedef struct structdatablock {
 // Midnight Mega general setup options:
 #define OPTIONshowDEL 1  // show deleted files as type DEL
 #define OPTIONshowALO 2  // copy allocated BAM blocks only
-#define OPTIONshowIGN 4
+#define OPTIONshowDRV 4
 #define OPTIONshow4   8
 #define OPTIONshow5   0x10
 #define OPTIONMAX     4
@@ -110,6 +110,7 @@ typedef struct structOPTION {
 } OPTION;
 extern OPTION option;
 
+void _miniInit();
 void GetBAM(unsigned char side, unsigned char dirtrack);
 void PutBAM(unsigned char drive, unsigned char side, unsigned char dirtrack);
 unsigned char BAM2Attic(unsigned char drive, unsigned char side, unsigned char dirtrack);

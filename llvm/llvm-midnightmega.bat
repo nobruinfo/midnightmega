@@ -72,7 +72,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.10-beta
+SET v=v0.5.11-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
@@ -104,10 +104,10 @@ IF ERRORLEVEL == 1 (
   ECHO ------------------------------------------------------
   REM  -Wall
   CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %cfiles% %libcfiles%
-  SET opts=%opts% -DDISKDEBUG
-  CALL %LLVM_BAT% -Os -o dbg%PRJ%.prg !opts! %cfiles% %libcfiles%
-  SET opts=!opts! -DDELAYDEBUG
-  CALL %LLVM_BAT% -Os -o emu%PRJ%.prg !opts! %cfiles% %libcfiles%
+REM  SET opts=%opts% -DDISKDEBUG
+REM  CALL %LLVM_BAT% -Os -o dbg%PRJ%.prg !opts! %cfiles% %libcfiles%
+REM  SET opts=!opts! -DDELAYDEBUG
+REM  CALL %LLVM_BAT% -Os -o emu%PRJ%.prg !opts! %cfiles% %libcfiles%
 
   for /f "tokens=1* delims=?" %%i in ('DIR /B /O:DN "%TEMP%\*.o"') do (
     ECHO File is %%i
@@ -121,8 +121,8 @@ IF ERRORLEVEL == 1 (
   %c1541% -format disk%PRJ%,id d81 %PRJ%.d81
   %c1541% -attach %PRJ%.d81 -delete %PRJ%
   %c1541% -attach %PRJ%.d81 -write %PRJ%.prg %PRJ%
-  %c1541% -attach %PRJ%.d81 -write dbg%PRJ%.prg dbg%PRJ%
-  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
+REM  %c1541% -attach %PRJ%.d81 -write dbg%PRJ%.prg dbg%PRJ%
+REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   IF 1 == 2 (
     ECHO this is a sequential file for testing.>%PRJ%.seq
     %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s
@@ -146,21 +146,6 @@ IF ERRORLEVEL == 1 (
     %petcat% -text -c -w2 -o help.seq -- help.txt
     %c1541% -attach %PRJ%.d81 -write help.seq help.seq,s
   )
-  ECHO 10 POKE $D080,$20>F011.BAS
-  ECHO 20 POKE $D081,$20>>F011.BAS
-  ECHO 30 POKE $D084,41>>F011.BAS
-  ECHO 40 POKE $D085,1>>F011.BAS
-  ECHO 50 POKE $D086,0>>F011.BAS
-  ECHO 60 POKE $D081,$41>>F011.BAS
-  ECHO 65 SLEEP 1>>F011.BAS
-  ECHO 70 PRINT PEEK^($D082^)>>F011.BAS
-  ECHO 80 PRINT PEEK^($D689^)>>F011.BAS
-  ECHO 90 POKE $D689,0>>F011.BAS
-  ECHO 110 POKE $D080,0>>F011.BAS
-  %petcat% -w65 -o F011.prg -- F011.bas
-  %c1541% -attach %PRJ%.d81 -write F011.prg f011readsect
-  DEL F011.bas>NUL
-  DEL F011.prg>NUL
 
   REM Use in Xemu's out of the image file fs access:
   XCOPY /Y %PRJ%.d81 %HDOS%\
@@ -205,6 +190,23 @@ REM      %c1541% -attach %DATADISK%.d81 -@ "/%%j:folder %%j" -delete %PRJ%
 
   %c1541% -attach %DATADISK%.d81 -delete %DATADISK%
   %c1541% -attach %DATADISK%.d81 -write regions.h regions.h,s
+
+  ECHO 10 POKE $D080,$20>F011.BAS
+  ECHO 20 POKE $D081,$20>>F011.BAS
+  ECHO 30 POKE $D084,41>>F011.BAS
+  ECHO 40 POKE $D085,1>>F011.BAS
+  ECHO 50 POKE $D086,0>>F011.BAS
+  ECHO 60 POKE $D081,$41>>F011.BAS
+  ECHO 65 SLEEP 1>>F011.BAS
+  ECHO 70 PRINT PEEK^($D082^)>>F011.BAS
+  ECHO 80 PRINT PEEK^($D689^)>>F011.BAS
+  ECHO 90 POKE $D689,0>>F011.BAS
+  ECHO 110 POKE $D080,0>>F011.BAS
+  %petcat% -w65 -o F011.prg -- F011.bas
+  %c1541% -attach %DATADISK%.d81 -write F011.prg f011readsect
+  DEL F011.bas>NUL
+  DEL F011.prg>NUL
+
   for /l %%i in (1, 1, 1) do (
     %c1541% -attach %DATADISK%.d81 -write %PRJ%.s asm%%i%PRJ%,s
   )

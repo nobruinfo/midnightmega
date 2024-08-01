@@ -51,6 +51,56 @@ unsigned char dosfilename[DOSFILENAMELEN + 1]; // extra byte for nullterm
 // Midnight Mega general setup options:
 OPTION option;
 
+#define READ 0
+#define WRITE 1
+#define OFF 2
+#define SHOWACCESSX 26
+#define SHOWACCESSY 22
+void ShowAccess(unsigned char drive,
+                char track, char sector, unsigned char rw)  {
+  if (rw == OFF)  {
+    textcolor(COLOUR_CYAN);
+    mcputsxy(SHOWACCESSX, SHOWACCESSY, " D");
+    hline(SHOWACCESSX, SHOWACCESSY, 12, 32); // 64);  // 64 is the horizontal line
+  } else if (option.option & OPTIONshowDRV) {
+// #ifdef DISKDEBUG
+    revers(1);
+    if (drive)  textcolor(COLOUR_LIGHTGREEN);
+    else        textcolor(COLOUR_LIGHTGREY);
+    mcputsxy(SHOWACCESSX, SHOWACCESSY, " D");
+    csputdec(drive, 1, 0);
+    textcolor(COLOUR_ORANGE);
+    cputc('T');
+    csputdec(track, 2, 0);
+    textcolor(COLOUR_LIGHTBLUE);
+    cputc('S');
+    csputdec(sector, 2, 0);
+    cputc(' ');
+    if (rw == WRITE)  {
+      textcolor(COLOUR_RED);
+      cputc('W');
+      cputc(' ');
+    } else {
+      textcolor(COLOUR_ORANGE);
+      cputc('R');
+      cputc(' ');
+    }
+    revers(0);
+/*
+#ifdef DELAYDEBUG
+  usleep(800000); // microseconds
+#endif
+  textcolor(COLOUR_CYAN);
+  mcputsxy(SHOWACCESSX, SHOWACCESSY, " D");
+  hline(SHOWACCESSX, SHOWACCESSY, 12, 32); // 64);  // 64 is the horizontal line
+#ifdef DELAYDEBUG
+  usleep(20000); // microseconds
+#endif
+#endif
+*/
+  }
+}
+
 void _miniInit()  {
   // clear F011 Floppy Controller Registers
   POKE(0xd080U, 0);
@@ -65,6 +115,8 @@ unsigned char ReadSector(unsigned char drive, char track,
                                               char sector) {
 	unsigned char retval;
 	unsigned char s;
+
+  ShowAccess(drive, track, sector, READ);
 
 	if (track == 0)  return 0xFC;
 	drive += 0x20;   // #$60 drive 0
@@ -110,6 +162,7 @@ unsigned char ReadSector(unsigned char drive, char track,
 	// Make sure we can see the data, clear bit 7:
 	POKE(0xd689U, PEEK(0xd689U) & ~0x80);
 
+  ShowAccess(drive, track, sector, OFF);
 	return retval;
 }
 
@@ -117,6 +170,8 @@ unsigned char ReadSector(unsigned char drive, char track,
 unsigned char WriteSector(unsigned char drive, char track,
                                                char sector) {
 	unsigned char retval;
+
+  ShowAccess(drive, track, sector, WRITE);
 
 	if (track == 0)  return 0xFC;
 	drive += 0x20;   // #$60 drive 0
@@ -160,48 +215,8 @@ unsigned char WriteSector(unsigned char drive, char track,
 	// Make sure we can see the data, clear bit 7:
 	POKE(0xd689U, PEEK(0xd689U) & ~0x80);
 
+  ShowAccess(drive, track, sector, OFF);
 	return retval;
-}
-
-#define READ 0
-#define WRITE 1
-#define SHOWACCESSX 26
-#define SHOWACCESSY 22
-void ShowAccess(unsigned char drive,
-                char track, char sector, unsigned char rw)  {
-#ifdef DISKDEBUG
-  revers(1);
-  if (drive)  textcolor(COLOUR_LIGHTGREEN);
-  else        textcolor(COLOUR_LIGHTGREY);
-  mcputsxy(SHOWACCESSX, SHOWACCESSY, " D");
-  csputdec(drive, 1, 0);
-  textcolor(COLOUR_ORANGE);
-  cputc('T');
-  csputdec(track, 2, 0);
-  textcolor(COLOUR_LIGHTBLUE);
-  cputc('S');
-  csputdec(sector, 2, 0);
-  cputc(' ');
-  if (rw == WRITE)  {
-    textcolor(COLOUR_RED);
-    cputc('W');
-    cputc(' ');
-  } else {
-    textcolor(COLOUR_ORANGE);
-    cputc('R');
-    cputc(' ');
-  }
-  revers(0);
-#ifdef DELAYDEBUG
-  usleep(800000); // microseconds
-#endif
-  textcolor(COLOUR_CYAN);
-  mcputsxy(SHOWACCESSX, SHOWACCESSY, " D");
-  hline(SHOWACCESSX, SHOWACCESSY, 12, 32); // 64);  // 64 is the horizontal line
-#ifdef DELAYDEBUG
-  usleep(20000); // microseconds
-#endif
-#endif
 }
 
 // depending on the sector's side this returns the wanted
@@ -252,7 +267,6 @@ unsigned char GetOneSector(BAM* entry, unsigned char drive,
   cgetc();
 #endif
 
-  ShowAccess(drive, track, sector, READ);
   return side;
 }
 unsigned char PutWholeSector(BAM* entry, unsigned char side,
@@ -283,7 +297,7 @@ unsigned char PutWholeSector(BAM* entry, unsigned char side,
   cgetcd();
   return WriteSector(drive, track, sector - side);
 }
-unsigned char PutOneSector(BAM* entry, unsigned char drive, 
+unsigned char PutOneSector(BAM* entry, unsigned char drive,
                            char track, char sector)  {
   BAM* ws = entry;   // later to be DATABLOCK*
 
@@ -310,7 +324,6 @@ unsigned char PutOneSector(BAM* entry, unsigned char drive,
   msprintfd("PutOneSector done. Returning while WriteSector.");
   cgetcd();
 
-  ShowAccess(drive, track, sector, WRITE);
   return WriteSector(drive, track, sector - side);
 }
 
@@ -451,7 +464,7 @@ void getDiskname(unsigned char drive, unsigned char dirtrack, char* diskname) {
   }
 }
 
-unsigned char readblockchain(uint32_t destination_address, // attic RAM
+unsigned char readblockchain(uint32_t destination_address,
                              unsigned int maxblocks, unsigned char drive,
                              unsigned char track, unsigned char sector)  {
   unsigned int i;
@@ -749,7 +762,8 @@ void writeblockchain(uint32_t source_address, // attic RAM
   }
   
   if (nexttrack > 0 && i >= maxblocks)  {
-	messagebox(0, "Writing file,", "number of sectors too big", " ");
+	messagebox(3, "Writing file,", "number of sectors too big",
+	              "max", (long) maxblocks);
   }
 }
 
