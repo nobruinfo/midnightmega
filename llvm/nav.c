@@ -617,6 +617,11 @@ void navi(unsigned char side)  {
 			hyppo_freeze_self();
             progress("Reading...", "BAM", 30);
             usleep(2000000); // microseconds
+            midnight[side]->flags |= MIDNIGHTFLAGismounted; // try remount
+            midnight[side?0:1]->flags |= MIDNIGHTFLAGismounted;
+            midnight[side]->dirtrack = HEADERTRACK;
+            midnight[side?0:1]->dirtrack = HEADERTRACK;
+		    UpdateSectors(midnight[side]->drive, side);
 		    UpdateSectors(midnight[side?0:1]->drive, side?0:1);
 		  }
 		}

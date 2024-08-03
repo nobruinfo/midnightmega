@@ -269,24 +269,25 @@ unsigned char GetOneSector(BAM* entry, unsigned char drive,
 
   return side;
 }
-unsigned char PutWholeSector(BAM* entry, unsigned char side,
-                    unsigned char drive, char track, char sector)  {
+unsigned char PutWholeSector(BAM* entry, unsigned char drive,
+                             char track, char sector)  {
   BAM* ws = entry;   // later to be DATABLOCK*
 
-  if (side > 1)  return side;
-  
-  // Now first read the state from the disk, because only one of
-  // the two logical sectors will be overwritten:
-  ReadSector(drive, track, sector);
-  
+//  if (side > 1)  return side;
+  unsigned char side = sector % 2;
+
   if (side == 0)  {
-//  clrhome();
+    clrhomed();
     mprintfd("PutWholeSector before lower buffer. Track=", track);
     mprintfd(" Sector=", sector);
     cputlnd();
     cgetcd();
-    lcopy((uint32_t) ws, SECTBUF, BLOCKSIZE);
-  } else {
+    lcopy((uint32_t) ws, SECTBUF, BLOCKSIZE * 2); // <-- take both sectors
+  } else {  // @@@@ probably no longer needed:
+    // Now first read the state from the disk, because only one of
+    // the two logical sectors will be overwritten:
+    ReadSector(drive, track, sector);
+  
     clrhomed();
     mprintfd("PutWholeSector before upper buffer. Track=", track);
     mprintfd(" Sector=", sector);
@@ -308,7 +309,7 @@ unsigned char PutOneSector(BAM* entry, unsigned char drive,
   ReadSector(drive, track, sector);
   
   if (side == 0)  {
-//  clrhome();
+    clrhomed();
     mprintfd("PutOneSector before lower buffer. Track=", track);
     mprintfd(" Sector=", sector);
     cputlnd();
@@ -877,28 +878,30 @@ unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive,
 */
     i = 0;
     for (track = 1; track <= 80; track++)  {
-	  for (sector = 0; sector < 40; sector++)  {
+	  for (sector = 0; sector < 40; sector += 2)  {
 		if (!(option.option & OPTIONshowALO) ||
-		    isallocatedBAMtracksector(track, sector))  {
+		    isallocatedBAMtracksector(track, sector) ||
+			isallocatedBAMtracksector(track, sector + 1))  {
 	      progress("Reading...", tracksectorstring(track, sector), i / 64);
-	      if (GetOneSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
+	      if (GetWholeSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
 		    return 0xff;
 	      }
 	      ws = worksector[0];
-	      lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE);
-	      i++;
+	      lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE * 2);
+	      i += 2;
 		}
 	  }
     }
     i = 0;
     for (track = 1; track <= 80; track++)  {
-	  for (sector = 0; sector < 40; sector++)  {
+	  for (sector = 0; sector < 40; sector += 2)  {
 		if (!(option.option & OPTIONshowALO) ||
-		    isallocatedBAMtracksector(track, sector))  {
+		    isallocatedBAMtracksector(track, sector) ||
+			isallocatedBAMtracksector(track, sector + 1))  {
 	      progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
-          lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
-	      PutOneSector((BAM *) ws, destdrive, track, sector);
-	      i++;
+          lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE * 2);
+	      PutWholeSector((BAM *) ws, destdrive, track, sector);
+	      i += 2;
 		}
 	  }
     }
