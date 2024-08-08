@@ -12,8 +12,8 @@
 // *********************************************************
 
 // need to be at a page frame border, CAREFUL as this define does not throw warnings:
-#define readdir_direntasm DIRENTPAGELOW
-struct HYPPODIRENT* const __attribute__((used)) readdir_dirent = (struct HYPPODIRENT*) DIRENTPAGELOW;
+#define readdir_direntasm BLOCKDIRENT
+struct HYPPODIRENT* const __attribute__((used)) readdir_dirent = (struct HYPPODIRENT*) BLOCKDIRENT;
 
 // static char * __attribute__((used)) HTRAP00asm = HTRAP00;
 #define HTRAP00asm $d640

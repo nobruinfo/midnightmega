@@ -20,6 +20,21 @@ struct TASKBLOCK {  // big book page #39b
 	unsigned char notimplemented[256-32-32-16-5];
 };                                   // blown up to fill a whole page
 
+#define DOSFILENAMELEN 16  // dirent DOS file name with no null termination
+
+typedef struct structdirent {
+	unsigned char chntrack;
+	unsigned char chnsector;
+    unsigned char type;
+	unsigned char track;
+	unsigned char sector;
+             char name[DOSFILENAMELEN]; // File name in PetSCII, limited to 16 chars
+	unsigned char dummy[9];  // see bytes $15..$1D of
+	                         // http://justsolve.archiveteam.org/wiki/GEOS_VLIR
+    unsigned int  size;      // in blocks, also for subpartitions
+    unsigned char access;
+} DIRENT;
+
 #define LFNFILENAMELEN 64
 #define LFNENTRIESPERBLOCK 4 // nbr of entries on disk block
 #define LFNBLOCKS 14    // nbr of dirent pages in attic
@@ -57,7 +72,8 @@ struct HYPPODIRENT {
 					  // 3   Volume label
 					  // 4   Sub-directory
 					  // 5   Archive
-	unsigned char dummy[256-87];  // blown up to fill a whole page
+	unsigned char dummy[256-87-64];  // blown up to fill a whole page
+	DIRENT direntryblock[2];
 };
 
 extern struct HYPPODIRENT *const readdir_dirent;

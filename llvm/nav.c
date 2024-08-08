@@ -20,7 +20,7 @@
 // flags and stuff:
 MIDNIGHT* midnight[2] = { (MIDNIGHT*) MIDNIGHTLEFTPAGE,
                           (MIDNIGHT*) MIDNIGHTRIGHTPAGE };
-unsigned char diskname[2][DOSFILENAMELEN + 1]; // @@ change for pointer
+unsigned char disknames[2][DOSFILENAMELEN + 1]; // @@ change for pointer
 unsigned char lfnname[LFNFILENAMELEN];         // @@ change for pointer
 
 #define FILEENTRIES (8 * DIRENTBLOCKS)
@@ -420,14 +420,13 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
       midnight[side]->curfile[c] = 0;
     }
 
-    getDiskname(drive, midnight[side]->dirtrack, (char *) diskname[side]);
+    getDiskname(drive, midnight[side]->dirtrack, (char *) disknames[side]);
 	c = BAM2Attic(drive, side, midnight[side]->dirtrack);
     if (c > 1)  {
 /*
 	  messagebox(3, "Reading BAM error, probably unmounted",
                     (drive ? "drive 1" : "drive 0"),
 	                "error=", (long) c);
-      strcopy("read error", (char *) diskname, 16);
 */
 	  midnight[side]->flags &= (~MIDNIGHTFLAGismounted);
 	  sethyppo = SETHYPPOONBYERROR;
@@ -441,7 +440,7 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
   }
   
   if (sethyppo != SETHYPPOOFF)  {
-	strcopy("storage card", (char *) diskname[side], 16);
+	strcopy("storage card", (char *) disknames[side], 16);
 	strcopy("storage card", (char *) midnight[side]->curfile, 16);
     midnight[side]->entries = gethyppodirent(drive, side, FILEENTRIES);
 	midnight[side]->blocksfree = UINT_MAX;
@@ -528,7 +527,7 @@ void navi(unsigned char side)  {
       mcbox(leftx, 0, leftx + 39, 0 + 23, COLOUR_CYAN, BOX_STYLE_INNER, 1, 0);
       revers(1);
       mcputsxy(leftx + 2, 0, " ");  // @@ to be string optimised as in listbox()
-	  msprintf((char *) diskname[i]);
+	  msprintf((char *) disknames[i]); // @@@@ maybe simply call GetDisknames here
 	  cputc(' ');
       if ((midnight[i]->flags & MIDNIGHTFLAGismounted) == TRUE)  {
         mcputsxy(wherex() + 1, 0, " ");
@@ -610,20 +609,16 @@ void navi(unsigned char side)  {
       break;
 
 	  case 0x8f4: // Mega-F3
-		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
-		  messagebox(0, "Freezer", "not supported in mount mode.", " ", 0);
-		} else {
-	      if (messagebox(0, "Freezer", "did you save your work?", " ", 0))  {
-			hyppo_freeze_self();
-            progress("Reading...", "BAM", 30);
-            usleep(2000000); // microseconds
-            midnight[side]->flags |= MIDNIGHTFLAGismounted; // try remount
-            midnight[side?0:1]->flags |= MIDNIGHTFLAGismounted;
-            midnight[side]->dirtrack = HEADERTRACK;
-            midnight[side?0:1]->dirtrack = HEADERTRACK;
-		    UpdateSectors(midnight[side]->drive, side);
-		    UpdateSectors(midnight[side?0:1]->drive, side?0:1);
-		  }
+	    if (messagebox(0, "Freezer", "did you save your work?", " ", 0))  {
+		  hyppo_freeze_self();
+          progress("Reading...", "BAM", 30);
+          usleep(2000000); // microseconds
+          midnight[side]->flags |= MIDNIGHTFLAGismounted; // try remount
+          midnight[side?0:1]->flags |= MIDNIGHTFLAGismounted;
+          midnight[side]->dirtrack = HEADERTRACK;
+          midnight[side?0:1]->dirtrack = HEADERTRACK;
+		  UpdateSectors(midnight[side]->drive, side);
+		  UpdateSectors(midnight[side?0:1]->drive, side?0:1);
 		}
       break;
 
@@ -804,7 +799,7 @@ void navi(unsigned char side)  {
 
 		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
 		  if (ds->type & HYPPODIRENTATTRDIR)  {
-			hyppo_setname(lfnname);  // ds->name);
+			hyppo_setname((char*) lfnname);  // ds->name);
 			attachresult = hyppo_chdir();
 
 		    if (attachresult > 0xf)  {  // @@ better error handling in Hyppo reqd
@@ -817,10 +812,10 @@ void navi(unsigned char side)  {
 		  } else {
 	        // @@ todo: choose drive
 		    if (midnight[side]->drive)  {
-		      hyppo_setname(lfnname); // (char *) ds->name);
+		      hyppo_setname((char *) lfnname); // (char *) ds->name);
 		      attachresult = hyppo_d81attach1();
 		    } else {
-		      hyppo_setname(lfnname); // (char *) ds->name);
+		      hyppo_setname((char *) lfnname); // (char *) ds->name);
 		      attachresult = hyppo_d81attach0();
 		    }
 //		hyppo_setname((char *) filelist[pos]);

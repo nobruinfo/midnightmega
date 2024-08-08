@@ -16,15 +16,20 @@ of this development will **eat** your files.
 
 # Start
 
-Use one of the following files within `MIDNIGHT.D81`:
+Currently `MIDNIGHTMEGA` PRG is the only programme. You find it
+within `MIDNIGHT.D81`.
 
-* `MIDNIGHTMEGA` PRG as the regular programme.
-* `DBGMIDNIGHTMEGA` PRG to see an additionak
-  disk/track/sector/read/write in the lower left of the screen.
-* `EMUMIDNIGHTMEGA` PRG same as `DBGMIDNIGHTMEGA` but with
-  additional delays for each sector read and written. Can be used
-  to examine `.d81` on storage card behaviours which otherwise
-  would be quite fast.
+The earlier file `DBGMIDNIGHTMEGA` PRG to see an additional
+disk/track/sector/read/write in the lower left of the screen is
+no longer needed. The overlay is configurable in the setup which
+you can reach with the [F9] key.
+
+The second file `EMUMIDNIGHTMEGA` PRG no longer provided was the
+same as `DBGMIDNIGHTMEGA` but with additional delays for each
+sector read and written. It was used to examine `.d81` on storage
+card behaviours or in XMega65 from the Xemu emulators suite. Both
+otherwise being quite fast to look at. The delay feature currently
+is no available.
 
 The additional output shows like `D1T40S1 R` where `D1` is the
 chosen disk drive number (currently 0 for the left screen pane
@@ -53,6 +58,16 @@ the [F1] key.
 * [F2] ([Shift][F1] on the MEGA65 of course) is used for both
   switching from a mounted .d81 to the selection within the
   storage card and back
+* [Mega][F1] can be used to call the unmount all routine of the
+  Hypervisor. This will unmount all real disk drives as well as
+  all .d81 files. Currently this leaves a real machine in a state
+  it cannot recover reaching real disk drives. .d81 files can be
+  newly mounted fine.
+* [Mega][F3] opens the Freezer screen. It is an in-application
+  alternative to using a longer press onto the [RESTORE] key.
+  After coming back the application is rescanning the drives like
+  it does if the [Ctrl][r] combination of keys is used to ensure
+  updated disk contents.
 
 # Project subfolders here in Github
 
@@ -115,7 +130,7 @@ all message box texts and so on. This is not yet begun.
 * ✓ Text based GUI, Midnight/Norton Commander oriented
 * ✓ copying of complete disk images, real diskettes respectively
 * ✓ proof of concept accessing .d81 mount handling
-* copying of ~~single~~/multiple files in between real/virtual drives,
+* ✓ copying of single/multiple files in between real/virtual drives,
   mounted images
 * message boxes for errors and warnings in different colours/sounds?
 * Handling of subdirectories (sub-partitions of file type `CBM`)
@@ -158,17 +173,19 @@ all message box texts and so on. This is not yet begun.
   optimised.<br />
   A BAM flag could be used to only read it back in case disk
   operation need access to it/alter it.
-* The disk controller always reads/writes two logical sectors
-  at a time because of course it acts on physical 80 sectored
-  dual sided media. The now abstraction make in no way optimal
-  use of that.<br />
-  Either reading one sector could keep the other in a cache or
-  `UpdateSectors()` could be optimised to read them all at once
-  in a proper numeric order.
+  Also BAM and dirent should be handled in one go as the double
+  logical sectors for both share same physical ones on a disk.
+* ✓ ~~The disk controller always reads/writes two logical sectors~~
+  ~~at a time because of course it acts on physical 80 sectored~~
+  ~~dual sided media. The now abstraction make in no way optimal~~
+  ~~use of that.~~<br />
+  ✓ ~~Either reading one sector could keep the other in a cache or~~
+  ~~`UpdateSectors()` could be optimised to read them all at once~~
+  ~~in a proper numeric order.~~
 * ✓ ~~`dirent` is currently not fully updated, additional sectors~~
   ~~are currently not added automatically.~~
-* `dirent` currently uses a full 255 bytes page of data which of
-  course is completely unnecessary.
+* ✓ ~~`dirent` currently uses a full 255 bytes page of data which of~~
+  ~~course is completely unnecessary.~~
 * ✓ ~~`dirent` currently is read beginning with the first block of~~
   ~~file entries not supporting the disk name block at track 40~~
   ~~sector 0.~~
@@ -187,8 +204,9 @@ all message box texts and so on. This is not yet begun.
   different that don't require modification at all.
 * Flickering in Xemu when e.g. cursor up is performed multiple times
   because of how modifier keys are currently handled.
-* If a file is only read the drive's LED doesn't switch back off. It
-  seems this is done by _miniinit() which needs to be checked anyway.
+* ✓ ~~If a file is only read the drive's LED doesn't switch back off.~~
+  ~~It seems this is done by _miniinit() which needs to be checked~~
+  ~~anyway.~~
 
 # C environment
 

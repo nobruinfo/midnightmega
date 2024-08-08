@@ -7,7 +7,9 @@
 #define VAL_DOSFTYPE_REL 4
 #define VAL_DOSFTYPE_CBM 5
 
+/* now in hyppo.h:
 #define DOSFILENAMELEN 16  // dirent DOS file name with no null termination
+*/
 #define DOSFILENAMEANDTYPELEN 40  // dirent output string with no null termination
 
 #define LEFTSIDE 0
@@ -15,23 +17,26 @@
 #define ENTRIESPERBLOCK 8 // nbr of entries on disk block
 #define DIRENTBLOCKS 14    // nbr of dirent pages in attic
 #define NBRENTRIES (DIRENTBLOCKS * ENTRIESPERBLOCK) // nbr of GUI entries
+/* now in hyppo.h:
 typedef struct structdirent {
 	unsigned char chntrack;
 	unsigned char chnsector;
     unsigned char type;
 	unsigned char track;
 	unsigned char sector;
-             char name[DOSFILENAMELEN]; /* File name in PetSCII, limited to 16 chars */
+             char name[DOSFILENAMELEN]; // File name in PetSCII, limited to 16 chars
 	unsigned char dummy[9];  // see bytes $15..$1D of
 	                         // http://justsolve.archiveteam.org/wiki/GEOS_VLIR
     unsigned int  size;      // in blocks, also for subpartitions
     unsigned char access;
 } DIRENT;
+*/
+/* @@@@ no longer needed:
 typedef struct structsectdirent {
 	DIRENT entry[ENTRIESPERBLOCK];
 } SECTDIRENT;
 extern SECTDIRENT * direntryblock[2];
-
+*/
 #define DIRFLAGSisselected 1
 
 typedef struct structDIRFLAGS {

@@ -4,15 +4,6 @@ REM This to have those !vars! at hand which aren't preset outside loops:
 setlocal enabledelayedexpansion
 
 SET VICE=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\2021
-SET VICE=%VICE%\GTK3VICE-3.6.1-win64\bin\
-SET c1541="%VICE%\c1541"
-
-SET PETCAT=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\
-SET PETCAT="%PETCAT%2021\GTK3VICE-3.6.1-win64\bin\petcat.exe"
-
-
-
-SET VICE=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\2021
 SET VICE=%VICE%\GTK3VICE-3.8-win64\bin\
 SET c1541="%VICE%\c1541"
 SET PETCAT=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\
@@ -72,7 +63,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.13-beta
+SET v=v0.5.14-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
