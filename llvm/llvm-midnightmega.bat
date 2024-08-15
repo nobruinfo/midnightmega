@@ -24,6 +24,7 @@ SET PATH=%PATH%;%VICE%;%XMEGA65%
 CD /D %~dp0
 
 SET PRJ=midnightmega
+SET ROMLIST=romlister
 SET DATADISK=datadisk
 SET versions=..\versions.txt
 
@@ -34,7 +35,8 @@ SET libcfilesdir=..\mega65-libc\src
 SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%\hal.c
 SET libcfiles=%libcfiles% include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
-SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c sid.c
+SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c sid.c romlist.c
+SET cfilesrom=%ROMLIST%.c hyppo.c fileio.c conioextensions.c romlist.c
 
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
 SET opts=--include-directory=.\include
@@ -48,6 +50,7 @@ SET opts=%opts% -Oz
 REM You can pass -mreserve-zp= to tell the compiler to reduce
 REM its ZP spend by that amount:
 REM SET opts=%opts% -mreserve-zp=2
+REM SET opts=%opts% -mlto-zp=5
 SET opts=%opts% -Wl,-Map=%PRJ%.map
 SET opts=%opts% -Wl,-trace
 REM SET opts=%opts% -Wl,--reproduce=reproduce.tar
@@ -63,7 +66,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.14-beta
+SET v=v0.5.15-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
@@ -109,9 +112,14 @@ REM  CALL %LLVM_BAT% -Os -o emu%PRJ%.prg !opts! %cfiles% %libcfiles%
 
   %LLVMDUMP% --disassemble --syms %PRJ%.prg.elf > %PRJ%_dump.txt
 
+  REM seperate ROM list application
+  CALL %LLVM_BAT% -Os -o %ROMLIST%.prg %opts% %cfilesrom% %libcfiles%
+
   %c1541% -format disk%PRJ%,id d81 %PRJ%.d81
   %c1541% -attach %PRJ%.d81 -delete %PRJ%
   %c1541% -attach %PRJ%.d81 -write %PRJ%.prg %PRJ%
+  %c1541% -attach %PRJ%.d81 -delete %ROMLIST%
+  %c1541% -attach %PRJ%.d81 -write %ROMLIST%.prg %ROMLIST%
 REM  %c1541% -attach %PRJ%.d81 -write dbg%PRJ%.prg dbg%PRJ%
 REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   IF 1 == 2 (

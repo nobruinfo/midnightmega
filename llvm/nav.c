@@ -10,6 +10,7 @@
 #include "conioextensions.h"
 #include "hyppo.h"
 #include "fileio.h"
+#include "romlist.h"
 #include "nav.h"
 #include "sid.h"
 
@@ -125,7 +126,7 @@ void shortcuts(unsigned char mod, unsigned char side)  {
 	shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
                          " 5",  "DskCpy");
 	shortcutprint(FALSE, " 6",  "      ");
-	shortcutprint(FALSE, " 7",  "      ");
+	shortcutprint( TRUE, " 7",  "ROMlst");
 	shortcutprint(FALSE, " 8",  "Format");
 	shortcutprint(FALSE, " 9",  "      ");
 	shortcutprint(FALSE, " 10", "     ");
@@ -354,6 +355,48 @@ unsigned char helpbox()  {
 //		cputc(' ');
       break;
 	}
+  }
+}
+
+unsigned char rombox()  {
+  unsigned char clear = 1;
+  unsigned char shadow = 1;
+  char c;
+
+  mcbox(4, 4, 75, 20, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+
+  revers(1);
+  mcputsxy(6, 4, " Midnight Mega ");
+  mcputsxy(25, 4, " List of ROM files ");
+  mcputsxy(47, 4, " The MEGA65 file commander ");
+  revers(0);
+
+  mcputsxy(7, 20, " ");
+  msprintf(VERSION);
+  msprintf(" ");
+  mcputsxy(52, 20, " github.com/nobruinfo ");
+
+  romlist(6);
+
+  while(1)  {
+    c = cgetc();
+    switch (c) {
+      case ' ':
+      case 13: // RETURN
+	    return TRUE;
+      break;
+
+      case 3:  // STOP
+       case 27: // Esc
+	    return FALSE;
+      break;
+
+      default:
+	    sidbong();
+//	    mprintf("val=", c);
+//		cputc(' ');
+      break;
+    }
   }
 }
 
@@ -736,6 +779,10 @@ void navi(unsigned char side)  {
 		    UpdateSectors(midnight[side?0:1]->drive, side?0:1);
 		  }
 		}
+      break;
+
+	  case 0x8f8: // Mega-F7
+	    rombox();
       break;
 
 	  case 0xf9:

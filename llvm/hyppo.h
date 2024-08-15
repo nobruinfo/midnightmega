@@ -92,6 +92,10 @@ unsigned char hyppo_opendir(void);
 unsigned char hyppo_chdir(void);
 unsigned char hyppo_closedir(unsigned char filedescriptor);
 unsigned char hyppo_readdir(unsigned char filedescriptor);
+unsigned char hyppo_findfirst(void);
+unsigned char hyppo_openfile(unsigned char filedescriptor);
+unsigned char hyppo_readfile(unsigned char filedescriptor);
+unsigned char hyppo_closefile(unsigned char filedescriptor);
 char * getsfn();
 char * getlfn();
 unsigned char getallhyppoentries(unsigned char drive, unsigned char side,

@@ -346,6 +346,90 @@ unsigned char hyppo_readdir(unsigned char filedescriptor)  {
   return retval;
 }
 
+unsigned char hyppo_findfirst(void)  {
+	unsigned char retval;
+
+  asm volatile(
+	"ldx #$00\n"    // reset number of found file entries
+    "lda #$30\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	"bcc errhypfindfirst%=\n"
+    "sta %0\n"
+	"jmp donehypfindfirst%=\n"
+"errhypfindfirst%=:\n"
+/*  a already carries the return (error) code
+    "lda #$FF\n"
+*/
+	"sta %0\n"
+"donehypfindfirst%=:\n"
+    "nop\n"
+  : "=r"(retval) : : "a", "x");
+  return retval;
+}
+
+unsigned char hyppo_openfile(unsigned char filedescriptor)  {
+	unsigned char retval;
+
+  asm volatile(
+//	"ldx #$00\n"    // shouldn't be necessary
+    "lda #$18\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	"bcc errhypopenfile%=\n"
+    "sta %0\n"
+	"jmp donehypopenfile%=\n"
+"errhypopenfile%=:\n"
+/*  a already carries the return (error) code
+    "lda #$FF\n"
+*/
+	"sta %0\n"
+"donehypopenfile%=:\n"
+    "nop\n"
+  : "=r"(retval) : "x"(filedescriptor) : "a" );
+  return retval;
+}
+
+unsigned char hyppo_readfile(unsigned char filedescriptor)  {
+	unsigned char retval;
+
+  asm volatile(
+//	"ldx #$00\n"    // shouldn't be necessary
+    "lda #$1a\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	"bcc errhypreadfile%=\n"
+    "sta %0\n"
+	"jmp donehypreadfile%=\n"
+"errhypreadfile%=:\n"
+    "lda #$FF\n"
+	"sta %0\n"
+"donehypreadfile%=:\n"
+    "nop\n"
+  : "=r"(retval) : "x"(filedescriptor) : "a");
+  return retval;
+}
+
+unsigned char hyppo_closefile(unsigned char filedescriptor)  {
+	unsigned char retval;
+
+  asm volatile(
+//	"ldx #$00\n"    // shouldn't be necessary
+    "lda #$20\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	"bcc errhypclosefile%=\n"
+    "sta %0\n"
+	"jmp donehypclosefile%=\n"
+"errhypclosefile%=:\n"
+    "lda #$FF\n"
+	"sta %0\n"
+"donehypclosefile%=:\n"
+    "nop\n"
+  : "=r"(retval) : "x"(filedescriptor) : "a");
+  return retval;
+}
+
 char * getsfn() {
   unsigned char i;
 //  char sfn[20]; //    [13];
