@@ -19,6 +19,7 @@
 // *********************************************************
 
 // flags and stuff:
+// __attribute__((section(".data")))
 MIDNIGHT* midnight[2] = { (MIDNIGHT*) MIDNIGHTLEFTPAGE,
                           (MIDNIGHT*) MIDNIGHTRIGHTPAGE };
 unsigned char disknames[2][DOSFILENAMELEN + 1]; // @@ change for pointer

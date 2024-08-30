@@ -9,6 +9,8 @@ SET c1541="%VICE%\c1541"
 SET PETCAT=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\
 SET PETCAT="%PETCAT%2021\GTK3VICE-3.8-win64\bin\petcat.exe"
 
+REM Should mega65_ftp cease to work at later versions consider adding
+REM "-c exit" to all lines:
 SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Tools\
 SET MFTP=%MFTP%m65tools-develo-165-c2b03a-windows\mega65_ftp.exe
 SET DEST=-e

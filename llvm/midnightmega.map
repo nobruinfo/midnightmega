@@ -3,156 +3,279 @@
        0        0        0     1 __basic_zp_end = 0x0090
        0        0        0     1 __rc0 = __basic_zp_start
        0        0        0     1 __rc1 = __rc0 + 1
-       0        0        0     1 PROVIDE ( __rc2 = __rc1 + 1 )
+       0        0        0     1 PROVIDE(__rc2 = __rc1 + 1)
        0        0        0     1 __rc3 = __rc2 + 1
-       0        0        0     1 PROVIDE ( __rc4 = __rc3 + 1 )
+       0        0        0     1 PROVIDE(__rc4 = __rc3 + 1)
        0        0        0     1 __rc5 = __rc4 + 1
-       0        0        0     1 PROVIDE ( __rc6 = __rc5 + 1 )
+       0        0        0     1 PROVIDE(__rc6 = __rc5 + 1)
        0        0        0     1 __rc7 = __rc6 + 1
-       0        0        0     1 PROVIDE ( __rc8 = __rc7 + 1 )
+       0        0        0     1 PROVIDE(__rc8 = __rc7 + 1)
        0        0        0     1 __rc9 = __rc8 + 1
-       0        0        0     1 PROVIDE ( __rc10 = __rc9 + 1 )
+       0        0        0     1 PROVIDE(__rc10 = __rc9 + 1)
        0        0        0     1 __rc11 = __rc10 + 1
-       0        0        0     1 PROVIDE ( __rc12 = __rc11 + 1 )
+       0        0        0     1 PROVIDE(__rc12 = __rc11 + 1)
        0        0        0     1 __rc13 = __rc12 + 1
-       0        0        0     1 PROVIDE ( __rc14 = __rc13 + 1 )
+       0        0        0     1 PROVIDE(__rc14 = __rc13 + 1)
        0        0        0     1 __rc15 = __rc14 + 1
-       0        0        0     1 PROVIDE ( __rc16 = __rc15 + 1 )
+       0        0        0     1 PROVIDE(__rc16 = __rc15 + 1)
        0        0        0     1 __rc17 = __rc16 + 1
-       0        0        0     1 PROVIDE ( __rc18 = __rc17 + 1 )
+       0        0        0     1 PROVIDE(__rc18 = __rc17 + 1)
        0        0        0     1 __rc19 = __rc18 + 1
-       0        0        0     1 PROVIDE ( __rc20 = __rc19 + 1 )
+       0        0        0     1 PROVIDE(__rc20 = __rc19 + 1)
        0        0        0     1 __rc21 = __rc20 + 1
-       0        0        0     1 PROVIDE ( __rc22 = __rc21 + 1 )
+       0        0        0     1 PROVIDE(__rc22 = __rc21 + 1)
        0        0        0     1 __rc23 = __rc22 + 1
-       0        0        0     1 PROVIDE ( __rc24 = __rc23 + 1 )
+       0        0        0     1 PROVIDE(__rc24 = __rc23 + 1)
        0        0        0     1 __rc25 = __rc24 + 1
-       0        0        0     1 PROVIDE ( __rc26 = __rc25 + 1 )
+       0        0        0     1 PROVIDE(__rc26 = __rc25 + 1)
        0        0        0     1 __rc27 = __rc26 + 1
-       0        0        0     1 PROVIDE ( __rc28 = __rc27 + 1 )
+       0        0        0     1 PROVIDE(__rc28 = __rc27 + 1)
        0        0        0     1 __rc29 = __rc28 + 1
-       0        0        0     1 PROVIDE ( __rc30 = __rc29 + 1 )
+       0        0        0     1 PROVIDE(__rc30 = __rc29 + 1)
        0        0        0     1 __rc31 = __rc30 + 1
     2001     2001       16     1 .basic_header
     2001     2001       16     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\basic-header.o:(.basic_header)
     2015     2015        0     1                 next_line
-      22     2017        6     1 .zp.data
+      22     2017        a     1 .zp.data
       22     2017        0     1         __zp_data_start = .
-      22     2017        6     1         romlister.prg.lto.o:(.zp.data)
-      27     201c        1     1                 g_curTextColor
-      28     201d        0     1 __zp_data_load_start = LOADADDR ( .zp.data )
-      28     201d        0     1 __zp_data_size = SIZEOF ( .zp.data )
-      28       28       18     1 .zp.bss
-      28       28        0     1         __zp_bss_start = .
-      28       28       18     1         romlister.prg.lto.o:(.zp.bss)
-      28       28        1     1                 fnamehi
-      29       29        1     1                 g_curScreenW
-      2a       2a        1     1                 g_curX
-      2b       2b        1     1                 g_curY
-      2c       2c       14     1                 dmalist
-      40       40        0     1 __zp_bss_size = SIZEOF ( .zp.bss )
-      40       40        a     1 .zp
-      40       40        a     1         romlister.prg.lto.o:(.zp.noinit)
-    201d     201d      8d3     1 .text
-    201d     201d        0     1         _init = .
-    201d     201d        0     1         _start = .
-    201d     201d        e     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\unmap-basic.o:(.init.010)
-    202b     202b        8     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(init-stack.S.obj):(.init.100)
-    202b     202b        0     1                 __do_init_stack
-    2033     2033        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(zero-bss.c.obj):(.init.200)
-    2033     2033        0     1                 __do_zero_bss
-    2036     2036        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(zero-zp-bss.c.obj):(.init.200)
-    2036     2036        0     1                 __do_zero_zp_bss
-    2039     2039        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(copy-zp-data.c.obj):(.init.200)
-    2039     2039        0     1                 __do_copy_zp_data
-    203c     203c        5     1         romlister.prg.lto.o:(.init.250)
-    203c     203c        0     1                 shift
-    2041     2041        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/common/lib\crt0.o:(.call_main)
-    2044     2044        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(exit-return.c.obj):(.after_main)
-    2044     2044        0     1                 __after_main
-    2047     2047        0     1         _fini = .
-    2047     2047        a     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\unmap-basic.o:(.fini.990)
-    2051     2051        1     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/common/lib\crt0.o:(.fini_rts)
-    2052     2052        a     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(exit-return.c.obj):(.text.__exit_return)
-    2052     2052        a     1                 __exit_return
-    205c     205c       13     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(zero-bss.c.obj):(.text.__zero_bss)
-    205c     205c       13     1                 __zero_bss
-    206f     206f       13     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(zero-zp-bss.c.obj):(.text.__zero_zp_bss)
-    206f     206f       13     1                 __zero_zp_bss
-    2082     2082       17     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(copy-zp-data.c.obj):(.text.__copy_zp_data)
-    2082     2082       17     1                 __copy_zp_data
-    2099     2099      355     1         romlister.prg.lto.o:(.text.main)
-    2099     2099      355     1                 main
-    221f     221f        0     1                 errhypsetnam0
-    2223     2223        0     1                 donehypsetnam0
-    2246     2246        0     1                 errhypfindfirst1
-    2248     2248        0     1                 donehypfindfirst1
-    2267     2267        0     1                 errhypopenfile2
-    2269     2269        0     1                 donehypopenfile2
-    2293     2293        0     1                 errhypreadfile3
-    2297     2297        0     1                 donehypreadfile3
-    22b6     22b6        0     1                 errhypclosefile4
-    22ba     22ba        0     1                 donehypclosefile4
-    23ee     23ee      12a     1         romlister.prg.lto.o:(.text.cputln)
-    23ee     23ee      12a     1                 cputln
-    2518     2518       51     1         romlister.prg.lto.o:(.text.asciitoscreencode_s)
-    2518     2518       51     1                 asciitoscreencode_s
-    2569     2569        e     1         romlister.prg.lto.o:(.text.mcputsxy)
-    2569     2569        e     1                 mcputsxy
-    2577     2577        1     1         romlister.prg.lto.o:(.text.escNOP)
-    2577     2577        1     1                 escNOP
-    2578     2578       18     1         romlister.prg.lto.o:(.text.getscreenaddr)
-    2578     2578       18     1                 getscreenaddr
-    2590     2590       c7     1         romlister.prg.lto.o:(.text.cputsxy)
-    2590     2590       c7     1                 cputsxy
-    2657     2657       27     1         romlister.prg.lto.o:(.text.do_dma)
-    2657     2657       27     1                 do_dma
-    267e     267e       67     1         romlister.prg.lto.o:(.text.lcopy)
-    267e     267e       67     1                 lcopy
-    26e5     26e5       50     1         romlister.prg.lto.o:(.text.lfill)
-    26e5     26e5       50     1                 lfill
-    2735     2735       19     1         romlister.prg.lto.o:(.text.strcpy)
-    2735     2735       19     1                 strcpy
-    274e     274e       35     1         romlister.prg.lto.o:(.text.strlen)
-    274e     274e       35     1                 strlen
-    2783     2783       13     1         romlister.prg.lto.o:(.text.__ashlhi3)
-    2783     2783       13     1                 __ashlhi3
-    2796     2796       32     1         romlister.prg.lto.o:(.text.__mulhi3)
-    2796     2796       32     1                 __mulhi3
-    27c8     27c8       dc     1         romlister.prg.lto.o:(.text.__udivmodhi4)
-    27c8     27c8       dc     1                 __udivmodhi4
-    28a4     28a4       2c     1         romlister.prg.lto.o:(.text.memcpy)
-    28a4     28a4       2c     1                 memcpy
-    28d0     28d0       20     1         romlister.prg.lto.o:(.text.__memset)
-    28d0     28d0       20     1                 __memset
-    28f0     28f0        0     1         __init_array_start = .
-    28f0     28f0        0     1         __init_array_end = .
-    28f0     28f0        0     1         __fini_array_start = .
-    28f0     28f0        0     1         __fini_array_end = .
-    28f0     28f0       85     1 .rodata
-    28f0     28f0       85     1         <internal>:(.rodata.str1.1)
-    2975     2975        0     1 .data
-    2975     2975        0     1         __data_start = .
-    2975     2975        0     1         __data_end = .
-    2975     2975        0     1 __data_load_start = LOADADDR ( .data )
-    2975     2975        0     1 __data_size = SIZEOF ( .data )
-    2975     2975      2fe     1 .bss
-    2975     2975        0     1         __bss_start = .
-    2975     2975        1     1         romlister.prg.lto.o:(.bss.g_curScreenH)
-    2975     2975        1     1                 g_curScreenH
-    2976     2976      2fd     1         romlister.prg.lto.o:(.bss.escapeCode)
-    2976     2976      2fd     1                 escapeCode
-    2c73     2c73        0     1         __bss_end = .
-    2c73     2c73        0     1 __bss_size = SIZEOF ( .bss )
-    2c73     2c73        1     1 .noinit
-    2c73     2c73        1     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(exit-return.c.obj):(.noinit..Lstatic_stack)
-    2c74     2c74        0     1         __heap_start = ALIGN ( . , 2 )
-    2c74     2c74        0     1 __stack = 0xd000
-       0        0       7c     1 .comment
-       0        0       7c     1         <internal>:(.comment)
-       0        0      c40     4 .symtab
-       0        0      c40     4         <internal>:(.symtab)
+      22     2017        a     1         midnightmega.prg.lto.o:(.zp.data)
+      27     201c        4     1                 midnight
+      2b     2020        1     1                 g_curTextColor
+      2c     2021        0     1 __zp_data_load_start = LOADADDR(.zp.data)
+      2c     2021        0     1 __zp_data_size = SIZEOF(.zp.data)
+      2c       2c       1c     1 .zp.bss
+      2c       2c        0     1         __zp_bss_start = .
+      2c       2c       1c     1         midnightmega.prg.lto.o:(.zp.bss)
+      2c       2c        1     1                 lastdrive
+      2d       2d        1     1                 lasttrack
+      2e       2e        1     1                 lastdoublesector
+      2f       2f        1     1                 option.0
+      30       30        1     1                 g_curScreenW
+      31       31        1     1                 g_curScreenH
+      32       32        1     1                 g_curX
+      33       33        1     1                 g_curY
+      34       34       14     1                 dmalist
+      48       48        0     1 __zp_bss_size = SIZEOF(.zp.bss)
+      48       48       3c     1 .zp
+      48       48       3c     1         midnightmega.prg.lto.o:(.zp.noinit)
+    2021     2021     4fb7     1 .text
+    2021     2021        0     1         _init = .
+    2021     2021        0     1         _start = .
+    2021     2021        e     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\unmap-basic.o:(.init.010)
+    202f     202f        8     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(init-stack.S.obj):(.init.100)
+    202f     202f        0     1                 __do_init_stack
+    2037     2037        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(zero-bss.c.obj):(.init.200)
+    2037     2037        0     1                 __do_zero_bss
+    203a     203a        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(zero-zp-bss.c.obj):(.init.200)
+    203a     203a        0     1                 __do_zero_zp_bss
+    203d     203d        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(copy-zp-data.c.obj):(.init.200)
+    203d     203d        0     1                 __do_copy_zp_data
+    2040     2040        5     1         midnightmega.prg.lto.o:(.init.250)
+    2040     2040        0     1                 shift
+    2045     2045        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/common/lib\crt0.o:(.call_main)
+    2048     2048        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(exit-custom.S.obj):(.after_main)
+    2048     2048        0     1                 __after_main
+    204b     204b        0     1         _fini = .
+    204b     204b        a     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\unmap-basic.o:(.fini.990)
+    2055     2055        1     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/common/lib\crt0.o:(.fini_rts)
+    2056     2056       79     1         C:\Users\SUPERU~1\AppData\Local\Temp\memory_asm-11d8dc.o:(.text)
+    2056     2056        0     1                 fourbytes
+    205a     205a        0     1                 lpstore
+    2075     2075        0     1                 lprestore
+    2090     2090        0     1                 lpoke
+    20b1     20b1        0     1                 lpeek
+    20cf     20cf       13     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(zero-bss.c.obj):(.text.__zero_bss)
+    20cf     20cf       13     1                 __zero_bss
+    20e2     20e2       13     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(zero-zp-bss.c.obj):(.text.__zero_zp_bss)
+    20e2     20e2       13     1                 __zero_zp_bss
+    20f5     20f5       17     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(copy-zp-data.c.obj):(.text.__copy_zp_data)
+    20f5     20f5       17     1                 __copy_zp_data
+    210c     210c     2760     1         midnightmega.prg.lto.o:(.text.main)
+    210c     210c     2760     1                 main
+    2f5b     2f5b        0     1                 errhypfindfirst0
+    2f5d     2f5d        0     1                 donehypfindfirst0
+    2f7c     2f7c        0     1                 errhypopenfile1
+    2f7e     2f7e        0     1                 donehypopenfile1
+    2fa8     2fa8        0     1                 errhypreadfile2
+    2fac     2fac        0     1                 donehypreadfile2
+    2fcb     2fcb        0     1                 errhypclosefile3
+    2fcf     2fcf        0     1                 donehypclosefile3
+    43f2     43f2        0     1                 errhypd81detach4
+    43f6     43f6        0     1                 donehypd81detach4
+    45a5     45a5        0     1                 errhypchdir5
+    45a9     45a9        0     1                 donehypchdir5
+    4637     4637        0     1                 errhypchdir6
+    463b     463b        0     1                 donehypchdir6
+    4756     4756        0     1                 errhyp1att7
+    475a     475a        0     1                 donehyp1att7
+    481b     481b        0     1                 errhyp0att8
+    481f     481f        0     1                 donehyp0att8
+    486c     486c       32     1         midnightmega.prg.lto.o:(.text.hyppo_setname)
+    486c     486c       32     1                 hyppo_setname
+    4898     4898        0     1                 errhypsetnam9
+    489c     489c        0     1                 donehypsetnam9
+    489e     489e       63     1         midnightmega.prg.lto.o:(.text.getsfn)
+    489e     489e       63     1                 getsfn
+    4901     4901      166     1         midnightmega.prg.lto.o:(.text.ShowAccess)
+    4901     4901      166     1                 ShowAccess
+    4a67     4a67       d2     1         midnightmega.prg.lto.o:(.text.ReadSector)
+    4a67     4a67       d2     1                 ReadSector
+    4b39     4b39       9f     1         midnightmega.prg.lto.o:(.text.WriteSector)
+    4b39     4b39       9f     1                 WriteSector
+    4bd8     4bd8       43     1         midnightmega.prg.lto.o:(.text.GetOneSector)
+    4bd8     4bd8       43     1                 GetOneSector
+    4c1b     4c1b       84     1         midnightmega.prg.lto.o:(.text.PutWholeSector)
+    4c1b     4c1b       84     1                 PutWholeSector
+    4c9f     4c9f       51     1         midnightmega.prg.lto.o:(.text.PutOneSector)
+    4c9f     4c9f       51     1                 PutOneSector
+    4cf0     4cf0       39     1         midnightmega.prg.lto.o:(.text.GetBAM)
+    4cf0     4cf0       39     1                 GetBAM
+    4d29     4d29       5c     1         midnightmega.prg.lto.o:(.text.PutBAM)
+    4d29     4d29       5c     1                 PutBAM
+    4d85     4d85       9a     1         midnightmega.prg.lto.o:(.text.readblockchain)
+    4d85     4d85       9a     1                 readblockchain
+    4e1f     4e1f      302     1         midnightmega.prg.lto.o:(.text.BAMSectorUpdate)
+    4e1f     4e1f      302     1                 BAMSectorUpdate
+    5121     5121      1a0     1         midnightmega.prg.lto.o:(.text.isallocatedBAMtracksector)
+    5121     5121      1a0     1                 isallocatedBAMtracksector
+    52c1     52c1      119     1         midnightmega.prg.lto.o:(.text.findnextBAMtracksector)
+    52c1     52c1      119     1                 findnextBAMtracksector
+    53da     53da       8c     1         midnightmega.prg.lto.o:(.text.tracksectorstring)
+    53da     53da       8c     1                 tracksectorstring
+    5466     5466       e2     1         midnightmega.prg.lto.o:(.text.getdirententry)
+    5466     5466       e2     1                 getdirententry
+    5548     5548       14     1         midnightmega.prg.lto.o:(.text.strcopy)
+    5548     5548       14     1                 strcopy
+    555c     555c       c6     1         midnightmega.prg.lto.o:(.text.csputdec)
+    555c     555c       c6     1                 csputdec
+    5622     5622       51     1         midnightmega.prg.lto.o:(.text.asciitoscreencode_s)
+    5622     5622       51     1                 asciitoscreencode_s
+    5673     5673       5e     1         midnightmega.prg.lto.o:(.text.clrhome)
+    5673     5673       5e     1                 clrhome
+    56d1     56d1        e     1         midnightmega.prg.lto.o:(.text.msprintf)
+    56d1     56d1        e     1                 msprintf
+    56df     56df       16     1         midnightmega.prg.lto.o:(.text.mcputsxy)
+    56df     56df       16     1                 mcputsxy
+    56f5     56f5      18b     1         midnightmega.prg.lto.o:(.text.mcbox)
+    56f5     56f5      18b     1                 mcbox
+    5880     5880      157     1         midnightmega.prg.lto.o:(.text.messagebox)
+    5880     5880      157     1                 messagebox
+    59d7     59d7       c0     1         midnightmega.prg.lto.o:(.text.progress)
+    59d7     59d7       c0     1                 progress
+    5a97     5a97       41     1         midnightmega.prg.lto.o:(.text.shortcutprint)
+    5a97     5a97       41     1                 shortcutprint
+    5ad8     5ad8      388     1         midnightmega.prg.lto.o:(.text.shortcuts)
+    5ad8     5ad8      388     1                 shortcuts
+    5e60     5e60       9f     1         midnightmega.prg.lto.o:(.text.optionstring)
+    5e60     5e60       9f     1                 optionstring
+    5eff     5eff      665     1         midnightmega.prg.lto.o:(.text.UpdateSectors)
+    5eff     5eff      665     1                 UpdateSectors
+    5ffc     5ffc        0     1                 errgetproc10
+    6000     6000        0     1                 donegetproc10
+    6139     6139        0     1                 errgetcurdrv11
+    613d     613d        0     1                 donegetcurdrv11
+    6156     6156        0     1                 errhypopendir12
+    615a     615a        0     1                 donehypopendir12
+    6200     6200        0     1                 hypreaddirloop13
+    6218     6218        0     1                 errhypreaddir13
+    621a     621a        0     1                 donehypreaddir13
+    64de     64de        0     1                 errhypclosedir14
+    64e0     64e0        0     1                 donehypclosedir14
+    6564     6564       46     1         midnightmega.prg.lto.o:(.text.Deselect)
+    6564     6564       46     1                 Deselect
+    65aa     65aa      147     1         midnightmega.prg.lto.o:(.text.sizeselectcurrentifnone)
+    65aa     65aa      147     1                 sizeselectcurrentifnone
+    66f1     66f1       46     1         midnightmega.prg.lto.o:(.text.sidbong)
+    66f1     66f1       46     1                 sidbong
+    6737     6737        1     1         midnightmega.prg.lto.o:(.text.escNOP)
+    6737     6737        1     1                 escNOP
+    6738     6738        9     1         midnightmega.prg.lto.o:(.text.cputc)
+    6738     6738        9     1                 cputc
+    6741     6741       a1     1         midnightmega.prg.lto.o:(.text.cputcxy)
+    6741     6741       a1     1                 cputcxy
+    67e2     67e2        7     1         midnightmega.prg.lto.o:(.text.cputs)
+    67e2     67e2        7     1                 cputs
+    67e9     67e9       db     1         midnightmega.prg.lto.o:(.text.cputsxy)
+    67e9     67e9       db     1                 cputsxy
+    68c4     68c4       aa     1         midnightmega.prg.lto.o:(.text.fillrect)
+    68c4     68c4       aa     1                 fillrect
+    696e     696e        9     1         midnightmega.prg.lto.o:(.text.cgetc)
+    696e     696e        9     1                 cgetc
+    6977     6977       27     1         midnightmega.prg.lto.o:(.text.do_dma)
+    6977     6977       27     1                 do_dma
+    699e     699e       67     1         midnightmega.prg.lto.o:(.text.lcopy)
+    699e     699e       67     1                 lcopy
+    6a05     6a05       50     1         midnightmega.prg.lto.o:(.text.lfill)
+    6a05     6a05       50     1                 lfill
+    6a55     6a55       5c     1         midnightmega.prg.lto.o:(.text.usleep)
+    6a55     6a55       5c     1                 usleep
+    6ab1     6ab1        5     1         midnightmega.prg.lto.o:(.text.exit)
+    6ab1     6ab1        5     1                 exit
+    6ab6     6ab6       3e     1         midnightmega.prg.lto.o:(.text.strcpy)
+    6ab6     6ab6       3e     1                 strcpy
+    6af4     6af4       3c     1         midnightmega.prg.lto.o:(.text.strlen)
+    6af4     6af4       3c     1                 strlen
+    6b30     6b30        b     1         midnightmega.prg.lto.o:(.text.__ashlqi3)
+    6b30     6b30        b     1                 __ashlqi3
+    6b3b     6b3b       13     1         midnightmega.prg.lto.o:(.text.__ashlhi3)
+    6b3b     6b3b       13     1                 __ashlhi3
+    6b4e     6b4e       32     1         midnightmega.prg.lto.o:(.text.__mulhi3)
+    6b4e     6b4e       32     1                 __mulhi3
+    6b80     6b80       c1     1         midnightmega.prg.lto.o:(.text.__udivhi3)
+    6b80     6b80       c1     1                 __udivhi3
+    6c41     6c41       45     1         midnightmega.prg.lto.o:(.text.__umodqi3)
+    6c41     6c41       45     1                 __umodqi3
+    6c86     6c86       70     1         midnightmega.prg.lto.o:(.text.__udivmodqi4)
+    6c86     6c86       70     1                 __udivmodqi4
+    6cf6     6cf6       dc     1         midnightmega.prg.lto.o:(.text.__udivmodhi4)
+    6cf6     6cf6       dc     1                 __udivmodhi4
+    6dd2     6dd2      1ba     1         midnightmega.prg.lto.o:(.text.__udivmodsi4)
+    6dd2     6dd2      1ba     1                 __udivmodsi4
+    6f8c     6f8c       2c     1         midnightmega.prg.lto.o:(.text.memcpy)
+    6f8c     6f8c       2c     1                 memcpy
+    6fb8     6fb8       20     1         midnightmega.prg.lto.o:(.text.__memset)
+    6fb8     6fb8       20     1                 __memset
+    6fd8     6fd8        0     1         __init_array_start = .
+    6fd8     6fd8        0     1         __init_array_end = .
+    6fd8     6fd8        0     1         __fini_array_start = .
+    6fd8     6fd8        0     1         __fini_array_end = .
+    6fd8     6fd8      b0c     1 .rodata
+    6fd8     6fd8       7e     1         midnightmega.prg.lto.o:(.rodata.main)
+    7056     7056      a26     1         <internal>:(.rodata.str1.1)
+    7a7c     7a7c        8     1         <internal>:(.rodata.cst4)
+    7a84     7a84       50     1         midnightmega.prg.lto.o:(.rodata..L__const.findnextBAMtracksector.strategy)
+    7ad4     7ad4       10     1         <internal>:(.rodata.cst16)
+    7ae4     7ae4        1     1 .data
+    7ae4     7ae4        0     1         __data_start = .
+    7ae4     7ae4        1     1         midnightmega.prg.lto.o:(.data)
+    7ae4     7ae4        1     1                 fnamehi.2
+    7ae5     7ae5        0     1         __data_end = .
+    7ae5     7ae5        0     1 __data_load_start = LOADADDR(.data)
+    7ae5     7ae5        0     1 __data_size = SIZEOF(.data)
+    7ae5     7ae5      4b0     1 .bss
+    7ae5     7ae5        0     1         __bss_start = .
+    7ae5     7ae5       21     1         midnightmega.prg.lto.o:(.bss.direntryblock2)
+    7ae5     7ae5       21     1                 direntryblock2
+    7b06     7b06       50     1         midnightmega.prg.lto.o:(.bss.s)
+    7b06     7b06       50     1                 s
+    7b56     7b56       e0     1         midnightmega.prg.lto.o:(.bss.direntflags)
+    7b56     7b56       e0     1                 direntflags
+    7c36     7c36       22     1         midnightmega.prg.lto.o:(.bss.disknames)
+    7c36     7c36       22     1                 disknames
+    7c58     7c58       40     1         midnightmega.prg.lto.o:(.bss.lfnname)
+    7c58     7c58       40     1                 lfnname
+    7c98     7c98      2fd     1         midnightmega.prg.lto.o:(.bss.escapeCode)
+    7c98     7c98      2fd     1                 escapeCode
+    7f95     7f95        0     1         __bss_end = .
+    7f95     7f95        0     1 __bss_size = SIZEOF(.bss)
+    7f95     7f95        0     1 .noinit
+    7f95     7f95        0     1         __heap_start = ALIGN(., 2)
+    7f95     7f95        0     1 __stack = 0xd000
+       0        0       cc     1 .comment
+       0        0       cc     1         <internal>:(.comment)
+       0        0     10f0     4 .symtab
+       0        0     10f0     4         <internal>:(.symtab)
        0        0       68     1 .shstrtab
        0        0       68     1         <internal>:(.shstrtab)
-       0        0      708     1 .strtab
-       0        0      708     1         <internal>:(.strtab)
+       0        0      a8d     1 .strtab
+       0        0      a8d     1         <internal>:(.strtab)

@@ -1,4 +1,6 @@
+// __attribute__((section(".data")))
 static unsigned char __attribute__((used)) fnamehi;
+// __attribute__((section(".data")))
 static unsigned char __attribute__((used)) fnamelo;
 
 // ******************************************
@@ -21,14 +23,24 @@ void setnam(char* filename) {
 //    "lda #(filename_len)\n"
 //    "ldx #<filename\n"
 //    "ldy #>filename\n"
+//    "brk\n"
+//    "brk\n"
+//    "brk\n"
+//    "brk\n"
+//    "eter%=:\n"
+//    "jmp eter%=\n"
+//    "brk\n"
+//    "brk\n"
+//    "brk\n"
+//    "brk\n"
     "jsr SETNAM\n" // C64 $ffbd
   :  : "y"(fnamehi), "a"(filename_len), "x"(fnamelo) : );
 }
 
 // SETLFS. Set file parameters.
 void setlfs(char device) {
-  unsigned char log = 0;
-  unsigned char sec = 1;
+  unsigned char log = 1;
+  unsigned char sec = 0; // $00 means: load to new address
   asm volatile(
     // SETLFS. Set file parameters.
     // Input: A = Logical number; X = Device number; Y = Secondary address.
@@ -48,9 +60,13 @@ char load(char* address, char verify) {
 
   fnamehi = (unsigned int) address >> 8;
   fnamelo = (unsigned int) address & 0xff;
-//  printf("fnamehi is: %04x ", (unsigned int) fnamehi);
-//  printf("fnamelo is: %04x ", (unsigned int) fnamelo);
-
+/*    clrhome();
+  printf("fnamehi is: %04x ", (unsigned int) fnamehi);
+    cputln();
+  printf("fnamelo is: %04x ", (unsigned int) fnamelo);
+    cputln();
+    cgetc();
+*/
   asm volatile(
     //LOAD. Load or verify file. (Must call SETLFS and SETNAM beforehands.)
     // Input: A: 0 = Load, 1-255 = Verify; X/Y = Load address (if secondary address = 0).
@@ -58,10 +74,12 @@ char load(char* address, char verify) {
 //    "ldx address\n"
 //    "ldy address+1\n"
 //    "lda verify\n"
+    "ldx #$16\n"
+    "ldy #$00\n"
     "jsr LOAD\n" // C64 $ffd5
-    "bcs error%=\n"
+    "bcs loaderror%=\n"
     "lda #$ff\n"
-    "error%=:\n"
+    "loaderror%=:\n"
     "sta %0\n"
   : "=r"(status) : "y"(fnamehi), "a"(verify), "x"(fnamelo) : );
   return status;

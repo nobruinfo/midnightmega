@@ -5,13 +5,14 @@
 // mega65-book.pdf#7a states:
 // 0.1600 0.1EFF Free for program use
 
-#define BLOCKBAMLOW    0x1600  // double sector buffers for BAM and data.
-#define BLOCKBAMHIGH   0x1700
-#define BLOCKDATALOW   0x1800
-#define BLOCKDATAHIGH  0x1900  // @@ no longer needed
+#define BASEPAGERESERVED 0x1600
+#define BLOCKBAMLOW    0x1700  // double sector buffers for BAM and data.
+#define BLOCKBAMHIGH   0x1800
+#define BLOCKDATALOW   0x1900
+#define BLOCKDATAHIGH  0x1A00
 
-#define BLOCKDIRENT    0x1A00  // used by DOS and Hyppo
-#define DIRENT_PAGEHIGH 0x1B00
+#define BLOCKDIRENT    0x1B00  // used by DOS and Hyppo
+// #define DIRENT_PAGEHIGH 0x1B00  // @@ no longer needed
 #define FILENAMEPAGE   0x1C00  // used by nav
 
 #define MIDNIGHTLEFTPAGE   0x1D00  // used by nav

@@ -32,11 +32,12 @@ set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
 set LLVM_BAT=%LLVM_HOME%\bin\mos-mega65-clang.bat
 set LLVMDUMP=%LLVM_HOME%\bin\llvm-objdump.exe
 SET libcfilesdir=..\mega65-libc\src
-SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%\hal.c
+REM  SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%\hal.c
+SET libcfiles=%libcfilesdir%\hal.c
 SET libcfiles=%libcfiles% include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
-SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c sid.c romlist.c
-SET cfilesrom=%ROMLIST%.c hyppo.c fileio.c conioextensions.c romlist.c
+SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c sid.c romlist.c conio.c memory.c
+SET cfilesrom=%ROMLIST%.c hyppo.c fileio.c conioextensions.c romlist.c conio.c memory.c
 
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
 SET opts=--include-directory=.\include
@@ -51,9 +52,10 @@ REM You can pass -mreserve-zp= to tell the compiler to reduce
 REM its ZP spend by that amount:
 REM SET opts=%opts% -mreserve-zp=2
 REM SET opts=%opts% -mlto-zp=5
-SET opts=%opts% -Wl,-Map=%PRJ%.map
 SET opts=%opts% -Wl,-trace
 REM SET opts=%opts% -Wl,--reproduce=reproduce.tar
+REM SET opts=%opts% -mcpu=mos45gs02
+REM SET opts=%opts% -T midnightmega.ld
 
 REM git tag -a "v0.1.0-beta" -m "version v0.1.0-beta"
 git describe --tags>arghh.tmp
@@ -66,7 +68,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.15-beta
+SET v=v0.5.16-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
@@ -89,6 +91,8 @@ REM XMEGA65 -version -headless>>%versions%
 ECHO:>>%versions%
 
 REM DEL %TEMP%\*.o
+REM -c does a .o without linking:
+CALL %LLVM_BAT% -c -o unmap-basic-basepage.o unmap-basic-basepage.S
 CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %cfiles% %libcfiles%
 
 :NOBUILD
@@ -97,7 +101,7 @@ IF ERRORLEVEL == 1 (
 ) ELSE (
   ECHO ------------------------------------------------------
   REM  -Wall
-  CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %cfiles% %libcfiles%
+  CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% -Wl,-Map=%PRJ%.map %cfiles% %libcfiles%
 REM  SET opts=%opts% -DDISKDEBUG
 REM  CALL %LLVM_BAT% -Os -o dbg%PRJ%.prg !opts! %cfiles% %libcfiles%
 REM  SET opts=!opts! -DDELAYDEBUG
@@ -113,7 +117,8 @@ REM  CALL %LLVM_BAT% -Os -o emu%PRJ%.prg !opts! %cfiles% %libcfiles%
   %LLVMDUMP% --disassemble --syms %PRJ%.prg.elf > %PRJ%_dump.txt
 
   REM seperate ROM list application
-  CALL %LLVM_BAT% -Os -o %ROMLIST%.prg %opts% %cfilesrom% %libcfiles%
+  CALL %LLVM_BAT% -Os -o %ROMLIST%.prg %opts% -Wl,-Map=%ROMLIST%.map %cfilesrom% %libcfiles%
+  %LLVMDUMP% --disassemble --syms %ROMLIST%.prg.elf > %ROMLIST%_dump.txt
 
   %c1541% -format disk%PRJ%,id d81 %PRJ%.d81
   %c1541% -attach %PRJ%.d81 -delete %PRJ%
@@ -122,6 +127,11 @@ REM  CALL %LLVM_BAT% -Os -o emu%PRJ%.prg !opts! %cfiles% %libcfiles%
   %c1541% -attach %PRJ%.d81 -write %ROMLIST%.prg %ROMLIST%
 REM  %c1541% -attach %PRJ%.d81 -write dbg%PRJ%.prg dbg%PRJ%
 REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
+
+  REM file for loadFileToMemory():
+    ECHO this is a sequential file for testing.>%PRJ%.seq
+    %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s
+    DEL %PRJ%.seq>NUL
   IF 1 == 2 (
     ECHO this is a sequential file for testing.>%PRJ%.seq
     %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s

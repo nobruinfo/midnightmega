@@ -30,6 +30,7 @@ struct TASKBLOCK* const taskblock = (struct TASKBLOCK*) FILENAMEPAGE;
 
 // https://stackoverflow.com/questions/8810390/how-to-use-a-global-variable-in-gcc-inline-assembly
 // define fnamehi (unsigned char)((unsigned int)hyppofn->name >> 8)
+__attribute__((section(".data")))
 static unsigned char __attribute__((used)) fnamehi;
 unsigned char hyppo_setup_transfer_area(void)  {
   unsigned char retval;

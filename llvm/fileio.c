@@ -51,6 +51,7 @@ unsigned char direntside;
 unsigned char dosfilename[DOSFILENAMELEN + 1]; // extra byte for nullterm
 
 // Midnight Mega general setup options:
+// __attribute__((section(".data")))
 OPTION option;
 
 #define READ 0
@@ -102,8 +103,11 @@ void ShowAccess(unsigned char drive,
   }
 }
 
+// __attribute__((section(".data")))
 char lastdrive = 0;
+// __attribute__((section(".data")))
 char lasttrack = 0;
+// __attribute__((section(".data")))
 char lastdoublesector = 0;
 void _miniInit()  {
   // clear F011 Floppy Controller Registers

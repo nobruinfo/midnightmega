@@ -50,7 +50,7 @@ int main() {
 */
 
   clrhome();
-  
+
   // mprintf("hyppo_getcurrentdrive=", hyppo_getcurrentdrive());
 
   // testing:
@@ -80,15 +80,6 @@ int main() {
                     ".d81 and real disks! Please work on backed up media.",
 			        "Press RETURN to continue, STOP to halt.", 0))  {
     navi(0);
-/*
-    strcpy((char *) lfnname, (char *) "midnightmega.0");
-	char* pointer = (char*) 0x1600;
-	printf("result: %04x ",
-	  loadFileToMemory(8, (char*) lfnname, pointer));
-    cputln();
-    cgetc();
-    flushkeybuf();
-*/
   }
 
   clrhome();
@@ -98,6 +89,134 @@ int main() {
 //  cgetc();
 //  flushkeybuf();
 hyppo_reset();
+
+  return 0;
+}
+
+
+int _main2() {
+    strcpy((char *) lfnname, (char *) "midnightmega.0");
+//	char* pointer = (char*) 0x1700;
+
+/*
+  asm volatile(
+    "brk\n"
+    "brk\n"
+    "brk\n"
+    "brk\n"
+    "eter%=:\n"
+    "jmp eter%=\n"
+    "brk\n"
+    "brk\n"
+    "brk\n"
+    "brk\n"
+  :  :  : );
+//  :  : "y"(pointer >> 8), "a"(strlen(lfnname)), "x"(pointer & 0xff) : );
+*/
+
+//  unsigned char retval;
+  char status;
+
+//  POKE(0, 7);  POKE(1, 5);
+//    POKE(0xd02fU, 0x47);
+//    POKE(0xd02fU, 0x53);
+/*
+  // to map kernel and I/O:
+  asm volatile(
+    " lda #0x00\n"
+    " tax\n"
+    " tay\n"
+    " taz\n"
+    " map\n"
+    " nop"
+  : : : "y", "a", "x" );
+*/
+  pcputs("file: ");
+  pcputs((char *) lfnname);
+    cputln();
+    cgetc();
+    flushkeybuf();
+
+  char filename_len = (char) strlen((const char *) lfnname);
+  fnamehi = (unsigned int) lfnname >> 8;
+  fnamelo = (unsigned int) lfnname & 0xff;
+	pcputs("filename_len is: ");
+	cputhex((unsigned int) filename_len, 4);
+
+  asm volatile(
+    "taz\n"
+
+    "lda #$00\n" // Switch zero page back to default
+    "tab\n"
+
+    "tza\n"
+    // Kernal SETNAM function
+    // SETNAM. Set file name parameters.
+    // Input: A = File name length; X/Y = Pointer to file name.
+//    "lda #(filename_len)\n"
+//    "ldx #<filename\n"
+//    "ldy #>filename\n"
+    "lda #$e\n"    // strlen          TESTING ***
+//    "ldx #$67\n"
+//    "ldy #$36\n"
+    "jsr SETNAM\n" // C64 $ffbd
+
+    // SETLFS. Set file parameters.
+    // Input: A = Logical number; X = Device number; Y = Secondary address.
+    "ldx #$8\n"
+    "lda #$1\n" // #$0f
+    "ldy #$0\n" // #$ff
+    "jsr SETLFS\n" // C64 $ffba
+
+// LOAD. Load or verify file. (Must call SETLFS and SETNAM beforehands.)
+// - verify: 0 = Load, 1-255 = Verify
+//
+// Returns a status, 0xff: Success other: Kernal Error Code
+
+    //LOAD. Load or verify file. (Must call SETLFS and SETNAM beforehands.)
+    // Input: A: 0 = Load, 1-255 = Verify; X/Y = Load address (if secondary address = 0).
+    // Output: Carry: 0 = No errors, 1 = Error; A = KERNAL error code (if Carry = 1); X/Y = Address of last byte loaded/verified (if Carry = 0).
+//    "ldx address\n"
+//    "ldy address+1\n"
+//    "lda verify\n"
+    "lda #$0\n"
+    "ldx #$00\n"
+    "ldy #$17\n"
+    "jsr LOAD\n" // C64 $ffd5
+    "bcs loaderror%=\n"
+    "lda #$ff\n"
+    "loaderror%=:\n"
+    "sta %0\n"
+    "lda #$16\n" // Switch zero page to $1600 - $16ff
+    "tab\n"
+  : "=r"(status) : "y"(fnamehi), "a"(filename_len), "x"(fnamelo) : );
+	pcputs("result: ");
+	cputhex(status, 4);
+
+
+//	printf("result: %04x ",
+//	  loadFileToMemory(8, (char*) lfnname, pointer));
+    cputln();
+    cgetc();
+    flushkeybuf();
+
+  clrhome();
+  msprintf("Have fun with your MEGA65!");
+  usleep(2000000); // microseconds
+//  cputln();
+//  cgetc();
+//  flushkeybuf();
+hyppo_reset();
+
+  return 0;
+}
+
+int _main() {
+  conioinit();
+	mcputsxy(20, 3, "test");
+    cputln();
+    cgetc();
+    flushkeybuf();
 
   return 0;
 }
