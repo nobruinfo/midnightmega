@@ -541,6 +541,7 @@ void navi(unsigned char side)  {
   unsigned char startsector;
   unsigned char attachresult;
   unsigned int i;
+  unsigned char fd;
   DIRENT* ds;
   
   option.option = OPTIONshowALO | OPTIONshowDRV;
@@ -645,8 +646,8 @@ void navi(unsigned char side)  {
 		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
 		  messagebox(0, "Unmount", "not supported in mount mode.", " ", 0);
 		} else {
-	      if (messagebox(0, "Unmount", "all drives will be unmounted", " ", 0))  {
-            hyppo_d81detach();
+	      if (messagebox(0, "Unmount", (side ? "right drive" : "left drive"), " ", 0))  {
+            hyppo_dos_attach(0b10000000 + side); // hyppo_d81detach();
 		    UpdateSectors(midnight[side?0:1]->drive, side?0:1);
 		  }
 		}
@@ -670,16 +671,12 @@ void navi(unsigned char side)  {
 	  case 0xf8: // Modifiers and ASC_F8 delete
 	  case 0x1f8:
 	  case 0x2f8:
-		if (((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE) ||
-			((midnight[side?0:1]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
-		  messagebox(0, "Copying/deleting storage card files/folders", "is not supported.",
-                        " ", 0);
-		} else {
-          // @@ does only current file:
- /* @@ */ ds = getdirententry(side, midnight[side]->pos);
+        // @@ does only current file:
+        ds = getdirententry(side, midnight[side]->pos);     /* @@ */
 // /* @@ */ if ( /* (ds->type&0xf) != VAL_DOSFTYPE_CBM && */
- /* @@ */ if ((ds->type&0xf) != VAL_DOSFTYPE_CBM &&
- /* @@ */     (ds->type&0xf) != VAL_DOSFTYPE_DEL)  {
+        if ((ds->type&0xf) != VAL_DOSFTYPE_CBM &&           /* @@ */
+            (ds->type&0xf) != VAL_DOSFTYPE_DEL ||           /* @@ */
+			((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE))  {  /* @@ */
           // @@ has to go to sizeselectcurrentifnone()
 
 #ifdef DEBUG
@@ -696,57 +693,71 @@ void navi(unsigned char side)  {
 	        cputln();
 	        cgetc();
 #endif
-            if (c == 0xf5)  {  // copy
-              // @@ these "if"s need to be swapped:
-			  if (sizeselectcurrentifnone(side) > midnight[side?0:1]->blocksfree)  {
-			    messagebox(0, "File copy,", "destination disk space insufficient",
-                              " ", 0);
-			  } else if (messagebox(0, "File copy,", ds->name,
-			             (side ? "from right to left" : "from left to right"), 0)) {
-				for (i = 0; i < NBRENTRIES; i++)  {
-                  if (direntflags[side][i].flags & DIRFLAGSisselected)  {
-                    ds = getdirententry(side, i);
+          if (c == 0xf5)  {  // copy
+            if (((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE) ||
+                ((midnight[side?0:1]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
+              messagebox(0, "Copying storage card files/folders", "is not supported.",
+                            " ", 0);
+            // @@ these "if"s need to be swapped:
+            } else if (sizeselectcurrentifnone(side) > midnight[side?0:1]->blocksfree)  {
+			  messagebox(0, "File copy,", "destination disk space insufficient",
+                            " ", 0);
+			} else if (messagebox(0, "File copy,", ds->name,
+			           (side ? "from right to left" : "from left to right"), 0)) {
+		      for (i = 0; i < NBRENTRIES; i++)  {
+                if (direntflags[side][i].flags & DIRFLAGSisselected)  {
+                  ds = getdirententry(side, i);
 
-                    progress("Reading...", "source file", 20);
-			        readblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side]->drive,
-                                   ds->track, ds->sector);
-                    progress("Reading...", "BAM", 30);
-                    // write on opposing side disk:
-                    GetBAM(side?0:1, midnight[side?0:1]->dirtrack);
-                    progress("Writing...", "destination file", 40);
-                    writeblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side?0:1]->drive,
-		                            &starttrack, &startsector, midnight[side?0:1]->dirtrack);
-                    ds->track = starttrack;  // recycle src dirent for destination
-		            ds->sector = startsector;
+                  progress("Reading...", "source file", 20);
+			      readblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side]->drive,
+                                 ds->track, ds->sector);
+                  progress("Reading...", "BAM", 30);
+                  // write on opposing side disk:
+                  GetBAM(side?0:1, midnight[side?0:1]->dirtrack);
+                  progress("Writing...", "destination file", 40);
+                  writeblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side?0:1]->drive,
+		                          &starttrack, &startsector, midnight[side?0:1]->dirtrack);
+                  ds->track = starttrack;  // recycle src dirent for destination
+		          ds->sector = startsector;
 
 #ifdef DEBUG
-		            mprintf("   before newds type=", ds->type);
-	                cputln();
-	                cgetc();
+		          mprintf("   before newds type=", ds->type);
+	              cputln();
+	              cgetc();
 #endif
-                    progress("Writing...", "directory", 60);
-		            // load opposing side dirent block into Attic:
+                  progress("Writing...", "directory", 60);
+		          // load opposing side dirent block into Attic:
 //		          midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
-		            writenewdirententry(midnight[side?0:1]->drive, side?0:1,
-                                    midnight[side?0:1]->dirtrack, ds);
-		            // re-read altered dirent on opposing side after entry added:
+		          writenewdirententry(midnight[side?0:1]->drive, side?0:1,
+                                      midnight[side?0:1]->dirtrack, ds);
+		          // re-read altered dirent on opposing side after entry added:
 //		          midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
-                    progress("Writing...", "BAM", 80);
-		            PutBAM(midnight[side?0:1]->drive, side?0:1, midnight[side?0:1]->dirtrack);
-				  }
-				}
-	            UpdateSectors(midnight[side?0:1]->drive, side?0:1);
-		        Deselect(side);
+                  progress("Writing...", "BAM", 80);
+		          PutBAM(midnight[side?0:1]->drive, side?0:1, midnight[side?0:1]->dirtrack);
+			    }
 			  }
-		    } else if (ds->type != VAL_DOSFTYPE_DEL &&  // delete
-			           messagebox(0, "File delete,", ds->name,
-			                      (side ? "from right side" : "from left side"), 0))  {
+	          UpdateSectors(midnight[side?0:1]->drive, side?0:1);
+		      Deselect(side);
+			}
+		  } else if (ds->type != VAL_DOSFTYPE_DEL &&  // delete
+                     messagebox(0, "File delete,", ds->name,
+		                        (side ? "from right side" : "from left side"), 0))  {
+            if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
+              hyppo_setname(ds->name); // hyppofn->name);
+              fd = hyppo_findfirst();
+              if (fd >= 0x84)  {
+		        messagebox(0, "File ", ds->name,
+			                  "not found", 0);
+			  } else {
+		        hyppo_rmfile(fd);
+			  }
+			} else {
               if (sizeselectcurrentifnone(side) != UINT_MAX)  {  // size returned doesn't matter to delete
-			    for (i = NBRENTRIES; i > 0; i--)  {
+		        for (i = NBRENTRIES; i > 0; i--)  {
                   if (direntflags[side][i - 1].flags & DIRFLAGSisselected)  {
                     ds = getdirententry(side, i - 1);
 
-			        progress("Reading...", "BAM", 20);
+		            progress("Reading...", "BAM", 20);
                     ds->type = VAL_DOSFTYPE_DEL;
                     GetBAM(side, midnight[side]->dirtrack);
                     progress("Writing...", "removing BAM entries", 40);
@@ -754,19 +765,39 @@ void navi(unsigned char side)  {
                                       midnight[side]->dirtrack, i - 1); // midnight[side]->pos);
                     progress("Writing...", "updating BAM", 80);
                     PutBAM(midnight[side]->drive, side, midnight[side]->dirtrack);
-				  }
-			    }
-                UpdateSectors(midnight[side]->drive, side);
-		        Deselect(side);
+		          }
+		        }
 			  }
 		    }
-		  } else {
-			messagebox(0, "File type for", ds->name,
-			              "unsupported", 0);
+            UpdateSectors(midnight[side]->drive, side);
+		    Deselect(side);
 		  }
+		} else {
+		  messagebox(0, "File type for", ds->name,
+			            "unsupported", 0);
 		}
       break;
 
+/* not implemented on Hyppo side:
+	  case 0xf6: // Modifiers and ASC_F5:
+	  case 0x1f6:
+	  case 0x2f6:
+		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
+		  hyppo_setname(ds->name); // hyppofn->name);
+		  fd = hyppo_findfirst();
+		  if (fd >= 0x84)  {
+			messagebox(0, "File ", ds->name,
+						  "not found", 0);
+		  } else {
+			input file name
+			hyppo_setname again
+			hyppo_rename(fd);
+		  }
+		} else {
+		UpdateSectors(midnight[side]->drive, side);
+		Deselect(side);
+      break;
+*/
 	  case 0x8f6: // Mega-F5
 		if (((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE) ||
 			((midnight[side?0:1]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
@@ -861,14 +892,14 @@ void navi(unsigned char side)  {
 	        // @@ todo: choose drive
 		    if (midnight[side]->drive)  {
 		      hyppo_setname((char *) lfnname); // (char *) ds->name);
-		      attachresult = hyppo_d81attach1();
+		      attachresult = hyppo_dos_attach(1); // hyppo_d81attach1();
 		    } else {
 		      hyppo_setname((char *) lfnname); // (char *) ds->name);
-		      attachresult = hyppo_d81attach0();
+		      attachresult = hyppo_dos_attach(0); // hyppo_d81attach0();
 		    }
 //		hyppo_setname((char *) filelist[pos]);
 //		attachresult = (midnight[side]->drive ? hyppo_d81attach1() : hyppo_d81attach0());
-		    if (attachresult != 0)  {
+		    if (attachresult > 0x4a)  { // @@@@ to be reviewed
 		      messagebox(0, "Storage card mounting,", "mount failed for",
                             (char *) lfnname, 0); // ds->name, 0);
 		    } else {

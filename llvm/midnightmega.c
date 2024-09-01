@@ -59,16 +59,17 @@ int main() {
   // clrhome();
   // mprintf("hyppo_d81detach=", hyppo_d81detach());
 
+//  unsigned char majorhyppo;
+//  unsigned char minorhyppo;
+//  unsigned char majorHDOS;
+//  unsigned char minorHDOS;
+  hyppo_getversion(); // &majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
 /*
-  unsigned char majorhyppo;
-  unsigned char minorhyppo;
-  unsigned char majorHDOS;
-  unsigned char minorHDOS;
-  hyppo_getversion(&majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
-  mprintf(" majorhyppo=", majorhyppo);
-  mprintf(" minorhyppo=", minorhyppo);
-  mprintf(" majorHDOS=", majorHDOS);
-  mprintf(" minorHDOS=", minorHDOS);
+  gotoxy(0, 17);
+  mprintf(" majorhyppo=", PEEK(0x1700)); // majorhyppo);
+  mprintf(" minorhyppo=", PEEK(0x1701)); // minorhyppo);
+  mprintf(" majorHDOS=", PEEK(0x1702)); // majorHDOS);
+  mprintf(" minorHDOS=", PEEK(0x1703)); // minorHDOS);
 */
 
   mcputsxy(0, 22, "The function keys shown in the bottom line are ");
