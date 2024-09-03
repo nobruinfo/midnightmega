@@ -2,6 +2,10 @@
 // ***  nav.h Midnight Mega's window mgmt                ***
 // *********************************************************
 
+// read mount state of real hardware floppy drives:
+#define D6A1_USEREAL0 1
+#define D6A1_USEREAL1 4
+
 #define MIDNIGHTFLAGismounted 1
 
 typedef struct structMIDNIGHT {

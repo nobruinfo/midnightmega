@@ -8,12 +8,6 @@
 #include "fileio.h"
 #include "conioextensions.h"
 
-// Gibt es im Basic eine Möglichkeit festzustellen um was für
-// ein Laufwerk es sich bei U8 oder U9 handelt, also ob es das
-// interne oder ein .d81 Image ist ?
-// gardners: Du könntest $D6A9 peeken und die Bits daraus lesen
-// effectively found as bits D0IMG and D1IMG in $D68B.
-
 // static unsigned char __attribute__((used)) retval;
 
 // unsigned char ptrMiniOffs = $DE;
@@ -51,6 +45,7 @@ unsigned char direntside;
 unsigned char dosfilename[DOSFILENAMELEN + 1]; // extra byte for nullterm
 
 // Midnight Mega general setup options:
+// __attribute__((section(".data")))
 OPTION option;
 
 #define READ 0
@@ -102,8 +97,11 @@ void ShowAccess(unsigned char drive,
   }
 }
 
+// __attribute__((section(".data")))
 char lastdrive = 0;
+// __attribute__((section(".data")))
 char lasttrack = 0;
+// __attribute__((section(".data")))
 char lastdoublesector = 0;
 void _miniInit()  {
   // clear F011 Floppy Controller Registers
@@ -383,7 +381,7 @@ void BAMSectorUpdate(BAM* BAMsector, BAM* BAMsector2, char track, char sector, c
   unsigned char bitshifter = 1;
 
 //  BAMsector += $100;  // @@@@@ dirty test
-//  printf("BAMSectorUpdate BAMsector is: %lx\n", (unsigned long) BAMsector);
+//  mprintf("BAMSectorUpdate BAMsector is:", (unsigned long) BAMsector);
 
   // next BAM sector of two in total:
   if (track > 40)  {

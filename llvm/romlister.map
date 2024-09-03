@@ -1,0 +1,153 @@
+     VMA      LMA     Size Align Out     In      Symbol
+       0        0        0     1 __basic_zp_start = 0x0002
+       0        0        0     1 __basic_zp_end = 0x0090
+       0        0        0     1 __rc0 = __basic_zp_start
+       0        0        0     1 __rc1 = __rc0 + 1
+       0        0        0     1 PROVIDE(__rc2 = __rc1 + 1)
+       0        0        0     1 __rc3 = __rc2 + 1
+       0        0        0     1 PROVIDE(__rc4 = __rc3 + 1)
+       0        0        0     1 __rc5 = __rc4 + 1
+       0        0        0     1 PROVIDE(__rc6 = __rc5 + 1)
+       0        0        0     1 __rc7 = __rc6 + 1
+       0        0        0     1 PROVIDE(__rc8 = __rc7 + 1)
+       0        0        0     1 __rc9 = __rc8 + 1
+       0        0        0     1 PROVIDE(__rc10 = __rc9 + 1)
+       0        0        0     1 __rc11 = __rc10 + 1
+       0        0        0     1 PROVIDE(__rc12 = __rc11 + 1)
+       0        0        0     1 __rc13 = __rc12 + 1
+       0        0        0     1 PROVIDE(__rc14 = __rc13 + 1)
+       0        0        0     1 __rc15 = __rc14 + 1
+       0        0        0     1 PROVIDE(__rc16 = __rc15 + 1)
+       0        0        0     1 __rc17 = __rc16 + 1
+       0        0        0     1 PROVIDE(__rc18 = __rc17 + 1)
+       0        0        0     1 __rc19 = __rc18 + 1
+       0        0        0     1 PROVIDE(__rc20 = __rc19 + 1)
+       0        0        0     1 __rc21 = __rc20 + 1
+       0        0        0     1 PROVIDE(__rc22 = __rc21 + 1)
+       0        0        0     1 __rc23 = __rc22 + 1
+       0        0        0     1 PROVIDE(__rc24 = __rc23 + 1)
+       0        0        0     1 __rc25 = __rc24 + 1
+       0        0        0     1 PROVIDE(__rc26 = __rc25 + 1)
+       0        0        0     1 __rc27 = __rc26 + 1
+       0        0        0     1 PROVIDE(__rc28 = __rc27 + 1)
+       0        0        0     1 __rc29 = __rc28 + 1
+       0        0        0     1 PROVIDE(__rc30 = __rc29 + 1)
+       0        0        0     1 __rc31 = __rc30 + 1
+    2001     2001       16     1 .basic_header
+    2001     2001       16     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\basic-header.o:(.basic_header)
+    2015     2015        0     1                 next_line
+      22     2017        5     1 .zp.data
+      22     2017        0     1         __zp_data_start = .
+      22     2017        5     1         romlister.prg.lto.o:(.zp.data)
+      27     201c        0     1 __zp_data_load_start = LOADADDR(.zp.data)
+      27     201c        0     1 __zp_data_size = SIZEOF(.zp.data)
+      27       27       19     1 .zp.bss
+      27       27        0     1         __zp_bss_start = .
+      27       27       19     1         romlister.prg.lto.o:(.zp.bss)
+      27       27        1     1                 fnamehi
+      28       28        1     1                 g_curScreenW
+      29       29        1     1                 g_curTextColor
+      2a       2a        1     1                 g_curX
+      2b       2b        1     1                 g_curY
+      2c       2c       14     1                 dmalist
+      40       40        0     1 __zp_bss_size = SIZEOF(.zp.bss)
+      40       40        c     1 .zp
+      40       40        c     1         romlister.prg.lto.o:(.zp.noinit)
+    201c     201c      894     1 .text
+    201c     201c        0     1         _init = .
+    201c     201c        0     1         _start = .
+    201c     201c        e     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\unmap-basic.o:(.init.010)
+    202a     202a        8     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(init-stack.S.obj):(.init.100)
+    202a     202a        0     1                 __do_init_stack
+    2032     2032        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(zero-bss.c.obj):(.init.200)
+    2032     2032        0     1                 __do_zero_bss
+    2035     2035        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(zero-zp-bss.c.obj):(.init.200)
+    2035     2035        0     1                 __do_zero_zp_bss
+    2038     2038        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(copy-zp-data.c.obj):(.init.200)
+    2038     2038        0     1                 __do_copy_zp_data
+    203b     203b        5     1         romlister.prg.lto.o:(.init.250)
+    203b     203b        0     1                 shift
+    2040     2040        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/common/lib\crt0.o:(.call_main)
+    2043     2043        3     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(exit-custom.S.obj):(.after_main)
+    2043     2043        0     1                 __after_main
+    2046     2046        0     1         _fini = .
+    2046     2046        a     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\unmap-basic.o:(.fini.990)
+    2050     2050        1     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/common/lib\crt0.o:(.fini_rts)
+    2051     2051       13     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(zero-bss.c.obj):(.text.__zero_bss)
+    2051     2051       13     1                 __zero_bss
+    2064     2064       13     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(zero-zp-bss.c.obj):(.text.__zero_zp_bss)
+    2064     2064       13     1                 __zero_zp_bss
+    2077     2077       17     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(copy-zp-data.c.obj):(.text.__copy_zp_data)
+    2077     2077       17     1                 __copy_zp_data
+    208e     208e      315     1         romlister.prg.lto.o:(.text.main)
+    208e     208e      315     1                 main
+    21d4     21d4        0     1                 errhypsetnam0
+    21d8     21d8        0     1                 donehypsetnam0
+    21fb     21fb        0     1                 errhypfindfirst1
+    21fd     21fd        0     1                 donehypfindfirst1
+    221c     221c        0     1                 errhypopenfile2
+    221e     221e        0     1                 donehypopenfile2
+    2248     2248        0     1                 errhypreadfile3
+    224c     224c        0     1                 donehypreadfile3
+    226b     226b        0     1                 errhypclosefile4
+    226f     226f        0     1                 donehypclosefile4
+    23a3     23a3      12a     1         romlister.prg.lto.o:(.text.cputln)
+    23a3     23a3      12a     1                 cputln
+    24cd     24cd       51     1         romlister.prg.lto.o:(.text.asciitoscreencode_s)
+    24cd     24cd       51     1                 asciitoscreencode_s
+    251e     251e        e     1         romlister.prg.lto.o:(.text.mcputsxy)
+    251e     251e        e     1                 mcputsxy
+    252c     252c       18     1         romlister.prg.lto.o:(.text.getscreenaddr)
+    252c     252c       18     1                 getscreenaddr
+    2544     2544       ce     1         romlister.prg.lto.o:(.text.cputsxy)
+    2544     2544       ce     1                 cputsxy
+    2612     2612       27     1         romlister.prg.lto.o:(.text.do_dma)
+    2612     2612       27     1                 do_dma
+    2639     2639       67     1         romlister.prg.lto.o:(.text.lcopy)
+    2639     2639       67     1                 lcopy
+    26a0     26a0       50     1         romlister.prg.lto.o:(.text.lfill)
+    26a0     26a0       50     1                 lfill
+    26f0     26f0        5     1         romlister.prg.lto.o:(.text.exit)
+    26f0     26f0        5     1                 exit
+    26f5     26f5       19     1         romlister.prg.lto.o:(.text.strcpy)
+    26f5     26f5       19     1                 strcpy
+    270e     270e       35     1         romlister.prg.lto.o:(.text.strlen)
+    270e     270e       35     1                 strlen
+    2743     2743       13     1         romlister.prg.lto.o:(.text.__ashlhi3)
+    2743     2743       13     1                 __ashlhi3
+    2756     2756       32     1         romlister.prg.lto.o:(.text.__mulhi3)
+    2756     2756       32     1                 __mulhi3
+    2788     2788       dc     1         romlister.prg.lto.o:(.text.__udivmodhi4)
+    2788     2788       dc     1                 __udivmodhi4
+    2864     2864       2c     1         romlister.prg.lto.o:(.text.memcpy)
+    2864     2864       2c     1                 memcpy
+    2890     2890       20     1         romlister.prg.lto.o:(.text.__memset)
+    2890     2890       20     1                 __memset
+    28b0     28b0        0     1         __init_array_start = .
+    28b0     28b0        0     1         __init_array_end = .
+    28b0     28b0        0     1         __fini_array_start = .
+    28b0     28b0        0     1         __fini_array_end = .
+    28b0     28b0       85     1 .rodata
+    28b0     28b0       85     1         <internal>:(.rodata.str1.1)
+    2935     2935        0     1 .data
+    2935     2935        0     1         __data_start = .
+    2935     2935        0     1         __data_end = .
+    2935     2935        0     1 __data_load_start = LOADADDR(.data)
+    2935     2935        0     1 __data_size = SIZEOF(.data)
+    2935     2935        1     1 .bss
+    2935     2935        0     1         __bss_start = .
+    2935     2935        1     1         romlister.prg.lto.o:(.bss.g_curScreenH)
+    2935     2935        1     1                 g_curScreenH
+    2936     2936        0     1         __bss_end = .
+    2936     2936        0     1 __bss_size = SIZEOF(.bss)
+    2936     2936        0     1 .noinit
+    2936     2936        0     1         __heap_start = ALIGN(., 2)
+    2936     2936        0     1 __stack = 0xd000
+       0        0       cc     1 .comment
+       0        0       cc     1         <internal>:(.comment)
+       0        0      c00     4 .symtab
+       0        0      c00     4         <internal>:(.symtab)
+       0        0       68     1 .shstrtab
+       0        0       68     1         <internal>:(.shstrtab)
+       0        0      6d8     1 .strtab
+       0        0      6d8     1         <internal>:(.strtab)

@@ -25,13 +25,11 @@
 
 // char* inputstr = (char*) INPUTSTRPAGE;
 
-extern void test();
-extern MIDNIGHT* midnight[2];
+#include "testjmp.h"
+extern unsigned char lfnname[LFNFILENAMELEN];
 #include "fileio.h"
 extern BAM * BAMsector[2];
-extern void _miniInit();
-extern unsigned char GetOneSector(BAM* entry, unsigned char drive,
-                             char track, char sector);
+
 // KickC calls conio_mega65_init() before doing main():
 int main() {
   conioinit();
@@ -52,26 +50,8 @@ int main() {
 */
 
   clrhome();
-  
+
   // mprintf("hyppo_getcurrentdrive=", hyppo_getcurrentdrive());
-
-  // testing:
-  // clrhome();
-  // mprintf("hyppo_get_proc_desc=", hyppo_get_proc_desc());
-  // clrhome();
-  // mprintf("hyppo_d81detach=", hyppo_d81detach());
-
-/*
-  unsigned char majorhyppo;
-  unsigned char minorhyppo;
-  unsigned char majorHDOS;
-  unsigned char minorHDOS;
-  hyppo_getversion(&majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
-  mprintf(" majorhyppo=", majorhyppo);
-  mprintf(" minorhyppo=", minorhyppo);
-  mprintf(" majorHDOS=", majorHDOS);
-  mprintf(" minorHDOS=", minorHDOS);
-*/
 
   mcputsxy(0, 22, "The function keys shown in the bottom line are ");
   msprintf("meant to be used with ");
@@ -80,58 +60,8 @@ int main() {
 
   if (messagebox(1, "is currently beta and may destroy data structures on",
                     ".d81 and real disks! Please work on backed up media.",
-			        "Press RETURN to continue, STOP to halt.", 0))  {
+                    "Press RETURN to continue, STOP to halt.", 0))  {
     navi(0);
-/*
-    unsigned char track = 1;
-	while (track > 0) {
-	  clrhome();
-      inputbox((char *) midnight[0]->inputstr, "Enter track number 1..80, 0 to quit:");
-      track = atoi((const char *) midnight[0]->inputstr);
-      if (track > 0)  {
-        inputbox((char *) midnight[0]->inputstr, "Enter sector number 0..39:");
-	    _miniInit();  //             drive
-        if (GetOneSector(BAMsector[0], 0, track, atoi((const char *) midnight[0]->inputstr)) > 1)  {
-//        if (GetOneSector(BAMsector[0], 0, 1, 3) > 1)  {
-	      messagebox(0, "BAMsector 0",
-                      "read error.",
-			          "Press RETURN to continue, STOP to halt.");
-        }
-        // BAM* bs = BAMsector[0];
-        // if (GetOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector) > 1)  {
-	    // return 0xfe;
-        // }
-        messagebox(0, "BAMsector 0",
-                      "now ready at $1600.",
-			          "Press RETURN to continue, STOP to halt.");
-	  }
-    }
-
-	clrhome();
-	unsigned int pos = 0;
-	long screenbase = getscreenaddr();
-	for (unsigned char track = 1; track <= 80; track++)  {
-      for (unsigned char sector = 0; sector <= 39 && pos < 2000; sector++)  {
-	    _miniInit();  //             drive
-        if (GetOneSector(BAMsector[0], 0, track, sector) > 1)  {
-	      messagebox(0, "BAMsector 0",
-                      "read error.",
-			          "Press RETURN to continue, STOP to halt.");
-        } else {
-		  POKE(screenbase + pos, BAMsector[0]->chntrack);
-		  pos++;
-		  POKE(screenbase + pos, BAMsector[0]->chnsector);
-		  pos++;
-		  POKE(screenbase + pos, BAMsector[0]->version);
-		  pos++;
-		  POKE(screenbase + pos, BAMsector[0]->versioninvert);
-		  pos++;
-		  pos++;
-        }
-	  }
-	}
-	cgetc();
-*/
   }
 
   clrhome();
@@ -141,6 +71,135 @@ int main() {
 //  cgetc();
 //  flushkeybuf();
   hyppo_reset();
+
+  return 0;
+}
+
+
+int _main2() {
+  conioinit();
+    strcpy((char *) lfnname, (char *) "midnightmega.0");
+//	char* pointer = (char*) 0x1700;
+
+/*
+  asm volatile(
+    "brk\n"
+    "brk\n"
+    "brk\n"
+    "brk\n"
+    "eter%=:\n"
+    "jmp eter%=\n"
+    "brk\n"
+    "brk\n"
+    "brk\n"
+    "brk\n"
+  :  :  : );
+//  :  : "y"(pointer >> 8), "a"(strlen(lfnname)), "x"(pointer & 0xff) : );
+*/
+
+//  unsigned char retval;
+  char status;
+
+//  POKE(0, 7);  POKE(1, 5);
+//    POKE(0xd02fU, 0x47);
+//    POKE(0xd02fU, 0x53);
+/*
+  // to map kernel and I/O:
+  asm volatile(
+    " lda #0x00\n"
+    " tax\n"
+    " tay\n"
+    " taz\n"
+    " map\n"
+    " nop\n"
+	"ldz #0\n"      // make z zero for llvm-mos indirect addressing
+  : : : "y", "a", "x" );
+*/
+  pcputs("file: ");
+  pcputs((char *) lfnname);
+    cputln();
+    cgetc();
+    flushkeybuf();
+
+  char filename_len = (char) strlen((const char *) lfnname);
+  fnamehi = (unsigned int) lfnname >> 8;
+  fnamelo = (unsigned int) lfnname & 0xff;
+	pcputs("filename_len is: ");
+	cputhex((unsigned int) filename_len, 4);
+
+  asm volatile(
+    "taz\n"
+
+    "lda #$00\n" // Switch zero page back to default
+    "tab\n"
+
+    "tza\n"
+	"ldz #0\n"      // make z zero for llvm-mos indirect addressing
+    // Kernal SETNAM function
+    // SETNAM. Set file name parameters.
+    // Input: A = File name length; X/Y = Pointer to file name.
+//    "lda #(filename_len)\n"
+//    "ldx #<filename\n"
+//    "ldy #>filename\n"
+    "lda #$e\n"    // strlen          TESTING ***
+//    "ldx #$67\n"
+//    "ldy #$36\n"
+    "jsr SETNAM\n" // C64 $ffbd
+
+    // SETLFS. Set file parameters.
+    // Input: A = Logical number; X = Device number; Y = Secondary address.
+    "ldx #$8\n"
+    "lda #$1\n" // #$0f
+    "ldy #$0\n" // #$ff
+    "jsr SETLFS\n" // C64 $ffba
+
+// LOAD. Load or verify file. (Must call SETLFS and SETNAM beforehands.)
+// - verify: 0 = Load, 1-255 = Verify
+//
+// Returns a status, 0xff: Success other: Kernal Error Code
+
+    //LOAD. Load or verify file. (Must call SETLFS and SETNAM beforehands.)
+    // Input: A: 0 = Load, 1-255 = Verify; X/Y = Load address (if secondary address = 0).
+    // Output: Carry: 0 = No errors, 1 = Error; A = KERNAL error code (if Carry = 1); X/Y = Address of last byte loaded/verified (if Carry = 0).
+//    "ldx address\n"
+//    "ldy address+1\n"
+//    "lda verify\n"
+    "lda #$0\n"
+    "ldx #$00\n"
+    "ldy #$17\n"
+    "jsr LOAD\n" // C64 $ffd5
+    "bcs loaderror%=\n"
+    "lda #$ff\n"
+    "loaderror%=:\n"
+    "sta %0\n"
+    "lda #$16\n" // Switch zero page to $1600 - $16ff
+    "tab\n"
+  : "=r"(status) : "y"(fnamehi), "a"(filename_len), "x"(fnamelo) : );
+	mh4printf("result: ", status);
+
+//	mh4printf("result: ",
+//	  loadFileToMemory(8, (char*) lfnname, pointer));
+    cputln();
+    cgetc();
+    flushkeybuf();
+
+  clrhome();
+  msprintf("Have fun with your MEGA65!");
+  usleep(2000000); // microseconds
+//  cputln();
+//  cgetc();
+//  flushkeybuf();
+hyppo_reset();
+
+  return 0;
+}
+
+int _main() {
+  conioinit();
+	mcputsxy(20, 3, "test");
+    cputln();
+    cgetc();
+    flushkeybuf();
 
   return 0;
 }

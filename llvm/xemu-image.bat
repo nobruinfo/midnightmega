@@ -9,6 +9,8 @@ SET c1541="%VICE%\c1541"
 SET PETCAT=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme\
 SET PETCAT="%PETCAT%2021\GTK3VICE-3.8-win64\bin\petcat.exe"
 
+REM Should mega65_ftp cease to work at later versions consider adding
+REM "-c exit" to all lines:
 SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Tools\
 SET MFTP=%MFTP%m65tools-develo-165-c2b03a-windows\mega65_ftp.exe
 SET DEST=-e
@@ -84,7 +86,7 @@ for /d %%k in ("%D81%\*") do (
   ECHO !prefix!
   "%MFTP%" %DEST% -c "mkdir %%~nk"
   for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
-	ECHO CD=!CD!  D81=!DISKUPPER!
+	REM ECHO CD=!CD!  D81=!DISKUPPER!
     SET "FOLDERSLASH=!FOLDER:\=/!"
 	"%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
     SET "DISKUPPER=%%i"
@@ -116,7 +118,7 @@ for /d %%k in ("%D81INTRO%\*") do (
     for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
       set "DISKUPPER=!DISKUPPER:%%b=%%b!"
     )
-	ECHO CD=!CD!  D81=!DISKUPPER!
+	REM ECHO CD=!CD!  D81=!DISKUPPER!
     "%MFTP%" %DEST% -c "cd %INTRODEST%" -c "mkdir %%~nk" -c "cd %%~nk" -c "put !FOLDERSLASH!/!DISKUPPER!"
     REM "%MFTP%" %DEST% -c "cd %%~nk" -c "ren ??????~?.D81 ??????-?.D81"
   )
@@ -130,7 +132,7 @@ for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N "!prefix!"') do (
   for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
     set "DISKUPPER=!DISKUPPER:%%b=%%b!"
   )
-  ECHO CD=!CD!  D81=!DISKUPPER!
+  REM ECHO CD=!CD!  D81=!DISKUPPER!
   "%MFTP%" %DEST% -c "cd %INTRODEST%" -c "put '!DISKUPPER!'"
   REM "%MFTP%" %DEST% -c "ren ??????~?.D81 ??????-?.D81"
 )
@@ -151,7 +153,7 @@ SET "prefix="!prefix1!" "!prefix2!" "!prefix3!""
 ECHO !prefix!
 "%MFTP%" %DEST% -c "mkdir %FOLDER%"
 for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
-  ECHO CD=!CD!  D81=!DISKUPPER!
+  REM ECHO CD=!CD!  D81=!DISKUPPER!
   SET "FOLDERSLASH=!FOLDER:\=/!"
   "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
   SET "DISKUPPER=%%i"
@@ -175,7 +177,7 @@ SET "prefix="!prefix1!" "!prefix2!" "!prefix3!""
 ECHO !prefix!
 "%MFTP%" %DEST% -c "mkdir %FOLDER%"
 for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
-  ECHO CD=!CD!  D81=!DISKUPPER!
+  REM ECHO CD=!CD!  D81=!DISKUPPER!
   SET "FOLDERSLASH=!FOLDER:\=/!"
   "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
   SET "DISKUPPER=%%i"
@@ -196,7 +198,7 @@ SET "prefix="*.cor""
 ECHO !prefix!
 "%MFTP%" %DEST% -c "mkdir %FOLDER%"
 for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
-  ECHO CD=!CD!  D81=!DISKUPPER!
+  REM ECHO CD=!CD!  D81=!DISKUPPER!
   SET "FOLDERSLASH=!FOLDER:\=/!"
   "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
   SET "DISKUPPER=%%i"

@@ -1,4 +1,4 @@
-versions for Midnight Mega v0.5.14-beta
+versions for Midnight Mega v0.5.18-beta
 
 c1541 (VICE 3.8)
 
@@ -7,13 +7,13 @@ petcat (VICE 3.8)
 MEGA65 cross-development tool for FTP-like access to MEGA65 SD card via serial monitor interface
 version: 20240705.11-develo-c2b03a9
 
-clang version 19.0.0git (https://github.com/llvm-mos/llvm-mos 9c3a71b6966a8a116129dc89e0e38dd767d4e6c4)
+clang version 20.0.0git (https://github.com/llvm-mos/llvm-mos 53d247613243fefde9e012b318052bd379aefb14)
 Target: mos
 Thread model: posix
 InstalledDir: F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin
 
 LLVM (http://llvm.org/):
-  LLVM version 19.0.0git
+  LLVM version 20.0.0git
   Optimized build.
 
 

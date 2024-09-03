@@ -14,6 +14,7 @@ SET MTOO=D:\Game Collections\C64\Mega65\Tools\M65Tools\
 SET MFTP=%MTOO%m65tools-develo-165-c2b03a-windows\mega65_ftp.exe
 SET ETHL=%MTOO%m65tools-develo-165-c2b03a-windows\etherload.exe
 SET HICKUP=D:\Game Collections\C64\Mega65\Xemu
+SET HICKUPOPT=-hickup "%HICKUP%\HICKUP hyppo13.M65"
 SET XMEGA65=%HICKUP%\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos
 SET "HDOSSLASH=%HDOS:\=/%"
@@ -24,6 +25,7 @@ SET PATH=%PATH%;%VICE%;%XMEGA65%
 CD /D %~dp0
 
 SET PRJ=midnightmega
+SET ROMLIST=romlister
 SET DATADISK=datadisk
 SET versions=..\versions.txt
 
@@ -31,10 +33,12 @@ set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
 set LLVM_BAT=%LLVM_HOME%\bin\mos-mega65-clang.bat
 set LLVMDUMP=%LLVM_HOME%\bin\llvm-objdump.exe
 SET libcfilesdir=..\mega65-libc\src
-SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%\hal.c
+REM  SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%\hal.c
+SET libcfiles=%libcfilesdir%\hal.c
 SET libcfiles=%libcfiles% include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
-SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c sid.c
+SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c sid.c romlist.c conio.c memory.c
+SET cfilesrom=%ROMLIST%.c hyppo.c fileio.c conioextensions.c romlist.c conio.c memory.c
 
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
 SET opts=--include-directory=.\include
@@ -48,9 +52,11 @@ SET opts=%opts% -Oz
 REM You can pass -mreserve-zp= to tell the compiler to reduce
 REM its ZP spend by that amount:
 REM SET opts=%opts% -mreserve-zp=2
-SET opts=%opts% -Wl,-Map=%PRJ%.map
+REM SET opts=%opts% -mlto-zp=5
 SET opts=%opts% -Wl,-trace
 REM SET opts=%opts% -Wl,--reproduce=reproduce.tar
+REM SET opts=%opts% -mcpu=mos45gs02
+REM SET opts=%opts% -T midnightmega.ld
 
 REM git tag -a "v0.1.0-beta" -m "version v0.1.0-beta"
 git describe --tags>arghh.tmp
@@ -63,7 +69,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.14-beta
+SET v=v0.5.18-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
@@ -86,6 +92,8 @@ REM XMEGA65 -version -headless>>%versions%
 ECHO:>>%versions%
 
 REM DEL %TEMP%\*.o
+REM -c does a .o without linking:
+CALL %LLVM_BAT% -c -o unmap-basic-basepage.o unmap-basic-basepage.S
 CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %cfiles% %libcfiles%
 
 :NOBUILD
@@ -94,7 +102,7 @@ IF ERRORLEVEL == 1 (
 ) ELSE (
   ECHO ------------------------------------------------------
   REM  -Wall
-  CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% %cfiles% %libcfiles%
+  CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% -Wl,-Map=%PRJ%.map %cfiles% %libcfiles%
 REM  SET opts=%opts% -DDISKDEBUG
 REM  CALL %LLVM_BAT% -Os -o dbg%PRJ%.prg !opts! %cfiles% %libcfiles%
 REM  SET opts=!opts! -DDELAYDEBUG
@@ -109,11 +117,22 @@ REM  CALL %LLVM_BAT% -Os -o emu%PRJ%.prg !opts! %cfiles% %libcfiles%
 
   %LLVMDUMP% --disassemble --syms %PRJ%.prg.elf > %PRJ%_dump.txt
 
+  REM seperate ROM list application
+  CALL %LLVM_BAT% -Os -o %ROMLIST%.prg %opts% -Wl,-Map=%ROMLIST%.map %cfilesrom% %libcfiles%
+  %LLVMDUMP% --disassemble --syms %ROMLIST%.prg.elf > %ROMLIST%_dump.txt
+
   %c1541% -format disk%PRJ%,id d81 %PRJ%.d81
   %c1541% -attach %PRJ%.d81 -delete %PRJ%
   %c1541% -attach %PRJ%.d81 -write %PRJ%.prg %PRJ%
+  %c1541% -attach %PRJ%.d81 -delete %ROMLIST%
+  %c1541% -attach %PRJ%.d81 -write %ROMLIST%.prg %ROMLIST%
 REM  %c1541% -attach %PRJ%.d81 -write dbg%PRJ%.prg dbg%PRJ%
 REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
+
+  REM file for loadFileToMemory():
+    ECHO this is a sequential file for testing.>%PRJ%.seq
+    %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s
+    DEL %PRJ%.seq>NUL
   IF 1 == 2 (
     ECHO this is a sequential file for testing.>%PRJ%.seq
     %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s
@@ -168,7 +187,7 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   ECHO 900 POKE $D6CF, $42>>mega65.bas
 
   SET HEADLESS=-headless -sleepless -testing
-  XMEGA65 !HEADLESS! -hickup "%HICKUP%\HICKUP.M65" -importbas mega65.bas
+  XMEGA65 !HEADLESS! %HICKUPOPT% -importbas mega65.bas
   "%MFTP%" -d %IMG% -c "get !DATADISKUPPER!.D81"
 
   REM c1541 currently destroys neighbouring subpartitions if only 3 tracks of size:
@@ -252,7 +271,7 @@ REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
 
   XMEGA65 -besure ^
     -importbas mega65.bas ^
-    -hickup "%HICKUP%\HICKUP.M65" ^
+    %HICKUPOPT% ^
 	-driveled
 REM    -hdosvirt -defd81fromsd
 REM    -8 !PRJSHORT!.d81 -9 %DATADISK%.d81 -autoload

@@ -376,6 +376,7 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
 	  }
 	}
   }
+  return TRUE;
 }
 
 unsigned char valuesbox(unsigned char mode, char* message, char* message2, long val2,

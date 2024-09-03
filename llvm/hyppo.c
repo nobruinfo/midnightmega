@@ -30,6 +30,7 @@ struct TASKBLOCK* const taskblock = (struct TASKBLOCK*) FILENAMEPAGE;
 
 // https://stackoverflow.com/questions/8810390/how-to-use-a-global-variable-in-gcc-inline-assembly
 // define fnamehi (unsigned char)((unsigned int)hyppofn->name >> 8)
+// __attribute__((section(".data")))
 static unsigned char __attribute__((used)) fnamehi;
 unsigned char hyppo_setup_transfer_area(void)  {
   unsigned char retval;
@@ -195,7 +196,7 @@ unsigned char hyppo_d81attach1(void)  {
   : "=r"(retval) : : "a", "x");
   return retval;
 }
-
+/*
 unsigned char hyppo_d81detach(void)  {
 	unsigned char retval;
 
@@ -215,6 +216,30 @@ unsigned char hyppo_d81detach(void)  {
   : "=r"(retval) : : "a", "x");
   return retval;
 }
+*/
+unsigned char hyppo_dos_attach(unsigned char mountbits)  {
+	unsigned char retval;
+
+  asm volatile(
+    "lda #$4a\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	"bcc errhypd81dosattach%=\n"
+    "sta %0\n"
+	"jmp donehypd81dosattach%=\n"
+"errhypd81dosattach%=:\n"
+    "lda #$FF\n"
+	"sta %0\n"
+"donehypd81dosattach%=:\n"
+    "nop\n"
+  : "=r"(retval) : "x"(mountbits) : "a", "y");
+  return retval;
+}
+/*
+unsigned char hyppo_d81attach0() {return hyppo_dos_attach(0b00000000);}
+unsigned char hyppo_d81attach1() {return hyppo_dos_attach(0b00000001);}
+unsigned char hyppo_d81detach()  {return hyppo_dos_attach(0b10000010);}
+*/
 
 /*
 hyppo_loadfile
@@ -343,6 +368,110 @@ unsigned char hyppo_readdir(unsigned char filedescriptor)  {
     readdir_dirent->lfn[readdir_dirent->length] = 0; // put str terminate null
   }
 
+  return retval;
+}
+
+unsigned char hyppo_findfirst(void)  {
+	unsigned char retval;
+
+  asm volatile(
+	"ldx #$00\n"    // reset number of found file entries
+    "lda #$30\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	"bcc errhypfindfirst%=\n"
+    "sta %0\n"
+	"jmp donehypfindfirst%=\n"
+"errhypfindfirst%=:\n"
+/*  a already carries the return (error) code
+    "lda #$FF\n"
+*/
+	"sta %0\n"
+"donehypfindfirst%=:\n"
+    "nop\n"
+  : "=r"(retval) : : "a", "x");
+  return retval;
+}
+
+unsigned char hyppo_openfile(unsigned char filedescriptor)  {
+	unsigned char retval;
+
+  asm volatile(
+//	"ldx #$00\n"    // shouldn't be necessary
+    "lda #$18\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	"bcc errhypopenfile%=\n"
+    "sta %0\n"
+	"jmp donehypopenfile%=\n"
+"errhypopenfile%=:\n"
+/*  a already carries the return (error) code
+    "lda #$FF\n"
+*/
+	"sta %0\n"
+"donehypopenfile%=:\n"
+    "nop\n"
+  : "=r"(retval) : "x"(filedescriptor) : "a" );
+  return retval;
+}
+
+unsigned char hyppo_readfile(unsigned char filedescriptor)  {
+	unsigned char retval;
+
+  asm volatile(
+//	"ldx #$00\n"    // shouldn't be necessary
+    "lda #$1a\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	"bcc errhypreadfile%=\n"
+    "sta %0\n"
+	"jmp donehypreadfile%=\n"
+"errhypreadfile%=:\n"
+    "lda #$FF\n"
+	"sta %0\n"
+"donehypreadfile%=:\n"
+    "nop\n"
+  : "=r"(retval) : "x"(filedescriptor) : "a");
+  return retval;
+}
+
+unsigned char hyppo_closefile(unsigned char filedescriptor)  {
+	unsigned char retval;
+
+  asm volatile(
+//	"ldx #$00\n"    // shouldn't be necessary
+    "lda #$20\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	"bcc errhypclosefile%=\n"
+    "sta %0\n"
+	"jmp donehypclosefile%=\n"
+"errhypclosefile%=:\n"
+    "lda #$FF\n"
+	"sta %0\n"
+"donehypclosefile%=:\n"
+    "nop\n"
+  : "=r"(retval) : "x"(filedescriptor) : "a");
+  return retval;
+}
+
+unsigned char hyppo_rmfile(unsigned char filedescriptor)  {
+	unsigned char retval;
+
+  asm volatile(
+//	"ldx #$00\n"    // shouldn't be necessary
+    "lda #$26\n"
+	"sta HTRAP00\n"
+	"clv\n"
+	"bcc errhyprmfile%=\n"
+    "sta %0\n"
+	"jmp donehyprmfile%=\n"
+"errhyprmfile%=:\n"
+    "lda #$FF\n"
+	"sta %0\n"
+"donehyprmfile%=:\n"
+    "nop\n"
+  : "=r"(retval) : "x"(filedescriptor) : "a");
   return retval;
 }
 
@@ -479,16 +608,32 @@ void hyppo_freeze_self(void)  {
 }
 
 // https://www.felixcloutier.com/documents/gcc-asm.html#outputs
-// @@ minorHDOS not yet implemented
 void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
                       unsigned char * majorHDOS,  unsigned char * minorHDOS)  {
+// void hyppo_getversion(void)  {
+//   unsigned char majhyp;
+//   unsigned char minhyp;
+//   unsigned char majdos;
+//   unsigned char mindos;
+
   asm volatile(
     "lda #$00\n"
 	"sta HTRAP00\n"
 	"clv\n"
+//	"sta $1700\n"   // @@@@ quirky
+//	"stx $1701\n"
+//	"sty $1702\n"
+	"stz $1703\n"
+	"ldz #0\n"      // make z zero for llvm-mos indirect addressing
 	                                                  // llvm doesn't know the z reg
   : "=a" (*majorhyppo), "=x" (*minorhyppo), "=y" (*majorHDOS) // , "=z" (*minorHDOS)
-  :  : /*  "a", "x", "y", "z" */ );
+//  : // "=a" (majhyp), "=x" (minhyp), "=y" (majdos) // , "=z" (*minorHDOS)
+  :  : /* "a", "x", "y" / * , "z" */ );
+
+//  *majorhyppo = majhyp;
+//  *minorhyppo = minhyp;
+//  *majorHDOS = majdos;
+  *minorHDOS = PEEK(0x1703);
 }
 
 // ******************************************

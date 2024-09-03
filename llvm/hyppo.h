@@ -85,13 +85,34 @@ unsigned char hyppo_get_proc_desc(void);
 unsigned char hyppo_getcurrentdrive(void);
 unsigned char hyppo_selectdrive(unsigned char nb);
 unsigned char hyppo_setname(char *filename);
+
+/* dos_attach (probably $4A)
+dos_attach:
+        ;; NEW CALL DOS 1.3
+        ;;
+        ;; handles both attaching and detaching images and real drives
+        ;;
+        ;; X.0 - DRVNUM  select drive 0 or 1
+        ;; X.1 - BOTHDRV (MODE=detach) selects both drives
+        ;; X.6 - NOREAL  (MODE=detach) don't attach real drive if set
+        ;; X.7 - MODE    select mode 0 - attach, 1 - detach
+
+Preconditions: The current Hyppo filename has been set using
+        hyppo_setname (only for mount).
+*/
 unsigned char hyppo_d81attach0(void);
 unsigned char hyppo_d81attach1(void);
-unsigned char hyppo_d81detach(void);
+// unsigned char hyppo_d81detach(void);
+unsigned char hyppo_dos_attach(unsigned char mountbits);
 unsigned char hyppo_opendir(void);
 unsigned char hyppo_chdir(void);
 unsigned char hyppo_closedir(unsigned char filedescriptor);
 unsigned char hyppo_readdir(unsigned char filedescriptor);
+unsigned char hyppo_findfirst(void);
+unsigned char hyppo_openfile(unsigned char filedescriptor);
+unsigned char hyppo_readfile(unsigned char filedescriptor);
+unsigned char hyppo_closefile(unsigned char filedescriptor);
+unsigned char hyppo_rmfile(unsigned char filedescriptor);
 char * getsfn();
 char * getlfn();
 unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
@@ -102,3 +123,4 @@ void hyppo_reset(void);
 void hyppo_freeze_self(void);
 void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
                       unsigned char * majorHDOS,  unsigned char * minorHDOS);
+// void hyppo_getversion(void);
