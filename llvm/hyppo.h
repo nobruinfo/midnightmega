@@ -99,10 +99,10 @@ dos_attach:
 
 Preconditions: The current Hyppo filename has been set using
         hyppo_setname (only for mount).
+*/
 unsigned char hyppo_d81attach0(void);
 unsigned char hyppo_d81attach1(void);
-unsigned char hyppo_d81detach(void);
-*/
+// unsigned char hyppo_d81detach(void);
 unsigned char hyppo_dos_attach(unsigned char mountbits);
 unsigned char hyppo_opendir(void);
 unsigned char hyppo_chdir(void);
@@ -121,6 +121,6 @@ unsigned char gethyppodirent(unsigned char drive, unsigned char side,
                              unsigned char maxentries);
 void hyppo_reset(void);
 void hyppo_freeze_self(void);
-// void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
-//                       unsigned char * majorHDOS,  unsigned char * minorHDOS);
-void hyppo_getversion(void);
+void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
+                      unsigned char * majorHDOS,  unsigned char * minorHDOS);
+// void hyppo_getversion(void);

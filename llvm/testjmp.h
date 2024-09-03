@@ -14,7 +14,7 @@ void setnam(char* filename) {
   char filename_len = (char)strlen(filename);
   fnamehi = (unsigned int) filename >> 8;
   fnamelo = (unsigned int) filename & 0xff;
-//  printf("filename_len is: %04x ", (unsigned int) filename_len);
+//  mh4printf("filename_len is: ", (unsigned long) filename_len);
 
   asm volatile(
     // Kernal SETNAM function
@@ -61,9 +61,9 @@ char load(char* address, char verify) {
   fnamehi = (unsigned int) address >> 8;
   fnamelo = (unsigned int) address & 0xff;
 /*    clrhome();
-  printf("fnamehi is: %04x ", (unsigned int) fnamehi);
+  mh4printf("fnamehi is: ", (unsigned long) fnamehi);
     cputln();
-  printf("fnamelo is: %04x ", (unsigned int) fnamelo);
+  mh4printf("fnamelo is: ", (unsigned long) fnamelo);
     cputln();
     cgetc();
 */
@@ -109,14 +109,14 @@ volatile __zp char* addresszp;
 volatile char* endaddress;
 
 char saveFileToMemory( char device, char* filename, char* address) {
-//	printf("SETNAM is: %04x ", (unsigned int) SETNAM);
-//	printf("SETLFS is: %04x ", (unsigned int) SETLFS);
-//	printf("SAVE is: %04x ", (unsigned int) SAVE);
+//	mh4printf("SETNAM is: ", (unsigned long) SETNAM);
+//	mh4printf("SETLFS is: ", (unsigned long) SETLFS);
+//	mh4printf("SAVE is: ", (unsigned long) SAVE);
 	endaddress = (address + sizeof(address));
 	addresszp = address;
-	printf("addresszp is: %04x ", (unsigned int) addresszp);
-	printf("endaddress is: %04x ", (unsigned int) endaddress);
-	printf("\n\n\n\n");
+	mh4printf("addresszp is: ", (unsigned long) addresszp);
+	mh4printf("endaddress is: ", (unsigned long) endaddress);
+	cputln();
 	setbnk();
     setnam(filename);
     setlfs(device);

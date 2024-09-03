@@ -120,7 +120,7 @@ void shortcuts(unsigned char mod, unsigned char side)  {
 	shortcutprint(FALSE, " 9",  "Menu  ");
 	shortcutprint(FALSE, " 10", "Quit ");
   } else if (mod & 8)  {  // MEGA key, C=
-	shortcutprint( TRUE, " 1",  "UMntAl"); // @@@@
+	shortcutprint(FALSE, " 1",  "      ");
 	shortcutprint(FALSE, " 2",  "      ");
 	shortcutprint( TRUE, " 3",  "Freezr");
 	shortcutprint(FALSE, " 4",  "      ");
@@ -249,8 +249,9 @@ unsigned char setupbox()  {
 
 	  default:
         sidbong();
-//	    mprintf("val=", c);
+//	    mh4printf("val=", c);
 //		cputc(' ');
+//		usleep(400000); // microseconds
       break;
 	}
   }
@@ -286,7 +287,15 @@ unsigned char helpbox()  {
 	msprintf(" to rescan current file panel (left or right).");
 
     mcputsxy(6,  4, "Due to Hypervisor limitations .d81 image files can neither be copied");
-    mcputsxy(6,  5, "as a whole nor be created, use the MEGA65 freezer menu to do so.");
+    mcputsxy(6,  5, "as a whole nor be created, use ");
+    revers(1);
+    msprintf(" Mega ");
+    revers(0);
+	msprintf(" ");
+    revers(1);
+	msprintf(" F3 ");
+    revers(0);
+	msprintf(" for the freezer.");
 
     revers(1);
     mcputsxy(6,  7, " Mega ");
@@ -295,13 +304,13 @@ unsigned char helpbox()  {
     revers(1);
 	msprintf(" F5 ");
     revers(0);
-	msprintf(" copies each and every files of the selected side (left");
-    mcputsxy(6,  8, "or right) to the opposite one, this will ");
+	msprintf(" copies all blocks (allocated ones if configured) to");
+    mcputsxy(6,  8, "the opposite side, this will ");
     highlight(1);
     msprintf("overwrite");
     highlight(0);
-    msprintf(" a whole disk");
-    mcputsxy(6,  9, "(image) contents irrevocably.");
+    msprintf(" a whole disk (image)");
+    mcputsxy(6,  9, "contents irrevocably.");
 
     revers(1);
     mcputsxy(6, 11, " ");
@@ -330,9 +339,13 @@ unsigned char helpbox()  {
 	msprintf(" F1 ");
     revers(0);
 
-    msprintf(" on the MEGA65 of course) is used for both swit-");
-    mcputsxy(6, 19, "ching from a mounted .d81 to the selection within the storage");
-    mcputsxy(6, 20, "card and back.");
+    msprintf(" on the MEGA65 of course) is used for switching");
+    mcputsxy(6, 19, "from a mounted .d81 to the selection within the storage card and");
+    mcputsxy(6, 20, "back. ");
+    revers(1);
+	msprintf(" F11 ");
+    revers(0);
+	msprintf(" unmounts the current side to reach a real floppy drive.");
 
     revers(1);
     mcputsxy(36, 22, "   OK   ");
@@ -357,6 +370,19 @@ unsigned char helpbox()  {
       break;
 	}
   }
+}
+
+// This uses $1703 so has to be called off usage of this memory:
+unsigned char legacyHDOS()  {
+  unsigned char majorhyppo;
+  unsigned char minorhyppo;
+  unsigned char majorHDOS;
+  unsigned char minorHDOS;
+
+  hyppo_getversion(&majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
+  if ((((majorhyppo * 100) + minorhyppo) < 102) ||
+      (((majorHDOS * 100) + minorHDOS) < 103))  return TRUE;
+  else return FALSE;
 }
 
 unsigned char rombox()  {
@@ -442,26 +468,42 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
               taskblock->d81filename0,
               taskblock->d81filenamelength0);
       midnight[side]->curfile[taskblock->d81filenamelength0] = 0;
-*/
+* /
       c = 0;
       while (taskblock->d81filename0[c] != 0 && c < taskblock->d81filenamelength0)  {
         midnight[side]->curfile[c] = taskblock->d81filename0[c];
         c++;
       }
       midnight[side]->curfile[c] = 0;
+*/
+	  if (PEEK(0xd6a1) & D6A1_USEREAL0)  {
+	    strcopy("real drive", (char *) midnight[side]->curfile, 16);
+      } else {
+	    strcopy((char *) taskblock->d81filename0,
+		        (char *) midnight[side]->curfile,
+				taskblock->d81filenamelength0);
+	  }
     } else {
 /*
       strncpy(midnight[side]->curfile,
               taskblock->d81filename1,
               taskblock->d81filenamelength1);
       midnight[side]->curfile[taskblock->d81filenamelength1] = 0;
-*/
+* /
       c = 0;
       while (taskblock->d81filename1[c] != 0 && c < taskblock->d81filenamelength1)  {
         midnight[side]->curfile[c] = taskblock->d81filename1[c];
         c++;
       }
       midnight[side]->curfile[c] = 0;
+*/
+	  if (PEEK(0xd6a1) & D6A1_USEREAL1)  {
+	    strcopy("real drive", (char *) midnight[side]->curfile, 16);
+      } else {
+	    strcopy((char *) taskblock->d81filename1,
+		        (char *) midnight[side]->curfile,
+				taskblock->d81filenamelength1);
+	  }
     }
 
     getDiskname(drive, midnight[side]->dirtrack, (char *) disknames[side]);
@@ -534,6 +576,7 @@ unsigned int sizeselectcurrentifnone(unsigned char side)  {
 
 // unsigned char testtrack;
 // unsigned char testsector;
+unsigned char legacyHDOSstate;
 void navi(unsigned char side)  {
   unsigned int c;  // keyboard input
   unsigned char leftx;
@@ -545,6 +588,7 @@ void navi(unsigned char side)  {
   DIRENT* ds;
   
   option.option = OPTIONshowALO | OPTIONshowDRV;
+  legacyHDOSstate = legacyHDOS(); // clobbers $1703
   
   // initialising:
   for (i = 0; i < 2; i++)  {
@@ -599,6 +643,9 @@ void navi(unsigned char side)  {
 	      mcputsxy(leftx + 12, 23, " ");
           csputdec(midnight[i]->blocksfree, 0, 0);
 	      msprintf(" blocks free ");
+        }
+		else {
+		  mcputsxy(leftx + 12, 23, " F11 to mount real drive ");
 	    }
         revers(0);
         listbox((side == i), i, leftx + 1, 1, midnight[i]->pos, midnight[i]->entries);
@@ -641,7 +688,7 @@ void navi(unsigned char side)  {
 		UpdateSectors(midnight[side]->drive, side);
 		Deselect(side);
       break;
-
+/*
 	  case 0x8f2: // Mega-F1
 		if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
 		  messagebox(0, "Unmount", "not supported in mount mode.", " ", 0);
@@ -652,7 +699,7 @@ void navi(unsigned char side)  {
 		  }
 		}
       break;
-
+*/
 	  case 0x8f4: // Mega-F3
 	    if (messagebox(0, "Freezer", "did you save your work?", " ", 0))  {
 		  hyppo_freeze_self();
@@ -697,6 +744,9 @@ void navi(unsigned char side)  {
             if (((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE) ||
                 ((midnight[side?0:1]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
               messagebox(0, "Copying storage card files/folders", "is not supported.",
+                            " ", 0);
+            } else if (midnight[side?0:1]->dirtrack != HEADERTRACK)  {
+			  messagebox(0, "File copy,", "into subfolders currently unsupported.",
                             " ", 0);
             // @@ these "if"s need to be swapped:
             } else if (sizeselectcurrentifnone(side) > midnight[side?0:1]->blocksfree)  {
@@ -828,6 +878,38 @@ void navi(unsigned char side)  {
 		Deselect(side?0:1);
       break;
 
+	  case 0xfb: // F11
+	    if (legacyHDOSstate)  {
+/*
+  unsigned char majorhyppo;
+  unsigned char minorhyppo;
+  unsigned char majorHDOS;
+  unsigned char minorHDOS;
+  hyppo_getversion(&majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
+          unsigned char clear = 1;
+          unsigned char shadow = 1;
+
+          mcbox(20, 15, 70, 19, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+          gotoxy(24, 17);
+          mprintf(" Hyppo v", majorhyppo);
+          mprintf(".", minorhyppo);
+          mprintf(" HDOS v", majorHDOS);
+          mprintf(".", minorHDOS);
+*/
+	      messagebox(0, "Your version of the Hyppo/HDOS is too old",
+                        "to unmount drives.",
+                        "Press RETURN or STOP to continue.", 0);
+		} else {
+	      if (messagebox(0, "Unmount", (side ? "right drive?" : "left drive?"), " ", 0))  {
+            hyppo_dos_attach(0b10000000 + midnight[side]->drive); // hyppo_d81detach();
+		    midnight[side]->flags |= MIDNIGHTFLAGismounted;
+		    midnight[side]->dirtrack = HEADERTRACK;
+	        UpdateSectors(midnight[side]->drive, side);
+		    Deselect(side);
+		  }
+		}
+      break;
+
 	  case 0x412: // Ctrl-r
 		midnight[side]->flags |= MIDNIGHTFLAGismounted;
 		midnight[side]->dirtrack = HEADERTRACK;
@@ -889,16 +971,15 @@ void navi(unsigned char side)  {
 		      Deselect(side);
             }		
 		  } else {
-	        // @@ todo: choose drive
+	        // @@@@ currently trying to mount everything that is not a dir:
 		    if (midnight[side]->drive)  {
 		      hyppo_setname((char *) lfnname); // (char *) ds->name);
-		      attachresult = hyppo_dos_attach(1); // hyppo_d81attach1();
+		      attachresult = (legacyHDOSstate ? hyppo_d81attach1() : hyppo_dos_attach(1));
 		    } else {
 		      hyppo_setname((char *) lfnname); // (char *) ds->name);
-		      attachresult = hyppo_dos_attach(0); // hyppo_d81attach0();
+		      attachresult = (legacyHDOSstate ? hyppo_d81attach0() : hyppo_dos_attach(0));
 		    }
-//		hyppo_setname((char *) filelist[pos]);
-//		attachresult = (midnight[side]->drive ? hyppo_d81attach1() : hyppo_d81attach0());
+
 		    if (attachresult > 0x4a)  { // @@@@ to be reviewed
 		      messagebox(0, "Storage card mounting,", "mount failed for",
                             (char *) lfnname, 0); // ds->name, 0);

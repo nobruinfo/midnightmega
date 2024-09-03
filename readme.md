@@ -40,16 +40,16 @@ writing the disk (image).
 # Operation
 
 The following keymapping is also shown when opened by pressing
-the [F1] key.
+the [F1] or [HELP] key.
 
 * Most keys are shown in the feeter bar
 * [Ctrl][r] to rescan current file panel (left or right)
 * Due to Hypervisor limitations .d81 image files can neither be
-  copied as a whole nor be created, use the MEGA65 freezer menu
-  to do so
-* [Mega][F5] copies each and every files of the selected side
-  (left or right) to the opposite one, this will **overwrite** a
-  whole disk (image) contents irrevocably
+  copied as a whole nor be created, use [Mega][F3] to reach the
+  MEGA65 freezer menu to do so
+* [Mega][F5] copies all blocks (allocated ones if configured) of
+  the selected side (left or right) to the opposite one, this
+  will **overwrite** a whole disk (image) contents irrevocably
 * [&larr;] in the upper left of your keyboard can be used instead
   of the `..` directory entry to climb to the parent directory
 * Currently the left pane is always drive 0 and the right one
@@ -58,16 +58,11 @@ the [F1] key.
 * [F2] ([Shift][F1] on the MEGA65 of course) is used for both
   switching from a mounted .d81 to the selection within the
   storage card and back
-* [Mega][F1] can be used to call the unmount all routine of the
-  Hypervisor. This will unmount all real disk drives as well as
-  all .d81 files. Currently this leaves a real machine in a state
-  it cannot recover reaching real disk drives. .d81 files can be
-  newly mounted fine.
 * [Mega][F3] opens the Freezer screen. It is an in-application
   alternative to using a longer press onto the [RESTORE] key.
   After coming back the application is rescanning the drives like
   it does if the [Ctrl][r] combination of keys is used to ensure
-  updated disk contents.
+  updated disk contents
 
 # Project subfolders here in Github
 
@@ -122,6 +117,7 @@ all message box texts and so on. This is not yet begun.
   the user, same routines to be used as for [F3].
 * GEOS VLIR filenames and file types are not displayed correctly,
   neither are they supported nor rejected.
+* Add the core's .d64 support.
 * In addition to `.prg` and `.d81` create a ROM file with the
   programme to be used like so.
 
@@ -150,6 +146,7 @@ all message box texts and so on. This is not yet begun.
 * refactoring for code runtime optimisation
 * test data copy by exceeding the maximum number of allowed blocks
 * test unmounted drives, empty disks and other error handling
+* better visualise disk and mounting errors
 * remove `dirent` sectors if empty after file deletions, retain
   track chain
 * ✓ show a status feeter with number of blocks available
@@ -159,6 +156,8 @@ all message box texts and so on. This is not yet begun.
 
 ## Bugs
 
+* Copying files into subdirs currently allocates BAM outside
+  the subfolder tracks.
 * The help file display routine is currently limited to one
   block of data instead of four for a full screen.
 * ✓ ~~Additional `dirent` blocks are placed outside track 40~~
@@ -168,9 +167,9 @@ all message box texts and so on. This is not yet begun.
 * After file delete BAM seems to be written in the according
   function as well as in nav.c<br />
   better check with DEBUG on
-* BAM and `dirent` blocks are read/written way too often. With the
-  now cache for two disks (left and right) in place this can be
-  optimised.<br />
+* ~~BAM and `dirent` blocks are read/written way too often. With~~
+  ~~the now cache for two disks (left and right) in place this~~
+  ~~can be optimised.~~<br />
   A BAM flag could be used to only read it back in case disk
   operation need access to it/alter it.
   Also BAM and dirent should be handled in one go as the double
@@ -214,6 +213,8 @@ all message box texts and so on. This is not yet begun.
 
 * are in file `llvm/conioextensions.h` and are quirky because of most
   in `conio.c` being `static`
+* `conio.c` was copied to `llvm` and massively edited to get rid of
+  not needed stuff. This freed 3+ blocks of code.
 * the full removal of `KickC` based include files from folder
   `llvm/include`
 

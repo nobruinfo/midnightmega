@@ -154,7 +154,7 @@ fnamehi = (unsigned int)hyppofn->name >> 8;
 	: "=r"(retval) : "y"(fnamehi) : "a", "x");
   return retval;
 }
-/*
+
 unsigned char hyppo_d81attach0(void)  {
 	unsigned char retval;
 
@@ -196,7 +196,7 @@ unsigned char hyppo_d81attach1(void)  {
   : "=r"(retval) : : "a", "x");
   return retval;
 }
-
+/*
 unsigned char hyppo_d81detach(void)  {
 	unsigned char retval;
 
@@ -608,9 +608,9 @@ void hyppo_freeze_self(void)  {
 }
 
 // https://www.felixcloutier.com/documents/gcc-asm.html#outputs
-// void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
-//                       unsigned char * majorHDOS,  unsigned char * minorHDOS)  {
-void hyppo_getversion(void)  {
+void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
+                      unsigned char * majorHDOS,  unsigned char * minorHDOS)  {
+// void hyppo_getversion(void)  {
 //   unsigned char majhyp;
 //   unsigned char minhyp;
 //   unsigned char majdos;
@@ -620,18 +620,20 @@ void hyppo_getversion(void)  {
     "lda #$00\n"
 	"sta HTRAP00\n"
 	"clv\n"
-	"sta $1700\n"   // @@@@ quirky
-	"stx $1701\n"
-	"sty $1702\n"
+//	"sta $1700\n"   // @@@@ quirky
+//	"stx $1701\n"
+//	"sty $1702\n"
 	"stz $1703\n"
+	"ldz #0\n"      // make z zero for llvm-mos indirect addressing
 	                                                  // llvm doesn't know the z reg
-  : // "=a" (majhyp), "=x" (minhyp), "=y" (majdos) // , "=z" (*minorHDOS)
-  :  : "a", "x", "y" /* , "z" */ );
+  : "=a" (*majorhyppo), "=x" (*minorhyppo), "=y" (*majorHDOS) // , "=z" (*minorHDOS)
+//  : // "=a" (majhyp), "=x" (minhyp), "=y" (majdos) // , "=z" (*minorHDOS)
+  :  : /* "a", "x", "y" / * , "z" */ );
 
 //  *majorhyppo = majhyp;
 //  *minorhyppo = minhyp;
 //  *majorHDOS = majdos;
-//  *minorHDOS = PEEK(0x1703);
+  *minorHDOS = PEEK(0x1703);
 }
 
 // ******************************************

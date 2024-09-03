@@ -53,25 +53,6 @@ int main() {
 
   // mprintf("hyppo_getcurrentdrive=", hyppo_getcurrentdrive());
 
-  // testing:
-  // clrhome();
-  // mprintf("hyppo_get_proc_desc=", hyppo_get_proc_desc());
-  // clrhome();
-  // mprintf("hyppo_d81detach=", hyppo_d81detach());
-
-//  unsigned char majorhyppo;
-//  unsigned char minorhyppo;
-//  unsigned char majorHDOS;
-//  unsigned char minorHDOS;
-  hyppo_getversion(); // &majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
-/*
-  gotoxy(0, 17);
-  mprintf(" majorhyppo=", PEEK(0x1700)); // majorhyppo);
-  mprintf(" minorhyppo=", PEEK(0x1701)); // minorhyppo);
-  mprintf(" majorHDOS=", PEEK(0x1702)); // majorHDOS);
-  mprintf(" minorHDOS=", PEEK(0x1703)); // minorHDOS);
-*/
-
   mcputsxy(0, 22, "The function keys shown in the bottom line are ");
   msprintf("meant to be used with ");
   mcputsxy(0, 23, "and without [Shift] and [Mega] after the messagebox is dismissed:");
@@ -79,7 +60,7 @@ int main() {
 
   if (messagebox(1, "is currently beta and may destroy data structures on",
                     ".d81 and real disks! Please work on backed up media.",
-			        "Press RETURN to continue, STOP to halt.", 0))  {
+                    "Press RETURN to continue, STOP to halt.", 0))  {
     navi(0);
   }
 
@@ -89,13 +70,14 @@ int main() {
 //  cputln();
 //  cgetc();
 //  flushkeybuf();
-hyppo_reset();
+  hyppo_reset();
 
   return 0;
 }
 
 
 int _main2() {
+  conioinit();
     strcpy((char *) lfnname, (char *) "midnightmega.0");
 //	char* pointer = (char*) 0x1700;
 
@@ -129,7 +111,8 @@ int _main2() {
     " tay\n"
     " taz\n"
     " map\n"
-    " nop"
+    " nop\n"
+	"ldz #0\n"      // make z zero for llvm-mos indirect addressing
   : : : "y", "a", "x" );
 */
   pcputs("file: ");
@@ -151,6 +134,7 @@ int _main2() {
     "tab\n"
 
     "tza\n"
+	"ldz #0\n"      // make z zero for llvm-mos indirect addressing
     // Kernal SETNAM function
     // SETNAM. Set file name parameters.
     // Input: A = File name length; X/Y = Pointer to file name.
@@ -191,11 +175,9 @@ int _main2() {
     "lda #$16\n" // Switch zero page to $1600 - $16ff
     "tab\n"
   : "=r"(status) : "y"(fnamehi), "a"(filename_len), "x"(fnamelo) : );
-	pcputs("result: ");
-	cputhex(status, 4);
+	mh4printf("result: ", status);
 
-
-//	printf("result: %04x ",
+//	mh4printf("result: ",
 //	  loadFileToMemory(8, (char*) lfnname, pointer));
     cputln();
     cgetc();
