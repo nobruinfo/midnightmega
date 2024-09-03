@@ -1,3 +1,6 @@
+// testing memory leakages by throwing out all parts currently
+// not used
+
 /*  CONIO.H style Text mode support  for the Mega65 libC
 
     Copyright (c) 2020-2021 Hernán Di Pietro
@@ -51,20 +54,10 @@
 #define PRINTF_STATE_INIT 0
 #define PRINTF_STATE_ESCAPE 1
 
-// cprintf Screen Control Escape Codes.
-//
-// See ESCAPE_HASH() for how to generate.
-//
-typedef struct tagESCAPE_CODE {
-    unsigned char arg;
-    void (*fn)(unsigned char);
-} ESCAPE_CODE;
-
 // use 198 bytes of C64 tape buffer as petscii2screencode conversion buffer
 // in order to save bank 0 memory
 static char* p2sbuf = (char*)0x334;
 
-static ESCAPE_CODE escapeCode[255];
 // __attribute__((section(".data")))
 static unsigned char g_curTextColor = COLOUR_WHITE;
 // __attribute__((section(".data")))
@@ -93,20 +86,6 @@ const unsigned char chHorzBottom[] = { 0x20, 0x63, 0x43, 0x6F, 0x43 };
 const unsigned char chVertRight[] = { 0x20, 0x74, 0x5D, 0x6A, 0x5D };
 const unsigned char chVertLeft[] = { 0x20, 0x6A, 0x5D, 0x74, 0x5D };
 #endif
-
-// Hash function for cprintf ESCAPE codes
-
-static unsigned char hash(const unsigned char* str, const unsigned char maxLen)
-{
-    unsigned long hash = 277;
-    register unsigned char c;
-    register unsigned char len = 0;
-    while ((c = *str++) && (len < maxLen)) {
-        len++;
-        hash = ((hash << 5) + hash) + c;
-    }
-    return (unsigned char)hash;
-}
 
 static void clrscr_(unsigned char ignored __attribute__((unused)))
 {
@@ -139,64 +118,6 @@ void conioinit(void)
     g_curScreenH = IS_V400 ? 50 : 25;
 
     flushkeybuf();
-
-    for (i = 0; i < sizeof(escapeCode) / sizeof(escapeCode[0]); ++i) {
-        escapeCode[i].fn = escNOP;
-        escapeCode[i].arg = 0x0;
-    }
-
-    // Setup escape codes according to it's hashed strings.
-    // We know that for those codes and with k=277 there are no collisions.
-    // Adding new codes should verify no collisions are added by changing k
-    // or by using another algorithm.
-
-    escapeCode[1].fn = moveleft;
-    escapeCode[7].fn = moveright;
-    escapeCode[10].fn = moveup;
-    escapeCode[22].fn = clrscr_;
-    escapeCode[30].fn = gohome_;
-    escapeCode[49].fn = underline;
-    escapeCode[57].fn = textcolor;
-    escapeCode[57].arg = COLOUR_GREY1;
-    escapeCode[58].fn = textcolor;
-    escapeCode[58].arg = COLOUR_GREY2;
-    escapeCode[59].fn = textcolor;
-    escapeCode[59].arg = COLOUR_GREY3;
-    escapeCode[64].fn = textcolor;
-    escapeCode[64].arg = COLOUR_CYAN;
-    escapeCode[68].fn = textcolor;
-    escapeCode[68].arg = COLOUR_LIGHTBLUE;
-    escapeCode[72].fn = textcolor;
-    escapeCode[72].arg = COLOUR_LIGHTGREEN;
-    escapeCode[96].fn = blink;
-    escapeCode[96].arg = 1;
-    escapeCode[139].fn = revers;
-    escapeCode[140].fn = textcolor;
-    escapeCode[140].arg = COLOUR_PURPLE;
-    escapeCode[147].fn = underline;
-    escapeCode[147].arg = 1;
-    escapeCode[151].fn = textcolor;
-    escapeCode[151].arg = COLOUR_BROWN;
-    escapeCode[158].fn = blink;
-    escapeCode[168].fn = textcolor;
-    escapeCode[168].arg = COLOUR_WHITE;
-    escapeCode[173].fn = revers;
-    escapeCode[173].arg = 1;
-    escapeCode[191].fn = textcolor;
-    escapeCode[191].arg = COLOUR_YELLOW;
-    escapeCode[199].fn = textcolor;
-    escapeCode[199].arg = COLOUR_PINK;
-    escapeCode[206].fn = textcolor;
-    escapeCode[206].arg = COLOUR_BLACK;
-    escapeCode[215].fn = textcolor;
-    escapeCode[215].arg = COLOUR_ORANGE;
-    escapeCode[216].fn = textcolor;
-    escapeCode[216].arg = COLOUR_BLUE;
-    escapeCode[220].fn = textcolor;
-    escapeCode[220].arg = COLOUR_GREEN;
-    escapeCode[240].fn = textcolor;
-    escapeCode[240].arg = COLOUR_RED;
-    escapeCode[249].fn = movedown;
 }
 
 char petsciitoscreencode(char c)
@@ -495,16 +416,16 @@ void moveright(unsigned char count)
 unsigned char _cprintf(
     const unsigned char translateCodes, const unsigned char* fmt, ...)
 {
-    unsigned char printfState = PRINTF_STATE_INIT;
-    unsigned char escHash = 0;
+//    unsigned char printfState = PRINTF_STATE_INIT;
+//    unsigned char escHash = 0;
     unsigned char cch = 0;
 
     while (*fmt) {
-        switch (printfState) {
-        case PRINTF_STATE_INIT:
+//        switch (printfState) {
+//        case PRINTF_STATE_INIT:
             switch (*fmt) {
             case '{':
-                printfState = PRINTF_STATE_ESCAPE;
+//                printfState = PRINTF_STATE_ESCAPE;
                 break;
 
             case '\t': // Tab
@@ -519,7 +440,7 @@ unsigned char _cprintf(
                 cputc(translateCodes ? petsciitoscreencode(*fmt) : *fmt);
             }
             break;
-
+/*
         case PRINTF_STATE_ESCAPE:
             if (*fmt == '{') // print literal
             {
@@ -543,6 +464,7 @@ unsigned char _cprintf(
             printfState = PRINTF_STATE_INIT;
             break;
         }
+*/
 
         fmt++;
     }

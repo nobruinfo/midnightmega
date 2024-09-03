@@ -86,7 +86,7 @@ for /d %%k in ("%D81%\*") do (
   ECHO !prefix!
   "%MFTP%" %DEST% -c "mkdir %%~nk"
   for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
-	ECHO CD=!CD!  D81=!DISKUPPER!
+	REM ECHO CD=!CD!  D81=!DISKUPPER!
     SET "FOLDERSLASH=!FOLDER:\=/!"
 	"%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
     SET "DISKUPPER=%%i"
@@ -118,7 +118,7 @@ for /d %%k in ("%D81INTRO%\*") do (
     for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
       set "DISKUPPER=!DISKUPPER:%%b=%%b!"
     )
-	ECHO CD=!CD!  D81=!DISKUPPER!
+	REM ECHO CD=!CD!  D81=!DISKUPPER!
     "%MFTP%" %DEST% -c "cd %INTRODEST%" -c "mkdir %%~nk" -c "cd %%~nk" -c "put !FOLDERSLASH!/!DISKUPPER!"
     REM "%MFTP%" %DEST% -c "cd %%~nk" -c "ren ??????~?.D81 ??????-?.D81"
   )
@@ -132,7 +132,7 @@ for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N "!prefix!"') do (
   for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
     set "DISKUPPER=!DISKUPPER:%%b=%%b!"
   )
-  ECHO CD=!CD!  D81=!DISKUPPER!
+  REM ECHO CD=!CD!  D81=!DISKUPPER!
   "%MFTP%" %DEST% -c "cd %INTRODEST%" -c "put '!DISKUPPER!'"
   REM "%MFTP%" %DEST% -c "ren ??????~?.D81 ??????-?.D81"
 )
@@ -153,7 +153,7 @@ SET "prefix="!prefix1!" "!prefix2!" "!prefix3!""
 ECHO !prefix!
 "%MFTP%" %DEST% -c "mkdir %FOLDER%"
 for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
-  ECHO CD=!CD!  D81=!DISKUPPER!
+  REM ECHO CD=!CD!  D81=!DISKUPPER!
   SET "FOLDERSLASH=!FOLDER:\=/!"
   "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
   SET "DISKUPPER=%%i"
@@ -177,7 +177,7 @@ SET "prefix="!prefix1!" "!prefix2!" "!prefix3!""
 ECHO !prefix!
 "%MFTP%" %DEST% -c "mkdir %FOLDER%"
 for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
-  ECHO CD=!CD!  D81=!DISKUPPER!
+  REM ECHO CD=!CD!  D81=!DISKUPPER!
   SET "FOLDERSLASH=!FOLDER:\=/!"
   "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
   SET "DISKUPPER=%%i"
@@ -198,7 +198,7 @@ SET "prefix="*.cor""
 ECHO !prefix!
 "%MFTP%" %DEST% -c "mkdir %FOLDER%"
 for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
-  ECHO CD=!CD!  D81=!DISKUPPER!
+  REM ECHO CD=!CD!  D81=!DISKUPPER!
   SET "FOLDERSLASH=!FOLDER:\=/!"
   "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
   SET "DISKUPPER=%%i"
