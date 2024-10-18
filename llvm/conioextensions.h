@@ -9,6 +9,7 @@ char tolowerchar(char ch);
 char * strlowr(char *str);
 char * strsan(char *str);
 void strcopy(char *src, char *dest, unsigned char len);
+unsigned char mstrcmp(char *src, char *dest, unsigned char len);
 
 #define COLOR_RAM_BASE 0xFF80000UL
 // to be replaced by a getter function
@@ -24,6 +25,7 @@ char* asciitoscreencode_s(char* s);
 void clrhome(void);
 
 // instead of printf() variants:
+void mcputc(char c);
 void msprintf(char* str);
 void mprintf(char* str, long n);
 void mhprintf(char* str, long n);

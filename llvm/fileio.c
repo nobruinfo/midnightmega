@@ -134,43 +134,43 @@ unsigned char ReadSector(unsigned char drive, char track,
       lasttrack != track || lastdoublesector != (sector / 2))  {
 //    mcputsxy(3, SHOWACCESSY, " reading ");
 //    csputdec(sector, 2, 0);
-	// Turn on motor + led (which causes led to light solid):
-	POKE(0xd080U, drive);
-	// Spinup for ready:
-	POKE(0xd081U, 0x20);
-	// Wait while busy:
-	while (PEEK(0xd082U) & 0x80) {}
-	// Track (start at 0):
-	POKE(0xd084U, track - 1);
-	// Sector (only side 0 ones):
-//	POKE(0xd085U, sector / 2 + 1);
-	POKE(0xd085U, (((sector) % 20) / 2) + 1);
+    // Turn on motor + led (which causes led to light solid):
+    POKE(0xd080U, drive);
+    // Spinup for ready:
+    POKE(0xd081U, 0x20);
+    // Wait while busy:
+    while (PEEK(0xd082U) & 0x80) {}
+    // Track (start at 0):
+    POKE(0xd084U, track - 1);
+    // Sector (only side 0 ones):
+//    POKE(0xd085U, sector / 2 + 1);
+    POKE(0xd085U, (((sector) % 20) / 2) + 1);
 //    if (sector < 20)  s = (sector / 2) + 1;
-//	else              s = ((sector - 20) / 2) + 1;
+//    else              s = ((sector - 20) / 2) + 1;
 //    POKE(0xd085U, s);
-	// Side:
-//	POKE(0xd086U, 0);
-	POKE(0xd086U, ((sector >= 20) ? 1 : 0)); // side
-	// Read:
-	POKE(0xd081U, 0x41);
-	// Wait while busy:
-	while (PEEK(0xd082U) & 0x80) {}
-	// Check for error:
-	if (PEEK(0xd082U) & 0x18) {
+    // Side:
+//    POKE(0xd086U, 0);
+    POKE(0xd086U, ((sector >= 20) ? 1 : 0)); // side
+    // Read:
+    POKE(0xd081U, 0x41);
+    // Wait while busy:
+    while (PEEK(0xd082U) & 0x80) {}
+    // Check for error:
+    if (PEEK(0xd082U) & 0x18) {
       // Turn on just the LED, this causes to blink:
-	  POKE(0xd080U, 0x40);
-	  bordercolor(COLOUR_RED);
+      POKE(0xd080U, 0x40);
+      bordercolor(COLOUR_RED);
       lasttrack = 0;
   mprintfd("ReadSector. Track=", track);
   mprintfd(" Sector=", sector);
   mhprintfd(" $d082U=", PEEK(0xd082U));
   cputlnd();
   cgetcd();
-	  return 0xff;
-	}	// Make sure we can see the data, clear bit 7:
-	POKE(0xd689U, PEEK(0xd689U) & ~0x80);
+      return 0xff;
+    }    // Make sure we can see the data, clear bit 7:
+    POKE(0xd689U, PEEK(0xd689U) & ~0x80);
     lastdrive = drive;
-	lasttrack = track;
+    lasttrack = track;
     lastdoublesector = (sector / 2);
   } /*
   else {
@@ -184,56 +184,56 @@ unsigned char ReadSector(unsigned char drive, char track,
 // both physical sectors are written:
 unsigned char WriteSector(unsigned char drive, char track,
                                                char sector) {
-	unsigned char retval;
+    unsigned char retval;
 
   ShowAccess(drive, track, sector, WRITE);
   lasttrack = 0; // @@@@@
 
-	if (track == 0)  return 0xFC;
-	drive += 0x20;   // #$60 drive 0
-	if (sector < 20)  {
-		drive += 0x08; // second side of disk
-	}
+    if (track == 0)  return 0xFC;
+    drive += 0x20;   // #$60 drive 0
+    if (sector < 20)  {
+        drive += 0x08; // second side of disk
+    }
 
-	// Flag which side we need:
-	retval = sector % 2;
+    // Flag which side we need:
+    retval = sector % 2;
 
-	// Turn on motor + led (which causes led to light solid):
-	POKE(0xd080U, drive);
-	// Spinup for ready:
-	POKE(0xd081U, 0x20);
-	// Wait while busy:
-	while (PEEK(0xd082U) & 0x80) {}
-	// Track (start at 0):
-	POKE(0xd084U, track - 1);
-	// Sector (only side 0 ones):
-	// Sectors start at 1   mega65-book.pdf#3f0
-//	POKE(0xd085U, sector / 2 + 1);
-	POKE(0xd085U, (((sector) % 20) / 2) + 1);
-	// Side:
-	POKE(0xd086U, (sector >= 20 ? 1 : 0));
-	// Write:
-	POKE(0xd081U, 0x84);
-	// Wait while busy and writing:
-	while ((PEEK(0xd082U) & 0x80) ||
-	       (PEEK(0xd083U) & 0x10))  {}
-	// Check for error:
-	if (PEEK(0xd082U) & 0x18) {
+    // Turn on motor + led (which causes led to light solid):
+    POKE(0xd080U, drive);
+    // Spinup for ready:
+    POKE(0xd081U, 0x20);
+    // Wait while busy:
+    while (PEEK(0xd082U) & 0x80) {}
+    // Track (start at 0):
+    POKE(0xd084U, track - 1);
+    // Sector (only side 0 ones):
+    // Sectors start at 1   mega65-book.pdf#3f0
+//    POKE(0xd085U, sector / 2 + 1);
+    POKE(0xd085U, (((sector) % 20) / 2) + 1);
+    // Side:
+    POKE(0xd086U, (sector >= 20 ? 1 : 0));
+    // Write:
+    POKE(0xd081U, 0x84);
+    // Wait while busy and writing:
+    while ((PEEK(0xd082U) & 0x80) ||
+           (PEEK(0xd083U) & 0x10))  {}
+    // Check for error:
+    if (PEEK(0xd082U) & 0x18) {
       // Turn on just the LED, this causes to blink:
-	  POKE(0xd080U, 0x40);
-	  bordercolor(COLOUR_RED);
+      POKE(0xd080U, 0x40);
+      bordercolor(COLOUR_RED);
   mprintfd("WriteSector. Track=", track);
   mprintfd(" Sector=", sector);
   mhprintfd(" $d082U=", PEEK(0xd082U));
   cputlnd();
   cgetcd();
-	  return 0xff;
-	}
-	// Make sure we can see the data, clear bit 7:
-	POKE(0xd689U, PEEK(0xd689U) & ~0x80);
+      return 0xff;
+    }
+    // Make sure we can see the data, clear bit 7:
+    POKE(0xd689U, PEEK(0xd689U) & ~0x80);
 
   ShowAccess(drive, track, sector, OFF);
-	return retval;
+    return retval;
 }
 
 // depending on the sector's side this returns the wanted
@@ -346,10 +346,10 @@ unsigned char PutOneSector(BAM* entry, unsigned char drive,
 }
 
 unsigned char driveled(unsigned char errorcode)  {
-	// Turn on just the LED, this causes it to blink:
+    // Turn on just the LED, this causes it to blink:
     POKE(0xd080U, 0x40);
     bordercolor (COLOUR_RED);
-	return errorcode;
+    return errorcode;
 }
 
 void GetBAM(unsigned char side, unsigned char dirtrack)  {
@@ -386,49 +386,49 @@ void BAMSectorUpdate(BAM* BAMsector, BAM* BAMsector2, char track, char sector, c
   // next BAM sector of two in total:
   if (track > 40)  {
     track -= 40;
-	BAMsector = BAMsector2;
+    BAMsector = BAMsector2;
   }
 #ifdef DEBUG
-		gotoxy(42, 20);
-		mh4printf("BAMsector ", (long) BAMsector);
-		cputln();
-		cgetc();
+        gotoxy(42, 20);
+        mh4printf("BAMsector ", (long) BAMsector);
+        cputln();
+        cgetc();
 #endif
   
   track--;  // access array zero based
   if (set)  {  // if set clear alloc bit below to allocate:
     if (sector < 8)  {
-	  BAMsector->entry[track].alloc1 &= ~(bitshifter << sector);
+      BAMsector->entry[track].alloc1 &= ~(bitshifter << sector);
     }
     else if (sector < 16)  {
-	  BAMsector->entry[track].alloc2 &= ~(bitshifter << (sector - 8));
+      BAMsector->entry[track].alloc2 &= ~(bitshifter << (sector - 8));
     }
     else if (sector < 24)  {
-	  BAMsector->entry[track].alloc3 &= ~(bitshifter << (sector - 16));
+      BAMsector->entry[track].alloc3 &= ~(bitshifter << (sector - 16));
     }
     else if (sector < 32)  {
-	  BAMsector->entry[track].alloc4 &= ~(bitshifter << (sector - 24));
+      BAMsector->entry[track].alloc4 &= ~(bitshifter << (sector - 24));
     }
     else  {
-	  BAMsector->entry[track].alloc5 &= ~(bitshifter << (sector - 32));
+      BAMsector->entry[track].alloc5 &= ~(bitshifter << (sector - 32));
     }
     BAMsector->entry[track].free--;
   }
   else  {
     if (sector < 8)  {
-	  BAMsector->entry[track].alloc1 |= (bitshifter << sector);
+      BAMsector->entry[track].alloc1 |= (bitshifter << sector);
     }
     else if (sector < 16)  {
-	  BAMsector->entry[track].alloc2 |= (bitshifter << (sector - 8));
+      BAMsector->entry[track].alloc2 |= (bitshifter << (sector - 8));
     }
     else if (sector < 24)  {
-	  BAMsector->entry[track].alloc3 |= (bitshifter << (sector - 16));
+      BAMsector->entry[track].alloc3 |= (bitshifter << (sector - 16));
     }
     else if (sector < 32)  {
-	  BAMsector->entry[track].alloc4 |= (bitshifter << (sector - 24));
+      BAMsector->entry[track].alloc4 |= (bitshifter << (sector - 24));
     }
     else  {
-	  BAMsector->entry[track].alloc5 |= (bitshifter << (sector - 32));
+      BAMsector->entry[track].alloc5 |= (bitshifter << (sector - 32));
     }
     BAMsector->entry[track].free++;
   }
@@ -446,12 +446,12 @@ unsigned int BAMSectorsFreeBlocks(BAM* BAMsector, BAM* BAMsector2) {
       track = track80;
     } else {
       track = track80 - 40;
-	  BAMsector = BAMsector2;
-	}
+      BAMsector = BAMsector2;
+    }
 
     if (track80 != 39)  {
-	  free += BAMsector->entry[track].free;
-	}
+      free += BAMsector->entry[track].free;
+    }
   }
 
   return free;
@@ -474,11 +474,11 @@ void getDiskname(unsigned char drive, unsigned char dirtrack, char* diskname) {
     i = 0;
     while (hs->diskname[i] != 0xa0 && i < DOSFILENAMELEN)  {
       diskname[i] = hs->diskname[i];
-	  i++;
+      i++;
     }
     diskname[i] = 0;
   } else {
-	strcopy("read error", (char *) diskname, 16);
+    strcopy("read error", (char *) diskname, 16);
   }
 }
 
@@ -493,39 +493,39 @@ unsigned char readblockchain(uint32_t destination_address,
   nexttrack = track;
   nextsector = sector;
 #ifdef DEBUG
-		mprintf("readblockchain first nexttrack ", nexttrack);
-		mprintf(" nextsector ", nextsector);
-		cputln();
+        mprintf("readblockchain first nexttrack ", nexttrack);
+        mprintf(" nextsector ", nextsector);
+        cputln();
 #endif
 
   for (i = 0; i < maxblocks; i++)  {
     if (GetOneSector(worksectorasBAM[0], drive, nexttrack, nextsector) > 1)  {
-	  return(0xff);
-	}
+      return(0xff);
+    }
     DATABLOCK* ws = worksector[0];
-	nexttrack = ws->chntrack;
-	nextsector = ws->chnsector;
+    nexttrack = ws->chntrack;
+    nextsector = ws->chnsector;
 #ifdef DEBUG
-		mprintf("nexttrack ", nexttrack);
-		mprintf(" nextsector ", nextsector);
-//		mprintf(" workside ", workside);
-		cputln();
-		mprintf(" block ", i);
-		mh4printf(" is: ", (long) &ws);
-		cputln();
-		mh4printf(" worksector[0]: ", (long) worksector[0]);
-		mh4printf(" worksectorasBAM[0]: ", (long) worksectorasBAM[0]);
-		cputln();
-		cgetc();
+        mprintf("nexttrack ", nexttrack);
+        mprintf(" nextsector ", nextsector);
+//        mprintf(" workside ", workside);
+        cputln();
+        mprintf(" block ", i);
+        mh4printf(" is: ", (long) &ws);
+        cputln();
+        mh4printf(" worksector[0]: ", (long) worksector[0]);
+        mh4printf(" worksectorasBAM[0]: ", (long) worksectorasBAM[0]);
+        cputln();
+        cgetc();
 #endif
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
     lcopy((uint32_t) ws, destination_address + i * BLOCKSIZE, BLOCKSIZE);
-	
-	if (nexttrack == 0)  break;
+    
+    if (nexttrack == 0)  break;
   }
   
   if (nexttrack > 0)  {
-	return(0xfe);
+    return(0xfe);
   }
   return 0;
 }
@@ -545,13 +545,13 @@ unsigned char isallocatedBAMtracksector(unsigned char track,
   if (sector < 8)  {
     if (!(bs->entry[track].alloc1 & (bitshifter << sector)))  {
 #ifdef DEBUG
-		gotoxy(42, 7);
-		mprintf("t=", track);
-		mprintf(" s=", sector);
-		mprintf(" nt=", bs->chntrack);
-		mprintf(" ns=", bs->chnsector);
-		mprintf(" a1=", bs->entry[track].alloc1);
-		cgetc();
+        gotoxy(42, 7);
+        mprintf("t=", track);
+        mprintf(" s=", sector);
+        mprintf(" nt=", bs->chntrack);
+        mprintf(" ns=", bs->chnsector);
+        mprintf(" a1=", bs->entry[track].alloc1);
+        cgetc();
 #endif
       return TRUE;
     }
@@ -559,12 +559,12 @@ unsigned char isallocatedBAMtracksector(unsigned char track,
   else if (sector < 16)  {
     if (!(bs->entry[track].alloc2 & (bitshifter << (sector - 8))))  {
 #ifdef DEBUG
-		gotoxy(42, 8);
-		mprintf("t=", track);
-		mprintf(" s=", sector);
-		mprintf(" nt=", bs->chntrack);
-		mprintf(" ns=", bs->chnsector);
-		cgetc();
+        gotoxy(42, 8);
+        mprintf("t=", track);
+        mprintf(" s=", sector);
+        mprintf(" nt=", bs->chntrack);
+        mprintf(" ns=", bs->chnsector);
+        cgetc();
 #endif
       return TRUE;
     }
@@ -572,12 +572,12 @@ unsigned char isallocatedBAMtracksector(unsigned char track,
   else if (sector < 24)  {
     if (!(bs->entry[track].alloc3 & (bitshifter << (sector - 16))))  {
 #ifdef DEBUG
-		gotoxy(42, 9);
-		mprintf("t=", track);
-		mprintf(" s=", sector);
-		mprintf(" nt=", bs->chntrack);
-		mprintf(" ns=", bs->chnsector);
-		cgetc();
+        gotoxy(42, 9);
+        mprintf("t=", track);
+        mprintf(" s=", sector);
+        mprintf(" nt=", bs->chntrack);
+        mprintf(" ns=", bs->chnsector);
+        cgetc();
 #endif
       return TRUE;
     }
@@ -585,12 +585,12 @@ unsigned char isallocatedBAMtracksector(unsigned char track,
   else if (sector < 32)  {
     if (!(bs->entry[track].alloc4 & (bitshifter << (sector - 24))))  {
 #ifdef DEBUG
-		gotoxy(42, 10);
-		mprintf("t=", track);
-		mprintf(" s=", sector);
-		mprintf(" nt=", bs->chntrack);
-		mprintf(" ns=", bs->chnsector);
-		cgetc();
+        gotoxy(42, 10);
+        mprintf("t=", track);
+        mprintf(" s=", sector);
+        mprintf(" nt=", bs->chntrack);
+        mprintf(" ns=", bs->chnsector);
+        cgetc();
 #endif
       return TRUE;
     }
@@ -598,12 +598,12 @@ unsigned char isallocatedBAMtracksector(unsigned char track,
   else  {
     if (!(bs->entry[track].alloc5 & (bitshifter << (sector - 32))))  {
 #ifdef DEBUG
-		gotoxy(42, 11);
-		mprintf("t=", track);
-		mprintf(" s=", sector);
-		mprintf(" nt=", bs->chntrack);
-		mprintf(" ns=", bs->chnsector);
-		cgetc();
+        gotoxy(42, 11);
+        mprintf("t=", track);
+        mprintf(" s=", sector);
+        mprintf(" nt=", bs->chntrack);
+        mprintf(" ns=", bs->chnsector);
+        cgetc();
 #endif
       return TRUE;
     }
@@ -622,11 +622,11 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
   unsigned char done = 0; //      0   1   2   3   4   5   6   7   8   9
   unsigned char strategy[80] = { 38, 41, 40, 42, 37, 43, 36, 44, 35, 45,
                                  34, 46, 33, 47, 32, 48, 31, 49, 30, 50,
-								 29, 51, 28, 52, 27, 53, 26, 54, 25, 55,
-								 24, 56, 23, 57, 22, 58, 21, 59, 20, 60,
-								 19, 61, 18, 62, 17, 63, 16, 64, 15, 65,
-								 14, 66, 13, 67, 12, 68, 11, 69, 10, 70,
-								  9, 71,  8, 72,  7, 73,  6, 74,  5, 75,
+                                 29, 51, 28, 52, 27, 53, 26, 54, 25, 55,
+                                 24, 56, 23, 57, 22, 58, 21, 59, 20, 60,
+                                 19, 61, 18, 62, 17, 63, 16, 64, 15, 65,
+                                 14, 66, 13, 67, 12, 68, 11, 69, 10, 70,
+                                  9, 71,  8, 72,  7, 73,  6, 74,  5, 75,
                                   4, 76,  3, 77,  2, 78,  1, 79,  0, 39 };
   BAM* bs;
 
@@ -634,28 +634,28 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
   // @@ missing track strategy and track 40 special handling
   for (i = 0; i <= 79; i++)  {
     track80 = strategy[i];
-	if (track40)       track80++;    // BAM strategy is different
-	if (track80 > 79)  track80 = 0;
-	// next BAM sector of two in total:
+    if (track40)       track80++;    // BAM strategy is different
+    if (track80 > 79)  track80 = 0;
+    // next BAM sector of two in total:
     if (track80 < 40)  {
       track = track80;
       bs = BAMsector[0];
     } else {
       track = track80 - 40;
-	  bs = BAMsector[1];
-	}
+      bs = BAMsector[1];
+    }
     for (sector = 0; sector <= 39; sector++)  {
       if (sector < 8)  {
         if (bs->entry[track].alloc1 & (bitshifter << sector))  {
           done = 1;
 #ifdef DEBUG
-		gotoxy(42, 7);
-		mprintf("t=", track);
-		mprintf(" s=", sector);
-		mprintf(" nt=", bs->chntrack);
-		mprintf(" ns=", bs->chnsector);
-		mprintf(" a1=", bs->entry[track].alloc1);
-		cgetc();
+        gotoxy(42, 7);
+        mprintf("t=", track);
+        mprintf(" s=", sector);
+        mprintf(" nt=", bs->chntrack);
+        mprintf(" ns=", bs->chnsector);
+        mprintf(" a1=", bs->entry[track].alloc1);
+        cgetc();
 #endif
           break;
         }
@@ -664,12 +664,12 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
         if (bs->entry[track].alloc2 & (bitshifter << (sector - 8)))  {
           done = 1;
 #ifdef DEBUG
-		gotoxy(42, 8);
-		mprintf("t=", track);
-		mprintf(" s=", sector);
-		mprintf(" nt=", bs->chntrack);
-		mprintf(" ns=", bs->chnsector);
-		cgetc();
+        gotoxy(42, 8);
+        mprintf("t=", track);
+        mprintf(" s=", sector);
+        mprintf(" nt=", bs->chntrack);
+        mprintf(" ns=", bs->chnsector);
+        cgetc();
 #endif
           break;
         }
@@ -678,12 +678,12 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
         if (bs->entry[track].alloc3 & (bitshifter << (sector - 16)))  {
           done = 1;
 #ifdef DEBUG
-		gotoxy(42, 9);
-		mprintf("t=", track);
-		mprintf(" s=", sector);
-		mprintf(" nt=", bs->chntrack);
-		mprintf(" ns=", bs->chnsector);
-		cgetc();
+        gotoxy(42, 9);
+        mprintf("t=", track);
+        mprintf(" s=", sector);
+        mprintf(" nt=", bs->chntrack);
+        mprintf(" ns=", bs->chnsector);
+        cgetc();
 #endif
           break;
         }
@@ -692,12 +692,12 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
         if (bs->entry[track].alloc4 & (bitshifter << (sector - 24)))  {
           done = 1;
 #ifdef DEBUG
-		gotoxy(42, 10);
-		mprintf("t=", track);
-		mprintf(" s=", sector);
-		mprintf(" nt=", bs->chntrack);
-		mprintf(" ns=", bs->chnsector);
-		cgetc();
+        gotoxy(42, 10);
+        mprintf("t=", track);
+        mprintf(" s=", sector);
+        mprintf(" nt=", bs->chntrack);
+        mprintf(" ns=", bs->chnsector);
+        cgetc();
 #endif
           break;
         }
@@ -706,19 +706,19 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
         if (bs->entry[track].alloc5 & (bitshifter << (sector - 32)))  {
           done = 1;
 #ifdef DEBUG
-		gotoxy(42, 11);
-		mprintf("t=", track);
-		mprintf(" s=", sector);
-		mprintf(" nt=", bs->chntrack);
-		mprintf(" ns=", bs->chnsector);
-		cgetc();
+        gotoxy(42, 11);
+        mprintf("t=", track);
+        mprintf(" s=", sector);
+        mprintf(" nt=", bs->chntrack);
+        mprintf(" ns=", bs->chnsector);
+        cgetc();
 #endif
           break;
         }
       }
       if (done)  break;
     }
-	if (done)  break;
+    if (done)  break;
   }
   track80++;  // access array zero based, but tracks are 1..80
 
@@ -737,8 +737,8 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
 // ignores start track and sector upon call but gives them back:
 void writeblockchain(uint32_t source_address,
                     unsigned int maxblocks, unsigned char drive,
-					unsigned char * starttrack, unsigned char * startsector,
-					unsigned char dirtrack)  {
+                    unsigned char * starttrack, unsigned char * startsector,
+                    unsigned char dirtrack)  {
   unsigned int i;
   unsigned char nexttrack = 0;
   unsigned char nextsector = 0xff;
@@ -758,52 +758,52 @@ void writeblockchain(uint32_t source_address,
     lcopy(source_address + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
 
 #ifdef DEBUG
-		mprintf("nexttrack ", nexttrack);
-		mprintf(" nextsector ", nextsector);
-		mprintf(" block ", i);
-		mh4printf(" is: ", (long) &ws);
-		mh4printf(" worksector[0]: ", (long) worksector[0]);
-		cputln();
+        mprintf("nexttrack ", nexttrack);
+        mprintf(" nextsector ", nextsector);
+        mprintf(" block ", i);
+        mh4printf(" is: ", (long) &ws);
+        mh4printf(" worksector[0]: ", (long) worksector[0]);
+        cputln();
 #endif
 
-	// replace chain with available ones or leave 0 if last datablock:
-	if (ws->chntrack > 0)  {
+    // replace chain with available ones or leave 0 if last datablock:
+    if (ws->chntrack > 0)  {
       findnextBAMtracksector(&nexttrack, &nextsector, FALSE, dirtrack);
       ws->chntrack = nexttrack;
       ws->chnsector = nextsector;
-	}
+    }
     // is there a second sector to combine write a physical sector?
-	if (ws->chntrack > 0 && track == ws->chntrack &&
-	    (sector / 2) == (ws->chnsector / 2))  {
+    if (ws->chntrack > 0 && track == ws->chntrack &&
+        (sector / 2) == (ws->chnsector / 2))  {
       i++;
-	  lcopy(source_address + i * BLOCKSIZE, (uint32_t) ws1, BLOCKSIZE);
-	  if (ws1->chntrack > 0)  {
+      lcopy(source_address + i * BLOCKSIZE, (uint32_t) ws1, BLOCKSIZE);
+      if (ws1->chntrack > 0)  {
         findnextBAMtracksector(&nexttrack, &nextsector, FALSE, dirtrack);
         ws1->chntrack = nexttrack;
         ws1->chnsector = nextsector;
-	  }
-//		mprintf("double sectors, track=", track);
-//		mprintf(" sector=", sector);
-//		cputln();
-//		cgetc();
+      }
+//        mprintf("double sectors, track=", track);
+//        mprintf(" sector=", sector);
+//        cputln();
+//        cgetc();
       PutWholeSector((BAM *) ws, drive, track, sector);
-	  ws->chntrack = ws1->chntrack; // fake to abort below if zero
+      ws->chntrack = ws1->chntrack; // fake to abort below if zero
     } else {
-//		mprintf("single sectors, track=", track);
-//		mprintf(" sector=", sector);
-//		cputln();
-//		cgetc();
-	  PutOneSector((BAM *) ws, drive, track, sector);
+//        mprintf("single sectors, track=", track);
+//        mprintf(" sector=", sector);
+//        cputln();
+//        cgetc();
+      PutOneSector((BAM *) ws, drive, track, sector);
     }
 
-	if (ws->chntrack == 0)  break;
+    if (ws->chntrack == 0)  break;
     track = nexttrack;
     sector = nextsector;
   }
   
   if (nexttrack > 0 && i >= maxblocks)  {
-	messagebox(3, "Writing file,", "number of sectors too big",
-	              "max", (long) maxblocks);
+    messagebox(3, "Writing file,", "number of sectors too big",
+                  "max", (long) maxblocks);
   }
 }
 
@@ -816,40 +816,40 @@ unsigned char deleteblockchain(unsigned char drive, unsigned char dirtrack,
 
   // _miniInit();
   if (GetOneSector(BAMsector[0], drive, dirtrack, BAMSECT) > 1)  {
-	return 0xff;
+    return 0xff;
   }
   bs = BAMsector[0];
   if (GetOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector) > 1)  {
-	return 0xfe;
+    return 0xfe;
   }
 
   nexttrack = track;
   nextsector = sector;
 #ifdef DEBUG
-		mprintf("nexttrack ", nexttrack);
-		mprintf(" nextsector ", nextsector);
-		cputln();
+        mprintf("nexttrack ", nexttrack);
+        mprintf(" nextsector ", nextsector);
+        cputln();
 #endif
   while (nexttrack > 0)  {
     /* workside = */ GetOneSector(worksectorasBAM[0], drive, nexttrack, nextsector);
     DATABLOCK* ws = worksector[0];
-	BAMSectorUpdate(BAMsector[0], BAMsector[1], nexttrack, nextsector, 0); // 0=free up
+    BAMSectorUpdate(BAMsector[0], BAMsector[1], nexttrack, nextsector, 0); // 0=free up
 #ifdef DEBUG
-		gotoxy(42, 0);
-		mprintf("nexttrack ", nexttrack);
-		mprintf(" nextsector ", nextsector);
-//		mprintf(" workside ", workside);
-		cputln();
-		gotoxy(42, 1);
-		mh4printf(" block is: ", (long) &ws);
-		cputln();
-		gotoxy(42, 2);
-		mh4printf(" worksector[0]: ", (long) worksector[0]);
-		cputln();
-		cgetc();
+        gotoxy(42, 0);
+        mprintf("nexttrack ", nexttrack);
+        mprintf(" nextsector ", nextsector);
+//        mprintf(" workside ", workside);
+        cputln();
+        gotoxy(42, 1);
+        mh4printf(" block is: ", (long) &ws);
+        cputln();
+        gotoxy(42, 2);
+        mh4printf(" worksector[0]: ", (long) worksector[0]);
+        cputln();
+        cgetc();
 #endif
-	nexttrack = ws->chntrack;
-	nextsector = ws->chnsector;
+    nexttrack = ws->chntrack;
+    nextsector = ws->chnsector;
   }
   PutOneSector(BAMsector[0], drive, dirtrack, BAMSECT);
   PutOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
@@ -895,54 +895,54 @@ unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive,
   // if setting allocated BAM blocks only:
   if ((option.option & OPTIONshowALO))  {
     i = 0;
-	GetBAM(side, dirtrack);
+    GetBAM(side, dirtrack);
     for (track = 1; track <= 80; track++)  {
-	  for (sector = 0; sector < 40; sector++)  {
-		if (isallocatedBAMtracksector(track, sector))  {
-	      progress("Reading...", tracksectorstring(track, sector), i / 64);
-	      if (GetOneSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
-		    return 0xff;
-	      }
-	      ws = worksector[0];
-	      lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE);
+      for (sector = 0; sector < 40; sector++)  {
+        if (isallocatedBAMtracksector(track, sector))  {
+          progress("Reading...", tracksectorstring(track, sector), i / 64);
+          if (GetOneSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
+            return 0xff;
+          }
+          ws = worksector[0];
+          lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE);
 
-	      progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
+          progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
           lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE);
-	      PutOneSector((BAM *) ws, destdrive, track, sector);
-		}
-	    i++;
-	  }
+          PutOneSector((BAM *) ws, destdrive, track, sector);
+        }
+        i++;
+      }
     }
   } else  {
 */
     i = 0;
     for (track = 1; track <= 80; track++)  {
-	  for (sector = 0; sector < 40; sector += 2)  {
-		if (!(option.option & OPTIONshowALO) ||
-		    isallocatedBAMtracksector(track, sector) ||
-			isallocatedBAMtracksector(track, sector + 1))  {
-	      progress("Reading...", tracksectorstring(track, sector), i / 64);
-	      if (GetWholeSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
-		    return 0xff;
-	      }
-	      ws = worksector[0];
-	      lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE * 2);
-	      i += 2;
-		}
-	  }
+      for (sector = 0; sector < 40; sector += 2)  {
+        if (!(option.option & OPTIONshowALO) ||
+            isallocatedBAMtracksector(track, sector) ||
+            isallocatedBAMtracksector(track, sector + 1))  {
+          progress("Reading...", tracksectorstring(track, sector), i / 64);
+          if (GetWholeSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
+            return 0xff;
+          }
+          ws = worksector[0];
+          lcopy((uint32_t) ws, ATTICFILEBUFFER + i * BLOCKSIZE, BLOCKSIZE * 2);
+          i += 2;
+        }
+      }
     }
     i = 0;
     for (track = 1; track <= 80; track++)  {
-	  for (sector = 0; sector < 40; sector += 2)  {
-		if (!(option.option & OPTIONshowALO) ||
-		    isallocatedBAMtracksector(track, sector) ||
-			isallocatedBAMtracksector(track, sector + 1))  {
-	      progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
+      for (sector = 0; sector < 40; sector += 2)  {
+        if (!(option.option & OPTIONshowALO) ||
+            isallocatedBAMtracksector(track, sector) ||
+            isallocatedBAMtracksector(track, sector + 1))  {
+          progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
           lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE * 2);
-	      PutWholeSector((BAM *) ws, destdrive, track, sector);
-	      i += 2;
-		}
-	  }
+          PutWholeSector((BAM *) ws, destdrive, track, sector);
+          i += 2;
+        }
+      }
     }
 //  }
   return 0;
@@ -953,49 +953,49 @@ unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i)  {
   if (type & HYPPODIRENTATTR)  {
     switch (type & (~HYPPODIRENTATTR)) {
       case HYPPODIRENTATTRDIR:
-	    s[i++] = 'D';
-	    s[i++] = 'I';
+        s[i++] = 'D';
+        s[i++] = 'I';
         s[i++] = 'R';
       break;
       default:
-	    s[i++] = ' ';
-	    s[i++] = ' ';
-	    s[i++] = ' ';
+        s[i++] = ' ';
+        s[i++] = ' ';
+        s[i++] = ' ';
       break;
-	}
+    }
   } else {
     switch (type & 0xf) {
       case VAL_DOSFTYPE_SEQ:
-	    s[i++] = 'S';
-	    s[i++] = 'E';
+        s[i++] = 'S';
+        s[i++] = 'E';
         s[i++] = 'Q';
       break;
       case VAL_DOSFTYPE_PRG:
-	    s[i++] = 'P';
-	    s[i++] = 'R';
-	    s[i++] = 'G';
+        s[i++] = 'P';
+        s[i++] = 'R';
+        s[i++] = 'G';
       break;
       case VAL_DOSFTYPE_USR:
-	    s[i++] = 'U';
-	    s[i++] = 'S';
-	    s[i++] = 'R';
+        s[i++] = 'U';
+        s[i++] = 'S';
+        s[i++] = 'R';
       break;
       case VAL_DOSFTYPE_REL:
-	    s[i++] = 'R';
-	    s[i++] = 'E';
-	    s[i++] = 'L';
+        s[i++] = 'R';
+        s[i++] = 'E';
+        s[i++] = 'L';
       break;
       case VAL_DOSFTYPE_CBM:
-	    s[i++] = 'C';
-	    s[i++] = 'B';
-	    s[i++] = 'M';
+        s[i++] = 'C';
+        s[i++] = 'B';
+        s[i++] = 'M';
       break;
       default: // VAL_DOSFTYPE_DEL
-	    s[i++] = 'D';
-	    s[i++] = 'E';
-	    s[i++] = 'L';
+        s[i++] = 'D';
+        s[i++] = 'E';
+        s[i++] = 'L';
       break;
-	}
+    }
   }
   return i;
 }
@@ -1013,30 +1013,30 @@ DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
     lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
           (uint32_t) ds, DIRENTSIZE);
 
-//	if (ds->track == 0)  return NULL; // no more entries
-	if (ds->chntrack > 0)  max += ENTRIESPERBLOCK; // more attic pages
-	// if a non-deleted or a SD card file (hence no mask) ?
-	if (ds->type != VAL_DOSFTYPE_DEL || (option.option & OPTIONshowDEL))  {
-	  if (pos == entry)  return ds; // found
-	  pos++;
-	}
+//    if (ds->track == 0)  return NULL; // no more entries
+    if (ds->chntrack > 0)  max += ENTRIESPERBLOCK; // more attic pages
+    // if a non-deleted or a SD card file (hence no mask) ?
+    if (ds->type != VAL_DOSFTYPE_DEL || (option.option & OPTIONshowDEL))  {
+      if (pos == entry)  return ds; // found
+      pos++;
+    }
 
 #ifdef DEBUG
-	if (ds->track > 0)  {
-	  mprintf("direntry ", i);
-	  mh4printf(" is: ", (long) &ds);
-	  memcpy(dosfilename, ds->name, DOSFILENAMELEN);
-	  dosfilename[DOSFILENAMELEN] = 0; // proper null termination
-	  msprintf(" name ");
-//		msprintf((char *) dosfilename);
-	  mprintf(" chntrk ", ds->chntrack);
-	  mprintf(" chnsect ", ds->chnsector);
-	  mhprintf(" type ", ds->type&0xf);
-	  mprintf(" trk ", ds->track);
-	  mprintf(" sect ", ds->sector);
-	  mprintf(" size ", ds->size);
-	  mhprintf(" access ", ds->access);
-	  cputln();
+    if (ds->track > 0)  {
+      mprintf("direntry ", i);
+      mh4printf(" is: ", (long) &ds);
+      memcpy(dosfilename, ds->name, DOSFILENAMELEN);
+      dosfilename[DOSFILENAMELEN] = 0; // proper null termination
+      msprintf(" name ");
+//        msprintf((char *) dosfilename);
+      mprintf(" chntrk ", ds->chntrack);
+      mprintf(" chnsect ", ds->chnsector);
+      mhprintf(" type ", ds->type&0xf);
+      mprintf(" trk ", ds->track);
+      mprintf(" sect ", ds->sector);
+      mprintf(" size ", ds->size);
+      mhprintf(" access ", ds->access);
+      cputln();
     }
 #endif
   }
@@ -1062,8 +1062,8 @@ unsigned char getdirent(unsigned char drive, unsigned char side, unsigned char d
   cgetc();
 */
   for (i = NBRENTRIES; i >= 0; i--)  {
-//	if (i < 10)  valuesbox(0, "loop entries", "i=", i, " ", 0);
-	if (getdirententry(side, i) != NULL)  return i;  // nbr of entries
+//    if (i < 10)  valuesbox(0, "loop entries", "i=", i, " ", 0);
+    if (getdirententry(side, i) != NULL)  return i;  // nbr of entries
   }
   return 0xff;
 }
@@ -1090,84 +1090,84 @@ void writenewdirententry(unsigned char drive, unsigned char side,
   for (i = 0; i < max; i++)  {
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
     lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
-	      (uint32_t) ds, DIRENTSIZE);
+          (uint32_t) ds, DIRENTSIZE);
 
-	if ((i % ENTRIESPERBLOCK) == 0)  {
-	  topdirent = i;
+    if ((i % ENTRIESPERBLOCK) == 0)  {
+      topdirent = i;
       // not for the first iteration:
-	  if (i > 0)  {
-	    track = nexttrack;
-	    sector = nextsector;
-	  }
-	}
-	if (ds->chntrack > 0)  {
+      if (i > 0)  {
+        track = nexttrack;
+        sector = nextsector;
+      }
+    }
+    if (ds->chntrack > 0)  {
       max += ENTRIESPERBLOCK; // more attic pages
-	  nexttrack = ds->chntrack;  // chain for where to write dirent sector
-	  nextsector = ds->chnsector;
-	}
-	if ((ds->type&0xf) == VAL_DOSFTYPE_DEL)  {
-	  newds->chntrack = ds->chntrack;  // keep blockchain
-	  newds->chnsector = ds->chnsector;
-	  lcopy((uint32_t) newds,
-	        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
-			DIRENTSIZE);
+      nexttrack = ds->chntrack;  // chain for where to write dirent sector
+      nextsector = ds->chnsector;
+    }
+    if ((ds->type&0xf) == VAL_DOSFTYPE_DEL)  {
+      newds->chntrack = ds->chntrack;  // keep blockchain
+      newds->chnsector = ds->chnsector;
+      lcopy((uint32_t) newds,
+            ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+            DIRENTSIZE);
 
 #ifdef DEBUG
-	  mprintf("writenewdirententry i=", i);
-	  mprintf(" ofs=", side * ATTICDIRENTSIZE +
+      mprintf("writenewdirententry i=", i);
+      mprintf(" ofs=", side * ATTICDIRENTSIZE +
                        i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
-	  mprintf(" side=", sector % 2);
-	  mprintf(" newds->track=", newds->track);
-	  mprintf(" newds->sector=", newds->sector);
-	  cputln();
-	  mprintf("track=", track);
-	  mprintf(" sector=", sector);
-	  mprintf(" nexttrack=", nexttrack);
-	  mprintf(" nextsector=", nextsector);
-	  mprintf(" type=", (newds->type&0xf));
-	  cputln();
-	  mh4printf(" ds addr=", (long) ds);
-	  mh4printf(" newds addr=", (long) newds);
-	  cputln();
-	  cgetc();
+      mprintf(" side=", sector % 2);
+      mprintf(" newds->track=", newds->track);
+      mprintf(" newds->sector=", newds->sector);
+      cputln();
+      mprintf("track=", track);
+      mprintf(" sector=", sector);
+      mprintf(" nexttrack=", nexttrack);
+      mprintf(" nextsector=", nextsector);
+      mprintf(" type=", (newds->type&0xf));
+      cputln();
+      mh4printf(" ds addr=", (long) ds);
+      mh4printf(" newds addr=", (long) newds);
+      cputln();
+      cgetc();
 #endif
 
-	  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
+      lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
               i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
-	        BLOCKDATALOW, BLOCKSIZE);
-	  PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
+            BLOCKDATALOW, BLOCKSIZE);
+      PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
 #ifdef DEBUG
-	  msprintf("writenewdirententry done");
-	  cputln();
-	  cgetc();
+      msprintf("writenewdirententry done");
+      cputln();
+      cgetc();
 #endif
-	  return;
-	}
+      return;
+    }
 
 #ifdef DEBUG
-	if (ds->track > 0)  {
-	  mprintf("writedirentry ", i);
-	  mh4printf(" is: ", (long) &ds);
-	  memcpy(dosfilename, ds->name, DOSFILENAMELEN);
-	  dosfilename[DOSFILENAMELEN] = 0; // proper null termination
-	  msprintf(" name ");
-//		msprintf((char *) dosfilename);
-	  mprintf(" chntrk ", ds->chntrack);
-	  mprintf(" chnsect ", ds->chnsector);
-	  mhprintf(" type ", ds->type&0xf);
-	  mprintf(" trk ", ds->track);
-	  mprintf(" sect ", ds->sector);
-	  mprintf(" size ", ds->size);
-	  mhprintf(" access ", ds->access);
-	  cputln();
-	  cgetc();
+    if (ds->track > 0)  {
+      mprintf("writedirentry ", i);
+      mh4printf(" is: ", (long) &ds);
+      memcpy(dosfilename, ds->name, DOSFILENAMELEN);
+      dosfilename[DOSFILENAMELEN] = 0; // proper null termination
+      msprintf(" name ");
+//        msprintf((char *) dosfilename);
+      mprintf(" chntrk ", ds->chntrack);
+      mprintf(" chnsect ", ds->chnsector);
+      mhprintf(" type ", ds->type&0xf);
+      mprintf(" trk ", ds->track);
+      mprintf(" sect ", ds->sector);
+      mprintf(" size ", ds->size);
+      mhprintf(" access ", ds->access);
+      cputln();
+      cgetc();
     }
 #endif
   }
   
   // peek first dirent of full block to set new chain:
   lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + topdirent * DIRENTSIZE,
-	    (uint32_t) ds, DIRENTSIZE);
+        (uint32_t) ds, DIRENTSIZE);
   // dirent already full, establish an additional sector:
   // @@ sector strategy needed
   findnextBAMtracksector(&nexttrack, &nextsector, TRUE, dirtrack);
@@ -1175,16 +1175,16 @@ void writenewdirententry(unsigned char drive, unsigned char side,
   ds->chnsector = nextsector;
   // write new chain:
   lcopy((uint32_t) ds, // first dirent is the new one
-	    ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + topdirent * DIRENTSIZE,
-		DIRENTSIZE);
+        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + topdirent * DIRENTSIZE,
+        DIRENTSIZE);
   // dirty, copy attic back to block buffer and save it:
   lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
-		topdirent / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
-		BLOCKDATALOW, BLOCKSIZE);
+        topdirent / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
+        BLOCKDATALOW, BLOCKSIZE);
   PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
 #ifdef DEBUG
       mprintf("first sector set, i=", i);
-	  cputln();
+      cputln();
       cgetc();
 #endif
 
@@ -1194,13 +1194,13 @@ void writenewdirententry(unsigned char drive, unsigned char side,
   newds->chntrack = 0;  // indicate end of chain
   newds->chnsector = 0xff;
   lcopy((uint32_t) newds, // first dirent is the new one
-	    ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
-		DIRENTSIZE);
+        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+        DIRENTSIZE);
 
   // dirty, copy attic back to block buffer and save it:
   lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
-		i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
-		BLOCKDATALOW, BLOCKSIZE);
+        i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
+        BLOCKDATALOW, BLOCKSIZE);
   PutOneSector((BAM *) worksectorasBAM[0], drive, nexttrack, nextsector);
 //  messagebox(0, "directory entries exhausted");
 }
@@ -1226,80 +1226,80 @@ void deletedirententry(unsigned char drive, unsigned char side,
   for (i = 0, pos = 0; i < max; i++)  {
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
     lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
-	      (uint32_t) ds, DIRENTSIZE);
+          (uint32_t) ds, DIRENTSIZE);
 
-	// not for the first iteration:
-	if (i > 0 && (i % ENTRIESPERBLOCK) == 0)  {
-	  track = nexttrack;
-	  sector = nextsector;
-	}
-	if (ds->chntrack > 0)  {
+    // not for the first iteration:
+    if (i > 0 && (i % ENTRIESPERBLOCK) == 0)  {
+      track = nexttrack;
+      sector = nextsector;
+    }
+    if (ds->chntrack > 0)  {
       max += ENTRIESPERBLOCK; // more attic pages
-	  nexttrack = ds->chntrack;  // chain for where to write dirent sector
-	  nextsector = ds->chnsector;
-	}
+      nexttrack = ds->chntrack;  // chain for where to write dirent sector
+      nextsector = ds->chnsector;
+    }
 
-	// if a non-deleted or a SD card file (hence no mask) ?
-	if (ds->type != VAL_DOSFTYPE_DEL || (option.option & OPTIONshowDEL))  {
-	  if (pos == entry)  {
-//		valuesbox(0, "Deleting...", "i=", i, "pos=", pos);
-	    //                           also clear upper bits:
-		filetypebefore = ds->type;
-	    ds->type = VAL_DOSFTYPE_DEL; // + (ds->type & ~0xf);
-	    lcopy((uint32_t) ds, ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
-	          DIRENTSIZE);
+    // if a non-deleted or a SD card file (hence no mask) ?
+    if (ds->type != VAL_DOSFTYPE_DEL || (option.option & OPTIONshowDEL))  {
+      if (pos == entry)  {
+//        valuesbox(0, "Deleting...", "i=", i, "pos=", pos);
+        //                           also clear upper bits:
+        filetypebefore = ds->type;
+        ds->type = VAL_DOSFTYPE_DEL; // + (ds->type & ~0xf);
+        lcopy((uint32_t) ds, ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+              DIRENTSIZE);
 #ifdef DEBUG
-	    mprintf("deletedirententry i=", i);
-	    mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
-	    mprintf(" side=", side);
-	    mprintf(" track=", track);
-	    mprintf(" sector=", sector);
-	    mprintf(" nexttrack=", nexttrack);
-	    mprintf(" nextsector=", nextsector);
-	    mprintf(" type=", (ds->type&0xf));
-	    mh4printf(" ds addr=", (long) &ds);
-	    cputln();
-	    cgetc();
+        mprintf("deletedirententry i=", i);
+        mprintf(" ofs=", i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE);
+        mprintf(" side=", side);
+        mprintf(" track=", track);
+        mprintf(" sector=", sector);
+        mprintf(" nexttrack=", nexttrack);
+        mprintf(" nextsector=", nextsector);
+        mprintf(" type=", (ds->type&0xf));
+        mh4printf(" ds addr=", (long) &ds);
+        cputln();
+        cgetc();
 #endif
-	    lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
-	            i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
-	          BLOCKDATALOW, BLOCKSIZE);
-	    PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
-		if ((filetypebefore&0xf) != VAL_DOSFTYPE_CBM)  {
-	      deleteblockchain(drive, dirtrack, ds->track, ds->sector);
-		} else {
+        lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
+                i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
+              BLOCKDATALOW, BLOCKSIZE);
+        PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
+        if ((filetypebefore&0xf) != VAL_DOSFTYPE_CBM)  {
+          deleteblockchain(drive, dirtrack, ds->track, ds->sector);
+        } else {
           for (s = 0; s < ds->size; s++)  {
-			BAMSectorUpdate(BAMsector[0], BAMsector[1],
+            BAMSectorUpdate(BAMsector[0], BAMsector[1],
                             ds->track + (s / 40), ds->sector + (s % 40), 0); // 0=free up
-		  }
-		}
+          }
+        }
 #ifdef DEBUG
-	    msprintf("deletedirententry done");
-	    cputln();
-	    cgetc();
+        msprintf("deletedirententry done");
+        cputln();
+        cgetc();
 #endif
-	    return;
-	  }
-	  pos++;
-	}
+        return;
+      }
+      pos++;
+    }
 
 #ifdef DEBUG
-	if (ds->track > 0)  {
-	  mprintf("direntry ", i);
-	  mh4printf(" is: ", (long) &ds);
-	  memcpy(dosfilename, ds->name, DOSFILENAMELEN);
-	  dosfilename[DOSFILENAMELEN] = 0; // proper null termination
-	  msprintf(" name ");
-//		msprintf((char *) dosfilename);
-	  mprintf(" chntrk ", ds->chntrack);
-	  mprintf(" chnsect ", ds->chnsector);
-	  mhprintf(" type ", ds->type&0xf);
-	  mprintf(" trk ", ds->track);
-	  mprintf(" sect ", ds->sector);
-	  mprintf(" size ", ds->size);
-	  mhprintf(" access ", ds->access);
-	  cputln();
-	  cgetc();
+    if (ds->track > 0)  {
+      mprintf("direntry ", i);
+      mh4printf(" is: ", (long) &ds);
+      memcpy(dosfilename, ds->name, DOSFILENAMELEN);
+      dosfilename[DOSFILENAMELEN] = 0; // proper null termination
+      msprintf(" name ");
+//        msprintf((char *) dosfilename);
+      mprintf(" chntrk ", ds->chntrack);
+      mprintf(" chnsect ", ds->chnsector);
+      mhprintf(" type ", ds->type&0xf);
+      mprintf(" trk ", ds->track);
+      mprintf(" sect ", ds->sector);
+      mprintf(" size ", ds->size);
+      mhprintf(" access ", ds->access);
+      cputln();
+      cgetc();
     }
 #endif
   }

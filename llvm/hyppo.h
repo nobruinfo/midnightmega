@@ -4,35 +4,35 @@
 
 // please be aware the following structures are the same RAM page:
 struct HYPPOFILENAME {
-	char name[65];
-	char sfn[65];
-	unsigned char dummy[256-65-65];  // blown up to fill a whole page
+  char name[65];
+  char sfn[65];
+  unsigned char dummy[256-65-65];  // blown up to fill a whole page
 };
 struct TASKBLOCK {  // big book page #39b
-    char taskID;
-	char taskname[16];
-	char d81flags0;
-	char d81flags1;
-	char d81filenamelength0;
-	char d81filenamelength1;
-	char d81filename0[32];
-	char d81filename1[32];
-	unsigned char notimplemented[256-32-32-16-5];
+  char taskID;
+  char taskname[16];
+  char d81flags0;
+  char d81flags1;
+  char d81filenamelength0;
+  char d81filenamelength1;
+  char d81filename0[32];
+  char d81filename1[32];
+  unsigned char notimplemented[256-32-32-16-5];
 };                                   // blown up to fill a whole page
 
 #define DOSFILENAMELEN 16  // dirent DOS file name with no null termination
 
 typedef struct structdirent {
-	unsigned char chntrack;
-	unsigned char chnsector;
-    unsigned char type;
-	unsigned char track;
-	unsigned char sector;
-             char name[DOSFILENAMELEN]; // File name in PetSCII, limited to 16 chars
-	unsigned char dummy[9];  // see bytes $15..$1D of
-	                         // http://justsolve.archiveteam.org/wiki/GEOS_VLIR
-    unsigned int  size;      // in blocks, also for subpartitions
-    unsigned char access;
+  unsigned char chntrack;
+  unsigned char chnsector;
+  unsigned char type;
+  unsigned char track;
+  unsigned char sector;
+           char name[DOSFILENAMELEN]; // File name in PetSCII, limited to 16 chars
+  unsigned char dummy[9];  // see bytes $15..$1D of
+                           // http://justsolve.archiveteam.org/wiki/GEOS_VLIR
+  unsigned int  size;      // in blocks, also for subpartitions
+  unsigned char access;
 } DIRENT;
 
 #define LFNFILENAMELEN 64
@@ -54,26 +54,26 @@ typedef struct structsectlfn {
 #define HYPPODIRENTATTRARC 0x20
 #define HYPPODIRENTATTR    0x40 // denotes the type being from storage card
 struct HYPPODIRENT {
-	char lfn[LFNFILENAMELEN];    // The long file name
-	char length;      // The length of long file name
-	char sfn[8];      // The short file name without the extension
-	char ext[3];      // The extension
-	char res[2];      // unused
-	unsigned long clusternumber; // The cluster number where the file
-	                             // begins. For sub-directories, this
-								 // is where the FAT dir entries start
-								 // for that sub-directory
-	unsigned long size; // The length of file in bytes
-	char attr;        // The type and attribute bits:
-					  // Bit Meaning if bit is set
-					  // 0   Read only
-					  // 1   Hidden
-					  // 2   System
-					  // 3   Volume label
-					  // 4   Sub-directory
-					  // 5   Archive
-	unsigned char dummy[256-87-64];  // blown up to fill a whole page
-	DIRENT direntryblock[2];
+  char lfn[LFNFILENAMELEN];    // The long file name
+  char length;      // The length of long file name
+  char sfn[8];      // The short file name without the extension
+  char ext[3];      // The extension
+  char res[2];      // unused
+  unsigned long clusternumber; // The cluster number where the file
+                               // begins. For sub-directories, this
+                 // is where the FAT dir entries start
+                 // for that sub-directory
+  unsigned long size; // The length of file in bytes
+  char attr;        // The type and attribute bits:
+            // Bit Meaning if bit is set
+            // 0   Read only
+            // 1   Hidden
+            // 2   System
+            // 3   Volume label
+            // 4   Sub-directory
+            // 5   Archive
+  unsigned char dummy[256-87-64];  // blown up to fill a whole page
+  DIRENT direntryblock[2];
 };
 
 extern struct HYPPODIRENT *const readdir_dirent;

@@ -37,8 +37,8 @@ char * strsan(char *str) {
   
   while (*s) {
 //  for (int i=0; i < sizeof(s); s++) {
-	if (*s < 0x20 || *s > 0x7d) *s = '?';
-	s++;
+    if (*s < 0x20 || *s > 0x7d) *s = '?';
+    s++;
   }
   return s;
 }
@@ -47,10 +47,23 @@ void strcopy(char *src, char *dest, unsigned char len) {
   unsigned char c = 0;  // build up a string
 
   while (src[c] != 0 && c < len)  {
-	dest[c] = src[c];
-	c++;
+    dest[c] = src[c];
+    c++;
   }
   dest[c] = 0;
+}
+
+unsigned char mstrcmp(char *src, char *dest, unsigned char len) {
+  unsigned char c = 0;  // build up a string
+
+  while (src[c] == dest[c])  {
+    // valuesbox(0, "mstrcmp", "c=", c, "char=", src[c]);
+    if (c >= len)  return 0;
+    if (src[c] == 0)  return 0;
+    c++;
+  }
+  // valuesbox(0, "mstrcmp done", "c=", c, "char=", src[c]);
+  return c + 1;
 }
 
 #define COLOR_RAM_BASE 0xFF80000UL
@@ -63,15 +76,15 @@ void cputln(void)  {
   getscreensize(&width, &height);
   screenbytes = width * height;
   if (wherey() + 1 >= height)  {
-	lcopy(getscreenaddr() + width, getscreenaddr(), screenbytes - width);
+    lcopy(getscreenaddr() + width, getscreenaddr(), screenbytes - width);
     lcopy(COLOR_RAM_BASE + width, COLOR_RAM_BASE, screenbytes - width);
     lfill(getscreenaddr() + screenbytes - width, ' ', width);
     lfill(COLOR_RAM_BASE + screenbytes - width, COLOUR_WHITE, width);
-		// COLOUR_WHITE to be replaced by a getter function
-		// COLOR_RAM_BASE calculation supports one-byte colours only
-	gotoxy(0, wherey());
+        // COLOUR_WHITE to be replaced by a getter function
+        // COLOR_RAM_BASE calculation supports one-byte colours only
+    gotoxy(0, wherey());
   } else {
-	gotoxy(0, wherey() + 1);
+    gotoxy(0, wherey() + 1);
   }
 }
 
@@ -88,26 +101,26 @@ void lpoke___________(uint32_t address, uint8_t value)
 #define MAXDECDIGITS 10
 void csputdec(long n, unsigned char padding, unsigned char leadingZeros)
 {
-    unsigned char buffer[MAXDECDIGITS + 1];
-    unsigned char rem = 0, i = 0;
-    char digit = MAXDECDIGITS - 1;
-    buffer[MAXDECDIGITS] = 0;
-    do {
-        rem = n % 10;
-        n /= 10;
-        buffer[digit--] = '0' + rem; // static: hexDigits[rem];
-    } while (((int)digit >= 0) && (n != 0));
+  unsigned char buffer[MAXDECDIGITS + 1];
+  unsigned char rem = 0, i = 0;
+  char digit = MAXDECDIGITS - 1;
+  buffer[MAXDECDIGITS] = 0;
+  do {
+      rem = n % 10;
+      n /= 10;
+      buffer[digit--] = '0' + rem; // static: hexDigits[rem];
+  } while (((int)digit >= 0) && (n != 0));
 
-    while (digit > 0)  {
-	  if (leadingZeros > 0)  {
-		leadingZeros--;
-        buffer[digit--] = '0'; // static: hexDigits[0];
-	  } else if (digit > (MAXDECDIGITS - padding))  {  // padding actually aligns
-		buffer[digit--] = ' ';
-	  } else break;
-    }
+  while (digit > 0)  {
+    if (leadingZeros > 0)  {
+      leadingZeros--;
+      buffer[digit--] = '0'; // static: hexDigits[0];
+    } else if (digit > (MAXDECDIGITS - padding))  {  // padding actually aligns
+      buffer[digit--] = ' ';
+    } else break;
+  }
 
-    cputs(&buffer[digit + 1]);
+  cputs(&buffer[digit + 1]);
 }
 
 char asciitoscreencode(char c)
@@ -116,45 +129,48 @@ char asciitoscreencode(char c)
 //        return c - 64;
 //    }
 
-    if (c == 0xa0) return 32; // unused dos file name characters
+  if (c == 0xa0) return 32; // unused dos file name characters
 
-    if (c >= 192) {
-        return c - 128;
-    }
+  if (c >= 192) {
+      return c - 128;
+  }
 
-    if (c >= 96 && c < 192) {
-        return c - 96;
-    }
+  if (c >= 96 && c < 192) {
+      return c - 96;
+  }
 
-    if (c == '[') return 27;
-    if (c == '\\') return 105;
-    if (c == ']') return 29;
-    if (c == '^') return 100;
-    if (c == '_') return 100;
+  if (c == '[') return 27;
+  if (c == '\\') return 105;
+  if (c == ']') return 29;
+  if (c == '^') return 100;
+  if (c == '_') return 100;
 
-    return c;
+  return c;
 }
 
 char* asciitoscreencode_s(char* s)
 {
-    char* src = s;
-    char* dest = p2sbuf;
-    while ((*dest++ = asciitoscreencode(*src++)))
-        ;
-    if (p2sbuf[0] == 0)  {
-      p2sbuf[0] = ' ';  // print crash prevention
-      p2sbuf[1] = 0;
-	}
-	return p2sbuf;
+  char* src = s;
+  char* dest = p2sbuf;
+  while ((*dest++ = asciitoscreencode(*src++)))
+      ;
+  if (p2sbuf[0] == 0)  {
+    p2sbuf[0] = ' ';  // print crash prevention
+    p2sbuf[1] = 0;
+  }
+  return p2sbuf;
 }
 
 void clrhome(void)
 {
-    clrscr();
-    gohome();
+  clrscr();
+  gohome();
 }
 
 // instead of printf() variants:
+void mcputc(char c)  {
+  cputc(asciitoscreencode(c));
+}
 void msprintf(char* str)  {
   cputs((const unsigned char*) asciitoscreencode_s(str));
 }
@@ -175,154 +191,154 @@ void mcprintf(char* str, char c)  {
   cputc(c);
 }
 void mcputsxy(unsigned char x, unsigned char y, char* str)  {
-	cputsxy(x, y, (const unsigned char *) asciitoscreencode_s(str));
+    cputsxy(x, y, (const unsigned char *) asciitoscreencode_s(str));
 }
 // Debug defined:
 void msprintfd(char* str)  {
 #ifdef DEBUG
-	msprintf(str);
+  msprintf(str);
 #endif
 }
 void mprintfd(char* str, long n)  {
 #ifdef DEBUG
-	mprintf(str, n);
+  mprintf(str, n);
 #endif
 }
 void mhprintfd(char* str, long n)  {
 #ifdef DEBUG
-	mhprintf(str, n);
+  mhprintf(str, n);
 #endif
 }
 void mh4printfd(char* str, long n)  {
 #ifdef DEBUG
-	mh4printf(str, n);
+  mh4printf(str, n);
 #endif
 }
 void mcprintfd(char* str, char c)  {
 #ifdef DEBUG
-	mcprintf(str, c);
+  mcprintf(str, c);
 #endif
 }
 void cputcd(unsigned char c)  {
 #ifdef DEBUG
-	cputc(c);
+  cputc(c);
 #endif
 }
 void clrhomed(void)  {
 #ifdef DEBUG
-	clrhome();
+  clrhome();
 #endif
 }
 void cputlnd(void)  {
 #ifdef DEBUG
-	cputln();
+  cputln();
 #endif
 }
 unsigned char cgetcd(void)  {
   unsigned char c = 0;
 #ifdef DEBUG
-	c = cgetc();
+  c = cgetc();
 #endif
   return c;
 }
 
 unsigned char cinput2(
-    unsigned char* buffer2, unsigned char buflen, unsigned char flags)
+  unsigned char* buffer2, unsigned char buflen, unsigned char flags)
 {
-    register unsigned char numch = 0, i, ch;
-    const int sx = wherex();
-    const int sy = wherey();
+  register unsigned char numch = 0, i, ch;
+  const int sx = wherex();
+  const int sy = wherey();
 
-    if (buffer2 == NULL || buflen == 0) {
-        return 0;
+  if (buffer2 == NULL || buflen == 0) {
+    return 0;
+  }
+
+  flushkeybuf();
+
+  for (i = 0; i < buflen; ++i) {
+    buffer2[i] = '\0';
+  }
+
+  while (1) {
+    if (buffer2[0]!=0)  cputsxy(sx, sy, buffer2);
+    else gotoxy(sx, sy);
+    blink(1);
+    cputc(224);
+    blink(0);
+    ch = cgetc();
+
+    if (ch == 13) {
+        break;
     }
 
-    flushkeybuf();
-
-    for (i = 0; i < buflen; ++i) {
-        buffer2[i] = '\0';
+    if (ch == 20) {
+      if (numch > 0) {
+        moveleft(1);
+        cputc(' ');
+        buffer2[--numch] = '\0';
+      }
     }
-
-    while (1) {
-        if (buffer2[0]!=0)  cputsxy(sx, sy, buffer2);
-		else gotoxy(sx, sy);
-        blink(1);
-        cputc(224);
-        blink(0);
-        ch = cgetc();
-
-        if (ch == 13) {
-            break;
+    else if (numch < buflen - 1) {
+      if ((((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'))
+          && (flags & CINPUT_ACCEPT_LETTER))
+        || ((ch >= '0' && ch <= '9') && (flags & CINPUT_ACCEPT_NUMERIC))
+        || (flags & CINPUT_ACCEPT_ALL)) {
+        if ((ch >= 0x61 && ch <= 0x7a) && (PEEK(0x0D18) & ~2)
+          && (flags & ~CINPUT_NO_AUTOTRANSLATE)) {
+          ch -= 0x20;
         }
 
-        if (ch == 20) {
-		  if (numch > 0) {
-            moveleft(1);
-            cputc(' ');
-            buffer2[--numch] = '\0';
-		  }
-        }
-        else if (numch < buflen - 1) {
-            if ((((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'))
-                    && (flags & CINPUT_ACCEPT_LETTER))
-                || ((ch >= '0' && ch <= '9') && (flags & CINPUT_ACCEPT_NUMERIC))
-                || (flags & CINPUT_ACCEPT_ALL)) {
-                if ((ch >= 0x61 && ch <= 0x7a) && (PEEK(0x0D18) & ~2)
-                    && (flags & ~CINPUT_NO_AUTOTRANSLATE)) {
-                    ch -= 0x20;
-                }
-
-                buffer2[numch++] = ch;
-            }
-        }
+        buffer2[numch++] = ch;
+      }
     }
+  }
 
-    moveleft(1);
-	cputc(' ');  // remove blinking cursor after last entered char
-	return numch;
+  moveleft(1);
+  cputc(' ');  // remove blinking cursor after last entered char
+  return numch;
 }
 
 void mcbox(unsigned char left, unsigned char top, unsigned char right, unsigned char bottom,
-    unsigned char color, unsigned char style, unsigned char clear, unsigned char shadow)
+  unsigned char color, unsigned char style, unsigned char clear, unsigned char shadow)
 {
-	RECT rc = { left, top, right, bottom };
-    register unsigned char i = 0;
-    const unsigned char len = right - left;
-//    unsigned char prevCol = g_curTextColor;
+  RECT rc = { left, top, right, bottom };
+  register unsigned char i = 0;
+  const unsigned char len = right - left;
+//  unsigned char prevCol = g_curTextColor;
 
-    textcolor(color);
-    if (clear) {
-        fillrect(&rc, ' ', color); // g_curTextColor);
+  textcolor(color);
+  if (clear) {
+    fillrect(&rc, ' ', color); // g_curTextColor);
+  }
+
+  // https://c64os.com/post/c64screencodes
+  cputcxy(left, top, 112); // 176);
+  cputcxy(left, bottom, 109); // 173);
+  cputcxy(right, top, 110); // 174);
+  cputcxy(right, bottom, 125); // 189);
+
+  for (i = 1; i < len; ++i) {
+    cputcxy(left + i, top, 64); // 99);
+    cputcxy(left + i, bottom, 64); // 99);
+  }
+
+  for (i = top + 1; i <= bottom - 1; ++i) {
+    cputcxy(left, i, 93); // 98);
+    cputcxy(right, i, 93); // 98);
+  }
+
+  unsigned char width;
+  unsigned char height;
+  getscreensize(&width, &height);
+
+  if (shadow && bottom < height && right < width) {
+    lfill(COLOR_RAM_BASE + ((bottom + 1) * (unsigned int)width)
+              + (1 + left),
+    COLOUR_DARKGREY, len);
+    for (i = top + 1; i <= bottom + 1; ++i) {
+      cellcolor(right + 1, i, COLOUR_DARKGREY);
     }
-
-    // https://c64os.com/post/c64screencodes
-	cputcxy(left, top, 112); // 176);
-    cputcxy(left, bottom, 109); // 173);
-    cputcxy(right, top, 110); // 174);
-    cputcxy(right, bottom, 125); // 189);
-
-    for (i = 1; i < len; ++i) {
-        cputcxy(left + i, top, 64); // 99);
-        cputcxy(left + i, bottom, 64); // 99);
-    }
-
-    for (i = top + 1; i <= bottom - 1; ++i) {
-        cputcxy(left, i, 93); // 98);
-        cputcxy(right, i, 93); // 98);
-    }
-
-	unsigned char width;
-	unsigned char height;
-	getscreensize(&width, &height);
-
-    if (shadow && bottom < height && right < width) {
-        lfill(COLOR_RAM_BASE + ((bottom + 1) * (unsigned int)width)
-                  + (1 + left),
-            COLOUR_DARKGREY, len);
-        for (i = top + 1; i <= bottom + 1; ++i) {
-            cellcolor(right + 1, i, COLOUR_DARKGREY);
-        }
-    }
+  }
 //    textcolor(prevCol);
 }
 
@@ -343,7 +359,7 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
   mcputsxy(12, 7, message2);
   mcputsxy(12, 8, message3);
   if (mode == 3)  {
-	mhprintf("=", n);
+    mhprintf("=", n);
   }
 
   revers(1);
@@ -360,21 +376,21 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
     while(1)  {
       c = cgetc();
       switch (c) {
-	    case 13: // RETURN
-	      return TRUE;
+        case 13: // RETURN
+          return TRUE;
         break;
 
-	    case 3:  // STOP
-	    case 27: // Esc
-	      return FALSE;
+        case 3:  // STOP
+        case 27: // Esc
+          return FALSE;
         break;
 
-	    default:
-//	      mprintf("val=", c);
-//		  cputc(' ');
-	    break;
-	  }
-	}
+        default:
+//          mprintf("val=", c);
+//          cputc(' ');
+        break;
+      }
+    }
   }
   return TRUE;
 }
@@ -403,10 +419,10 @@ void progress(char* message, char* message2, unsigned char progresspercent)  {
   cputcxy(12, 9, 0xa0); // filled space
   for (i = 0; i < 50; i++)  {
     if (progresspercent / 2 > i)  {
-	  cputc(0xa0); // filled space
-	} else {
-	  cputc(0x7b); // '. '
-	}
+      cputc(0xa0); // filled space
+    } else {
+      cputc(0x7b); // '. '
+    }
   }
   cputc(0x65); // '| '
   mprintf(" ", progresspercent);

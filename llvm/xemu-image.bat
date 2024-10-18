@@ -12,7 +12,7 @@ SET PETCAT="%PETCAT%2021\GTK3VICE-3.8-win64\bin\petcat.exe"
 REM Should mega65_ftp cease to work at later versions consider adding
 REM "-c exit" to all lines:
 SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Tools\
-SET MFTP=%MFTP%m65tools-develo-165-c2b03a-windows\mega65_ftp.exe
+SET MFTP=%MFTP%m65tools-release-1.00-windows\mega65_ftp.exe
 SET DEST=-e
 SET XMEGA65=D:\Game Collections\C64\Mega65\Xemu\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos\
@@ -20,6 +20,7 @@ SET D81=D:\Game Collections\C64\Mega65\disks
 SET D81INTRO=D:\Game Collections\C64\Mega65\disks unsorted\Intro\ALL_INTROS\sdcard-files
 SET D81FNX=D:\Game Collections\C64\FNX1591\disks
 SET D81C64=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme
+SET D81MM=F:\Entwicklungsprojekte\github-nobru\midnightmega\llvm
 SET CORE=D:\Game Collections\C64\Mega65\core\CORE
 SET INTRODEST=INTRO
 SET IMG=%APPDATA%\xemu-lgb\mega65\mega65.img
@@ -46,13 +47,15 @@ echo (o) populate "CORE"
 echo (a) populate "autoboot"
 echo (h) show ftp command list
 echo (c) execute ftp dir command
+echo (l) put latest Midnight Mega
 echo (s) change destination ethernet/Xemu
 echo (q) quit
 echo ==========================
-choice /c mdif6oahcsq /n /m "Type key of option to be executed: "
+choice /c mdif6oahclsq /n /m "Type key of option to be executed: "
 
-if errorlevel 11 goto end
-if errorlevel 10 goto doswap
+if errorlevel 12 goto end
+if errorlevel 11 goto doswap
+if errorlevel 10 goto mmput
 if errorlevel 9 goto dodir
 if errorlevel 8 goto dohelp
 if errorlevel 7 goto doautoboot
@@ -176,9 +179,9 @@ SET "prefix3=*.prg"
 SET "prefix="!prefix1!" "!prefix2!" "!prefix3!""
 ECHO !prefix!
 "%MFTP%" %DEST% -c "mkdir %FOLDER%"
+SET "FOLDERSLASH=!FOLDER:\=/!"
 for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
   REM ECHO CD=!CD!  D81=!DISKUPPER!
-  SET "FOLDERSLASH=!FOLDER:\=/!"
   "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
   SET "DISKUPPER=%%i"
   for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
@@ -186,8 +189,20 @@ for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
   )
   "%MFTP%" %DEST% -c "cd !FOLDERSLASH!" -c "put '!DISKUPPER!'"
 )
+REM Install Jiffy:
+SET BASIC=W:\ftp.zimmers.net\pub\cbm\firmware\computers\c64\basic.901226-01.bin
+REM JiffyDOS_C64_6.01.bin
+SET JDOS=D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\
+SET JDOS="%JDOS%\Backups\230303 SD Card\nobru\0cartridges\JiffyDOS_C64.bin"
+COPY /b %BASIC%+%JDOS% JD-C64.BIN
+COPY "D:\Game Collections\C64\Eigene Programme Backup\Tests\JiffyDOS\C1541.ROM" JD-C1541.BIN
+ECHO !FOLDERSLASH!
+"%MFTP%" %DEST% -c "cd !FOLDERSLASH!" -c "put 'JD-C64.BIN'"
+"%MFTP%" %DEST% -c "cd !FOLDERSLASH!" -c "put 'JD-C1541.BIN'"
 "%MFTP%" %DEST% -c "dir"|more
 pause
+DEL JD-C64.BIN
+DEL JD-C1541.BIN
 goto menu
 
 :docore
@@ -254,6 +269,14 @@ goto menu
 title MEGA65_FTP ftp commands
 CD /D "%D81%"
 "%MFTP%" %DEST% -c dir
+pause
+goto menu
+
+:mmput
+title MEGA65_FTP put Midnight Mega files
+CD /D "%D81MM%"
+"%MFTP%" %DEST% -c "put MIDNIGHTMEGA.D81 MIDNIGHT.D81"
+"%MFTP%" %DEST% -c "put DATADISK.D81"
 pause
 goto menu
 

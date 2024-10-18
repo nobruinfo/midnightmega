@@ -1,0 +1,120 @@
+# an example of file description of binary data to generate
+
+# set endianess to big-endian
+big-endian
+
+# change default to decimal
+decimal
+
+# https://github.com/dadadel/binmake
+
+
+# default number is hexadecimal
+# 00112233
+
+# man can explicit a number type: %b means binary number
+# %b0100110111100000
+
+# change endianess to little-endian
+# little-endian
+
+# if no explicit, use default
+# 44556677
+
+# bytes are not concerned by endianess
+# 88 99 aa bb
+
+# change default to decimal
+# decimal
+
+# following number is now decimal on one byte due to its value
+# 0123
+
+# following number is now decimal forced to 4 bytes
+# 0123[4]
+
+# strings are delimited by " or '
+# "this is some raw string"
+
+# explicit hexa number starts with %x
+# %xff
+
+# Commodore text output
+
+# functions:
+# 0x01  print gotoxy
+
+# 0000 first text
+# function (must be non-zero)
+%x01
+3
+9
+"Nullter Text Test!"
+0
+
+# 0001
+# function (must be non-zero)
+%x01
+3
+10
+"Dies ist ein Test!"
+0
+
+# 0002
+# function (must be non-zero)
+%x01
+30
+1
+"Zweiter Text."
+0
+
+# 0003
+# function (must be non-zero)
+%x01
+1
+11
+"Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+0
+
+# 0004
+# function (must be non-zero)
+%x01
+1
+12
+"Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+0
+
+# 0005
+# function (must be non-zero)
+%x01
+11
+13
+"Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+0
+
+# 0006
+# function (must be non-zero)
+%x01
+13
+14
+"Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+0
+
+# 0007
+# function (must be non-zero)
+%x01
+15
+15
+"Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+0
+
+# 0008
+# function (must be non-zero)
+%x01
+17
+16
+"Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+0
+
+# file terminator
+0

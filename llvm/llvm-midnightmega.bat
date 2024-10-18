@@ -11,8 +11,8 @@ SET PETCAT="%PETCAT%2021\GTK3VICE-3.8-win64\bin\petcat.exe"
 
 SET M65DBG=F:\Entwicklungsprojekte\github-nobru\m65dbg\m65dbg\m65dbg.exe
 SET MTOO=D:\Game Collections\C64\Mega65\Tools\M65Tools\
-SET MFTP=%MTOO%m65tools-develo-165-c2b03a-windows\mega65_ftp.exe
-SET ETHL=%MTOO%m65tools-develo-165-c2b03a-windows\etherload.exe
+SET MFTP=%MTOO%m65tools-release-1.00-windows\mega65_ftp.exe
+SET ETHL=%MTOO%m65tools-release-1.00-windows\etherload.exe
 SET HICKUP=D:\Game Collections\C64\Mega65\Xemu
 SET HICKUPOPT=-hickup "%HICKUP%\HICKUP hyppo13.M65"
 SET XMEGA65=%HICKUP%\xemu-binaries-win64\
@@ -37,7 +37,7 @@ REM  SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%
 SET libcfiles=%libcfilesdir%\hal.c
 SET libcfiles=%libcfiles% include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
-SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c sid.c romlist.c conio.c memory.c
+SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c texts.c sid.c romlist.c conio.c memory.c
 SET cfilesrom=%ROMLIST%.c hyppo.c fileio.c conioextensions.c romlist.c conio.c memory.c
 
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
@@ -69,7 +69,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.18-beta
+SET v=v0.5.19-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
@@ -156,6 +156,11 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
     %petcat% -text -c -w2 -o help.seq -- help.txt
     %c1541% -attach %PRJ%.d81 -write help.seq help.seq,s
   )
+  REM Text file created by https://github.com/dadadel/binmake :
+  wsl --exec sh maketextseqfile.sh %PRJ%text_binmake.src %PRJ%text1_binmake.seq
+  %petcat% -text -c -w2 -o %PRJ%text.seq -- %PRJ%text.src
+  %c1541% -attach %PRJ%.d81 -write %PRJ%text.seq %PRJ%text,s
+  DEL %PRJ%text.seq %PRJ%text_binmake.seq
 
   REM Use in Xemu's out of the image file fs access:
   XCOPY /Y %PRJ%.d81 %HDOS%\
@@ -257,7 +262,7 @@ REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   "%MFTP%" -e -c "put %HDOSSLASH%/FAKEDISK.D81"
 
   TIMEOUT 1
-  "%ETHL%" --run %PRJ%.prg
+  REM "%ETHL%" --mount !PRJSHORT!.d81 --run %PRJ%.prg
 
   REM Create a stub disk to be loaded at CLI level from current host
   REM directory to mount .d81 within virtual storage card image:
@@ -269,14 +274,18 @@ REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   ECHO 40 REM SLEEP 1 >>mega65.bas
   ECHO 50 RUN "*">>mega65.bas
 
+  powershell -command "&{(Get-Content mega65.bas).ToLower() | Out-File mega65lower.bas -Encoding Ascii}"
+  %petcat% -w65 -o mega65.bas.prg -- mega65lower.bas
+  "%ETHL%" --mount !PRJSHORT!.d81 --run mega65.bas.prg
+
   XMEGA65 -besure ^
     -importbas mega65.bas ^
     %HICKUPOPT% ^
-	-driveled
+    -driveled
 REM    -hdosvirt -defd81fromsd
 REM    -8 !PRJSHORT!.d81 -9 %DATADISK%.d81 -autoload
   REM XMEGA65 -syscon -besure -prg !PRJSHORT!.prg
-  DEL mega65.bas
+REM  DEL mega65.bas mega65.bas.prg mega65lower.bas
 
   MKDIR %TEMP%\Xemu 2>&1 >NUL
   CHDIR /D %TEMP%\Xemu

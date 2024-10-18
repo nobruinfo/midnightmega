@@ -9,19 +9,19 @@
 #define MIDNIGHTFLAGismounted 1
 
 typedef struct structMIDNIGHT {
-	unsigned char drive;     // 0 or 1
-	unsigned char pos;       // cursor bar
-    unsigned char entries;   // nbr of list entries
-    unsigned char curfile[65];  // currently mounted .d81 filename
-	unsigned int  blocksfree;
-	unsigned char flags;     // see defines above
-	unsigned char dirtrack;  // BAM/dirent track for current partition
-	unsigned char dummy3;
-	unsigned char inputstr[80];  // for conio text input
+  unsigned char drive;     // 0 or 1
+  unsigned char pos;       // cursor bar
+  unsigned char entries;   // nbr of list entries
+  unsigned char curfile[65];  // currently mounted .d81 filename
+  unsigned int  blocksfree;
+  unsigned char flags;     // see defines above
+  unsigned char dirtrack;  // BAM/dirent track for current partition
+  unsigned char dummy3;
+  unsigned char inputstr[80];  // for conio text input
 } MIDNIGHT; // for each of the two sides of the file navi
 
 void listboxd81(unsigned char x, unsigned char y,
-             unsigned char currentitem, unsigned char nbritems);
+                unsigned char currentitem, unsigned char nbritems);
 void listbox(unsigned char iscurrent, unsigned char side,
              unsigned char x, unsigned char y,
              unsigned char currentitem, unsigned char nbritems);
