@@ -135,12 +135,12 @@ all message box texts and so on. This is not yet begun.
   attic too &#x2639;
 * ability to use the same drive number on both sides of the commander
   to copy files onto the same disk
-* Unmounting to gain full access to the underlying real floppy drive
+* unmounting to gain full access to the underlying real floppy drive
   is not yet implemented
 * ✓ Full disk copy, meaning only within already mounted .d81 disk
   image files or with real floppy diskettes
 * ✓ proof of concept abstraction layer real/virtual floppy image
-* proof of concept reading floppy (sub-) directories
+* ✓ proof of concept reading floppy (sub-) directories
 * ✓ proof of concept reading files, sectors, tracks
 * ✓ proof of concept writing files, sectors, tracks
 * refactoring for code runtime optimisation
@@ -150,16 +150,41 @@ all message box texts and so on. This is not yet begun.
 * remove `dirent` sectors if empty after file deletions, retain
   track chain
 * ✓ show a status feeter with number of blocks available
-* Involving the user to handle same name files/directories
+* involving the user to handle same name files/directories
 * `s[]` and `OPTION option` are maybe data to put to different
-  places, `s[]` could be the same pointer as `p2sbuf`
+  places, `s[]` could be the same pointer as `p2sbuf`<br />
+  also all little string places like `disknames[]` and fixed
+  strings everywhere can be optimised<br />
+  `strcopy()` doesn't consider strings filled with $0a as used
+  in filenames and disk names<br />
+  There is an input string in both sides of the MIDNIGHT data
+  structure which can be used
+* Handling of `$a0` as the space character replacement is done
+  at screen output in `conioextensions.c` which isn't ideal.
+* Maybe unify `strcopy` alike functions to handle all variants
+  and fixed length strings as well
+* all variants of printing to the screen need to be replaced by
+  only one to not have redundant code
+* all texts at startup can now go to the help pages
+* not all routines take care of changing header sectors if dived
+  into sub-partitions, most of them are secured by an error
+  message though
+* Completing the routines to create subdirectories, strategy for
+  consecutive tracks to first present the maximum size and to
+  finally create
+* Use different (grid?) colour when SD card content is shown
+* Speed testing with now into a SEQ file outsourced strings on
+  real hardware
+* Maybe change reading disk sectors completely to a tracked based
+  cached reading like is done in Megasputm:
+  https://github.com/ki-bo/megasputm/blob/main/src/diskio.c#L1555
 
 ## Bugs
 
-* Copying files into subdirs currently allocates BAM outside
-  the subfolder tracks.
-* The help file display routine is currently limited to one
-  block of data instead of four for a full screen.
+* ✓ ~~Copying files into subdirs currently allocates BAM outside~~
+  ~~the subfolder tracks.~~
+* ✓ ~~The help file display routine is currently limited to one~~
+  ~~block of data instead of four for a full screen.~~
 * ✓ ~~Additional `dirent` blocks are placed outside track 40~~
   ~~and this is not what Commodore did.~~
 * ✓ ~~Additional file blocks are also placed within track 40.~~
@@ -171,9 +196,11 @@ all message box texts and so on. This is not yet begun.
   ~~the now cache for two disks (left and right) in place this~~
   ~~can be optimised.~~<br />
   A BAM flag could be used to only read it back in case disk
-  operation need access to it/alter it.
+  operation need access to it/alter it.<br />
   Also BAM and dirent should be handled in one go as the double
   logical sectors for both share same physical ones on a disk.
+* Storage card file deletion (also used for directories) takes
+  place more than once, should be wrapped in a function.
 * ✓ ~~The disk controller always reads/writes two logical sectors~~
   ~~at a time because of course it acts on physical 80 sectored~~
   ~~dual sided media. The now abstraction make in no way optimal~~
@@ -206,6 +233,10 @@ all message box texts and so on. This is not yet begun.
 * ✓ ~~If a file is only read the drive's LED doesn't switch back off.~~
   ~~It seems this is done by _miniinit() which needs to be checked~~
   ~~anyway.~~
+* Multiple selected listed items are not properly named in confirmation
+  dialog boxes.
+* At some places the highlighted list item is used for the chosen
+  action instead of the selected items.
 
 # C environment
 

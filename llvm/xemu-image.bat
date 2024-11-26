@@ -11,8 +11,10 @@ SET PETCAT="%PETCAT%2021\GTK3VICE-3.8-win64\bin\petcat.exe"
 
 REM Should mega65_ftp cease to work at later versions consider adding
 REM "-c exit" to all lines:
-SET MFTP=D:\Game Collections\C64\Mega65\Tools\M65Tools\
-SET MFTP=%MFTP%m65tools-release-1.00-windows\mega65_ftp.exe
+SET MTOO=D:\Game Collections\C64\Mega65\Tools\M65Tools\
+SET MTOO=%MTOO%m65tools-release-1.00-windows
+SET MFTP=%MTOO%\mega65_ftp.exe
+SET MFTP=F:\Entwicklungsprojekte\github-nobru\mega65-tools\bin\mega65_ftp.exe
 SET DEST=-e
 SET XMEGA65=D:\Game Collections\C64\Mega65\Xemu\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos\
@@ -49,11 +51,13 @@ echo (h) show ftp command list
 echo (c) execute ftp dir command
 echo (l) put latest Midnight Mega
 echo (s) change destination ethernet/Xemu
+echo (t) test
 echo (q) quit
 echo ==========================
-choice /c mdif6oahclsq /n /m "Type key of option to be executed: "
+choice /c mdif6oahclstq /n /m "Type key of option to be executed: "
 
-if errorlevel 12 goto end
+if errorlevel 13 goto end
+if errorlevel 12 goto test
 if errorlevel 11 goto doswap
 if errorlevel 10 goto mmput
 if errorlevel 9 goto dodir
@@ -171,24 +175,37 @@ goto menu
 
 :doc64
 title MEGA65_FTP populating disks
-CD /D "%D81C64%"
-SET FOLDER=C64
-SET "prefix1=*.d81"
-SET "prefix2=*.d64"
-SET "prefix3=*.prg"
-SET "prefix="!prefix1!" "!prefix2!" "!prefix3!""
-ECHO !prefix!
-"%MFTP%" %DEST% -c "mkdir %FOLDER%"
-SET "FOLDERSLASH=!FOLDER:\=/!"
-for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
-  REM ECHO CD=!CD!  D81=!DISKUPPER!
-  "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
-  SET "DISKUPPER=%%i"
-  for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
-    set "DISKUPPER=!DISKUPPER:%%b=%%b!"
+IF 1 == 2 (
+  CD /D "%D81C64%"
+  SET FOLDER=C64
+  SET "prefix1=*.d81"
+  SET "prefix2=*.d64"
+  SET "prefix3=*.prg"
+  SET "prefix="!prefix1!" "!prefix2!" "!prefix3!""
+  ECHO !prefix!
+  "%MFTP%" %DEST% -c "mkdir %FOLDER%"
+  SET "FOLDERSLASH=!FOLDER:\=/!"
+  for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
+    REM ECHO CD=!CD!  D81=!DISKUPPER!
+    "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
+    SET "DISKUPPER=%%i"
+    for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+      set "DISKUPPER=!DISKUPPER:%%b=%%b!"
+    )
+    "%MFTP%" %DEST% -c "cd !FOLDERSLASH!" -c "put '!DISKUPPER!'"
   )
-  "%MFTP%" %DEST% -c "cd !FOLDERSLASH!" -c "put '!DISKUPPER!'"
 )
+
+REM Has ( ) brackets:
+CD /D "D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\Backups\230303 SD Card\-cbm\C64"
+CALL :upload C64\cbm
+CD /D "D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\Backups\230303 SD Card\nobru"
+CALL :upload C64\nobru
+
+REM config file:
+CD /D "D:\Game Collections\C64\Mega65\core\C64\C64"
+CALL :upload C64
+
 REM Install Jiffy:
 SET BASIC=W:\ftp.zimmers.net\pub\cbm\firmware\computers\c64\basic.901226-01.bin
 REM JiffyDOS_C64_6.01.bin
@@ -196,9 +213,9 @@ SET JDOS=D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\
 SET JDOS="%JDOS%\Backups\230303 SD Card\nobru\0cartridges\JiffyDOS_C64.bin"
 COPY /b %BASIC%+%JDOS% JD-C64.BIN
 COPY "D:\Game Collections\C64\Eigene Programme Backup\Tests\JiffyDOS\C1541.ROM" JD-C1541.BIN
-ECHO !FOLDERSLASH!
-"%MFTP%" %DEST% -c "cd !FOLDERSLASH!" -c "put 'JD-C64.BIN'"
-"%MFTP%" %DEST% -c "cd !FOLDERSLASH!" -c "put 'JD-C1541.BIN'"
+REM ECHO !FOLDERSLASH!
+"%MFTP%" %DEST% -c "cd C64" -c "put 'JD-C64.BIN'"
+"%MFTP%" %DEST% -c "cd C64" -c "put 'JD-C1541.BIN'"
 "%MFTP%" %DEST% -c "dir"|more
 pause
 DEL JD-C64.BIN
@@ -250,6 +267,7 @@ ECHO 220 boot>>mega65.bas
 
 ECHO 300 rem is in root folder>>mega65.bas
 ECHO 310 mount "midnight.d81">>mega65.bas
+ECHO 315 mount "datadisk.d81",u9>>mega65.bas
 ECHO 320 run "*">>mega65.bas
 
 %petcat% -w65 -o mega65.prg -- mega65.bas
@@ -307,16 +325,88 @@ pause
 goto doswap
 
 :destethernet
-SET DEST=-e
+SET DEST=-0 0 -e
 echo Destination is now ethernet.
 pause
 goto menu
 
 :destxemu
-SET DEST=-d %IMG%
+SET DEST=-0 0 -d %IMG%
 echo Destination is now the image file for Xemu.
 pause
 goto menu
+
+:test
+echo Testing:
+CD /D "D:\Game Collections\C64\Mega65\disktest"
+CALL :upload
+pause
+goto menu
+
+REM The following nasty subroutine makes it happen a
+REM nested\path\structure can be local and will be
+REM mirrored onto the storage card (image file):
+:upload
+  REM function parameters:
+  SET FOLDER=%~1
+  SET LOCALFOLDER=%~2
+  SET "prefix=%CD%\%LOCALFOLDER%\*.*"
+
+  ECHO upload started with "%FOLDER%" and local "%LOCALFOLDER%" and cd=%CD%
+  SET DIRCMDS=
+  SET LCDCMD=
+  SET tok=
+  IF /I "%LOCALFOLDER%" NEQ "" (
+    SET LCDCMD=-c "lcd '%LOCALFOLDER%'"
+  )
+  IF /I "%FOLDER%" NEQ "." SET tok=%FOLDER%
+
+:uploadloop
+  FOR /F "tokens=1* delims=\" %%a in ("%tok%") do (
+    REM ECHO tok=%%a
+    SET DIRCMDS=%DIRCMDS% -c "mkdir '%%a'" -c "cd '%%a'"
+    SET tok=%%b
+  )
+  if defined tok goto :uploadloop
+
+  REM Loop files of this dir level:
+  FOR /F "tokens=1* delims=?" %%i in ('DIR /B /O:N "!prefix!"') do (
+    REM Ignore directories:
+    FOR %%F in ("%%~i") do set "ATTR=%%~aF"
+    SET ATTR=!ATTR:~0,1!
+    IF /I "!ATTR!" NEQ "d" (
+      REM Shouldn't be necessary as mega65_ftp handles overwrite:
+      REM but if this will need 'cd' into each level:
+      REM "%MFTP%" %DEST% -c "del '%%i'"
+      REM Preferably enforce uppercase, especially for FAT 8.3 names:
+      SET "DISKUPPER=%%i"
+      for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+        set "DISKUPPER=!DISKUPPER:%%b=%%b!"
+      )
+      REM ECHO file=!DISKUPPER!
+      "%MFTP%" %DEST% %LCDCMD% %DIRCMDS% -c "put '!DISKUPPER!'"
+      REM "%MFTP%" %DEST% -c "cd '%%~nk'" -c "ren '??????~?.D81' '??????-?.D81'"
+    )
+  )
+
+  REM Loop directories to recursively call this routine:
+  FOR /D %%k in ("*.*") do (
+    REM ECHO ----- k=%%k -----
+    REM Dive the given level(s) deeper:
+    SET OLDPATH=%CD%
+    CD "%%k"
+
+    REM ECHO k=%%k folder=%FOLDER% cd=%CD%
+    IF /I "%LOCALFOLDER%" NEQ "" (
+      CALL :upload "%FOLDER%\%%k" "%LOCALFOLDER%"
+    ) ELSE (
+      CALL :upload "%FOLDER%\%%k"
+    )
+
+    REM ECHO oldpath=!OLDPATH! cd=%CD% k=%%k
+    CD /D !OLDPATH!
+  )
+EXIT /B 0
 
 :end
 CD /D %~dp0

@@ -76,15 +76,16 @@ typedef struct structHEADER {
   unsigned char chnsector;
   unsigned char diskdosversion; // $44
   unsigned char unused;
-           char diskname[DOSFILENAMELEN]; /* name in PetSCII, limited to 16 chars */
-  unsigned char unused1;
-  unsigned char unused2;
-  unsigned char diskid;
-  unsigned char unused3;
+           char diskname[DOSFILENAMELEN]; // name in PetSCII, limited to 16 chars
+  unsigned char unused1;  // $a0
+  unsigned char unused2;  // $a0
+  unsigned char diskid1;
+  unsigned char diskid2;
+  unsigned char unused3;  // $a0
   unsigned char dosversion; // $19
   unsigned char diskversion; // $1a
-  unsigned char unused4;
-  unsigned char unused5;
+  unsigned char unused4;  // $a0
+  unsigned char unused5;  // $a0
   unsigned char dummy[227];
 } HEADER;
 
@@ -98,10 +99,12 @@ typedef struct structdatablock {
 
 #define HEADERTRACK 40
 #define HEADERSECT   0
-#define BAMTRACK 40
-#define BAMSECT   1
+#define BAMTRACK    40
+#define BAMSECT      1
 #define DIRENTTRACK 40
 #define DIRENTSECT   3
+#define FIRSTTRACK   1
+#define LASTTRACK   80
 
 // Midnight Mega general setup options:
 #define OPTIONshowDEL 1  // show deleted files as type DEL
@@ -116,29 +119,47 @@ typedef struct structOPTION {
 extern OPTION option;
 
 void _miniInit();
-void GetBAM(unsigned char side, unsigned char dirtrack);
+void GetBAM(unsigned char side);
 void PutBAM(unsigned char drive, unsigned char side, unsigned char dirtrack);
 unsigned char BAM2Attic(unsigned char drive, unsigned char side, unsigned char dirtrack);
 void BAMSectorUpdate(BAM* BAMsector, BAM* BAMsector2, char track, char sector, char set);
-unsigned int FreeBlocks(unsigned char drive, unsigned char dirtrack);
+void FormatPartition(unsigned char drive, unsigned char side, unsigned char dirtrack,
+                     unsigned char firsttrack, unsigned char lasttrack,
+                     char* name);
+unsigned int FreeBlocks(unsigned char drive, unsigned char dirtrack,
+                        unsigned char firsttrack, unsigned char lasttrack);
+unsigned char FreeTracks(unsigned char side,
+                         unsigned char firsttrack, unsigned char lasttrack,
+                         unsigned char * starttrack, unsigned char * endtrack,
+                         unsigned char nboftracks);
+unsigned int BAMCheckSizeinFilebuffer(unsigned char drive, unsigned char side,
+                                      unsigned char dirtrack,
+                                      unsigned char firsttrack,
+                                      unsigned char lasttrack);
+void BAMAllocateTracks(unsigned char side,
+                       unsigned char starttrack, unsigned char endtrack);
 void getDiskname(unsigned char drive, unsigned char dirtrack, char* diskname);
 unsigned char readblockchain(uint32_t destination_address, // attic RAM
                              unsigned int maxblocks, unsigned char drive,
                              unsigned char track, unsigned char sector);
 void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector,
-                            unsigned char track40, unsigned char dirtrack);
+                     unsigned char track40, unsigned char dirtrack,
+                     unsigned char firsttrack, unsigned char lasttrack);
 void writeblockchain(uint32_t source_address, // attic RAM
                      unsigned int maxblocks, unsigned char drive,
                      unsigned char * starttrack, unsigned char * startsector,
-                     unsigned char dirtrack);
+                     unsigned char dirtrack,
+                     unsigned char firsttrack, unsigned char lasttrack);
 unsigned char deleteblockchain(unsigned char drive, unsigned char dirtrack,
                                unsigned char track, unsigned char sector);
 unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive,
-                            unsigned char side, unsigned char dirtrack);
+                            unsigned char side);
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i);
 DIRENT* getdirententry(unsigned char side, unsigned char entry);
 unsigned char getdirent(unsigned char drive, unsigned char side, unsigned char dirtrack);
 void writenewdirententry(unsigned char drive, unsigned char side,
-                         unsigned char dirtrack, DIRENT* newds);
+                         unsigned char dirtrack,
+                         unsigned char firsttrack, unsigned char lasttrack,
+                         DIRENT* newds);
 void deletedirententry(unsigned char drive, unsigned char side,
                        unsigned char dirtrack,  unsigned char entry);

@@ -53,6 +53,19 @@ void strcopy(char *src, char *dest, unsigned char len) {
   dest[c] = 0;
 }
 
+void strmakefilename(char *src, char *dest, unsigned char len) {
+  unsigned char c = 0;  // build up a string
+
+  while (src[c] != 0 && c < len)  {
+    dest[c] = src[c];
+    c++;
+  }
+  while (c < len)  {
+    dest[c] = 0xa0;
+    c++;
+  }
+}
+
 unsigned char mstrcmp(char *src, char *dest, unsigned char len) {
   unsigned char c = 0;  // build up a string
 
@@ -159,6 +172,61 @@ char* asciitoscreencode_s(char* s)
     p2sbuf[1] = 0;
   }
   return p2sbuf;
+}
+
+void cputcctrl(unsigned char c)  {
+  switch (c) {
+    case 18: // {RVSON}
+      revers(1);
+    break;
+    case 146: // {RVSOFF}
+      revers(0);
+    break;
+
+    case 9: // {ensh} used to highlight
+      highlight(1);
+    break;
+    case 8: // {dish} used for highlight off
+      highlight(0);
+    break;
+
+    case 130: // {130} flashing on
+      blink(1);
+    break;
+    case 132: // {132} flashing off
+      blink(0);
+    break;
+
+    case 11: // {11} underline on
+      underline(1);
+    break;
+    case 12: // {12} underline off
+      underline(0);
+    break;
+
+    case 151: // {dark gray}
+      textcolor(COLOUR_GREY1);
+    break;
+
+    case 154: // {light blue}
+      textcolor(COLOUR_LIGHTBLUE);
+    break;
+
+    case 159: // {cyan}
+      textcolor(COLOUR_CYAN);
+    break;
+
+/*
+void revers(unsigned char enable)
+void highlight(unsigned char enable)
+void blink(unsigned char enable)
+void underline(unsigned char enable)
+*/
+
+    default:
+      cputc(petsciitoscreencode(c));
+    break;
+  }
 }
 
 void clrhome(void)
@@ -347,6 +415,7 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
   unsigned char clear = 1;
   unsigned char shadow = 1;
   char c;
+  unsigned char x;
 
   mcbox(10, 4, 70, 12, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
   
@@ -358,21 +427,26 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
   mcputsxy(12, 6, message);
   mcputsxy(12, 7, message2);
   mcputsxy(12, 8, message3);
-  if (mode == 3)  {
-    mhprintf("=", n);
+  if (mode == MBOXNUMBER)  {
+    mh4printf("=", n);
   }
 
   revers(1);
-  mcputsxy(12, 10, "   OK   ");
-  mcputsxy(60, 10, " Cancel ");
+  if (mode == MBOXNOCANCEL)  {
+    x = 37;
+  } else {
+    x = 12;
+    mcputsxy(60, 10, " Cancel ");
+  }
+  mcputsxy( x, 10, "   OK   ");
   revers(0);
 //  gotoxy(1, 10);
-  if (mode == 1)  {
+  if (mode == MBOXVERSION)  {
     mcputsxy(2, 1, VERSION);
     mcputsxy(58, 1, "github.com/nobruinfo");
   }
   
-  if (mode != 2)  {
+  if (mode != MBOXFALLTHROUGH)  {
     while(1)  {
       c = cgetc();
       switch (c) {

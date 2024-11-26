@@ -11,8 +11,10 @@ SET PETCAT="%PETCAT%2021\GTK3VICE-3.8-win64\bin\petcat.exe"
 
 SET M65DBG=F:\Entwicklungsprojekte\github-nobru\m65dbg\m65dbg\m65dbg.exe
 SET MTOO=D:\Game Collections\C64\Mega65\Tools\M65Tools\
-SET MFTP=%MTOO%m65tools-release-1.00-windows\mega65_ftp.exe
-SET ETHL=%MTOO%m65tools-release-1.00-windows\etherload.exe
+SET MTOO=%MTOO%m65tools-release-1.00-windows
+SET MFTP=%MTOO%\mega65_ftp.exe
+SET MFTP=F:\Entwicklungsprojekte\github-nobru\mega65-tools\bin\mega65_ftp.exe
+SET ETHL=%MTOO%\etherload.exe
 SET HICKUP=D:\Game Collections\C64\Mega65\Xemu
 SET HICKUPOPT=-hickup "%HICKUP%\HICKUP hyppo13.M65"
 SET XMEGA65=%HICKUP%\xemu-binaries-win64\
@@ -69,7 +71,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.19-beta
+SET v=v0.5.20-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
@@ -129,10 +131,6 @@ REM  CALL %LLVM_BAT% -Os -o emu%PRJ%.prg !opts! %cfiles% %libcfiles%
 REM  %c1541% -attach %PRJ%.d81 -write dbg%PRJ%.prg dbg%PRJ%
 REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
 
-  REM file for loadFileToMemory():
-    ECHO this is a sequential file for testing.>%PRJ%.seq
-    %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s
-    DEL %PRJ%.seq>NUL
   IF 1 == 2 (
     ECHO this is a sequential file for testing.>%PRJ%.seq
     %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s
@@ -186,7 +184,8 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   ECHO 1 MOUNT "%DATADISK%.D81">>mega65.bas
   for /l %%j in (0, 1, 1) do (
     ECHO 1%%j0 MKDIR "FOLDER %%j",L 11 >>mega65.bas
-    ECHO 1%%j1 MKDIR "SUBFOLDER %%j",L 4 >>mega65.bas
+    REM Subfolder makes C1541 freak out:
+    ECHO 1%%j1 REM MKDIR "SUBFOLDER %%j",L 4 >>mega65.bas
     ECHO 1%%j5 CHDIR "/">>mega65.bas
   )
   ECHO 900 POKE $D6CF, $42>>mega65.bas
@@ -209,17 +208,19 @@ REM      %c1541% -attach %DATADISK%.d81 -@ "/%%j:folder %%j" -delete %PRJ%
   ECHO 10 POKE $D080,$20>F011.BAS
   ECHO 20 POKE $D081,$20>>F011.BAS
   ECHO 30 POKE $D084,41>>F011.BAS
-  ECHO 40 POKE $D085,1>>F011.BAS
-  ECHO 50 POKE $D086,0>>F011.BAS
+  ECHO 40 POKE $D085,^1>>F011.BAS
+  ECHO 50 POKE $D086,^0>>F011.BAS
   ECHO 60 POKE $D081,$41>>F011.BAS
-  ECHO 65 SLEEP 1>>F011.BAS
+  ECHO 65 SLEEP ^1>>F011.BAS
   ECHO 70 PRINT PEEK^($D082^)>>F011.BAS
   ECHO 80 PRINT PEEK^($D689^)>>F011.BAS
-  ECHO 90 POKE $D689,0>>F011.BAS
-  ECHO 110 POKE $D080,0>>F011.BAS
-  %petcat% -w65 -o F011.prg -- F011.bas
+  ECHO 90 POKE $D689,^0>>F011.BAS
+  ECHO 110 POKE $D080,^0>>F011.BAS
+  powershell -command "&{(Get-Content F011.bas).ToLower() | Out-File F011lower.bas -Encoding Ascii}"
+  %petcat% -w65 -o F011.prg -- F011lower.bas
   %c1541% -attach %DATADISK%.d81 -write F011.prg f011readsect
   DEL F011.bas>NUL
+  DEL F011lower.bas>NUL
   DEL F011.prg>NUL
 
   for /l %%i in (1, 1, 1) do (
@@ -285,7 +286,7 @@ REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
 REM    -hdosvirt -defd81fromsd
 REM    -8 !PRJSHORT!.d81 -9 %DATADISK%.d81 -autoload
   REM XMEGA65 -syscon -besure -prg !PRJSHORT!.prg
-REM  DEL mega65.bas mega65.bas.prg mega65lower.bas
+  DEL mega65.bas mega65.bas.prg mega65lower.bas
 
   MKDIR %TEMP%\Xemu 2>&1 >NUL
   CHDIR /D %TEMP%\Xemu

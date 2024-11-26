@@ -475,6 +475,26 @@ unsigned char hyppo_rmfile(unsigned char filedescriptor)  {
   return retval;
 }
 
+unsigned char hyppo_rmdir(unsigned char filedescriptor)  {
+  unsigned char retval;
+
+  asm volatile(
+//    "ldx #$00\n"    // shouldn't be necessary
+    "lda #$10\n"
+    "sta HTRAP00\n"
+    "clv\n"
+    "bcc errhyprmfile%=\n"
+    "sta %0\n"
+    "jmp donehyprmfile%=\n"
+"errhyprmfile%=:\n"
+    "lda #$FF\n"
+    "sta %0\n"
+"donehyprmfile%=:\n"
+    "nop\n"
+  : "=r"(retval) : "x"(filedescriptor) : "a");
+  return retval;
+}
+
 char * getsfn() {
   unsigned char i;
 //  char sfn[20]; //    [13];
@@ -554,7 +574,7 @@ unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
           direntryblock2.sector = readdir_dirent->clusternumber & 0xff;
           direntryblock2.type = readdir_dirent->attr | HYPPODIRENTATTR; // to determine from mounted
           direntryblock2.size = readdir_dirent->size / 1024; // kB
-          direntryblock2.access = 0;
+//          direntryblock2.access = 0;
           lcopy((uint32_t) &direntryblock2,
                 ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + entries * DIRENTSIZE,
                 DIRENTSIZE);

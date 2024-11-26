@@ -5,10 +5,18 @@
 #define TRUE  1
 #define FALSE 0
 
+// for messagebox:
+#define MBOXREGULAR     0
+#define MBOXVERSION     1
+#define MBOXFALLTHROUGH 2
+#define MBOXNUMBER      3
+#define MBOXNOCANCEL    4
+
 char tolowerchar(char ch);
 char * strlowr(char *str);
 char * strsan(char *str);
 void strcopy(char *src, char *dest, unsigned char len);
+void strmakefilename(char *src, char *dest, unsigned char len);
 unsigned char mstrcmp(char *src, char *dest, unsigned char len);
 
 #define COLOR_RAM_BASE 0xFF80000UL
@@ -22,6 +30,7 @@ void lpoke___________(uint32_t address, uint8_t value);
 void csputdec(long n, unsigned char padding, unsigned char leadingZeros);
 char asciitoscreencode(char c);
 char* asciitoscreencode_s(char* s);
+void cputcctrl(unsigned char c);
 void clrhome(void);
 
 // instead of printf() variants:

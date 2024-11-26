@@ -53,16 +53,16 @@ int main() {
 
   // mprintf("hyppo_getcurrentdrive=", hyppo_getcurrentdrive());
 
-  mcputsxy(0, 22, "The function keys shown in the bottom line are ");
-  msprintf("meant to be used with ");
-  mcputsxy(0, 23, "and without [Shift] and [Mega] after the messagebox is dismissed:");
-  shortcuts(20, 0);
+//  mcputsxy(0, 22, "The function keys shown in the bottom line are ");
+//  msprintf("meant to be used with ");
+//  mcputsxy(0, 23, "and without [Shift] and [Mega] after the messagebox is dismissed:");
+//  shortcuts(20, 0);
 
-  if (messagebox(1, "is currently beta and may destroy data structures on",
-                    ".d81 and real disks! Please work on backed up media.",
-                    "Press RETURN to continue, STOP to halt.", 0))  {
+//  if (messagebox(1, "is currently beta and may destroy data structures on",
+//                    ".d81 and real disks! Please work on backed up media.",
+//                    "Press RETURN to continue, STOP to halt.", 0))  {
     navi(0);
-  }
+//  }
 
   clrhome();
   msprintf("Have fun with your MEGA65!");

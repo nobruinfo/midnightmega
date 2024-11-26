@@ -32,7 +32,7 @@ typedef struct structdirent {
   unsigned char dummy[9];  // see bytes $15..$1D of
                            // http://justsolve.archiveteam.org/wiki/GEOS_VLIR
   unsigned int  size;      // in blocks, also for subpartitions
-  unsigned char access;
+//  unsigned char access;
 } DIRENT;
 
 #define LFNFILENAMELEN 64
@@ -113,6 +113,7 @@ unsigned char hyppo_openfile(unsigned char filedescriptor);
 unsigned char hyppo_readfile(unsigned char filedescriptor);
 unsigned char hyppo_closefile(unsigned char filedescriptor);
 unsigned char hyppo_rmfile(unsigned char filedescriptor);
+unsigned char hyppo_rmdir(unsigned char filedescriptor);
 char * getsfn();
 char * getlfn();
 unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
