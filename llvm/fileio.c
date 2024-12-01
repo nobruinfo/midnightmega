@@ -479,6 +479,8 @@ unsigned int BAMCheckSizeinFilebuffer(unsigned char drive, unsigned char side,
                               firsttrack, lasttrack);
 }
 
+// @@@@ debug
+unsigned char* const basepage = (unsigned char*) BASEPAGERESERVED;
 unsigned char BAMFreeTracksinaRow(BAM* BAMsector, BAM* BAMsector2,
                      unsigned char firsttrack, unsigned char lasttrack,
                      unsigned char * starttrack, unsigned char * endtrack,
@@ -508,8 +510,9 @@ unsigned char BAMFreeTracksinaRow(BAM* BAMsector, BAM* BAMsector2,
       number ++;
     } else {
       if (number)  {
-        *endtrack = track80; // track80 already point to the next used one
-        if ((*endtrack - *starttrack) >= nboftracks)  {
+        *endtrack = track80;
+        if ((*endtrack - *starttrack) >= (nboftracks - 1))  {
+          // weak strategy to find lowest track count in a row:
           if ((*endtrack - *starttrack) >= (endtrackprev - starttrackprev)) {
             endtrackprev = *endtrack;
             starttrackprev = *starttrack;
@@ -528,6 +531,10 @@ unsigned char BAMFreeTracksinaRow(BAM* BAMsector, BAM* BAMsector2,
 
   // determine last track being unallocated:
   if ((*starttrack + number) > lasttrack)  *endtrack = lasttrack;
+
+  basepage[0] = number;      // @@@@ debug
+  basepage[1] = *starttrack; // @@@@ debug
+  basepage[2] = *endtrack;   // @@@@ debug
 
   return number;
 }
@@ -947,6 +954,7 @@ void writeblockchain(uint32_t source_address,
         mh4printf(" is: ", (long) &ws);
         mh4printf(" worksector[0]: ", (long) worksector[0]);
         cputln();
+        cgetc();
 #endif
 
     // replace chain with available ones or leave 0 if last datablock:
@@ -1446,6 +1454,8 @@ void deletedirententry(unsigned char drive, unsigned char side,
         mprintf(" nextsector=", nextsector);
         mprintf(" type=", (ds->type&0xf));
         mh4printf(" ds addr=", (long) &ds);
+        mprintf(" filetrack=", ds->track);
+        mprintf(" filesector=", ds->sector);
         cputln();
         cgetc();
 #endif
@@ -1453,6 +1463,8 @@ void deletedirententry(unsigned char drive, unsigned char side,
                 i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
               BLOCKDATALOW, BLOCKSIZE);
         PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
+basepage[3] = 0xff; // @@@@ debug
+basepage[4] = 0xff; // @@@@ debug
         if ((filetypebefore&0xf) != VAL_DOSFTYPE_CBM)  {
           deleteblockchain(drive, dirtrack, ds->track, ds->sector);
         } else {
@@ -1460,7 +1472,11 @@ void deletedirententry(unsigned char drive, unsigned char side,
           for (s = 0; s < (ds->size + 40); s++)  {
             BAMSectorUpdate(BAMsector[0], BAMsector[1],
                             ds->track + (s / 40), ds->sector + (s % 40), 0); // 0=free up
+basepage[3] = ds->track + (s / 40);  // @@@@ debug
+basepage[4] = ds->sector + (s % 40); // @@@@ debug
           }
+basepage[5] = (ds->size + 40) % 256; // @@@@ debug
+basepage[6] = (ds->size + 40) / 256; // @@@@ debug
         }
 #ifdef DEBUG
         msprintf("deletedirententry done");

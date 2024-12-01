@@ -15,9 +15,11 @@ SET MTOO=%MTOO%m65tools-release-1.00-windows
 SET MFTP=%MTOO%\mega65_ftp.exe
 SET MFTP=F:\Entwicklungsprojekte\github-nobru\mega65-tools\bin\mega65_ftp.exe
 SET ETHL=%MTOO%\etherload.exe
-SET HICKUP=D:\Game Collections\C64\Mega65\Xemu
-SET HICKUPOPT=-hickup "%HICKUP%\HICKUP hyppo13.M65"
-SET XMEGA65=%HICKUP%\xemu-binaries-win64\
+SET HICKUPDIR=D:\Game Collections\C64\Mega65\Xemu
+SET HICKUPFILE=HICKUP hyppo13.M65
+SET HICKUPFILE=HICKUP.M65
+SET HICKUPOPT=-hickup "%HICKUPDIR%\%HICKUPFILE%"
+SET XMEGA65=%HICKUPDIR%\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos
 SET "HDOSSLASH=%HDOS:\=/%"
 SET IMG=%APPDATA%\xemu-lgb\mega65\mega65.img
@@ -71,7 +73,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.20-beta
+SET v=v0.5.21-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
@@ -126,8 +128,6 @@ REM  CALL %LLVM_BAT% -Os -o emu%PRJ%.prg !opts! %cfiles% %libcfiles%
   %c1541% -format disk%PRJ%,id d81 %PRJ%.d81
   %c1541% -attach %PRJ%.d81 -delete %PRJ%
   %c1541% -attach %PRJ%.d81 -write %PRJ%.prg %PRJ%
-  %c1541% -attach %PRJ%.d81 -delete %ROMLIST%
-  %c1541% -attach %PRJ%.d81 -write %ROMLIST%.prg %ROMLIST%
 REM  %c1541% -attach %PRJ%.d81 -write dbg%PRJ%.prg dbg%PRJ%
 REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
 
@@ -155,10 +155,12 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
     %c1541% -attach %PRJ%.d81 -write help.seq help.seq,s
   )
   REM Text file created by https://github.com/dadadel/binmake :
-  wsl --exec sh maketextseqfile.sh %PRJ%text_binmake.src %PRJ%text1_binmake.seq
+  REM wsl --exec sh maketextseqfile.sh %PRJ%text_binmake.src %PRJ%text1_binmake.seq
   %petcat% -text -c -w2 -o %PRJ%text.seq -- %PRJ%text.src
   %c1541% -attach %PRJ%.d81 -write %PRJ%text.seq %PRJ%text,s
-  DEL %PRJ%text.seq %PRJ%text_binmake.seq
+  REM DEL %PRJ%text.seq %PRJ%text_binmake.seq
+  %c1541% -attach %PRJ%.d81 -delete %ROMLIST%
+  %c1541% -attach %PRJ%.d81 -write %ROMLIST%.prg %ROMLIST%
 
   REM Use in Xemu's out of the image file fs access:
   XCOPY /Y %PRJ%.d81 %HDOS%\
@@ -194,11 +196,15 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   XMEGA65 !HEADLESS! %HICKUPOPT% -importbas mega65.bas
   "%MFTP%" -d %IMG% -c "get !DATADISKUPPER!.D81"
 
-  REM c1541 currently destroys neighbouring subpartitions if only 3 tracks of size:
-  for /l %%j in (0, 1, 1) do (
-    for /l %%i in (0, 1, 1) do (
-REM      %c1541% -attach %DATADISK%.d81 -@ "/%%j:folder %%j" -delete %PRJ%
-      %c1541% -attach %DATADISK%.d81 -@ "/0:folder %%j" -write %PRJ%.prg %%j%PRJ%.%%i
+  IF 1 == 2 (
+    REM c1541 currently destroys neighbouring subpartitions if only 3 tracks
+    REM of size. Also with copying two or more files it writes one of them
+    REM in tracks lower than the dirtrack:
+    for /l %%j in (0, 1, 1) do (
+      for /l %%i in (0, 1, 1) do (
+  REM      %c1541% -attach %DATADISK%.d81 -@ "/%%j:folder %%j" -delete %PRJ%
+        %c1541% -attach %DATADISK%.d81 -@ "/0:folder %%j" -write %PRJ%.prg %%j%PRJ%.%%i
+      )
     )
   )
 
@@ -262,6 +268,9 @@ REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/FAKEDISK.D81"
   "%MFTP%" -e -c "put %HDOSSLASH%/FAKEDISK.D81"
 
+  REM storage card hickup seems to always win:
+  "%MFTP%" -d %IMG% -c "put '%HICKUPDIR%\%HICKUPFILE%' HICKUP.M65"
+
   TIMEOUT 1
   REM "%ETHL%" --mount !PRJSHORT!.d81 --run %PRJ%.prg
 
@@ -282,7 +291,7 @@ REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   XMEGA65 -besure ^
     -importbas mega65.bas ^
     %HICKUPOPT% ^
-    -driveled
+    -allowfreezer -driveled
 REM    -hdosvirt -defd81fromsd
 REM    -8 !PRJSHORT!.d81 -9 %DATADISK%.d81 -autoload
   REM XMEGA65 -syscon -besure -prg !PRJSHORT!.prg

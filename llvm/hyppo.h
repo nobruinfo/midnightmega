@@ -37,7 +37,7 @@ typedef struct structdirent {
 
 #define LFNFILENAMELEN 64
 #define LFNENTRIESPERBLOCK 4 // nbr of entries on disk block
-#define LFNBLOCKS 14    // nbr of dirent pages in attic
+#define LFNBLOCKS 20    // nbr of dirent pages in attic
 #define LFNNBRENTRIES (LFNBLOCKS * LFNENTRIESPERBLOCK) // nbr of GUI entries
 typedef struct structlfn {
   char name[LFNFILENAMELEN]; // no termination

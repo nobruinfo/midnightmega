@@ -26,8 +26,6 @@ MIDNIGHT* midnight[2] = { (MIDNIGHT*) MIDNIGHTLEFTPAGE,
 unsigned char disknames[2][DOSFILENAMELEN + 1]; // @@ change for pointer
 unsigned char lfnname[LFNFILENAMELEN];         // @@ change for pointer
 
-#define FILEENTRIES (8 * DIRENTBLOCKS)
-
 #define DIRENTPERSCREEN 22
 // @@ The in here present recognition of 0xa0 is also in conioextensions.c
 // @@ string build-up may be used elsewhere
@@ -597,7 +595,7 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
   if (sethyppo != SETHYPPOOFF)  {
     strcopy("storage card", (char *) disknames[side], 16);
     strcopy("storage card", (char *) midnight[side]->curfile, 16);
-    midnight[side]->entries = gethyppodirent(drive, side, FILEENTRIES);
+    midnight[side]->entries = gethyppodirent(drive, side, LFNNBRENTRIES);
     midnight[side]->blocksfree = UINT_MAX;
     if (sethyppo == SETHYPPOONBYERROR)  midnight[side]->blocksfree = UINT_MAX - 1;
   }
@@ -714,6 +712,7 @@ void navi(unsigned char side)  {
                              " ", 0);
   }
 
+  _miniInit();  // Pause the floppy drive while waiting for the user
   if (!messagebox(MBOXVERSION,
                      "is currently beta and may destroy data structures on",
                      ".d81 and real disks! Please work on backed up media.",
@@ -847,11 +846,43 @@ void navi(unsigned char side)  {
       case 0xf8: // Modifiers and ASC_F8 delete
       case 0x1f8:
       case 0x2f8:
-        // does only current file:
+        // check for multiselect and disallow on Hyppo and multiple
+        // directory selections:
+        number = 0;
         ds = getdirententry(side, midnight[side]->pos);
-        if ((ds->type&0xf) != VAL_DOSFTYPE_DEL ||
+        for (i = 0; i < NBRENTRIES; i++)  {
+          if (direntflags[side][i].flags & DIRFLAGSisselected)  {
+            // overwrite highlighted when a selection is active:
+            if (!(direntflags[side][midnight[side]->pos].flags &
+                  DIRFLAGSisselected))  {
+              midnight[side]->pos = i;
+            }
+            ds = getdirententry(side, i);
+            number++;
+          }
+        }
+        if (number == 0)  { // nothing selected, goes to highlighted
+          direntflags[side][midnight[side]->pos].flags ^= DIRFLAGSisselected;
+          number++;
+        }
+        // multiple selection abort criteria:
+        if (number > 1 &&
             ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
-          // @@ has to go to sizeselectcurrentifnone()
+          messagebox(MBOXNOCANCEL, "Operation on mulitiple",
+                     "storage card files/folders",
+                     "is not supported.", 0);
+        } else if (number > 1 &&
+                 ((ds->type&0xf) == VAL_DOSFTYPE_CBM))  {
+          messagebox(MBOXNOCANCEL, "Directory operation on",
+                     "multiple selected entries",
+                     "is not supported", 0);
+        } else { // okay to start:
+          if (number > 1)  {
+            strcpy((char*) midnight[side]->inputstr,
+                   (char*) "multiple selected entries");
+          } else {
+            strcpy((char*) midnight[side]->inputstr, (char*) ds->name);
+          }
 
 #ifdef DEBUG
           msprintf("name: ");
@@ -867,7 +898,13 @@ void navi(unsigned char side)  {
           cputln();
           cgetc();
 #endif
-          if (c == 0xf5)  {  // copy
+
+          if ((ds->type&0xf) == VAL_DOSFTYPE_DEL &&
+              ((midnight[side]->flags & MIDNIGHTFLAGismounted)))  {
+            messagebox(MBOXNOCANCEL, "File type for",
+                       (char *) midnight[side]->inputstr,
+                       "unsupported", 0);
+          } else if (c == 0xf5)  {  // copy
             if ((ds->type&0xf) == VAL_DOSFTYPE_CBM)  {
               messagebox(MBOXNOCANCEL, "Copying full directory structures",
                          "is not supported.", " ", 0);
@@ -884,8 +921,10 @@ void navi(unsigned char side)  {
             } else if (sizeselectcurrentifnone(side) > midnight[side?0:1]->blocksfree)  {
               messagebox(MBOXNOCANCEL, "File copy,",
                          "destination disk space insufficient", " ", 0);
-            } else if (messagebox(MBOXREGULAR, "File copy,", ds->name,
-                       (side ? "from right to left" : "from left to right"), 0)) {
+            } else if (messagebox(MBOXREGULAR, "File copy,",
+                       (char *) midnight[side]->inputstr,
+                       (side ? "from right to left" : "from left to right"),
+                       0)) {
               for (i = 0; i < NBRENTRIES; i++)  {
                 if (direntflags[side][i].flags & DIRFLAGSisselected)  {
                   ds = getdirententry(side, i);
@@ -930,8 +969,8 @@ void navi(unsigned char side)  {
             }
           } else if ((ds->type&0xf) == VAL_DOSFTYPE_CBM &&
                      (midnight[side]->entries != 0xff))  {
+            number = 0;
             for (i = NBRENTRIES; i > 0; i--)  {
-              number = 0;
               if (direntflags[side][i - 1].flags & DIRFLAGSisselected)  {
                 number++;
               }
@@ -976,10 +1015,12 @@ void navi(unsigned char side)  {
               UpdateSectors(midnight[side]->drive, side);
               Deselect(side);
             }
-          } else if (ds->type != VAL_DOSFTYPE_DEL &&  // delete
+          } else if (ds->type != VAL_DOSFTYPE_DEL &&  // file delete
                      ds->size > 0)  {     // storage card dirs are size zero
-            if (messagebox(MBOXREGULAR, "File delete,", ds->name,
-                           (side ? "from right side" : "from left side"), 0))  {
+            if (messagebox(MBOXREGULAR, "File delete,",
+                           (char *) midnight[side]->inputstr,
+                           (side ? "from right side" : "from left side"),
+                           0))  {
               if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
                 hyppo_setname(ds->name); // hyppofn->name);  // @@@@ same
                 fd = hyppo_findfirst();                 // @@@@ block as below
@@ -991,7 +1032,8 @@ void navi(unsigned char side)  {
                 }
                 hyppo_closedir(fd);
               } else {
-                if (sizeselectcurrentifnone(side) != UINT_MAX)  {  // size returned doesn't matter to delete
+                // size returned doesn't matter to delete:
+                if (sizeselectcurrentifnone(side) != UINT_MAX)  {
                   for (i = NBRENTRIES; i > 0; i--)  {
                     if (direntflags[side][i - 1].flags & DIRFLAGSisselected)  {
                       ds = getdirententry(side, i - 1);
@@ -1001,7 +1043,7 @@ void navi(unsigned char side)  {
                       GetBAM(side);
                       progress("Writing...", "removing BAM entries", 40);
                       deletedirententry(midnight[side]->drive, side,
-                                        midnight[side]->dirtrack, i - 1); // midnight[side]->pos);
+                                        midnight[side]->dirtrack, i - 1);
                       progress("Writing...", "updating BAM", 80);
                       PutBAM(midnight[side]->drive, side, midnight[side]->dirtrack);
                     }
@@ -1012,8 +1054,9 @@ void navi(unsigned char side)  {
               Deselect(side);
             }
           } else {
+/*
+            number = 0;
             for (i = NBRENTRIES; i > 0; i--)  {
-              number = 0;
               if (direntflags[side][i - 1].flags & DIRFLAGSisselected)  {
                 number++;
               }
@@ -1022,7 +1065,9 @@ void navi(unsigned char side)  {
               messagebox(MBOXNOCANCEL, "Directory delete,",
                          "on multiple selected",
                          "entries is not supported", 0);
-            } else if (messagebox(MBOXREGULAR, "Directory structure delete,",
+            } else 
+*/
+            if (messagebox(MBOXREGULAR, "Directory structure delete,",
                                   ds->name, (side ? "from right side" :
                                                     "from left side"),
                                   0))  {
@@ -1039,9 +1084,6 @@ void navi(unsigned char side)  {
             UpdateSectors(midnight[side]->drive, side);
             Deselect(side);
           }
-        } else {
-          messagebox(MBOXNOCANCEL, "File type for", ds->name,
-                     "unsupported", 0);
         }
       break;
 
@@ -1115,19 +1157,19 @@ void navi(unsigned char side)  {
                        midnight[side]->firsttrack,
                        midnight[side]->lasttrack,
                        &starttrack, &endtrack, number);
-#ifdef DEBUG
-            messagebox(MBOXNUMBER, "Creating subdirectory",
-                       // (char *) disknames[side],
-                       (side ? "mounted on right side" : "mounted on left side"),
-                       // "number=", number))  {
-                       "start-/endtrack=",
-                       starttrack * 256 + endtrack);
-#endif
             if (number >= 2 && (endtrack - starttrack) >= 2 &&
                 number <= (endtrack - starttrack + 1))  {
               inputbox((char*) midnight[side]->inputstr,
                        "Please enter name of the subdirectory");
               endtrack = starttrack + number - 1;
+#ifdef DEBUG
+              messagebox(MBOXNUMBER, "Creating subdirectory",
+                         // (char *) disknames[side],
+                         (side ? "mounted on right side" : "mounted on left side"),
+                         // "number=", number))  {
+                         "start-/endtrack=",
+                         starttrack * 256 + endtrack);
+#endif
               // First allocate BAM because the following format will use
               // the BAM of the partition:
               BAMAllocateTracks(side, starttrack, endtrack);
@@ -1288,8 +1330,12 @@ void navi(unsigned char side)  {
       case 0x20: // Space to toggle
       case 0x194: // Shift-Inst
       case 0x294:
-        direntflags[side][midnight[side]->pos].flags ^= DIRFLAGSisselected;
-        midnight[side]->pos++;
+        if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
+          sidbong();
+        } else {
+          direntflags[side][midnight[side]->pos].flags ^= DIRFLAGSisselected;
+          midnight[side]->pos++;
+        }
       break;
 
       case 13: // return

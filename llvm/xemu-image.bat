@@ -84,26 +84,32 @@ goto menu
 :dodisks
 title MEGA65_FTP populating disks
 CD /D "%D81%"
-for /d %%k in ("%D81%\*") do (
-  SET FOLDER=%%~nk
-  SET "prefix1=!FOLDER!\*.d81"
-  SET "prefix2=!FOLDER!\*.d64"
-  SET "prefix3=!FOLDER!\*.prg"
-  SET "prefix="!prefix1!" "!prefix2!" "!prefix3!""
-  ECHO !prefix!
-  "%MFTP%" %DEST% -c "mkdir %%~nk"
-  for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
-	REM ECHO CD=!CD!  D81=!DISKUPPER!
-    SET "FOLDERSLASH=!FOLDER:\=/!"
-	"%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
-    SET "DISKUPPER=%%i"
-    for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
-      set "DISKUPPER=!DISKUPPER:%%b=%%b!"
+IF 1 == 2 (
+  for /d %%k in ("%D81%\*") do (
+    SET FOLDER=%%~nk
+    SET "prefix1=!FOLDER!\*.d81"
+    SET "prefix2=!FOLDER!\*.d64"
+    SET "prefix3=!FOLDER!\*.prg"
+    SET "prefix="!prefix1!" "!prefix2!" "!prefix3!""
+    ECHO !prefix!
+    "%MFTP%" %DEST% -c "mkdir %%~nk"
+    for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
+    REM ECHO CD=!CD!  D81=!DISKUPPER!
+      SET "FOLDERSLASH=!FOLDER:\=/!"
+    "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
+      SET "DISKUPPER=%%i"
+      for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+        set "DISKUPPER=!DISKUPPER:%%b=%%b!"
+      )
+      "%MFTP%" %DEST% -c "cd %%~nk" -c "put '!FOLDERSLASH!/!DISKUPPER!'"
+      REM "%MFTP%" %DEST% -c "cd %%~nk" -c "ren ??????~?.D81 ??????-?.D81"
     )
-    "%MFTP%" %DEST% -c "cd %%~nk" -c "put '!FOLDERSLASH!/!DISKUPPER!'"
-    REM "%MFTP%" %DEST% -c "cd %%~nk" -c "ren ??????~?.D81 ??????-?.D81"
   )
 )
+
+REM CD done above
+CALL :upload
+
 "%MFTP%" %DEST% -c "dir"|more
 pause
 goto menu

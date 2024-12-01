@@ -15,8 +15,6 @@
 // ***  texts.c Midnight Mega's text mgmt                ***
 // *********************************************************
 
-#define FILEENTRIES (8 * DIRENTBLOCKS)
-
 unsigned char blockreadbyte(unsigned int byte, unsigned char raw)  {
   unsigned char data;
   unsigned int b = 0; // higher byte number that skips t/s bytes
