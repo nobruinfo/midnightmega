@@ -62,10 +62,10 @@ char load(char* address, char verify) {
   fnamelo = (unsigned int) address & 0xff;
 /*    clrhome();
   mh4printf("fnamehi is: ", (unsigned long) fnamehi);
-    cputln();
+  cputln();
   mh4printf("fnamelo is: ", (unsigned long) fnamelo);
-    cputln();
-    cgetc();
+  cputln();
+  cgetc();
 */
   asm volatile(
     //LOAD. Load or verify file. (Must call SETLFS and SETNAM beforehands.)
@@ -87,9 +87,9 @@ char load(char* address, char verify) {
 
 void setbnk()  {
   asm volatile(
-	"lda #$00\n"  // lfBank	// bank for save
-	"ldx #$00\n"	// bank for filename
-	"jsr SETBNK\n"  // $ff6b
+    "lda #$00\n"  // lfBank    // bank for save
+    "ldx #$00\n"    // bank for filename
+    "jsr SETBNK\n"  // $ff6b
   :  :  : );
 }
 
@@ -109,59 +109,59 @@ volatile __zp char* addresszp;
 volatile char* endaddress;
 
 char saveFileToMemory( char device, char* filename, char* address) {
-//	mh4printf("SETNAM is: ", (unsigned long) SETNAM);
-//	mh4printf("SETLFS is: ", (unsigned long) SETLFS);
-//	mh4printf("SAVE is: ", (unsigned long) SAVE);
-	endaddress = (address + sizeof(address));
-	addresszp = address;
-	mh4printf("addresszp is: ", (unsigned long) addresszp);
-	mh4printf("endaddress is: ", (unsigned long) endaddress);
-	cputln();
-	setbnk();
-    setnam(filename);
-    setlfs(device);
-    return save(addresszp, endaddress);
+//    mh4printf("SETNAM is: ", (unsigned long) SETNAM);
+//    mh4printf("SETLFS is: ", (unsigned long) SETLFS);
+//    mh4printf("SAVE is: ", (unsigned long) SAVE);
+  endaddress = (address + sizeof(address));
+  addresszp = address;
+  mh4printf("addresszp is: ", (unsigned long) addresszp);
+  mh4printf("endaddress is: ", (unsigned long) endaddress);
+  cputln();
+  setbnk();
+  setnam(filename);
+  setlfs(device);
+  return save(addresszp, endaddress);
 }
 
 char save(char* address, char* end) {
-    char status;
-    asm {
-		
+  char status;
+  asm {
+      
 */
 
 /*
-		// https://github.com/MEGA65/mega65-examples/blob/main/asm/load_save_d81/main.asm
-		lda #<$0000
-		sta $04
-		lda #>$0000
-		sta $05
+    // https://github.com/MEGA65/mega65-examples/blob/main/asm/load_save_d81/main.asm
+    lda #<$0000
+    sta $04
+    lda #>$0000
+    sta $05
 
-		// for start address
-		lda #$00  // lfBank+1
-		sta $b0
-		lda #$00  // lfBank
-		sta $af
-		// for end address
-		lda #$00  // lfBank+1
-		sta $ac
-		lda #$00  // lfBank
-		sta $ab
+    // for start address
+    lda #$00  // lfBank+1
+    sta $b0
+    lda #$00  // lfBank
+    sta $af
+    // for end address
+    lda #$00  // lfBank+1
+    sta $ac
+    lda #$00  // lfBank
+    sta $ab
 */
 
 /*
 
-        // regular routine:
-		ldx end
-        ldy end+1
-        lda #<address
-		clc
-        jsr SAVE
-        bcs error
-        lda #$ff
-        error:
-        sta status
-    }
-    return status;
+    // regular routine:
+    ldx end
+    ldy end+1
+    lda #<address
+    clc
+    jsr SAVE
+    bcs error
+    lda #$ff
+    error:
+    sta status
+  }
+  return status;
 }
 
 // ******************************************

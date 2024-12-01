@@ -11,11 +11,15 @@ SET PETCAT="%PETCAT%2021\GTK3VICE-3.8-win64\bin\petcat.exe"
 
 SET M65DBG=F:\Entwicklungsprojekte\github-nobru\m65dbg\m65dbg\m65dbg.exe
 SET MTOO=D:\Game Collections\C64\Mega65\Tools\M65Tools\
-SET MFTP=%MTOO%m65tools-develo-165-c2b03a-windows\mega65_ftp.exe
-SET ETHL=%MTOO%m65tools-develo-165-c2b03a-windows\etherload.exe
-SET HICKUP=D:\Game Collections\C64\Mega65\Xemu
-SET HICKUPOPT=-hickup "%HICKUP%\HICKUP hyppo13.M65"
-SET XMEGA65=%HICKUP%\xemu-binaries-win64\
+SET MTOO=%MTOO%m65tools-release-1.00-windows
+SET MFTP=%MTOO%\mega65_ftp.exe
+SET MFTP=F:\Entwicklungsprojekte\github-nobru\mega65-tools\bin\mega65_ftp.exe
+SET ETHL=%MTOO%\etherload.exe
+SET HICKUPDIR=D:\Game Collections\C64\Mega65\Xemu
+SET HICKUPFILE=HICKUP hyppo13.M65
+SET HICKUPFILE=HICKUP.M65
+SET HICKUPOPT=-hickup "%HICKUPDIR%\%HICKUPFILE%"
+SET XMEGA65=%HICKUPDIR%\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos
 SET "HDOSSLASH=%HDOS:\=/%"
 SET IMG=%APPDATA%\xemu-lgb\mega65\mega65.img
@@ -37,7 +41,7 @@ REM  SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%
 SET libcfiles=%libcfilesdir%\hal.c
 SET libcfiles=%libcfiles% include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
-SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c sid.c romlist.c conio.c memory.c
+SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c texts.c sid.c romlist.c conio.c memory.c
 SET cfilesrom=%ROMLIST%.c hyppo.c fileio.c conioextensions.c romlist.c conio.c memory.c
 
 REM https://clang.llvm.org/docs/ClangCommandLineReference.html
@@ -69,7 +73,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.18-beta
+SET v=v0.5.21-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
@@ -124,15 +128,9 @@ REM  CALL %LLVM_BAT% -Os -o emu%PRJ%.prg !opts! %cfiles% %libcfiles%
   %c1541% -format disk%PRJ%,id d81 %PRJ%.d81
   %c1541% -attach %PRJ%.d81 -delete %PRJ%
   %c1541% -attach %PRJ%.d81 -write %PRJ%.prg %PRJ%
-  %c1541% -attach %PRJ%.d81 -delete %ROMLIST%
-  %c1541% -attach %PRJ%.d81 -write %ROMLIST%.prg %ROMLIST%
 REM  %c1541% -attach %PRJ%.d81 -write dbg%PRJ%.prg dbg%PRJ%
 REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
 
-  REM file for loadFileToMemory():
-    ECHO this is a sequential file for testing.>%PRJ%.seq
-    %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s
-    DEL %PRJ%.seq>NUL
   IF 1 == 2 (
     ECHO this is a sequential file for testing.>%PRJ%.seq
     %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s
@@ -156,6 +154,13 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
     %petcat% -text -c -w2 -o help.seq -- help.txt
     %c1541% -attach %PRJ%.d81 -write help.seq help.seq,s
   )
+  REM Text file created by https://github.com/dadadel/binmake :
+  REM wsl --exec sh maketextseqfile.sh %PRJ%text_binmake.src %PRJ%text1_binmake.seq
+  %petcat% -text -c -w2 -o %PRJ%text.seq -- %PRJ%text.src
+  %c1541% -attach %PRJ%.d81 -write %PRJ%text.seq %PRJ%text,s
+  REM DEL %PRJ%text.seq %PRJ%text_binmake.seq
+  %c1541% -attach %PRJ%.d81 -delete %ROMLIST%
+  %c1541% -attach %PRJ%.d81 -write %ROMLIST%.prg %ROMLIST%
 
   REM Use in Xemu's out of the image file fs access:
   XCOPY /Y %PRJ%.d81 %HDOS%\
@@ -181,7 +186,8 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   ECHO 1 MOUNT "%DATADISK%.D81">>mega65.bas
   for /l %%j in (0, 1, 1) do (
     ECHO 1%%j0 MKDIR "FOLDER %%j",L 11 >>mega65.bas
-    ECHO 1%%j1 MKDIR "SUBFOLDER %%j",L 4 >>mega65.bas
+    REM Subfolder makes C1541 freak out:
+    ECHO 1%%j1 REM MKDIR "SUBFOLDER %%j",L 4 >>mega65.bas
     ECHO 1%%j5 CHDIR "/">>mega65.bas
   )
   ECHO 900 POKE $D6CF, $42>>mega65.bas
@@ -190,11 +196,15 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   XMEGA65 !HEADLESS! %HICKUPOPT% -importbas mega65.bas
   "%MFTP%" -d %IMG% -c "get !DATADISKUPPER!.D81"
 
-  REM c1541 currently destroys neighbouring subpartitions if only 3 tracks of size:
-  for /l %%j in (0, 1, 1) do (
-    for /l %%i in (0, 1, 1) do (
-REM      %c1541% -attach %DATADISK%.d81 -@ "/%%j:folder %%j" -delete %PRJ%
-      %c1541% -attach %DATADISK%.d81 -@ "/0:folder %%j" -write %PRJ%.prg %%j%PRJ%.%%i
+  IF 1 == 2 (
+    REM c1541 currently destroys neighbouring subpartitions if only 3 tracks
+    REM of size. Also with copying two or more files it writes one of them
+    REM in tracks lower than the dirtrack:
+    for /l %%j in (0, 1, 1) do (
+      for /l %%i in (0, 1, 1) do (
+  REM      %c1541% -attach %DATADISK%.d81 -@ "/%%j:folder %%j" -delete %PRJ%
+        %c1541% -attach %DATADISK%.d81 -@ "/0:folder %%j" -write %PRJ%.prg %%j%PRJ%.%%i
+      )
     )
   )
 
@@ -204,17 +214,19 @@ REM      %c1541% -attach %DATADISK%.d81 -@ "/%%j:folder %%j" -delete %PRJ%
   ECHO 10 POKE $D080,$20>F011.BAS
   ECHO 20 POKE $D081,$20>>F011.BAS
   ECHO 30 POKE $D084,41>>F011.BAS
-  ECHO 40 POKE $D085,1>>F011.BAS
-  ECHO 50 POKE $D086,0>>F011.BAS
+  ECHO 40 POKE $D085,^1>>F011.BAS
+  ECHO 50 POKE $D086,^0>>F011.BAS
   ECHO 60 POKE $D081,$41>>F011.BAS
-  ECHO 65 SLEEP 1>>F011.BAS
+  ECHO 65 SLEEP ^1>>F011.BAS
   ECHO 70 PRINT PEEK^($D082^)>>F011.BAS
   ECHO 80 PRINT PEEK^($D689^)>>F011.BAS
-  ECHO 90 POKE $D689,0>>F011.BAS
-  ECHO 110 POKE $D080,0>>F011.BAS
-  %petcat% -w65 -o F011.prg -- F011.bas
+  ECHO 90 POKE $D689,^0>>F011.BAS
+  ECHO 110 POKE $D080,^0>>F011.BAS
+  powershell -command "&{(Get-Content F011.bas).ToLower() | Out-File F011lower.bas -Encoding Ascii}"
+  %petcat% -w65 -o F011.prg -- F011lower.bas
   %c1541% -attach %DATADISK%.d81 -write F011.prg f011readsect
   DEL F011.bas>NUL
+  DEL F011lower.bas>NUL
   DEL F011.prg>NUL
 
   for /l %%i in (1, 1, 1) do (
@@ -256,8 +268,11 @@ REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/FAKEDISK.D81"
   "%MFTP%" -e -c "put %HDOSSLASH%/FAKEDISK.D81"
 
+  REM storage card hickup seems to always win:
+  "%MFTP%" -d %IMG% -c "put '%HICKUPDIR%\%HICKUPFILE%' HICKUP.M65"
+
   TIMEOUT 1
-  "%ETHL%" --run %PRJ%.prg
+  REM "%ETHL%" --mount !PRJSHORT!.d81 --run %PRJ%.prg
 
   REM Create a stub disk to be loaded at CLI level from current host
   REM directory to mount .d81 within virtual storage card image:
@@ -269,14 +284,18 @@ REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   ECHO 40 REM SLEEP 1 >>mega65.bas
   ECHO 50 RUN "*">>mega65.bas
 
+  powershell -command "&{(Get-Content mega65.bas).ToLower() | Out-File mega65lower.bas -Encoding Ascii}"
+  %petcat% -w65 -o mega65.bas.prg -- mega65lower.bas
+  "%ETHL%" --mount !PRJSHORT!.d81 --run mega65.bas.prg
+
   XMEGA65 -besure ^
     -importbas mega65.bas ^
     %HICKUPOPT% ^
-	-driveled
+    -allowfreezer -driveled
 REM    -hdosvirt -defd81fromsd
 REM    -8 !PRJSHORT!.d81 -9 %DATADISK%.d81 -autoload
   REM XMEGA65 -syscon -besure -prg !PRJSHORT!.prg
-  DEL mega65.bas
+  DEL mega65.bas mega65.bas.prg mega65lower.bas
 
   MKDIR %TEMP%\Xemu 2>&1 >NUL
   CHDIR /D %TEMP%\Xemu

@@ -20,41 +20,41 @@ void romlist(unsigned char ypos)  {
   unsigned int i;
 
   for (i = 0; i < 11; i++)  {
-	if (i < 10)  {
-	  strcpy(hyppofn->name, "MEGA650.ROM");
-	  hyppofn->name[6] = '0' + i;
-	} else {
-	  strcpy(hyppofn->name, "MEGA65.ROM");
-	}
-	hyppo_setname(hyppofn->name);
+    if (i < 10)  {
+      strcpy(hyppofn->name, "MEGA650.ROM");
+      hyppofn->name[6] = '0' + i;
+    } else {
+      strcpy(hyppofn->name, "MEGA65.ROM");
+    }
+    hyppo_setname(hyppofn->name);
     mcputsxy(FILENAMECOLON, i + ypos, hyppofn->name);
-	fd = hyppo_findfirst();
-	if (fd == 0x88)  {
+    fd = hyppo_findfirst();
+    if (fd == 0x88)  {
       mcputsxy(TEXTCOLON, i + ypos, "file not found.");
-	} else {
-	  fd = hyppo_openfile(fd);
-	  if (fd == 0x84)  {
+    } else {
+      fd = hyppo_openfile(fd);
+      if (fd == 0x84)  {
         mcputsxy(TEXTCOLON, i + ypos, "too many open files.");
-	  } else {
-	    if (fd == 0x86)  {
+      } else {
+        if (fd == 0x86)  {
           mcputsxy(TEXTCOLON, i + ypos, "file is a directory.");
-	    } else {
-	      if (hyppo_readfile(fd) == 0x89)  {
-		    mcputsxy(TEXTCOLON, i + ypos, "invalid file descriptor.");
-	      } else {
-	        hyppo_closefile(fd);
-			// mcputsxy(TEXTCOLON, i + ypos, "file loaded into $FFD6E00 .. $FFD6FF");
+        } else {
+          if (hyppo_readfile(fd) == 0x89)  {
+            mcputsxy(TEXTCOLON, i + ypos, "invalid file descriptor.");
+          } else {
+            hyppo_closefile(fd);
+            // mcputsxy(TEXTCOLON, i + ypos, "file loaded into $FFD6E00 .. $FFD6FF");
 
-			DATABLOCK* ws = worksector[0];
-			
-			lfill((uint32_t) ws, 0, BLOCKSIZE);
-			lcopy(SECTHYPLOAD + 0x16, (uint32_t) ws, BLOCKSIZE);
-			mcputsxy(TEXTCOLON, i + ypos, (char *) ws);
-			
-//			cgetc();
-		  }
-		}
-	  }
-	}
+            DATABLOCK* ws = worksector[0];
+            
+            lfill((uint32_t) ws, 0, BLOCKSIZE);
+            lcopy(SECTHYPLOAD + 0x16, (uint32_t) ws, BLOCKSIZE);
+            mcputsxy(TEXTCOLON, i + ypos, (char *) ws);
+            
+//            cgetc();
+          }
+        }
+      }
+    }
   }
 }

@@ -123,57 +123,107 @@ all message box texts and so on. This is not yet begun.
 
 ## Tasks
 
-* ✓ Text based GUI, Midnight/Norton Commander oriented
+### operational
+
 * ✓ copying of complete disk images, real diskettes respectively
 * ✓ proof of concept accessing .d81 mount handling
 * ✓ copying of single/multiple files in between real/virtual drives,
   mounted images
-* message boxes for errors and warnings in different colours/sounds?
-* Handling of subdirectories (sub-partitions of file type `CBM`)
+* ✓ Handling of subdirectories (sub-partitions of file type `CBM`)
   inside diskettes
 * [Ctrl][u] to swap mount situation, mind swapping the complete
   attic too &#x2639;
 * ability to use the same drive number on both sides of the commander
   to copy files onto the same disk
-* Unmounting to gain full access to the underlying real floppy drive
-  is not yet implemented
 * ✓ Full disk copy, meaning only within already mounted .d81 disk
   image files or with real floppy diskettes
 * ✓ proof of concept abstraction layer real/virtual floppy image
-* proof of concept reading floppy (sub-) directories
+* ✓ proof of concept reading floppy (sub-) directories
 * ✓ proof of concept reading files, sectors, tracks
 * ✓ proof of concept writing files, sectors, tracks
 * refactoring for code runtime optimisation
-* test data copy by exceeding the maximum number of allowed blocks
+* ✓ test data copy by exceeding the maximum number of allowed
+  blocks
+* ✓ unmounting to gain full access to the underlying real floppy drive
+  is not yet implemented
 * test unmounted drives, empty disks and other error handling
-* better visualise disk and mounting errors
+* handle errors when copying files from mounted .d81 in the
+  storage card subdirectory, this currently writes illegal track
+  numbers as blockchains
 * remove `dirent` sectors if empty after file deletions, retain
   track chain
-* ✓ show a status feeter with number of blocks available
-* Involving the user to handle same name files/directories
+* involving the user to handle same name files/directories
+* not all routines take care of changing header sectors if dived
+  into sub-partitions, most of them are secured by an error
+  message though
+* Completing the routines to create subdirectories, strategy for
+  consecutive tracks to first present the maximum size and to
+  finally create
+* Currently the subpartition startegy always heads for the biggest
+  available chunk of consecutive empty tracks, even if a very low
+  number is needed
+* Speed up with now into a SEQ file outsourced strings
+* Maybe change reading disk sectors completely to a tracked based
+  cached reading like is done in Megasputm:
+  https://github.com/ki-bo/megasputm/blob/main/src/diskio.c#L1555
+* If track chains are created by other tools like Dirmaster or
+  C1541 they may contain illegal track numbers, there should be
+  dedicated error messages for it
+
+### string, screen handling
+
 * `s[]` and `OPTION option` are maybe data to put to different
-  places, `s[]` could be the same pointer as `p2sbuf`
+  places, `s[]` could be the same pointer as `p2sbuf`<br />
+  also all little string places like `disknames[]` and fixed
+  strings everywhere can be optimised<br />
+  `strcopy()` doesn't consider strings filled with $0a as used
+  in filenames and disk names<br />
+  There is an input string in both sides of the MIDNIGHT data
+  structure which can be used
+* Handling of `$a0` as the space character replacement is done
+  at screen output in `conioextensions.c` which isn't ideal.
+* Maybe unify `strcopy` alike functions to handle all variants
+  and fixed length strings as well
+* all variants of printing to the screen need to be replaced by
+  only one to not have redundant code
+* all texts at startup can now go to the help pages
+
+### graphics
+
+* ✓ Text based GUI, Midnight/Norton Commander oriented
+* ✓ show a status feeter with number of blocks available
+* better visualise disk and mounting errors
+* message boxes for errors and warnings in different colours/sounds?
+* Use different (grid?) colour when SD card content is shown
+* Maybe replace some (most?) of the dialog boxes with a status
+  bar
+* On multiple selected entries present the user a nice sum of
+  their total size
+* How about those separator lines and graphics using DEL file
+  type entries?
 
 ## Bugs
 
-* Copying files into subdirs currently allocates BAM outside
-  the subfolder tracks.
-* The help file display routine is currently limited to one
-  block of data instead of four for a full screen.
+* ✓ ~~Copying files into subdirs currently allocates BAM outside~~
+  ~~the subfolder tracks.~~
+* ✓ ~~The help file display routine is currently limited to one~~
+  ~~block of data instead of four for a full screen.~~
 * ✓ ~~Additional `dirent` blocks are placed outside track 40~~
   ~~and this is not what Commodore did.~~
 * ✓ ~~Additional file blocks are also placed within track 40.~~
 * Updir within disk root folder unecessarily re-reads the headers
-* After file delete BAM seems to be written in the according
-  function as well as in nav.c<br />
-  better check with DEBUG on
+* ✓ ~~After file delete BAM seems to be written in the according
+  function as well as in nav.c~~ <br />
+  ~~better check with DEBUG on~~
 * ~~BAM and `dirent` blocks are read/written way too often. With~~
   ~~the now cache for two disks (left and right) in place this~~
   ~~can be optimised.~~<br />
   A BAM flag could be used to only read it back in case disk
-  operation need access to it/alter it.
+  operation need access to it/alter it.<br />
   Also BAM and dirent should be handled in one go as the double
   logical sectors for both share same physical ones on a disk.
+* ✓ ~~Storage card file deletion (also used for directories) takes~~
+  ~~place more than once, should be wrapped in a function.~~
 * ✓ ~~The disk controller always reads/writes two logical sectors~~
   ~~at a time because of course it acts on physical 80 sectored~~
   ~~dual sided media. The now abstraction make in no way optimal~~
@@ -206,6 +256,12 @@ all message box texts and so on. This is not yet begun.
 * ✓ ~~If a file is only read the drive's LED doesn't switch back off.~~
   ~~It seems this is done by _miniinit() which needs to be checked~~
   ~~anyway.~~
+* ✓ ~~Multiple selected listed items are not properly named in~~
+  ~~confirmation dialog boxes.~~
+* ✓ ~~At some places the highlighted list item is used for the chosen~~
+  ~~action instead of the selected items.~~
+* If a disk has faulty sector chains (e.g. to sector 0) even [Ctrl][r]
+  does not recover from that.
 
 # C environment
 
