@@ -126,8 +126,7 @@ void shortcuts(unsigned char mod, unsigned char side)  {
     shortcutprint(FALSE, " 4",  "      ");
     shortcutprint(FALSE, " 5",  "      ");
     shortcutprint(FALSE, " 6",  "      ");
-    shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
-                         " 7",  "Format");
+    shortcutprint(FALSE, " 7",  "      ");
     shortcutprint(FALSE, " 8",  "      ");
     shortcutprint(FALSE, " 9",  "      ");
     shortcutprint(FALSE, " 10", "     ");
@@ -139,10 +138,10 @@ void shortcuts(unsigned char mod, unsigned char side)  {
     shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
                          " 5",  "DskCpy");
     shortcutprint(FALSE, " 6",  "      ");
-    shortcutprint( TRUE, " 7",  "ROMlst");
     shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
-                         " 8",  "Format");
-    shortcutprint(FALSE, " 9",  "      ");
+                         " 7",  "Format");
+    shortcutprint(FALSE, " 8",  "      ");
+    shortcutprint( TRUE, " 9",  "ROMlst");
     shortcutprint(FALSE, " 10", "     ");
   } else if (mod & 3)  {                   // either of the shift keys makes
     shortcutprint( TRUE, " 1",  "Mount "); // next even numbered F key
@@ -1208,11 +1207,6 @@ void navi(unsigned char side)  {
       break;
 
       case 0x8f8: // Mega-F7
-        rombox();
-      break;
-
-      case 0x9f8: // Mega-F8
-      case 0xaf8:
         if ((midnight[side]->dirtrack != HEADERTRACK) ||
             ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
           messagebox(MBOXNOCANCEL, "The to be formatted disk/image file has to",
@@ -1239,6 +1233,10 @@ void navi(unsigned char side)  {
             Deselect(side);
           }
         }
+      break;
+
+      case 0x8fa: // Mega-F9
+        rombox();
       break;
 
       case 0xf9:
