@@ -601,11 +601,11 @@ void FormatPartition(unsigned char drive, unsigned char side,
 
   bs1->chntrack = dirtrack;  // first BAM sector points to second one
   bs1->chnsector = BAMSECT + 1;  // next sector of BAM
-  if (dirtrack >= 40)  {  // reset eventual dirtrack in upper BAM
-    bs1->entry[dirtrack - 40].free = 0x28;
-    bs1->entry[dirtrack - 40].alloc1 = 0xff;
+  if (dirtrack > 40)  {  // reset eventual dirtrack in upper BAM
+    bs1->entry[dirtrack - 41].free = 0x28;
+    bs1->entry[dirtrack - 41].alloc1 = 0xff;
   }
-  if ((dirtrack - 1) < 40)  {
+  if (dirtrack <= 40)  {
     bs1->entry[dirtrack - 1].free = 0x24;  // occupy header, BAM and dirent
     bs1->entry[dirtrack - 1].alloc1 = 0xf0;
   }
