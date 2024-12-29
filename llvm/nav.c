@@ -672,6 +672,7 @@ void navi(unsigned char side)  {
     midnight[i]->lasttrack = LASTTRACK;
     midnight[i]->pos = 0;
     midnight[i]->flags |= MIDNIGHTFLAGismounted;
+    messagebox(MBOXFALLTHROUGH, " ", " ", " ", 0);
     progress("Initialising...", "reading disk drives", i * 40 + 40);
     UpdateSectors(midnight[i]->drive, i);
     Deselect(i);
@@ -712,12 +713,14 @@ void navi(unsigned char side)  {
   }
 
   _miniInit();  // Pause the floppy drive while waiting for the user
+/* @@@@
   if (!messagebox(MBOXVERSION,
                      "is currently beta and may destroy data structures on",
                      ".d81 and real disks! Please work on backed up media.",
                      "Press RETURN to continue, STOP to halt.", 0))  {
     alive = FALSE;
   }
+@@@@ */
 
   // main navigation loop:
   while (alive)  {

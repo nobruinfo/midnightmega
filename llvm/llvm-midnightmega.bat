@@ -24,7 +24,7 @@ SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos
 SET "HDOSSLASH=%HDOS:\=/%"
 SET IMG=%APPDATA%\xemu-lgb\mega65\mega65.img
 SET D81NAME=MEGA65.D81
-SET PATH=%PATH%;%VICE%;%XMEGA65%
+SET PATH=%PATH%;%VICE%;%XMEGA65%;D:\Eigene Programme\Grafik\Latex\pandoc-3.6
 
 CD /D %~dp0
 
@@ -73,7 +73,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.5.22-beta
+SET v=v0.6.0-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 ECHO versions for Midnight Mega %v%>%versions%
@@ -94,6 +94,9 @@ ECHO:>>%versions%
 REM Xemu uses an additional console window that cannot be GREPped:
 REM XMEGA65 -version -headless>>%versions%
 ECHO:>>%versions%
+
+REM Reformat the .md to give it a table of contents:
+pandoc -s ..\docsrc\readmesrc.md --toc -t gfm -o ..\readme.md
 
 REM DEL %TEMP%\*.o
 REM -c does a .o without linking:
@@ -213,7 +216,7 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
 
   ECHO 10 POKE $D080,$20>F011.BAS
   ECHO 20 POKE $D081,$20>>F011.BAS
-  ECHO 30 POKE $D084,41>>F011.BAS
+  ECHO 30 POKE $D084,39>>F011.BAS
   ECHO 40 POKE $D085,^1>>F011.BAS
   ECHO 50 POKE $D086,^0>>F011.BAS
   ECHO 60 POKE $D081,$41>>F011.BAS
@@ -222,6 +225,8 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   ECHO 80 PRINT PEEK^($D689^)>>F011.BAS
   ECHO 90 POKE $D689,^0>>F011.BAS
   ECHO 110 POKE $D080,^0>>F011.BAS
+  ECHO 200 REM NOW IN MATRIX MODE EXAMINE TWO PAGES>>F011.BAS
+  ECHO 210 REM BEGINNING $FFD6000>>F011.BAS
   powershell -command "&{(Get-Content F011.bas).ToLower() | Out-File F011lower.bas -Encoding Ascii}"
   %petcat% -w65 -o F011.prg -- F011lower.bas
   %c1541% -attach %DATADISK%.d81 -write F011.prg f011readsect
@@ -296,6 +301,9 @@ REM    -hdosvirt -defd81fromsd
 REM    -8 !PRJSHORT!.d81 -9 %DATADISK%.d81 -autoload
   REM XMEGA65 -syscon -besure -prg !PRJSHORT!.prg
   DEL mega65.bas mega65.bas.prg mega65lower.bas
+
+  REM This is no good if using Xmega65 further on:
+  "%MFTP%" -d %IMG% -c "del HICKUP.M65"
 
   MKDIR %TEMP%\Xemu 2>&1 >NUL
   CHDIR /D %TEMP%\Xemu

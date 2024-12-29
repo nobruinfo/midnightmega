@@ -154,6 +154,6 @@
 {1}{6}{20}
 {1}{36}{22}{RVSON}{space}{space}OK{space}{space}{RVSOFF}
 {1}{60}{22}{RVSON}{space}{space}{30}{space}{space}{RVSOFF}
-{1}{69}{22}{dark gray}{space}{space}v{space}{space}{RVSOFF}{cyan}
+{1}{69}{22}{RVSON}{dark gray}{space}{space}v{space}{space}{RVSOFF}{cyan}
 {10}
 {0}

@@ -397,9 +397,9 @@ REM mirrored onto the storage card (image file):
 
   REM Loop directories to recursively call this routine:
   FOR /D %%k in ("*.*") do (
-    REM ECHO ----- k=%%k -----
+    REM ECHO ----- new cd=!CD! k=%%k -----
     REM Dive the given level(s) deeper:
-    SET OLDPATH=%CD%
+    REM SET OLDPATH=!CD!
     CD "%%k"
 
     REM ECHO k=%%k folder=%FOLDER% cd=%CD%
@@ -409,8 +409,9 @@ REM mirrored onto the storage card (image file):
       CALL :upload "%FOLDER%\%%k"
     )
 
-    REM ECHO oldpath=!OLDPATH! cd=%CD% k=%%k
-    CD /D !OLDPATH!
+    ECHO oldpath=!OLDPATH! cd=!CD! k=%%k
+    REM CD /D !OLDPATH!
+    CD ..
   )
 EXIT /B 0
 
