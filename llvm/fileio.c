@@ -71,17 +71,23 @@ void ShowAccess(unsigned char drive,
     textcolor(COLOUR_LIGHTBLUE);
     cputc('S');
     csputdec(sector, 2, 0);
+/*
+    cputc('H');
+    cputc((sector >= 20) ? '1' : '0');
+*/
     cputc(' ');
     if (rw == WRITE)  {
       textcolor(COLOUR_RED);
       cputc('W');
-      cputc(' ');
     } else {
       textcolor(COLOUR_ORANGE);
       cputc('R');
-      cputc(' ');
     }
+    if (drive)  textcolor(COLOUR_LIGHTGREEN);
+    else        textcolor(COLOUR_LIGHTGREY);
+    cputc(' ');
     revers(0);
+    cputc(' ');
 /*
 #ifdef DELAYDEBUG
   usleep(800000); // microseconds
@@ -136,10 +142,12 @@ unsigned char ReadSector(unsigned char drive, char track,
 //    csputdec(sector, 2, 0);
     // Turn on motor + led (which causes led to light solid):
     POKE(0xd080U, drive);
+/* @@@@
     // Spinup for ready:
     POKE(0xd081U, 0x20);
     // Wait while busy:
     while (PEEK(0xd082U) & 0x80) {}
+@@@@ */
     // Track (start at 0):
     POKE(0xd084U, track - 1);
     // Sector (only side 0 ones):
@@ -200,10 +208,12 @@ unsigned char WriteSector(unsigned char drive, char track,
 
     // Turn on motor + led (which causes led to light solid):
     POKE(0xd080U, drive);
+/* @@@@
     // Spinup for ready:
     POKE(0xd081U, 0x20);
     // Wait while busy:
     while (PEEK(0xd082U) & 0x80) {}
+@@@@ */
     // Track (start at 0):
     POKE(0xd084U, track - 1);
     // Sector (only side 0 ones):
