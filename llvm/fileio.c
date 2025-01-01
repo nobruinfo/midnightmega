@@ -120,7 +120,8 @@ void _miniInit()  {
 }
 
 // returns 1 for odd numbered sectors, 0 for even:
-unsigned char ReadSector(unsigned char drive, char track,
+unsigned char ReadSector(unsigned char legacyHDOSstate,
+                         unsigned char drive, char track,
                                               char sector) {
   unsigned char retval;
   unsigned char s;
@@ -142,12 +143,13 @@ unsigned char ReadSector(unsigned char drive, char track,
 //    csputdec(sector, 2, 0);
     // Turn on motor + led (which causes led to light solid):
     POKE(0xd080U, drive);
-/* @@@@
-    // Spinup for ready:
-    POKE(0xd081U, 0x20);
-    // Wait while busy:
-    while (PEEK(0xd082U) & 0x80) {}
-@@@@ */
+    // @@@@ legacy timing:
+    if (legacyHDOSstate)  {
+      // Spinup for ready:
+      POKE(0xd081U, 0x20);
+      // Wait while busy:
+      while (PEEK(0xd082U) & 0x80) {}
+    }
     // Track (start at 0):
     POKE(0xd084U, track - 1);
     // Sector (only side 0 ones):
@@ -190,7 +192,8 @@ unsigned char ReadSector(unsigned char drive, char track,
 }
 
 // both physical sectors are written:
-unsigned char WriteSector(unsigned char drive, char track,
+unsigned char WriteSector(unsigned char legacyHDOSstate,
+                          unsigned char drive, char track,
                                                char sector) {
     unsigned char retval;
 
@@ -208,12 +211,13 @@ unsigned char WriteSector(unsigned char drive, char track,
 
     // Turn on motor + led (which causes led to light solid):
     POKE(0xd080U, drive);
-/* @@@@
-    // Spinup for ready:
-    POKE(0xd081U, 0x20);
-    // Wait while busy:
-    while (PEEK(0xd082U) & 0x80) {}
-@@@@ */
+    // @@@@ legacy timing:
+    if (legacyHDOSstate)  {
+      // Spinup for ready:
+      POKE(0xd081U, 0x20);
+      // Wait while busy:
+      while (PEEK(0xd082U) & 0x80) {}
+    }
     // Track (start at 0):
     POKE(0xd084U, track - 1);
     // Sector (only side 0 ones):
@@ -249,7 +253,8 @@ unsigned char WriteSector(unsigned char drive, char track,
 // depending on the sector's side this returns the wanted
 // sector in the regular or upper 256 bytes of the 512
 // bytes buffer:
-unsigned char GetWholeSector(BAM* entry, unsigned char drive,
+unsigned char GetWholeSector(unsigned char legacyHDOSstate,
+                             BAM* entry, unsigned char drive,
                              char track, char sector)  {
   BAM* ws = entry;   // later to be DATABLOCK*
   unsigned char side;
@@ -260,7 +265,7 @@ unsigned char GetWholeSector(BAM* entry, unsigned char drive,
   cputln();
   cgetc();
 #endif
-  side = ReadSector(drive, track, sector);
+  side = ReadSector(legacyHDOSstate, drive, track, sector);
 
   if (side > 1)  return side;
   lcopy(SECTBUF,      (uint32_t) ws,             BLOCKSIZE);
@@ -272,7 +277,8 @@ unsigned char GetWholeSector(BAM* entry, unsigned char drive,
 #endif
   return side;
 }
-unsigned char GetOneSector(BAM* entry, unsigned char drive,
+unsigned char GetOneSector(unsigned char legacyHDOSstate,
+                           BAM* entry, unsigned char drive,
                              char track, char sector)  {
   BAM* ws = entry;   // later to be DATABLOCK*
   unsigned char side;
@@ -283,7 +289,7 @@ unsigned char GetOneSector(BAM* entry, unsigned char drive,
   cputln();
   cgetc();
 #endif
-  side = ReadSector(drive, track, sector);
+  side = ReadSector(legacyHDOSstate, drive, track, sector);
 
   if (side > 1)  return side;
   if (side == 0)  lcopy(SECTBUF,      (uint32_t) ws, BLOCKSIZE);
@@ -296,7 +302,8 @@ unsigned char GetOneSector(BAM* entry, unsigned char drive,
 
   return side;
 }
-unsigned char PutWholeSector(BAM* entry, unsigned char drive,
+unsigned char PutWholeSector(unsigned char legacyHDOSstate,
+                             BAM* entry, unsigned char drive,
                              char track, char sector)  {
   BAM* ws = entry;   // later to be DATABLOCK*
 
@@ -313,7 +320,7 @@ unsigned char PutWholeSector(BAM* entry, unsigned char drive,
   } else {  // @@@@ probably no longer needed:
     // Now first read the state from the disk, because only one of
     // the two logical sectors will be overwritten:
-    ReadSector(drive, track, sector);
+    ReadSector(legacyHDOSstate, drive, track, sector);
   
     clrhomed();
     mprintfd("PutWholeSector before upper buffer. Track=", track);
@@ -323,9 +330,10 @@ unsigned char PutWholeSector(BAM* entry, unsigned char drive,
   }
   msprintfd("PutWholeSector done. Returning while WriteSector.");
   cgetcd();
-  return WriteSector(drive, track, sector - side);
+  return WriteSector(legacyHDOSstate, drive, track, sector - side);
 }
-unsigned char PutOneSector(BAM* entry, unsigned char drive,
+unsigned char PutOneSector(unsigned char legacyHDOSstate,
+                           BAM* entry, unsigned char drive,
                            char track, char sector)  {
   BAM* ws = entry;   // later to be DATABLOCK*
 
@@ -333,7 +341,7 @@ unsigned char PutOneSector(BAM* entry, unsigned char drive,
   
   // Now first read the state from the disk, because only one of
   // the two logical sectors will be overwritten:
-  ReadSector(drive, track, sector);
+  ReadSector(legacyHDOSstate, drive, track, sector);
   
   if (side == 0)  {
     clrhomed();
@@ -352,7 +360,7 @@ unsigned char PutOneSector(BAM* entry, unsigned char drive,
   msprintfd("PutOneSector done. Returning while WriteSector.");
   cgetcd();
 
-  return WriteSector(drive, track, sector - side);
+  return WriteSector(legacyHDOSstate, drive, track, sector - side);
 }
 
 unsigned char driveled(unsigned char errorcode)  {
@@ -362,28 +370,31 @@ unsigned char driveled(unsigned char errorcode)  {
     return errorcode;
 }
 
-void GetBAM(unsigned char side)  {
+void GetBAM(unsigned char legacyHDOSstate, unsigned char side)  {
   BAM* bs;
 
   bs = BAMsector[0];
   lcopy(ATTICBAMBUFFER + side * ATTICBAMBUFFERSIZE,
         (uint32_t) bs, ATTICBAMBUFFERSIZE);
 }
-void PutBAM(unsigned char drive, unsigned char side, unsigned char dirtrack)  {
+void PutBAM(unsigned char legacyHDOSstate,
+            unsigned char drive, unsigned char side, unsigned char dirtrack)  {
   BAM* bs;
 
-  PutOneSector(BAMsector[0], drive, dirtrack, BAMSECT);
+  PutOneSector(legacyHDOSstate, BAMsector[0], drive, dirtrack, BAMSECT);
   bs = BAMsector[0];
-  PutOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
+  PutOneSector(legacyHDOSstate,
+               BAMsector[1], drive, bs->chntrack, bs->chnsector);
   lcopy((uint32_t) bs,
         ATTICBAMBUFFER + side * ATTICBAMBUFFERSIZE, ATTICBAMBUFFERSIZE);
 }
 
-unsigned char BAM2Attic(unsigned char drive, unsigned char side, unsigned char dirtrack) {
+unsigned char BAM2Attic(unsigned char legacyHDOSstate, unsigned char drive,
+                        unsigned char side, unsigned char dirtrack) {
   // _miniInit();
 
-  return readblockchain(side?ATTICBAM2BUFFER:ATTICBAMBUFFER, BAMBLOCKS,
-                        drive, dirtrack, BAMSECT);
+  return readblockchain(legacyHDOSstate, side?ATTICBAM2BUFFER:ATTICBAMBUFFER,
+                        BAMBLOCKS, drive, dirtrack, BAMSECT);
 }
 
 // this expects data in sector buffer:
@@ -469,20 +480,23 @@ unsigned int BAMSectorsFreeBlocks(BAM* BAMsector, BAM* BAMsector2,
   return free;
 }
 
-unsigned int FreeBlocks(unsigned char side, unsigned char dirtrack,
+unsigned int FreeBlocks(unsigned char legacyHDOSstate,
+                        unsigned char side, unsigned char dirtrack,
                         unsigned char firsttrack, unsigned char lasttrack) {
-  GetBAM(side);
+  GetBAM(legacyHDOSstate, side);
   return BAMSectorsFreeBlocks(BAMsector[0], BAMsector[1], dirtrack,
                               firsttrack, lasttrack);
 }
 
-unsigned int BAMCheckSizeinFilebuffer(unsigned char drive, unsigned char side,
-                                       unsigned char dirtrack,
-                                       unsigned char firsttrack,
-                                       unsigned char lasttrack) {
+unsigned int BAMCheckSizeinFilebuffer(unsigned char legacyHDOSstate,
+                                      unsigned char drive, unsigned char side,
+                                      unsigned char dirtrack,
+                                      unsigned char firsttrack,
+                                      unsigned char lasttrack) {
   BAM* bs;
 
-  readblockchain(ATTICFILEBUFFER, BAMBLOCKS, drive, dirtrack, BAMSECT);
+  readblockchain(legacyHDOSstate, ATTICFILEBUFFER, BAMBLOCKS,
+                 drive, dirtrack, BAMSECT);
   bs = BAMsector[0];
   lcopy(ATTICFILEBUFFER, (uint32_t) bs, ATTICBAMBUFFERSIZE);
   return BAMSectorsFreeBlocks(BAMsector[0], BAMsector[1], dirtrack,
@@ -549,11 +563,12 @@ unsigned char BAMFreeTracksinaRow(BAM* BAMsector, BAM* BAMsector2,
   return number;
 }
 
-unsigned char FreeTracks(unsigned char side,
+unsigned char FreeTracks(unsigned char legacyHDOSstate,
+                         unsigned char side,
                          unsigned char firsttrack, unsigned char lasttrack,
                          unsigned char * starttrack, unsigned char * endtrack,
                          unsigned char nboftracks) {
-  GetBAM(side);
+  GetBAM(legacyHDOSstate, side);
   return BAMFreeTracksinaRow(BAMsector[0], BAMsector[1],
                              firsttrack, lasttrack,
                              starttrack, endtrack, nboftracks);
@@ -561,7 +576,8 @@ unsigned char FreeTracks(unsigned char side,
 
 #define ID_i 'I'
 #define ID_d 'D'
-void FormatPartition(unsigned char drive, unsigned char side,
+void FormatPartition(unsigned char legacyHDOSstate,
+                     unsigned char drive, unsigned char side,
                      unsigned char dirtrack,
                      unsigned char firsttrack, unsigned char lasttrack,
                      char* name)  {
@@ -604,7 +620,7 @@ void FormatPartition(unsigned char drive, unsigned char side,
     bs->entry[track].alloc5 = 0xff;
   }
   progress("Writing...", "directory/BAM", 30);
-  PutWholeSector((BAM *) bs, drive, dirtrack, BAMSECT + 1);
+  PutWholeSector(legacyHDOSstate, (BAM *) bs, drive, dirtrack, BAMSECT + 1);
 
   // both BAM sectors look almost the same:
   lcopy((uint32_t) bs, (uint32_t) bs1, BLOCKSIZE);
@@ -637,15 +653,15 @@ void FormatPartition(unsigned char drive, unsigned char side,
   hs->unused5 = 0xa0;
 
   progress("Writing...", "BAM/header", 60);
-  PutWholeSector((BAM *) bs, drive, dirtrack, HEADERSECT);
+  PutWholeSector(legacyHDOSstate, (BAM *) bs, drive, dirtrack, HEADERSECT);
 }
 
-void BAMAllocateTracks(unsigned char side,
+void BAMAllocateTracks(unsigned char legacyHDOSstate, unsigned char side,
                        unsigned char starttrack, unsigned char endtrack) {
   unsigned char track80;
   unsigned char sector;
 
-  GetBAM(side);
+  GetBAM(legacyHDOSstate, side);
   for (track80 = starttrack; track80 <= endtrack; track80++)  {
     for (sector = 0; sector < 40; sector++)  {
       BAMSectorUpdate(BAMsector[0], BAMsector[1], track80, sector, 1); // 1=allocate
@@ -653,13 +669,15 @@ void BAMAllocateTracks(unsigned char side,
   }
 }
 
-void getDiskname(unsigned char drive, unsigned char dirtrack, char* diskname) {
+void getDiskname(unsigned char legacyHDOSstate,
+                 unsigned char drive, unsigned char dirtrack, char* diskname) {
   HEADER* hs;
   unsigned char i;
 
   // _miniInit();
 
-  if (GetOneSector(BAMsector[0], drive, dirtrack, HEADERSECT) < 2)  {
+  if (GetOneSector(legacyHDOSstate,
+                   BAMsector[0], drive, dirtrack, HEADERSECT) < 2)  {
     hs = (HEADER*) BAMsector[0];
 
     i = 0;
@@ -673,7 +691,8 @@ void getDiskname(unsigned char drive, unsigned char dirtrack, char* diskname) {
   }
 }
 
-unsigned char readblockchain(uint32_t destination_address,
+unsigned char readblockchain(unsigned char legacyHDOSstate,
+                             uint32_t destination_address,
                              unsigned int maxblocks, unsigned char drive,
                              unsigned char track, unsigned char sector)  {
   unsigned int i;
@@ -690,7 +709,8 @@ unsigned char readblockchain(uint32_t destination_address,
 #endif
 
   for (i = 0; i < maxblocks; i++)  {
-    if (GetOneSector(worksectorasBAM[0], drive, nexttrack, nextsector) > 1)  {
+    if (GetOneSector(legacyHDOSstate,
+                     worksectorasBAM[0], drive, nexttrack, nextsector) > 1)  {
       return(0xff);
     }
     DATABLOCK* ws = worksector[0];
@@ -933,11 +953,12 @@ void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsecto
 }
 
 // ignores start track and sector upon call but gives them back:
-void writeblockchain(uint32_t source_address,
-                    unsigned int maxblocks, unsigned char drive,
-                    unsigned char * starttrack, unsigned char * startsector,
-                    unsigned char dirtrack,
-                    unsigned char firsttrack, unsigned char lasttrack)  {
+void writeblockchain(unsigned char legacyHDOSstate,
+                     uint32_t source_address,
+                     unsigned int maxblocks, unsigned char drive,
+                     unsigned char * starttrack, unsigned char * startsector,
+                     unsigned char dirtrack,
+                     unsigned char firsttrack, unsigned char lasttrack)  {
   unsigned int i;
   unsigned char nexttrack = 0;
   unsigned char nextsector = 0xff;
@@ -989,14 +1010,14 @@ void writeblockchain(uint32_t source_address,
 //        mprintf(" sector=", sector);
 //        cputln();
 //        cgetc();
-      PutWholeSector((BAM *) ws, drive, track, sector);
+      PutWholeSector(legacyHDOSstate, (BAM *) ws, drive, track, sector);
       ws->chntrack = ws1->chntrack; // fake to abort below if zero
     } else {
 //        mprintf("single sectors, track=", track);
 //        mprintf(" sector=", sector);
 //        cputln();
 //        cgetc();
-      PutOneSector((BAM *) ws, drive, track, sector);
+      PutOneSector(legacyHDOSstate, (BAM *) ws, drive, track, sector);
     }
 
     if (ws->chntrack == 0)  break;
@@ -1011,18 +1032,21 @@ void writeblockchain(uint32_t source_address,
 }
 
 // not physically deleting but BAM deallocating:
-unsigned char deleteblockchain(unsigned char drive, unsigned char dirtrack,
+unsigned char deleteblockchain(unsigned char legacyHDOSstate,
+                               unsigned char drive, unsigned char dirtrack,
                                unsigned char track, unsigned char sector)  {
   unsigned char nexttrack;
   unsigned char nextsector;
   BAM* bs;
 
   // _miniInit();
-  if (GetOneSector(BAMsector[0], drive, dirtrack, BAMSECT) > 1)  {
+  if (GetOneSector(legacyHDOSstate,
+                   BAMsector[0], drive, dirtrack, BAMSECT) > 1)  {
     return 0xff;
   }
   bs = BAMsector[0];
-  if (GetOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector) > 1)  {
+  if (GetOneSector(legacyHDOSstate,
+                   BAMsector[1], drive, bs->chntrack, bs->chnsector) > 1)  {
     return 0xfe;
   }
 
@@ -1034,7 +1058,8 @@ unsigned char deleteblockchain(unsigned char drive, unsigned char dirtrack,
         cputln();
 #endif
   while (nexttrack > 0)  {
-    /* workside = */ GetOneSector(worksectorasBAM[0], drive, nexttrack, nextsector);
+    /* workside = */ GetOneSector(legacyHDOSstate,
+                          worksectorasBAM[0], drive, nexttrack, nextsector);
     DATABLOCK* ws = worksector[0];
     BAMSectorUpdate(BAMsector[0], BAMsector[1], nexttrack, nextsector, 0); // 0=free up
 #ifdef DEBUG
@@ -1054,8 +1079,9 @@ unsigned char deleteblockchain(unsigned char drive, unsigned char dirtrack,
     nexttrack = ws->chntrack;
     nextsector = ws->chnsector;
   }
-  PutOneSector(BAMsector[0], drive, dirtrack, BAMSECT);
-  PutOneSector(BAMsector[1], drive, bs->chntrack, bs->chnsector);
+  PutOneSector(legacyHDOSstate, BAMsector[0], drive, dirtrack, BAMSECT);
+  PutOneSector(legacyHDOSstate,
+               BAMsector[1], drive, bs->chntrack, bs->chnsector);
   return 0;
 }
 
@@ -1088,7 +1114,8 @@ char * tracksectorstring(unsigned char track, unsigned char sector)  {
   return (char*) s;
 }
 
-unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive,
+unsigned char copywholedisk(unsigned char legacyHDOSstate,
+                            unsigned char srcdrive, unsigned char destdrive,
                             unsigned char side)  {
   unsigned char track;
   unsigned char sector;
@@ -1125,7 +1152,8 @@ unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive,
             isallocatedBAMtracksector(track, sector) ||
             isallocatedBAMtracksector(track, sector + 1))  {
           progress("Reading...", tracksectorstring(track, sector), i / 64);
-          if (GetWholeSector(worksectorasBAM[0], srcdrive, track, sector) > 1)  {
+          if (GetWholeSector(legacyHDOSstate,
+                          worksectorasBAM[0], srcdrive, track, sector) > 1)  {
             return 0xff;
           }
           ws = worksector[0];
@@ -1142,7 +1170,8 @@ unsigned char copywholedisk(unsigned char srcdrive, unsigned char destdrive,
             isallocatedBAMtracksector(track, sector + 1))  {
           progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
           lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE * 2);
-          PutWholeSector((BAM *) ws, destdrive, track, sector);
+          PutWholeSector(legacyHDOSstate,
+                         (BAM *) ws, destdrive, track, sector);
           i += 2;
         }
       }
@@ -1246,7 +1275,8 @@ DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
 //  cgetc();
   return NULL;
 }
-unsigned char getdirent(unsigned char drive, unsigned char side, unsigned char dirtrack)  {
+unsigned char getdirent(unsigned char legacyHDOSstate, unsigned char drive,
+                        unsigned char side, unsigned char dirtrack)  {
   signed int i;
 
   // _miniInit();
@@ -1255,8 +1285,9 @@ unsigned char getdirent(unsigned char drive, unsigned char side, unsigned char d
   cputln();
   cgetc();
 */
-  if (readblockchain(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE,
-                 DIRENTBLOCKS, drive, dirtrack, DIRENTSECT) > 1)  {
+  if (readblockchain(legacyHDOSstate,
+                     ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE,
+                     DIRENTBLOCKS, drive, dirtrack, DIRENTSECT) > 1)  {
     return 0xff;
   }
 /*
@@ -1272,7 +1303,8 @@ unsigned char getdirent(unsigned char drive, unsigned char side, unsigned char d
 }
 
 // start track/sector must be present in newds:
-void writenewdirententry(unsigned char drive, unsigned char side,
+void writenewdirententry(unsigned char legacyHDOSstate,
+                         unsigned char drive, unsigned char side,
                          unsigned char dirtrack,
                          unsigned char firsttrack, unsigned char lasttrack,
                          DIRENT* newds)  {
@@ -1340,7 +1372,8 @@ void writenewdirententry(unsigned char drive, unsigned char side,
       lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
               i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
             BLOCKDATALOW, BLOCKSIZE);
-      PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
+      PutOneSector(legacyHDOSstate,
+                   (BAM *) worksectorasBAM[0], drive, track, sector);
 #ifdef DEBUG
       msprintf("writenewdirententry done");
       cputln();
@@ -1387,7 +1420,8 @@ void writenewdirententry(unsigned char drive, unsigned char side,
   lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
         topdirent / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
         BLOCKDATALOW, BLOCKSIZE);
-  PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
+  PutOneSector(legacyHDOSstate,
+               (BAM *) worksectorasBAM[0], drive, track, sector);
 #ifdef DEBUG
       mprintf("first sector set, i=", i);
       cputln();
@@ -1407,11 +1441,13 @@ void writenewdirententry(unsigned char drive, unsigned char side,
   lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
         i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
         BLOCKDATALOW, BLOCKSIZE);
-  PutOneSector((BAM *) worksectorasBAM[0], drive, nexttrack, nextsector);
+  PutOneSector(legacyHDOSstate,
+               (BAM *) worksectorasBAM[0], drive, nexttrack, nextsector);
 //  messagebox(0, "directory entries exhausted");
 }
 
-void deletedirententry(unsigned char drive, unsigned char side,
+void deletedirententry(unsigned char legacyHDOSstate,
+                       unsigned char drive, unsigned char side,
                        unsigned char dirtrack, unsigned char entry)  {
   unsigned char i;
   unsigned int s;
@@ -1472,11 +1508,13 @@ void deletedirententry(unsigned char drive, unsigned char side,
         lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
                 i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
               BLOCKDATALOW, BLOCKSIZE);
-        PutOneSector((BAM *) worksectorasBAM[0], drive, track, sector);
+        PutOneSector(legacyHDOSstate,
+                     (BAM *) worksectorasBAM[0], drive, track, sector);
 basepage[3] = 0xff; // @@@@ debug
 basepage[4] = 0xff; // @@@@ debug
         if ((filetypebefore&0xf) != VAL_DOSFTYPE_CBM)  {
-          deleteblockchain(drive, dirtrack, ds->track, ds->sector);
+          deleteblockchain(legacyHDOSstate,
+                           drive, dirtrack, ds->track, ds->sector);
         } else {
           // remove 40 more sectors because the dirent track is not in size:
           for (s = 0; s < (ds->size + 40); s++)  {

@@ -511,6 +511,7 @@ unsigned int cgetcalt(unsigned char side)
 #define SETHYPPOOFF       0
 #define SETHYPPOON        1
 #define SETHYPPOONBYERROR 2
+unsigned char legacyHDOSstate;
 void UpdateSectors(unsigned char drive, unsigned char side)  {
   unsigned char c;  // build up a string
   unsigned char sethyppo;  // failures set "storage selection dirent mode"
@@ -540,7 +541,7 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
       midnight[side]->curfile[c] = 0;
 */
       if (PEEK(0xd6a1) & D6A1_USEREAL0)  {
-        strcopy("real drive", (char *) midnight[side]->curfile, 16);
+        strcopy("real drive", (char *) midnight[side]->curfile, DOSFILENAMELEN);
       } else {
         strcopy((char *) taskblock->d81filename0,
                 (char *) midnight[side]->curfile,
@@ -561,7 +562,7 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
       midnight[side]->curfile[c] = 0;
 */
       if (PEEK(0xd6a1) & D6A1_USEREAL1)  {
-        strcopy("real drive", (char *) midnight[side]->curfile, 16);
+        strcopy("real drive", (char *) midnight[side]->curfile, DOSFILENAMELEN);
       } else {
         strcopy((char *) taskblock->d81filename1,
                 (char *) midnight[side]->curfile,
@@ -569,8 +570,9 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
       }
     }
 
-    getDiskname(drive, midnight[side]->dirtrack, (char *) disknames[side]);
-    c = BAM2Attic(drive, side, midnight[side]->dirtrack);
+    getDiskname(legacyHDOSstate,
+                drive, midnight[side]->dirtrack, (char *) disknames[side]);
+    c = BAM2Attic(legacyHDOSstate, drive, side, midnight[side]->dirtrack);
     if (c > 1)  {
 /*
       messagebox(MBOXNUMBER, "Reading BAM error, probably unmounted",
@@ -580,10 +582,11 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
       midnight[side]->flags &= (~MIDNIGHTFLAGismounted);
       sethyppo = SETHYPPOONBYERROR;
     } else {
-      midnight[side]->blocksfree = FreeBlocks(side, midnight[side]->dirtrack,
+      midnight[side]->blocksfree = FreeBlocks(legacyHDOSstate,
+                                              side, midnight[side]->dirtrack,
                                               midnight[side]->firsttrack,
                                               midnight[side]->lasttrack);
-      midnight[side]->entries = getdirent(drive, side,
+      midnight[side]->entries = getdirent(legacyHDOSstate, drive, side,
                                           midnight[side]->dirtrack);
       sethyppo = SETHYPPOOFF;
     }
@@ -592,8 +595,8 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
   }
   
   if (sethyppo != SETHYPPOOFF)  {
-    strcopy("storage card", (char *) disknames[side], 16);
-    strcopy("storage card", (char *) midnight[side]->curfile, 16);
+    strcopy("storage card", (char *) disknames[side], DOSFILENAMELEN);
+    strcopy("storage card", (char *) midnight[side]->curfile, DOSFILENAMELEN);
     midnight[side]->entries = gethyppodirent(drive, side, LFNNBRENTRIES);
     midnight[side]->blocksfree = UINT_MAX;
     if (sethyppo == SETHYPPOONBYERROR)  midnight[side]->blocksfree = UINT_MAX - 1;
@@ -643,7 +646,6 @@ unsigned int sizeselectcurrentifnone(unsigned char side)  {
 
 // unsigned char testtrack;
 // unsigned char testsector;
-unsigned char legacyHDOSstate;
 void navi(unsigned char side)  {
   unsigned int c;  // keyboard input
   unsigned char leftx;
@@ -656,10 +658,14 @@ void navi(unsigned char side)  {
   unsigned char number;
   DIRENT* ds;
   unsigned char alive = TRUE;
-  
+
   option.option = OPTIONshowALO | OPTIONshowDRV;
   legacyHDOSstate = legacyHDOS(); // clobbers $1703
-  
+/*
+messagebox(MBOXNUMBER, "after legacy()",
+                       " ", // (midnight[side]->drive ? "drive 1" : "drive 0"),
+                       "BASEPAGERESERVED=", *(long*) BASEPAGERESERVED);
+*/
   // initialising:
   for (i = 0; i < 2; i++)  {
     // @@ to be made variable maybe?
@@ -692,18 +698,18 @@ void navi(unsigned char side)  {
 
   // read complete text file into Attic:
   if (alive)  {
-    if (readblockchain(ATTICTEXTBUFFER, TEXTBLOCKS, midnight[side]->drive,
-                                 ds->track, ds->sector) > 0)  {
+    if (readblockchain(legacyHDOSstate, ATTICTEXTBUFFER, TEXTBLOCKS,
+                       midnight[side]->drive, ds->track, ds->sector) > 0)  {
       // valuesbox(0, "readblockchain", "t=", ds->track, "s=", ds->sector);
       pcputs("ERROR too much text data for available blocks!");
       cgetc();
       alive = FALSE;
+    } else {
+      // Info above feeter:
+      text(0, FALSE);
+      text(1, FALSE);
+      shortcuts(20, 0);
     }
-
-    // Info above feeter:
-    text(0, FALSE);
-    text(1, FALSE);
-    shortcuts(20, 0);
   } else {
     // pcputs("ERROR text data file not found!");
     // cgetc();
@@ -713,6 +719,15 @@ void navi(unsigned char side)  {
   }
 
   _miniInit();  // Pause the floppy drive while waiting for the user
+  // @@@@ legacy timing:
+  if (legacyHDOSstate &&
+      !messagebox(MBOXVERSION,
+                     "A HICKUP.M65 v1.2 or older is active on your storage card",
+                     "or an old core containing it. Falling back to slow mode.",
+                     "Press RETURN to continue, STOP to halt.", 0))  {
+    alive = FALSE;
+  }
+
 /* @@@@
   if (!messagebox(MBOXVERSION,
                      "is currently beta and may destroy data structures on",
@@ -932,13 +947,14 @@ void navi(unsigned char side)  {
                   ds = getdirententry(side, i);
 
                   progress("Reading...", "source file", 20);
-                  readblockchain(ATTICFILEBUFFER, DATABLOCKS, midnight[side]->drive,
-                                 ds->track, ds->sector);
+                  readblockchain(legacyHDOSstate, ATTICFILEBUFFER, DATABLOCKS,
+                                 midnight[side]->drive, ds->track, ds->sector);
                   progress("Reading...", "BAM", 30);
                   // write on opposing side disk:
-                  GetBAM(side?0:1);
+                  GetBAM(legacyHDOSstate, side?0:1);
                   progress("Writing...", "destination file", 40);
-                  writeblockchain(ATTICFILEBUFFER, DATABLOCKS,
+                  writeblockchain(legacyHDOSstate,
+                                  ATTICFILEBUFFER, DATABLOCKS,
                                   midnight[side?0:1]->drive,
                                   &starttrack, &startsector,
                                   midnight[side?0:1]->dirtrack,
@@ -955,7 +971,8 @@ void navi(unsigned char side)  {
                   progress("Writing...", "directory", 60);
                   // load opposing side dirent block into Attic:
 //                  midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
-                  writenewdirententry(midnight[side?0:1]->drive, side?0:1,
+                  writenewdirententry(legacyHDOSstate,
+                                      midnight[side?0:1]->drive, side?0:1,
                                       midnight[side?0:1]->dirtrack,
                                       midnight[side?0:1]->firsttrack,
                                       midnight[side?0:1]->lasttrack,
@@ -963,7 +980,8 @@ void navi(unsigned char side)  {
                   // re-read altered dirent on opposing side after entry added:
 //                  midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
                   progress("Writing...", "BAM", 80);
-                  PutBAM(midnight[side?0:1]->drive, side?0:1, midnight[side?0:1]->dirtrack);
+                  PutBAM(legacyHDOSstate, midnight[side?0:1]->drive, side?0:1,
+                         midnight[side?0:1]->dirtrack);
                 }
               }
               UpdateSectors(midnight[side?0:1]->drive, side?0:1);
@@ -983,11 +1001,11 @@ void navi(unsigned char side)  {
                          "entries is not supported", 0);
             // use file data buffer to peek the dir BAM:
             } else if (ds->size !=
-                            BAMCheckSizeinFilebuffer(midnight[side]->drive,
-                       side,
-                       ds->track, // dirtrack
-                       ds->track, // firsttrack
-                       (ds->size / 40) + ds->track))  { // lasttrack
+                            BAMCheckSizeinFilebuffer(legacyHDOSstate,
+                              midnight[side]->drive, side,
+                              ds->track, // dirtrack
+                              ds->track, // firsttrack
+                              (ds->size / 40) + ds->track))  { // lasttrack
               messagebox(MBOXNOCANCEL, "Directory delete,", ds->name,
                          "directory is not empty", 0);
 #ifdef DEBUG
@@ -998,7 +1016,8 @@ void navi(unsigned char side)  {
               messagebox(MBOXNUMBER, "Directory delete,",
                          " ",
                          "size in BAM=",
-                         BAMCheckSizeinFilebuffer(midnight[side]->drive,
+                         BAMCheckSizeinFilebuffer(legacyHDOSstate,
+                                           midnight[side]->drive,
                                            side,
                                            ds->track, // dirtrack
                                            ds->track, // firsttrack
@@ -1008,12 +1027,14 @@ void navi(unsigned char side)  {
                                   (side ? "from right side" :
                                           "from left side"), 0))  {
               // restore BAM to finally delete:
-              GetBAM(side);
+              GetBAM(legacyHDOSstate, side);
 //              ds->type = VAL_DOSFTYPE_DEL;
-              deletedirententry(midnight[side]->drive, side,
+              deletedirententry(legacyHDOSstate,
+                                midnight[side]->drive, side,
                                 midnight[side]->dirtrack,
                                 midnight[side]->pos);
-              PutBAM(midnight[side]->drive, side, midnight[side]->dirtrack);
+              PutBAM(legacyHDOSstate,
+                     midnight[side]->drive, side, midnight[side]->dirtrack);
               UpdateSectors(midnight[side]->drive, side);
               Deselect(side);
             }
@@ -1042,12 +1063,15 @@ void navi(unsigned char side)  {
 
                       progress("Reading...", "BAM", 20);
   //                    ds->type = VAL_DOSFTYPE_DEL;
-                      GetBAM(side);
+                      GetBAM(legacyHDOSstate, side);
                       progress("Writing...", "removing BAM entries", 40);
-                      deletedirententry(midnight[side]->drive, side,
+                      deletedirententry(legacyHDOSstate,
+                                        midnight[side]->drive, side,
                                         midnight[side]->dirtrack, i - 1);
                       progress("Writing...", "updating BAM", 80);
-                      PutBAM(midnight[side]->drive, side, midnight[side]->dirtrack);
+                      PutBAM(legacyHDOSstate,
+                             midnight[side]->drive, side,
+                             midnight[side]->dirtrack);
                     }
                   }
                 }
@@ -1120,8 +1144,9 @@ void navi(unsigned char side)  {
                messagebox(MBOXREGULAR, "Disk copy,",
                           "destination disk will be OVERWRITTEN",
                           " ", 0))  {
-            GetBAM(side);
-            copywholedisk(midnight[side]->drive, midnight[side?0:1]->drive,
+            GetBAM(legacyHDOSstate, side);
+            copywholedisk(legacyHDOSstate,
+                          midnight[side]->drive, midnight[side?0:1]->drive,
                           side); // , midnight[side]->dirtrack);
             UpdateSectors(midnight[side?0:1]->drive, side?0:1);
           }
@@ -1138,7 +1163,7 @@ void navi(unsigned char side)  {
                      " ", 0);
         } else {
           // @@@@ to be replaced by asking name and ID:
-          FreeTracks(side,
+          FreeTracks(legacyHDOSstate, side,
                      midnight[side]->firsttrack,
                      midnight[side]->lasttrack,
                      &starttrack, &endtrack, 2); // two tracks
@@ -1155,7 +1180,7 @@ void navi(unsigned char side)  {
             inputbox((char*) midnight[side]->inputstr,
                      (char*) midnight[side]->inputstr);
             number = atoi((char*) midnight[side]->inputstr);
-            FreeTracks(side,
+            FreeTracks(legacyHDOSstate, side,
                        midnight[side]->firsttrack,
                        midnight[side]->lasttrack,
                        &starttrack, &endtrack, number);
@@ -1174,8 +1199,9 @@ void navi(unsigned char side)  {
 #endif
               // First allocate BAM because the following format will use
               // the BAM of the partition:
-              BAMAllocateTracks(side, starttrack, endtrack);
-              PutBAM(midnight[side]->drive, side, midnight[side]->dirtrack);
+              BAMAllocateTracks(legacyHDOSstate, side, starttrack, endtrack);
+              PutBAM(legacyHDOSstate,
+                     midnight[side]->drive, side, midnight[side]->dirtrack);
 
               ds->chntrack = 0;
               ds->chnsector = 0;
@@ -1183,14 +1209,15 @@ void navi(unsigned char side)  {
               ds->track = starttrack;  // recycle src dirent for destination
               ds->sector = 0;
               strmakefilename((char*) midnight[side]->inputstr,
-                              (char*) ds->name, 16);
+                              (char*) ds->name, DOSFILENAMELEN);
               ds->size = (endtrack - starttrack) * 40; // omit dirtrack
-              writenewdirententry(midnight[side]->drive, side,
+              writenewdirententry(legacyHDOSstate,
+                                  midnight[side]->drive, side,
                                   midnight[side]->dirtrack,
                                   midnight[side]->firsttrack,
                                   midnight[side]->lasttrack,
                                   ds);
-              FormatPartition(midnight[side]->drive, side,
+              FormatPartition(legacyHDOSstate, midnight[side]->drive, side,
                               starttrack, // midnight[side]->dirtrack,
                               starttrack, // midnight[side]->firsttrack,
                               endtrack,   // midnight[side]->lasttrack);
@@ -1225,8 +1252,8 @@ void navi(unsigned char side)  {
             inputbox((char*) midnight[side]->inputstr,
                      "Please enter the disk's name");
             strmakefilename((char*) midnight[side]->inputstr,
-                            (char*) midnight[side]->inputstr, 16);
-            FormatPartition(midnight[side]->drive, side,
+                            (char*) midnight[side]->inputstr, DOSFILENAMELEN);
+            FormatPartition(legacyHDOSstate, midnight[side]->drive, side,
                             midnight[side]->dirtrack,
                             midnight[side]->firsttrack,
                             midnight[side]->lasttrack,

@@ -1,4 +1,5 @@
 - [Midnight Mega](#midnight-mega)
+- [News](#news)
 - [Installation](#installation)
 - [Start](#start)
 - [Limitations](#limitations)
@@ -27,6 +28,17 @@
 A simple file commander and disk mounting programme.
 
 Work in progress.
+
+# News
+
+The current versions of `Midnight Mega` unfortunately are **slowed
+down** on purpose if you use a release version of the core software for
+your MEGA65. Specifically this is The file `HICKUP.M65` which resides on
+your storage card.
+
+You might temporarily install a newer `HICKUP.M65` with a factory
+delivered R6 machine to get the full `Midnight Mega` experience. Should
+you stay as you are MM will prompt you what you miss, mainly speed.
 
 # Installation
 
