@@ -1232,9 +1232,9 @@ unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i)  {
   return i;
 }
 
-DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
-  unsigned char i;
-  unsigned char pos;
+DIRENT* getdirententry(unsigned char side, unsigned int entry)  {
+  unsigned int i;
+  unsigned int pos;
   DIRENT* ds;
   unsigned int max = ENTRIESPERBLOCK;
 
@@ -1277,7 +1277,7 @@ DIRENT* getdirententry(unsigned char side, unsigned char entry)  {
 }
 unsigned char getdirent(unsigned char legacyHDOSstate, unsigned char drive,
                         unsigned char side, unsigned char dirtrack)  {
-  signed int i;
+  signed int entry; // counts below zero
 
   // _miniInit();
 /*
@@ -1295,9 +1295,9 @@ unsigned char getdirent(unsigned char legacyHDOSstate, unsigned char drive,
   cputln();
   cgetc();
 */
-  for (i = NBRENTRIES; i >= 0; i--)  {
-//    if (i < 10)  valuesbox(0, "loop entries", "i=", i, " ", 0);
-    if (getdirententry(side, i) != NULL)  return i;  // nbr of entries
+  for (entry = NBRENTRIES; entry >= 0; entry--)  {
+//    if (entry < 10)  valuesbox(0, "loop entries", "entry=", entry, " ", 0);
+    if (getdirententry(side, entry) != NULL)  return entry;  // nbr of entries
   }
   return 0xff;
 }
