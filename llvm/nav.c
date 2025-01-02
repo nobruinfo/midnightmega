@@ -763,11 +763,13 @@ messagebox(MBOXNUMBER, "after legacy()",
       csputdec(midnight[i]->drive, 0, 0);
       cputc(' ');
       if (midnight[i]->entries == 0xff)  {
+        // can also indicate more than the allowed number of dirents:
         mcputsxy(leftx + 17, 3, " empty ");
 //        if (side == i)  mcputsxy(leftx + 12, 5, " > F2 to mount < ");
 //        valuesbox(0, "empty list", "entries=", midnight[i]->entries, " ", 0);
       } else {
-        listbox((side == i), i, leftx + 1, 1, midnight[i]->pos, midnight[i]->entries);
+        listbox((side == i), i, leftx + 1, 1,
+                midnight[i]->pos, midnight[i]->entries);
       }
       if (midnight[i]->blocksfree == (UINT_MAX - 1))  {
         blink(TRUE);

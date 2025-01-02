@@ -15,7 +15,8 @@
 #define LEFTSIDE 0
 #define RIGHTSIDE 1
 #define ENTRIESPERBLOCK 8 // nbr of entries on disk block
-#define DIRENTBLOCKS 14    // nbr of dirent pages in attic
+#define DIRENTBLOCKS 31   // nbr of dirent pages in attic @@@@ would be 37
+                          // @@@@  possible, but 32 * 8 exceeds a byte full
 #define NBRENTRIES (DIRENTBLOCKS * ENTRIESPERBLOCK) // nbr of GUI entries
 /* now in hyppo.h:
 typedef struct structdirent {
@@ -167,7 +168,7 @@ unsigned char copywholedisk(unsigned char legacyHDOSstate,
                             unsigned char srcdrive, unsigned char destdrive,
                             unsigned char side);
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i);
-DIRENT* getdirententry(unsigned char side, unsigned char entry);
+DIRENT* getdirententry(unsigned char side, unsigned int entry);
 unsigned char getdirent(unsigned char legacyHDOSstate, unsigned char drive,
                         unsigned char side, unsigned char dirtrack);
 void writenewdirententry(unsigned char legacyHDOSstate,
