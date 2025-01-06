@@ -159,7 +159,7 @@ void writeblockchain(unsigned char legacyHDOSstate,
                      uint32_t source_address, // attic RAM
                      unsigned int maxblocks, unsigned char drive,
                      unsigned char * starttrack, unsigned char * startsector,
-                     unsigned char dirtrack,
+                     unsigned char dirtrack, unsigned char dirtrackflag,
                      unsigned char firsttrack, unsigned char lasttrack);
 unsigned char deleteblockchain(unsigned char legacyHDOSstate,
                                unsigned char drive, unsigned char dirtrack,
@@ -179,3 +179,13 @@ void writenewdirententry(unsigned char legacyHDOSstate,
 void deletedirententry(unsigned char legacyHDOSstate,
                        unsigned char drive, unsigned char side,
                        unsigned char dirtrack,  unsigned char entry);
+void swapdirententry(unsigned char side, unsigned int entry1,
+                                         unsigned int entry2);
+void rewritedirent(unsigned char legacyHDOSstate,
+                   unsigned char drive, unsigned char side,
+                   unsigned char dirtrack,
+                   unsigned char firsttrack, unsigned char lasttrack);
+void renamedisk(unsigned char legacyHDOSstate,
+                unsigned char drive, unsigned char side,
+                unsigned char dirtrack,
+                char* name);
