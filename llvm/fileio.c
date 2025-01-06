@@ -111,12 +111,19 @@ char prevtrack = 0;
 char lastdoublesector = 0;
 void _miniInit()  {
   // clear F011 Floppy Controller Registers
-  POKE(0xd080U, 0);
+  if (PEEK(0xd080U) != 0x40)  POKE(0xd080U, 0);
   prevtrack = 0;
 
   mh4printfd("_miniinit SECTBUF 32addr is: ", SECTBUF >> 16);
   mh4printfd(" ", SECTBUF & 0xffff);
   cputlnd();
+}
+
+unsigned char driveled(unsigned char errorcode)  {
+    // Turn on just the LED, this causes it to blink:
+    POKE(0xd080U, 0x40);
+    bordercolor (COLOUR_RED);
+    return errorcode;
 }
 
 // returns 1 for odd numbered sectors, 0 for even:
@@ -168,15 +175,15 @@ unsigned char ReadSector(unsigned char legacyHDOSstate,
     // Check for error:
     if (PEEK(0xd082U) & 0x18) {
       // Turn on just the LED, this causes to blink:
-      POKE(0xd080U, 0x40);
-      bordercolor(COLOUR_RED);
+//      POKE(0xd080U, 0x40);
+//      bordercolor(COLOUR_RED);
       prevtrack = 0;
   mprintfd("ReadSector. Track=", track);
   mprintfd(" Sector=", sector);
   mhprintfd(" $d082U=", PEEK(0xd082U));
   cputlnd();
   cgetcd();
-      return 0xff;
+      return driveled(0xff);
     }    // Make sure we can see the data, clear bit 7:
     POKE(0xd689U, PEEK(0xd689U) & ~0x80);
     lastdrive = drive;
@@ -234,14 +241,14 @@ unsigned char WriteSector(unsigned char legacyHDOSstate,
     // Check for error:
     if (PEEK(0xd082U) & 0x18) {
       // Turn on just the LED, this causes to blink:
-      POKE(0xd080U, 0x40);
-      bordercolor(COLOUR_RED);
+//      POKE(0xd080U, 0x40);
+//      bordercolor(COLOUR_RED);
   mprintfd("WriteSector. Track=", track);
   mprintfd(" Sector=", sector);
   mhprintfd(" $d082U=", PEEK(0xd082U));
   cputlnd();
   cgetcd();
-      return 0xff;
+      return driveled(0xff);
     }
     // Make sure we can see the data, clear bit 7:
     POKE(0xd689U, PEEK(0xd689U) & ~0x80);
@@ -361,13 +368,6 @@ unsigned char PutOneSector(unsigned char legacyHDOSstate,
   cgetcd();
 
   return WriteSector(legacyHDOSstate, drive, track, sector - side);
-}
-
-unsigned char driveled(unsigned char errorcode)  {
-    // Turn on just the LED, this causes it to blink:
-    POKE(0xd080U, 0x40);
-    bordercolor (COLOUR_RED);
-    return errorcode;
 }
 
 void GetBAM(unsigned char legacyHDOSstate, unsigned char side)  {
@@ -669,6 +669,8 @@ void BAMAllocateTracks(unsigned char legacyHDOSstate, unsigned char side,
   }
 }
 
+// @@@@ this has old filename handling and uses a BAM sector instead
+// @@@@ of passing a pointer:
 void getDiskname(unsigned char legacyHDOSstate,
                  unsigned char drive, unsigned char dirtrack, char* diskname) {
   HEADER* hs;
@@ -957,7 +959,7 @@ void writeblockchain(unsigned char legacyHDOSstate,
                      uint32_t source_address,
                      unsigned int maxblocks, unsigned char drive,
                      unsigned char * starttrack, unsigned char * startsector,
-                     unsigned char dirtrack,
+                     unsigned char dirtrack, unsigned char dirtrackflag,
                      unsigned char firsttrack, unsigned char lasttrack)  {
   unsigned int i;
   unsigned char nexttrack = 0;
@@ -970,7 +972,7 @@ void writeblockchain(unsigned char legacyHDOSstate,
   DATABLOCK* ws1 = worksector[1];
 
   // get a first sector anyway:
-  findnextBAMtracksector(&track, &sector, FALSE, dirtrack,
+  findnextBAMtracksector(&track, &sector, dirtrackflag, dirtrack,
                          firsttrack, lasttrack);
   *starttrack = track;  // to later write dirent
   *startsector = sector;
@@ -990,7 +992,7 @@ void writeblockchain(unsigned char legacyHDOSstate,
 
     // replace chain with available ones or leave 0 if last datablock:
     if (ws->chntrack > 0)  {
-      findnextBAMtracksector(&nexttrack, &nextsector, FALSE, dirtrack,
+      findnextBAMtracksector(&nexttrack, &nextsector, dirtrackflag, dirtrack,
                              firsttrack, lasttrack);
       ws->chntrack = nexttrack;
       ws->chnsector = nextsector;
@@ -1001,22 +1003,26 @@ void writeblockchain(unsigned char legacyHDOSstate,
       i++;
       lcopy(source_address + i * BLOCKSIZE, (uint32_t) ws1, BLOCKSIZE);
       if (ws1->chntrack > 0)  {
-        findnextBAMtracksector(&nexttrack, &nextsector, FALSE, dirtrack,
+        findnextBAMtracksector(&nexttrack, &nextsector, dirtrackflag, dirtrack,
                                firsttrack, lasttrack);
         ws1->chntrack = nexttrack;
         ws1->chnsector = nextsector;
       }
-//        mprintf("double sectors, track=", track);
-//        mprintf(" sector=", sector);
-//        cputln();
-//        cgetc();
+#ifdef DEBUG
+        mprintf("double sectors, track=", track);
+        mprintf(" sector=", sector);
+        cputln();
+        cgetc();
+#endif
       PutWholeSector(legacyHDOSstate, (BAM *) ws, drive, track, sector);
       ws->chntrack = ws1->chntrack; // fake to abort below if zero
     } else {
-//        mprintf("single sectors, track=", track);
-//        mprintf(" sector=", sector);
-//        cputln();
-//        cgetc();
+#ifdef DEBUG
+        mprintf("single sectors, track=", track);
+        mprintf(" sector=", sector);
+        cputln();
+        cgetc();
+#endif
       PutOneSector(legacyHDOSstate, (BAM *) ws, drive, track, sector);
     }
 
@@ -1246,7 +1252,10 @@ DIRENT* getdirententry(unsigned char side, unsigned int entry)  {
           (uint32_t) ds, DIRENTSIZE);
 
 //    if (ds->track == 0)  return NULL; // no more entries
-    if (ds->chntrack > 0)  max += ENTRIESPERBLOCK; // more attic pages
+    if ((ds->chntrack > 0) &&
+        ((i % ENTRIESPERBLOCK) == 0))  {
+      max += ENTRIESPERBLOCK; // more attic pages
+    }
     // if a non-deleted or a SD card file (hence no mask) ?
     if (ds->type != VAL_DOSFTYPE_DEL || (option.option & OPTIONshowDEL))  {
       if (pos == entry)  return ds; // found
@@ -1557,4 +1566,108 @@ basepage[6] = (ds->size + 40) / 256; // @@@@ debug
 #endif
   }
 //  messagebox(0, "entry not found");
+}
+
+void swapdirententry(unsigned char side, unsigned int entry1,
+                                         unsigned int entry2)  {
+  unsigned int i1;
+  unsigned int i2;
+  unsigned int pos;
+  DIRENT* ds;
+  DIRENT* dstemp;
+  unsigned int max = ENTRIESPERBLOCK;
+
+  ds = &readdir_dirent->direntryblock[0];
+  dstemp = &readdir_dirent->direntryblock[1];
+
+  for (i1 = 0, pos = 0; i1 < max; i1++)  {
+    // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
+    lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i1 * DIRENTSIZE,
+          (uint32_t) ds, DIRENTSIZE);
+
+    if (ds->chntrack > 0)  max += ENTRIESPERBLOCK; // more attic pages
+    // if a non-deleted or a SD card file (hence no mask) ?
+    if (ds->type != VAL_DOSFTYPE_DEL || (option.option & OPTIONshowDEL))  {
+      if (pos == entry1)  { // found
+        break;
+      }
+      pos++;
+    }
+  }
+
+  for (i2 = 0, pos = 0; i2 < max; i2++)  {
+    // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
+    lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i2 * DIRENTSIZE,
+          (uint32_t) ds, DIRENTSIZE);
+
+    if (ds->chntrack > 0)  max += ENTRIESPERBLOCK; // more attic pages
+    // if a non-deleted or a SD card file (hence no mask) ?
+    if (ds->type != VAL_DOSFTYPE_DEL || (option.option & OPTIONshowDEL))  {
+      if (pos == entry2)  { // found
+        break;
+      }
+      pos++;
+    }
+  }
+
+  // Temporarily dump first dirent into data block not in use:
+  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i1 * DIRENTSIZE,
+        (uint32_t) dstemp, DIRENTSIZE);
+  // Copy second one in first:
+  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i2 * DIRENTSIZE,
+        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i1 * DIRENTSIZE,
+        DIRENTSIZE);
+  // Now temporary in second:
+  lcopy((uint32_t) dstemp,
+        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i2 * DIRENTSIZE,
+        DIRENTSIZE);
+
+//  cgetc();
+}
+
+// @@@@ this deletes all dirents and completely saves them back as new,
+// @@@@ thus should be changed at some point:
+void rewritedirent(unsigned char legacyHDOSstate,
+                   unsigned char drive, unsigned char side,
+                   unsigned char dirtrack,
+                   unsigned char firsttrack, unsigned char lasttrack)  {
+  unsigned char starttrack;
+  unsigned char startsector;
+
+  if (deleteblockchain(legacyHDOSstate, drive, dirtrack,
+                       dirtrack, DIRENTSECT))  {
+    messagebox(MBOXNOCANCEL, "Updating directory,",
+               "fatal error",
+               " ", 0);
+  } else {
+    writeblockchain(legacyHDOSstate,
+                    ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE,
+                    DIRENTBLOCKS, drive,
+                    &starttrack, &startsector,
+                    dirtrack, TRUE, firsttrack, lasttrack);
+    PutBAM(legacyHDOSstate, drive, side, dirtrack);
+  }
+}
+
+void renamedisk(unsigned char legacyHDOSstate,
+                unsigned char drive, unsigned char side,
+                unsigned char dirtrack,
+                char* name)  {
+  HEADER* hs;
+  hs = (HEADER *) worksector[0]; // misuse data sector
+
+  if (GetOneSector(legacyHDOSstate,
+                   (BAM *) hs, drive, dirtrack, HEADERSECT) < 2)  {
+    strcopy(name, (char *) hs->diskname, 16);
+    if (PutOneSector(legacyHDOSstate,
+                     (BAM *) hs, drive, dirtrack, HEADERSECT) > 2)  {
+      messagebox(MBOXNOCANCEL, "Renaming subpartition,",
+                 "write error",
+                 " ", 0);
+    }
+  } else {
+    messagebox(MBOXNOCANCEL, "Renaming subpartition,",
+               "read error",
+               " ", 0);
+  }
 }
