@@ -52,11 +52,13 @@ echo (c) execute ftp dir command
 echo (l) put latest Midnight Mega
 echo (s) change destination ethernet/Xemu
 echo (t) test
+echo (r) populate "ROMS"
 echo (q) quit
 echo ==========================
-choice /c mdif6oahclstq /n /m "Type key of option to be executed: "
+choice /c mdif6oahclstrq /n /m "Type key of option to be executed: "
 
-if errorlevel 13 goto end
+if errorlevel 14 goto end
+if errorlevel 13 goto roms
 if errorlevel 12 goto test
 if errorlevel 11 goto doswap
 if errorlevel 10 goto mmput
@@ -204,9 +206,25 @@ IF 1 == 2 (
 
 REM Has ( ) brackets:
 CD /D "D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\Backups\230303 SD Card\-cbm\C64"
-CALL :upload C64\cbm
+REM CALL :upload C64\cbm
+CD /D "D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\Backups\230303 SD Card\-cbm\kung_fu_flash"
+CALL :upload C64\cbm\kung_fu_flash
 CD /D "D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\Backups\230303 SD Card\nobru"
-CALL :upload C64\nobru
+REM CALL :upload C64\nobru
+CD /D "D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\Backups\230303 SD Card\nobru\0_2023"
+CALL :upload C64\nobru\0_2023
+CD /D "D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\Backups\230303 SD Card\nobru\0cartridges"
+CALL :upload C64\nobru\0cartridges
+CD /D "D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\Backups\230303 SD Card\nobru\0demo"
+CALL :upload C64\nobru\0demo
+CD /D "D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\Backups\230303 SD Card\nobru\0disks"
+CALL :upload C64\nobru\0disks
+CD /D "D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\Backups\230303 SD Card\nobru\0nowhere"
+CALL :upload C64\nobru\0nowhere
+CD /D "D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\Backups\230303 SD Card\nobru\sound\mod"
+CALL :upload C64\nobru\sound\mod
+CD /D "D:\Game Collections\C64\2022 Hardware\Kung Fu Flash\Backups\230303 SD Card\nobru\sound\SID for Deft"
+CALL :upload C64\nobru\sound\SID for Deft
 
 REM config file:
 CD /D "D:\Game Collections\C64\Mega65\core\C64\C64"
@@ -346,6 +364,15 @@ goto menu
 echo Testing:
 CD /D "D:\Game Collections\C64\Mega65\disktest"
 CALL :upload
+pause
+goto menu
+
+:roms
+echo ROMS:
+CD /D "D:\Game Collections\C64\Mega65\roms"
+"%MFTP%" %DEST% -c "mkdir ROMS"
+"%MFTP%" %DEST% -c "cd ROMS" -c "put '920*.BIN'"
+"%MFTP%" %DEST% -c "dir"|more
 pause
 goto menu
 

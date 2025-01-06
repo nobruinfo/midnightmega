@@ -9,6 +9,11 @@
 #define TEXTBLOCKS 50
 
 // literals for accessing the correct instance (line number - 1):
+#define INFOFOOTER1 (1 - 1)
+#define INFOFOOTER2 (2 - 1)
+#define MENUTITLE   (94 - 1)
+#define MENUDIRSORT (95 - 1)
+#define MENUSETUP   (96 - 1)
 #define HELPBEGIN (101 - 1)
 #define HELP0     (107 - 1)
 #define HELP1     (124 - 1)

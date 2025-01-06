@@ -85,9 +85,26 @@ void listbox(unsigned char iscurrent, unsigned char side,
 //    else                   revers(0);
 //    cputsxy(x, y + n, s);
     textcolor(COLOUR_CYAN);
+    if ((midnight[side]->flags & MIDNIGHTFLAGdirsortactive) &&
+        (direntflags[side][n + ofs].flags & DIRFLAGSisselected) &&
+        (n + ofs == currentitem))  {
+      cputc(' ');
+      if (currentitem > 0)         cputc(0x1e);
+      if (currentitem < nbritems)  mcputc('v');
+//      msprintf(" \x1ev");
+    }
   }
   revers(0);  // otherwise last entry selected makes neighbouring frame reversed
 //  cputln();
+}
+
+void Deselect(unsigned char side)  {
+  unsigned int i;
+
+  // deselect all entries:
+  for (i = 0; i < NBRENTRIES; i++)  {
+    direntflags[side][i].flags &= ~(DIRFLAGSisselected);
+  }
 }
 
 void shortcutprint(unsigned char active, char* textbefore, char* textafter)  {
@@ -101,70 +118,89 @@ void shortcutprint(unsigned char active, char* textbefore, char* textafter)  {
 }
 
 void shortcuts(unsigned char mod, unsigned char side)  {
-  gotoxy(0, 24);
+  unsigned char width;
+  unsigned char height;
 
-  // MODKEY, with 1 meaning the key was held during the event:
-  // Bit 6 Bit 5 Bit 4 Bit 3 Bit 2 Bit 1 Bit 0
-  // CAPS  NO    ALT   C=    CTRL  SHIFT SHIFT
-  // LOCK  SCROLL                  right left
-  if (mod & 20)  {  // Alt or ctrl are masked
-    shortcutprint(FALSE, " 1",  "Help  ");
-    shortcutprint(FALSE, " 2",  "Mount ");
-    shortcutprint(FALSE, " 3",  "View  ");
-    shortcutprint(FALSE, " 4",  "Edit  ");
-    shortcutprint(FALSE, " 5",  "Copy  ");
-    shortcutprint(FALSE, " 6",  "RenMov");
-    shortcutprint(FALSE, " 7",  "Mkdir ");
-    shortcutprint(FALSE, " 8",  "Delete");
-    shortcutprint(FALSE, " 9",  "Menu  ");
-    shortcutprint(FALSE, " 10", "Quit ");
-  } else if (((mod & 9) == 9) ||
-             ((mod & 10) == 10)) {  // MEGA key, C= and any of the shift keys
-    shortcutprint(FALSE, " 1",  "      ");
-    shortcutprint(FALSE, " 2",  "      ");
-    shortcutprint(FALSE, " 3",  "      ");
-    shortcutprint(FALSE, " 4",  "      ");
-    shortcutprint(FALSE, " 5",  "      ");
-    shortcutprint(FALSE, " 6",  "      ");
-    shortcutprint(FALSE, " 7",  "      ");
-    shortcutprint(FALSE, " 8",  "      ");
-    shortcutprint(FALSE, " 9",  "      ");
-    shortcutprint(FALSE, " 10", "     ");
-  } else if (mod & 8)  {  // MEGA key, C=
-    shortcutprint(FALSE, " 1",  "      ");
-    shortcutprint(FALSE, " 2",  "      ");
-    shortcutprint( TRUE, " 3",  "Freezr");
-    shortcutprint(FALSE, " 4",  "      ");
-    shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
-                         " 5",  "DskCpy");
-    shortcutprint(FALSE, " 6",  "      ");
-    shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
-                         " 7",  "Format");
-    shortcutprint(FALSE, " 8",  "      ");
-    shortcutprint( TRUE, " 9",  "ROMlst");
-    shortcutprint(FALSE, " 10", "     ");
-  } else if (mod & 3)  {                   // either of the shift keys makes
-    shortcutprint( TRUE, " 1",  "Mount "); // next even numbered F key
-    shortcutprint(FALSE, " 2",  "      ");
-    shortcutprint(FALSE, " 3",  "Edit  ");
-    shortcutprint(FALSE, " 4",  "      ");
-    shortcutprint(FALSE, " 5",  "RenMov");
-    shortcutprint(FALSE, " 6",  "      ");
-    shortcutprint( TRUE, " 7",  "Delete");
-    shortcutprint(FALSE, " 8",  "      ");
-    shortcutprint( TRUE, " 9",  "Quit  ");
-    shortcutprint(FALSE, " 10", "     ");
+  gotoxy(0, 24);
+  if (midnight[side]->flags & MIDNIGHTFLAGdirsortactive)  {
+    textcolor(COLOUR_YELLOW);
+    msprintf("Arrange entries:");
+    shortcutprint(TRUE, " \x1e",  "Crsr up");
+    shortcutprint(TRUE, " v",  "Crsr down");
+    shortcutprint(TRUE, " Space",  "select");
+    shortcutprint(TRUE, " STOP",  "abort");
+    shortcutprint(TRUE, " RETURN",  "save");
+
+    getscreensize(&width, &height);
+//    while (wherex() + 1 < width)  { cputc(' '); }
+    lfill(getscreenaddr() + (width * height) - width + wherex(),
+          ' ', width - wherex());
+    lfill(COLOR_RAM_BASE + + (width * height) - width + wherex(),
+          COLOUR_CYAN, width - wherex());
   } else {
-    shortcutprint( TRUE, " 1",  "Help  ");
-    shortcutprint( TRUE, " 2",  "Mount ");
-    shortcutprint(FALSE, " 3",  "View  ");
-    shortcutprint(FALSE, " 4",  "Edit  ");
-    shortcutprint( TRUE, " 5",  "Copy  ");
-    shortcutprint(FALSE, " 6",  "RenMov");
-    shortcutprint( TRUE, " 7",  "Mkdir ");
-    shortcutprint( TRUE, " 8",  "Delete");
-    shortcutprint( TRUE, " 9",  "Menu  ");
-    shortcutprint( TRUE, " 10", "Quit ");
+    // MODKEY, with 1 meaning the key was held during the event:
+    // Bit 6 Bit 5 Bit 4 Bit 3 Bit 2 Bit 1 Bit 0
+    // CAPS  NO    ALT   C=    CTRL  SHIFT SHIFT
+    // LOCK  SCROLL                  right left
+    if (mod & 20)  {  // Alt or ctrl are masked
+      shortcutprint(FALSE, " 1",  "Help  ");
+      shortcutprint(FALSE, " 2",  "Mount ");
+      shortcutprint(FALSE, " 3",  "View  ");
+      shortcutprint(FALSE, " 4",  "Edit  ");
+      shortcutprint(FALSE, " 5",  "Copy  ");
+      shortcutprint(FALSE, " 6",  "Rename"); // "RenMov");
+      shortcutprint(FALSE, " 7",  "Mkdir ");
+      shortcutprint(FALSE, " 8",  "Delete");
+      shortcutprint(FALSE, " 9",  "Menu  ");
+      shortcutprint(FALSE, " 10", "Quit ");
+    } else if (((mod & 9) == 9) ||
+               ((mod & 10) == 10)) {  // MEGA key, C= and any of the shift keys
+      shortcutprint(FALSE, " 1",  "      ");
+      shortcutprint(FALSE, " 2",  "      ");
+      shortcutprint(FALSE, " 3",  "      ");
+      shortcutprint(FALSE, " 4",  "      ");
+      shortcutprint(FALSE, " 5",  "      ");
+      shortcutprint(FALSE, " 6",  "      ");
+      shortcutprint(FALSE, " 7",  "      ");
+      shortcutprint(FALSE, " 8",  "      ");
+      shortcutprint(FALSE, " 9",  "      ");
+      shortcutprint(FALSE, " 10", "     ");
+    } else if (mod & 8)  {  // MEGA key, C=
+      shortcutprint(FALSE, " 1",  "      ");
+      shortcutprint(FALSE, " 2",  "      ");
+      shortcutprint( TRUE, " 3",  "Freezr");
+      shortcutprint(FALSE, " 4",  "      ");
+      shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
+                           " 5",  "DskCpy");
+      shortcutprint(FALSE, " 6",  "      ");
+      shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
+                           " 7",  "Format");
+      shortcutprint(FALSE, " 8",  "      ");
+      shortcutprint( TRUE, " 9",  "ROMlst");
+      shortcutprint(FALSE, " 10", "     ");
+    } else if (mod & 3)  {                   // either of the shift keys makes
+      shortcutprint( TRUE, " 1",  "Mount "); // next even numbered F key
+      shortcutprint(FALSE, " 2",  "      ");
+      shortcutprint(FALSE, " 3",  "Edit  ");
+      shortcutprint(FALSE, " 4",  "      ");
+      shortcutprint( TRUE, " 5",  "Rename"); // "RenMov");
+      shortcutprint(FALSE, " 6",  "      ");
+      shortcutprint( TRUE, " 7",  "Delete");
+      shortcutprint(FALSE, " 8",  "      ");
+      shortcutprint( TRUE, " 9",  "Quit  ");
+      shortcutprint(FALSE, " 10", "     ");
+    } else {
+      shortcutprint( TRUE, " 1",  "Help  ");
+      shortcutprint( TRUE, " 2",  "Mount ");
+      shortcutprint(FALSE, " 3",  "View  ");
+      shortcutprint(FALSE, " 4",  "Edit  ");
+      shortcutprint( TRUE, " 5",  "Copy  ");
+      shortcutprint( TRUE, " 6",  "Rename"); // "RenMov");
+      shortcutprint( TRUE, " 7",  "Mkdir ");
+      shortcutprint( TRUE, " 8",  "Delete");
+      shortcutprint( TRUE, " 9",  "Menu  ");
+      shortcutprint( TRUE, " 10", "Quit ");
+    }
   }
 
   textcolor(COLOUR_CYAN);
@@ -257,6 +293,90 @@ unsigned char setupbox()  {
                                  "be quit unsaved. So use RETURN to",
                                  "accept.", 0);
 //        return FALSE;
+      break;
+
+      default:
+        sidbong();
+//        mh4printf("val=", c);
+//        cputc(' ');
+//        usleep(400000); // microseconds
+      break;
+    }
+  }
+}
+
+unsigned char menubox(unsigned char side)  {
+  unsigned char clear = 1;
+  unsigned char shadow = 1;
+  char c;
+  unsigned char pos = 0;
+  unsigned char ret = FALSE;
+  unsigned char i;
+  unsigned char drawn = FALSE;
+
+  // Because of the additional messagebox we need to redraw all:
+  while(1)  {
+    if (!drawn)  {
+      mcbox(10, 4, 70, 20, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+    
+      revers(1);
+      mcputsxy(14, 4, " Midnight Mega ");
+      mcputsxy(31, 4, " Menu ");
+      mcputsxy(40, 4, " The MEGA65 file commander ");
+      mcputsxy(36, 18, "   OK   ");
+  //  mcputsxy(12, 18, "  Save  ");
+  //  mcputsxy(60, 18, " Cancel ");
+      revers(0);
+      text(MENUTITLE, FALSE);
+      text(MENUDIRSORT, FALSE);
+      text(MENUSETUP, FALSE);
+      drawn = TRUE;
+    }
+
+    if (pos >= MENUMAX)  {
+      pos = MENUMAX - 1;
+    }
+    for (i = 0; i < MENUMAX; i++)  {
+      if (pos == i)  cputcxy(12, 6 + i, '>');
+      else           cputcxy(12, 6 + i, ' ');
+    }
+
+    c = cgetc();
+    switch (c) {
+      case 0x91: // Crsrup
+      case 0x9d: // Left
+        if (pos > 0)  pos--;
+      break;
+      case 0x11: // Crsrdown
+      case 0x1d: // Right
+        pos++;
+      break;
+
+      case 13: // RETURN
+        switch (pos) {
+          case 0:  // dirsort
+            if (midnight[side]->flags & MIDNIGHTFLAGismounted)  {
+              midnight[side]->flags |= MIDNIGHTFLAGdirsortactive;
+              Deselect(side);
+              return FALSE;
+            } else {
+              messagebox(MBOXNOCANCEL, "Directory entry sorting,",
+                         "on storage card not possible",
+                         " ", 0);
+              drawn = FALSE;
+            }
+          break;
+          default:
+            ret = setupbox();
+            drawn = FALSE;
+          break;
+        }
+        if (ret)  return TRUE;
+      break;
+
+      case 3:  // STOP
+      case 27: // Esc
+        return FALSE;
       break;
 
       default:
@@ -516,6 +636,7 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
   unsigned char c;  // build up a string
   unsigned char sethyppo;  // failures set "storage selection dirent mode"
 
+  midnight[side]->flags &= (~MIDNIGHTFLAGdirsortactive);
 
   if (midnight[side]->flags & MIDNIGHTFLAGismounted)  {
     // This would actually only have to be done once for both drives:
@@ -600,15 +721,6 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
     midnight[side]->entries = gethyppodirent(drive, side, LFNNBRENTRIES);
     midnight[side]->blocksfree = UINT_MAX;
     if (sethyppo == SETHYPPOONBYERROR)  midnight[side]->blocksfree = UINT_MAX - 1;
-  }
-}
-
-void Deselect(unsigned char side)  {
-  unsigned int i;
-
-  // deselect all entries:
-  for (i = 0; i < NBRENTRIES; i++)  {
-    direntflags[side][i].flags &= ~(DIRFLAGSisselected);
   }
 }
 
@@ -705,9 +817,9 @@ messagebox(MBOXNUMBER, "after legacy()",
       cgetc();
       alive = FALSE;
     } else {
-      // Info above feeter:
-      text(0, FALSE);
-      text(1, FALSE);
+      // Info above keybar:
+      text(INFOFOOTER1, FALSE);
+      text(INFOFOOTER2, FALSE);
       shortcuts(20, 0);
     }
   } else {
@@ -754,7 +866,7 @@ messagebox(MBOXNUMBER, "after legacy()",
       mcputsxy(leftx + 2, 0, " ");  // @@ to be string optimised as in listbox()
       msprintf((char *) disknames[i]); // @@@@ maybe simply call GetDisknames here
       cputc(' ');
-      if ((midnight[i]->flags & MIDNIGHTFLAGismounted) == TRUE)  {
+      if (midnight[i]->flags & MIDNIGHTFLAGismounted)  {
         mcputsxy(wherex() + 1, 0, " ");
         msprintf((char *) midnight[i]->curfile);
         cputc(' ');
@@ -792,14 +904,71 @@ messagebox(MBOXNUMBER, "after legacy()",
 
     c = cgetcalt(side);
     bordercolor (COLOUR_BLACK); // to unset red error borders
+    
+    // Drop all keys not used in dir sort mode:
+    if (midnight[side]->flags & MIDNIGHTFLAGdirsortactive)  {
+      switch (c) { // mega65-book.pdf#229
+        case 0x91: // Crsrup
+        case 0x191: // Shift Crsrup
+        case 0x291:
+        case 0x11: // Crsrdown
+        case 0x412: // Ctrl-r
+        case 0x20: // Space to toggle
+        case 0x194: // Shift-Inst
+        case 0x294:
+        case 0x1f: // HELP
+        case 0xf1: // unused F keys
+        case 0x1f1:
+        case 0x2f1:
+          // allowed keys in this mode
+        break;
+
+        case 13: // return
+          rewritedirent(legacyHDOSstate, midnight[side]->drive, side,
+                        midnight[side]->dirtrack,
+                        midnight[side]->firsttrack, midnight[side]->lasttrack);
+        // ... falling through ... no break;
+        case 3:    // STOP
+        case 27:   // Esc
+          UpdateSectors(midnight[side]->drive, side);
+          Deselect(side);
+          c = 0xFF; // bong preventing
+        break;
+
+        default:
+          c = 0;
+        break;
+      }
+    }
+
     switch (c) { // mega65-book.pdf#229
       case 0x91: // Crsrup
       case 0x191: // Shift Crsrup
       case 0x291:
-        if (midnight[side]->pos > 0)  midnight[side]->pos--;
+        if (midnight[side]->pos > 0)  {
+          if ((midnight[side]->flags & MIDNIGHTFLAGdirsortactive) &&
+              (direntflags[side][midnight[side]->pos].flags &
+                    DIRFLAGSisselected))  {
+            swapdirententry(side, midnight[side]->pos, midnight[side]->pos - 1);
+            Deselect(side);
+            direntflags[side][midnight[side]->pos - 1].flags |=
+                    DIRFLAGSisselected;
+          }
+          midnight[side]->pos--;
+        }
       break;
       case 0x11: // Crsrdown
-        midnight[side]->pos++;
+        if (midnight[side]->pos < midnight[side]->entries)  {
+          if ((midnight[side]->flags & MIDNIGHTFLAGdirsortactive) &&
+              (direntflags[side][midnight[side]->pos].flags &
+                    DIRFLAGSisselected))  {
+            swapdirententry(side, midnight[side]->pos, midnight[side]->pos + 1);
+            Deselect(side);
+            direntflags[side][midnight[side]->pos + 1].flags |=
+                    DIRFLAGSisselected;
+          }
+          midnight[side]->pos++;
+        }
       break;
       case 0x9d: // Left
       case 0x19d:
@@ -861,7 +1030,24 @@ messagebox(MBOXNUMBER, "after legacy()",
         }
       break;
 
+/* renaming not implemented on Hyppo side:
+          hyppo_setname(ds->name); // hyppofn->name);
+          fd = hyppo_findfirst();
+          if (fd >= 0x84)  {
+            messagebox(MBOXNOCANCEL, "File ", ds->name,
+                       "not found", 0);
+          } else {
+            input file name
+            hyppo_setname again
+            hyppo_rename(fd);
+          }
+          hyppo_closedir(fd);
+*/
+
       case 0xf5: // ASC_F5 copy
+      case 0xf6: // Modifiers and ASC_F5 rename
+      case 0x1f6:
+      case 0x2f6:
       case 0xf8: // Modifiers and ASC_F8 delete
       case 0x1f8:
       case 0x2f8:
@@ -959,7 +1145,7 @@ messagebox(MBOXNUMBER, "after legacy()",
                                   ATTICFILEBUFFER, DATABLOCKS,
                                   midnight[side?0:1]->drive,
                                   &starttrack, &startsector,
-                                  midnight[side?0:1]->dirtrack,
+                                  midnight[side?0:1]->dirtrack, FALSE,
                                   midnight[side?0:1]->firsttrack,
                                   midnight[side?0:1]->lasttrack);
                   ds->track = starttrack;  // recycle src dirent for destination
@@ -989,6 +1175,35 @@ messagebox(MBOXNUMBER, "after legacy()",
               UpdateSectors(midnight[side?0:1]->drive, side?0:1);
               Deselect(side);
             }
+          } else if ((c == 0xf6) || (c == 0x1f6) || (c == 0x2f6))  {  // copy
+            for (i = 0; i < NBRENTRIES; i++)  {
+              if (direntflags[side][i].flags & DIRFLAGSisselected)  {
+                ds = getdirententry(side, i);
+                strcpy((char*) midnight[side]->inputstr,
+                       "Enter the new name, empty to skip:");
+                inputbox((char*) midnight[side]->inputstr,
+                         (char*) midnight[side]->inputstr);
+                if (midnight[side]->inputstr[0] != 0)  {
+                  strmakefilename((char*) midnight[side]->inputstr,
+                                  (char*) ds->name, DOSFILENAMELEN);
+                  lcopy((uint32_t) ds,
+                        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+                        DIRENTSIZE);
+                  if ((ds->type&0xf) == VAL_DOSFTYPE_CBM)  {
+                    renamedisk(legacyHDOSstate,
+                               midnight[side]->drive, side,
+                               ds->track, // dirtrack of subpartition
+                               ds->name);
+                  }
+                  rewritedirent(legacyHDOSstate, midnight[side]->drive, side,
+                                midnight[side]->dirtrack,
+                                midnight[side]->firsttrack,
+                                midnight[side]->lasttrack);
+                }
+              }
+            }
+            UpdateSectors(midnight[side]->drive, side);
+            Deselect(side);
           } else if ((ds->type&0xf) == VAL_DOSFTYPE_CBM &&
                      (midnight[side]->entries != 0xff))  {
             number = 0;
@@ -1115,27 +1330,6 @@ messagebox(MBOXNUMBER, "after legacy()",
         }
       break;
 
-/* not implemented on Hyppo side:
-      case 0xf6: // Modifiers and ASC_F5:
-      case 0x1f6:
-      case 0x2f6:
-        if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
-          hyppo_setname(ds->name); // hyppofn->name);
-          fd = hyppo_findfirst();
-          if (fd >= 0x84)  {
-            messagebox(MBOXNOCANCEL, "File ", ds->name,
-                       "not found", 0);
-          } else {
-            input file name
-            hyppo_setname again
-            hyppo_rename(fd);
-          }
-          hyppo_closedir(fd);
-        } else {
-        UpdateSectors(midnight[side]->drive, side);
-        Deselect(side);
-      break;
-*/
       case 0x8f6: // Mega-F5
         if (((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE) ||
             ((midnight[side?0:1]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
@@ -1273,13 +1467,14 @@ messagebox(MBOXNUMBER, "after legacy()",
 
       case 0xf9:
         shortcuts(20, 0);
-        setupbox();
-        messagebox(MBOXFALLTHROUGH, " ", " ", " ", 0);
-        progress("Reading...", "BAM", 20);
-        UpdateSectors(midnight[side]->drive, side);
-        Deselect(side);
-        UpdateSectors(midnight[side?0:1]->drive, side?0:1);
-        Deselect(side?0:1);
+        if (menubox(side))  {
+          messagebox(MBOXFALLTHROUGH, " ", " ", " ", 0);
+          progress("Reading...", "BAM", 20);
+          UpdateSectors(midnight[side]->drive, side);
+          Deselect(side);
+          UpdateSectors(midnight[side?0:1]->drive, side?0:1);
+          Deselect(side?0:1);
+        }
       break;
 
       case 0xfb: // F11
@@ -1364,7 +1559,9 @@ messagebox(MBOXNUMBER, "after legacy()",
           sidbong();
         } else {
           direntflags[side][midnight[side]->pos].flags ^= DIRFLAGSisselected;
-          midnight[side]->pos++;
+          if (!(midnight[side]->flags & MIDNIGHTFLAGdirsortactive))  {
+            midnight[side]->pos++;
+          }
         }
       break;
 
@@ -1438,9 +1635,6 @@ messagebox(MBOXNUMBER, "after legacy()",
       case 0xf4:
       case 0x1f4:
       case 0x2f4:
-      case 0xf6:
-      case 0x1f6:
-      case 0x2f6:
       case 0x415: // Ctrl-u
         sidbong();
 //        messagebox(MBOXNOCANCEL, "Some function keys,",
@@ -1454,6 +1648,9 @@ messagebox(MBOXNUMBER, "after legacy()",
         if (getkeymodstate() == KEYMOD_RSHIFT || getkeymodstate() == KEYMOD_LSHIFT)  {
           return;
         }
+      break;
+      
+      case 0xFF: // bong preventing
       break;
 
       default:

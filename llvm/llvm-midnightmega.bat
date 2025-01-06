@@ -17,8 +17,9 @@ SET MFTP=F:\Entwicklungsprojekte\github-nobru\mega65-tools\bin\mega65_ftp.exe
 SET ETHL=%MTOO%\etherload.exe
 SET HICKUPDIR=D:\Game Collections\C64\Mega65\Xemu
 SET HICKUPFILE=HICKUP hyppo13.M65
-REM SET HICKUPFILE=HICKUP.M65
+SET HICKUPFILEOLD=HICKUP.M65
 SET HICKUPOPT=-hickup "%HICKUPDIR%\%HICKUPFILE%"
+SET HICKUPOPTOLD=-hickup "%HICKUPDIR%\%HICKUPFILEOLD%"
 SET XMEGA65=%HICKUPDIR%\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos
 SET "HDOSSLASH=%HDOS:\=/%"
@@ -73,9 +74,49 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.6.2-beta
+SET v=v0.6.3-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
+:menu
+echo ==========================
+echo     Choose an option
+echo ==========================
+echo (n) no hickup, no ethernet
+echo (e) no hickup
+echo (h) hickup
+echo (o) hickup, no ethernet
+echo (q) quit
+echo ==========================
+choice /c nehoq /n /m "Type key of option to be executed: "
+
+if errorlevel 5 goto end
+if errorlevel 4 goto dohicknoeth
+if errorlevel 3 goto dohick
+if errorlevel 2 goto donohick
+if errorlevel 1 goto donono
+
+echo Invalid choice. Try again.
+pause
+goto menu
+
+:donono
+SET HICK=
+SET ETH=
+goto startllvm
+:donohick
+SET HICK=
+SET ETH=YES
+goto startllvm
+:dohick
+SET HICK=YES
+SET ETH=YES
+goto startllvm
+:dohicknoeth
+SET HICK=YES
+SET ETH=
+goto startllvm
+
+:startllvm
 ECHO versions for Midnight Mega %v%>%versions%
 ECHO:>>%versions%
 %c1541% -version>>%versions%
@@ -266,16 +307,31 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
 
 REM  "%MFTP%" -d %IMG% -c "del !PRJSHORT!.d81"
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/!PRJUPPER!.D81"
-  "%MFTP%" -e -c "put %HDOSSLASH%/!PRJUPPER!.D81"
+  IF "%ETH%" == "YES" (
+    "%MFTP%" -e -c "put %HDOSSLASH%/!PRJUPPER!.D81"
+  )
 REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/!DATADISKUPPER!.D81"
-  "%MFTP%" -e -c "put %HDOSSLASH%/!DATADISKUPPER!.D81"
+  IF "%ETH%" == "YES" (
+    "%MFTP%" -e -c "put %HDOSSLASH%/!DATADISKUPPER!.D81"
+  )
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/FAKEDISK.D81"
-  "%MFTP%" -e -c "put %HDOSSLASH%/FAKEDISK.D81"
+  IF "%ETH%" == "YES" (
+    "%MFTP%" -e -c "put %HDOSSLASH%/FAKEDISK.D81"
+  )
 
-  REM storage card hickup seems to always win:
-  "%MFTP%" -d %IMG% -c "put '%HICKUPDIR%\%HICKUPFILE%' HICKUP.M65"
-  "%MFTP%" -e -c "put '%HICKUPDIR%\%HICKUPFILE%' HICKUP.M65"
+  IF "%HICK%" == "YES" (
+    REM storage card hickup seems to always win:
+    "%MFTP%" -d %IMG% -c "put '%HICKUPDIR%\%HICKUPFILE%' HICKUP.M65"
+    IF "%ETH%" == "YES" (
+      "%MFTP%" -e -c "put '%HICKUPDIR%\%HICKUPFILE%' HICKUP.M65"
+    )
+  ) ELSE (
+    "%MFTP%" -d %IMG% -c "del HICKUP.M65"
+    IF "%ETH%" == "YES" (
+      "%MFTP%" -e -c "del HICKUP.M65"
+    )
+  )
 
   TIMEOUT 1
   REM "%ETHL%" --mount !PRJSHORT!.d81 --run %PRJ%.prg
@@ -292,11 +348,18 @@ REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
 
   powershell -command "&{(Get-Content mega65.bas).ToLower() | Out-File mega65lower.bas -Encoding Ascii}"
   %petcat% -w65 -o mega65.bas.prg -- mega65lower.bas
-  "%ETHL%" --mount !PRJSHORT!.d81 --run mega65.bas.prg
+  IF "%ETH%" == "YES" (
+    "%ETHL%" --mount !PRJSHORT!.d81 --run mega65.bas.prg
+  )
+
+  REM Nasty, the before headless XMega65 urgently needed a hickup:
+  IF NOT "%HICK%" == "YES" (
+    SET HICKUPOPT=%HICKUPOPTOLD%
+  )
 
   XMEGA65 -besure ^
     -importbas mega65.bas ^
-    %HICKUPOPT% ^
+    !HICKUPOPT! ^
     -allowfreezer -driveled
 REM    -hdosvirt -defd81fromsd
 REM    -8 !PRJSHORT!.d81 -9 %DATADISK%.d81 -autoload

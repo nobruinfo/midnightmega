@@ -19,6 +19,8 @@
     - [string, screen handling](#string-screen-handling)
     - [graphics](#graphics)
   - [Bugs](#bugs)
+    - [recently fixed](#recently-fixed)
+    - [faults](#faults)
 - [C environment](#c-environment)
   - [Additions to `mega65-libc`](#additions-to-mega65-libc)
   - [Additions to llvm-mos](#additions-to-llvm-mos)
@@ -104,7 +106,7 @@ cease to work. Hence both files are essential for the operation of
 The following keymapping is also shown when opened by pressing the
 \[F1\] or \[HELP\] key.
 
-- Most keys are shown in the feeter bar
+- Most keys are shown in the footer bar
 - \[Ctrl\]\[r\] to rescan current file panel (left or right)
 - Due to Hypervisor limitations .d81 image files can neither be copied
   as a whole nor be created, use \[Mega\]\[F3\] to reach the MEGA65
@@ -255,6 +257,12 @@ allow for more features. Currently still lots of strings are within the
 - If track chains are created by other tools like Dirmaster or C1541
   they may contain illegal track numbers, there should be dedicated
   error messages for it
+- ~~BAM and `dirent` blocks are read/written way too often. With~~ ~~the
+  now cache for two disks (left and right) in place this~~ ~~can be
+  optimised.~~<br /> A BAM flag could be used to only read it back in
+  case disk operation need access to it/alter it.<br /> Also BAM and
+  dirent should be handled in one go as the double logical sectors for
+  both share same physical ones on a disk.
 
 ### string, screen handling
 
@@ -275,7 +283,7 @@ allow for more features. Currently still lots of strings are within the
 ### graphics
 
 - [x] Text based GUI, Midnight/Norton Commander oriented
-- [x] show a status feeter with number of blocks available
+- [x] show a status footer with number of blocks available
 - better visualise disk and mounting errors
 - message boxes for errors and warnings in different colours/sounds?
 - Use different (grid?) colour when SD card content is shown
@@ -284,8 +292,18 @@ allow for more features. Currently still lots of strings are within the
   total size
 - How about those separator lines and graphics using DEL file type
   entries?
+- Modifier key handling could be improved/optimised to treat keys
+  different that don’t require modification at all.
+- Flickering in Xemu when e.g. cursor up is performed multiple times
+  because of how modifier keys are currently handled.
+- Maybe costumise a font to have certain helping characters like an
+  arrow down. Then also put all borders into the CBM standard font to
+  make adtbm’s Christmas collection .d81 with its wavy lines appear
+  (more) correctly.
 
 ## Bugs
+
+### recently fixed
 
 - [x] ~~Copying files into subdirs currently allocates BAM outside~~
   ~~the subfolder tracks.~~
@@ -297,12 +315,6 @@ allow for more features. Currently still lots of strings are within the
 - Updir within disk root folder unecessarily re-reads the headers
 - [x] ~~After file delete BAM seems to be written in the according
   function as well as in nav.c~~ <br /> ~~better check with DEBUG on~~
-- ~~BAM and `dirent` blocks are read/written way too often. With~~ ~~the
-  now cache for two disks (left and right) in place this~~ ~~can be
-  optimised.~~<br /> A BAM flag could be used to only read it back in
-  case disk operation need access to it/alter it.<br /> Also BAM and
-  dirent should be handled in one go as the double logical sectors for
-  both share same physical ones on a disk.
 - [x] ~~Storage card file deletion (also used for directories) takes~~
   ~~place more than once, should be wrapped in a function.~~
 - [x] ~~The disk controller always reads/writes two logical sectors~~
@@ -329,10 +341,6 @@ allow for more features. Currently still lots of strings are within the
   ~~writing of a single one should first read its accompaigning one.~~
 - [x] ~~reading the last sector 39 results in side 1 and an invalid~~
   ~~next track.~~
-- Modifier key handling could be improved/optimised to treat keys
-  different that don’t require modification at all.
-- Flickering in Xemu when e.g. cursor up is performed multiple times
-  because of how modifier keys are currently handled.
 - [x] ~~If a file is only read the drive’s LED doesn’t switch back
   off.~~ \~~It seems this is done by \_miniinit() which needs to be
   checked\~~ ~~anyway.~~
@@ -340,8 +348,14 @@ allow for more features. Currently still lots of strings are within the
   ~~confirmation dialog boxes.~~
 - [x] ~~At some places the highlighted list item is used for the
   chosen~~ ~~action instead of the selected items.~~
+
+### faults
+
 - If a disk has faulty sector chains (e.g. to sector 0) even
   \[Ctrl\]\[r\] does not recover from that.
+- When a `.d64` is mounted `Midnight Mega` treats it as a `.d81` and
+  data is lost when it is being operated on. This state cannot be
+  detected with Hyppo HDOS v1.2 and older.
 
 # C environment
 
