@@ -94,7 +94,7 @@
 {1}{12}{6}Make a selection and press RETURN:
 {1}{14}{8}Sorting directory
 {1}{14}{9}Setup
-{1}{0}{0}.
+{10}
 {1}{0}{0}.
 {1}{0}{0}.
 {1}{0}{0}.
@@ -149,9 +149,10 @@
 {1}{6}{12}{RVSON}{space}Mega{space}{RVSOFF}{space}{RVSON}{space}F5{space}{RVSOFF}{space}copies all blocks (allocated ones if configured) to
 {1}{6}{13}the opposite side, this will{space}{ensh}overwrite{dish}{space}a whole disk (image)
 {1}{6}{14}contents irrevocably.
-{1}{6}{18}
-{1}{6}{19}
-{1}{6}{20}
+{1}{6}{16}With {RVSON}{space}F6{space}{RVSOFF}{space}you can rename files and folders within your beloved {ensh}.d81{dish}
+{1}{6}{17}disk image files and on real diskettes of course. Things on your
+{1}{6}{18}storage cards can't be renamed as this is not supported by the Hyppo
+{1}{6}{19}functions it relies on.
 {1}{36}{22}{RVSON}{space}{space}OK{space}{space}{RVSOFF}
 {1}{60}{22}{RVSON}{space}{space}{30}{space}{space}{RVSOFF}
 {1}{69}{22}{RVSON}{dark gray}{space}{space}v{space}{space}{RVSOFF}{cyan}

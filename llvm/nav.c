@@ -327,9 +327,9 @@ unsigned char menubox(unsigned char side)  {
   //  mcputsxy(12, 18, "  Save  ");
   //  mcputsxy(60, 18, " Cancel ");
       revers(0);
-      text(MENUTITLE, FALSE);
-      text(MENUDIRSORT, FALSE);
-      text(MENUSETUP, FALSE);
+      text(MENUTITLE, TRUE);
+//      text(MENUDIRSORT, FALSE);
+//      text(MENUSETUP, FALSE);
       drawn = TRUE;
     }
 
@@ -337,8 +337,8 @@ unsigned char menubox(unsigned char side)  {
       pos = MENUMAX - 1;
     }
     for (i = 0; i < MENUMAX; i++)  {
-      if (pos == i)  cputcxy(12, 6 + i, '>');
-      else           cputcxy(12, 6 + i, ' ');
+      if (pos == i)  cputcxy(12, 8 + i, '>');
+      else           cputcxy(12, 8 + i, ' ');
     }
 
     c = cgetc();
