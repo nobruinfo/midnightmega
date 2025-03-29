@@ -32,6 +32,9 @@ extern BAM * BAMsector[2];
 
 // KickC calls conio_mega65_init() before doing main():
 int main() {
+  // setscreensize(80, 50);  or 40 25
+  setscreensize(80, 25);
+  // Init takes actual screensize from the before call to work with:
   conioinit();
   // ASCII lowercase is in conioinit()
 
@@ -39,8 +42,6 @@ int main() {
   bordercolor (COLOUR_BLACK);
   bgcolor (COLOUR_BLUE);
   
-  // setscreensize(80, 50);  or 40 25
-  setscreensize(80, 25);
 /*
   setuppercase();
   for (int i = 0; i <= 255; i++)  {

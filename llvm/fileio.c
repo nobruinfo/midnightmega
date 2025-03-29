@@ -151,7 +151,8 @@ unsigned char ReadSector(unsigned char legacyHDOSstate,
     // Turn on motor + led (which causes led to light solid):
     POKE(0xd080U, drive);
     // @@@@ legacy timing:
-    if (legacyHDOSstate)  {
+//    if (legacyHDOSstate)  {
+    if (lastdrive != drive)  {
       // Spinup for ready:
       POKE(0xd081U, 0x20);
       // Wait while busy:
@@ -219,7 +220,8 @@ unsigned char WriteSector(unsigned char legacyHDOSstate,
     // Turn on motor + led (which causes led to light solid):
     POKE(0xd080U, drive);
     // @@@@ legacy timing:
-    if (legacyHDOSstate)  {
+//    if (legacyHDOSstate)  {
+    if (lastdrive != drive)  {
       // Spinup for ready:
       POKE(0xd081U, 0x20);
       // Wait while busy:
@@ -252,6 +254,7 @@ unsigned char WriteSector(unsigned char legacyHDOSstate,
     }
     // Make sure we can see the data, clear bit 7:
     POKE(0xd689U, PEEK(0xd689U) & ~0x80);
+    lastdrive = drive;
 
   ShowAccess(drive, track, sector, OFF);
     return retval;
