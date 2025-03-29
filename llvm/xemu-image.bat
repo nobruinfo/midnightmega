@@ -12,7 +12,8 @@ SET PETCAT="%PETCAT%2021\GTK3VICE-3.8-win64\bin\petcat.exe"
 REM Should mega65_ftp cease to work at later versions consider adding
 REM "-c exit" to all lines:
 SET MTOO=D:\Game Collections\C64\Mega65\Tools\M65Tools\
-SET MTOO=%MTOO%m65tools-release-1.00-windows
+REM SET MTOO=%MTOO%m65tools-release-1.00-windows
+SET MTOO=%MTOO%m65tools-develo-165-c2b03a-windows
 SET MFTP=%MTOO%\mega65_ftp.exe
 SET MFTP=F:\Entwicklungsprojekte\github-nobru\mega65-tools\bin\mega65_ftp.exe
 SET DEST=-e
@@ -24,6 +25,7 @@ SET D81FNX=D:\Game Collections\C64\FNX1591\disks
 SET D81C64=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme
 SET D81MM=F:\Entwicklungsprojekte\github-nobru\midnightmega\llvm
 SET CORE=D:\Game Collections\C64\Mega65\core\CORE
+SET ESSENTIALS=D:\Game Collections\C64\Mega65\core\sdcardfiles
 SET INTRODEST=INTRO
 SET IMG=%APPDATA%\xemu-lgb\mega65\mega65.img
 SET PATH=%PATH%;%VICE%;%XMEGA65%
@@ -47,6 +49,7 @@ echo (f) populate "FNX1591"
 echo (6) populate "C64"
 echo (o) populate "CORE"
 echo (a) populate "autoboot"
+echo (e) populate "essentials"
 echo (h) show ftp command list
 echo (c) execute ftp dir command
 echo (l) put latest Midnight Mega
@@ -55,15 +58,16 @@ echo (t) test
 echo (r) populate "ROMS"
 echo (q) quit
 echo ==========================
-choice /c mdif6oahclstrq /n /m "Type key of option to be executed: "
+choice /c mdif6oaehclstrq /n /m "Type key of option to be executed: "
 
-if errorlevel 14 goto end
-if errorlevel 13 goto roms
-if errorlevel 12 goto test
-if errorlevel 11 goto doswap
-if errorlevel 10 goto mmput
-if errorlevel 9 goto dodir
-if errorlevel 8 goto dohelp
+if errorlevel 15 goto end
+if errorlevel 14 goto roms
+if errorlevel 13 goto test
+if errorlevel 12 goto doswap
+if errorlevel 11 goto mmput
+if errorlevel 10 goto dodir
+if errorlevel 9 goto dohelp
+if errorlevel 8 goto doessentials
 if errorlevel 7 goto doautoboot
 if errorlevel 6 goto docore
 if errorlevel 5 goto doc64
@@ -274,11 +278,17 @@ ECHO 0 rem *** %datadisk% ***>mega65.bas
 ECHO 1 print " 1) intro">>mega65.bas
 ECHO 2 print " 2) geos">>mega65.bas
 ECHO 3 print " 3) midnight mega">>mega65.bas
+ECHO 4 print " 4) petterm">>mega65.bas
+ECHO 5 print " 5) gehaf's imager">>mega65.bas
+ECHO 6 print " 6) intro4 test">>mega65.bas
 ECHO 20 print " / quit to basic">>mega65.bas
 ECHO 25 getkey a$>>mega65.bas
 ECHO 30 if a$ = "1" then 100 : rem intro>>mega65.bas
 ECHO 31 if a$ = "2" then 200 : rem geos>>mega65.bas
 ECHO 32 if a$ = "3" then 300 : rem midnight>>mega65.bas
+ECHO 33 if a$ = "4" then 400 : rem petterm>>mega65.bas
+ECHO 34 if a$ = "5" then 500 : rem imager>>mega65.bas
+ECHO 35 if a$ = "6" then 600 : rem intro4>>mega65.bas
 ECHO 39 if a$ = "/" then end>>mega65.bas
 
 ECHO 100 chdir "intro",u12>>mega65.bas
@@ -294,6 +304,19 @@ ECHO 310 mount "midnight.d81">>mega65.bas
 ECHO 315 mount "datadisk.d81",u9>>mega65.bas
 ECHO 320 run "*">>mega65.bas
 
+ECHO 400 rem is in root folder>>mega65.bas
+ECHO 410 mount "petterm.d81">>mega65.bas
+ECHO 420 run "*">>mega65.bas
+
+ECHO 500 chdir "tools",u12>>mega65.bas
+ECHO 501 chdir "geehaf",u12>>mega65.bas
+ECHO 510 mount "imager20 fat support.d81">>mega65.bas
+ECHO 520 run "*">>mega65.bas
+
+ECHO 600 rem chdir "intro",u12>>mega65.bas
+ECHO 610 mount "intro4.d81">>mega65.bas
+ECHO 620 boot>>mega65.bas
+
 %petcat% -w65 -o mega65.prg -- mega65.bas
 %c1541% -format mega65,id d81 mega65.d81
 %c1541% -attach mega65.d81 -write mega65.prg autoboot.c65
@@ -305,6 +328,27 @@ pause
 DEL mega65.bas
 DEL mega65.prg
 DEL MEGA65.D81
+goto menu
+
+:doessentials
+title MEGA65_FTP populating essentials
+CD /D "%ESSENTIALS%"
+SET FOLDER=.
+SET "prefix="*.m65""
+ECHO !prefix!
+REM "%MFTP%" %DEST% -c "mkdir %FOLDER%"
+for /f "tokens=1* delims=?" %%i in ('DIR /B /O:N !prefix!') do (
+  REM ECHO CD=!CD!  D81=!DISKUPPER!
+  SET "FOLDERSLASH=!FOLDER:\=/!"
+  "%MFTP%" %DEST% -c "del !FOLDERSLASH!/%%i"
+  SET "DISKUPPER=%%i"
+  for %%b in (A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+    set "DISKUPPER=!DISKUPPER:%%b=%%b!"
+  )
+  "%MFTP%" %DEST% -c "cd !FOLDERSLASH!" -c "put '!DISKUPPER!'"
+)
+"%MFTP%" %DEST% -c "dir"|more
+pause
 goto menu
 
 :dodir

@@ -74,7 +74,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.6.4-beta
+SET v=v0.6.5-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 
 :menu
@@ -205,6 +205,9 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
   REM DEL %PRJ%text.seq %PRJ%text_binmake.seq
   %c1541% -attach %PRJ%.d81 -delete %ROMLIST%
   %c1541% -attach %PRJ%.d81 -write %ROMLIST%.prg %ROMLIST%
+
+  REM @@@@ Testing:
+  REM %c1541% -attach %PRJ%.d81 -write ..\..\fireplace.prg fireplace
 
   REM Use in Xemu's out of the image file fs access:
   XCOPY /Y %PRJ%.d81 %HDOS%\
@@ -342,6 +345,7 @@ REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   REM Mount the two disks from the virtual storage image:
   ECHO 10 REM SLEEP 1 >mega65.bas
   ECHO 20 MOUNT "!PRJUPPER!.D81">>mega65.bas
+  REM @@@@ Maybe later second mount done upon a user option:
   ECHO 30 MOUNT "!DATADISKUPPER!.D81",U9>>mega65.bas
   ECHO 40 REM SLEEP 1 >>mega65.bas
   ECHO 50 RUN "*">>mega65.bas
