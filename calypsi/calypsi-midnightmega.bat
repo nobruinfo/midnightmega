@@ -32,20 +32,20 @@ CD /D %~dp0
 SET PRJ=midnightmega
 SET ROMLIST=romlister
 SET DATADISK=datadisk
-SET versions=..\versions_llvm-mos.txt
+SET versions=..\versions_calypsi.txt
 
-set LLVM_HOME=%~dp0..\..\..\Mega65\llvm-mos\llvm-mos
-set LLVM_BAT=%LLVM_HOME%\bin\mos-mega65-clang.bat
-set LLVMDUMP=%LLVM_HOME%\bin\llvm-objdump.exe
+set CALYPSI_HOME=%~dp0..\..\..\Mega65\calypsi-6502-5.12
+set CC6502="%CALYPSI_HOME%\bin\cc6502.exe"
+set CA6502="%CALYPSI_HOME%\bin\as6502.exe"
+set LN6502="%CALYPSI_HOME%\bin\ln6502.exe"
 SET libcfilesdir=..\mega65-libc\src
-REM  SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%\hal.c
-SET libcfiles=%libcfilesdir%\hal.c
-SET libcfiles=%libcfiles% include\memory_asm.s
+SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%\hal.c
+REM before Calypsi: SET libcfiles=%libcfiles% include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
-SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c texts.c sid.c romlist.c conio.c memory.c
-SET cfilesrom=%ROMLIST%.c hyppo.c fileio.c conioextensions.c romlist.c conio.c memory.c
+SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c texts.c sid.c romlist.c
+REM SET cfiles=%PRJ%.c conioextensions.c
+SET cfilesrom=%ROMLIST%.c hyppo.c fileio.c conioextensions.c romlist.c
 
-REM https://clang.llvm.org/docs/ClangCommandLineReference.html
 SET opts=--include-directory=.\include
 SET opts=%opts% --include-directory=..\mega65-libc\include
 SET opts=%opts% -ferror-limit=1 -Wno-error=implicit-function-declaration
@@ -54,15 +54,9 @@ REM SET opts=%opts% -Wl,-static -fdata-sections -ffunction-sections
 REM SET opts=%opts% -Wl,--gc-sections -Wl,-s
 REM https://www.c64-wiki.com/wiki/llvm-mos -Oz gives "size at all costs":
 SET opts=%opts% -Oz
-REM You can pass -mreserve-zp= to tell the compiler to reduce
-REM its ZP spend by that amount:
-REM SET opts=%opts% -mreserve-zp=2
-REM SET opts=%opts% -mlto-zp=5
+SET opts=%opts% -Wl,-Map=%PRJ%.map
 SET opts=%opts% -Wl,-trace
 REM SET opts=%opts% -Wl,--reproduce=reproduce.tar
-REM SET opts=%opts% -mcpu=mos45gs02
-REM SET opts=%opts% -T midnightmega.ld
-
 REM git tag -a "v0.1.0-beta" -m "version v0.1.0-beta"
 git describe --tags>arghh.tmp
 SET /P v=<arghh.tmp
@@ -76,6 +70,10 @@ DEL arghh.tmp > NUL 2> NUL
 REM Forget the git tag as it always is one commit behind:
 SET v=v0.6.6-beta
 SET opts=%opts% -DVERSION=\"%v%\"
+SET calopts=-D asm=__asm -I calypsi.h -D VERSION=\"%v%\" -I .\include -I ..\mega65-libc\include
+SET calopts=-D asm=__asm -I calypsi.h -D VERSION=\"%v%\" -I ..\mega65-libc\include
+SET calopts=%calopts% -O 2 --core 45gs02 --target MEGA65
+SET calopts=%calopts% -D FULLFEATURES
 
 :menu
 echo ==========================
@@ -128,9 +126,9 @@ TYPE arghh.tmp | find /i "cross-development">>%versions%
 TYPE arghh.tmp | find /i "version">>%versions%
 DEL arghh.tmp > NUL 2> NUL
 ECHO:>>%versions%
-%LLVM_HOME%\bin\mos-clang.exe --version>>%versions%
+%CC6502% --version>>%versions%
 ECHO:>>%versions%
-%LLVM_HOME%\bin\llvm-objdump.exe --version>>%versions%
+%CA6502% --version>>%versions%
 ECHO:>>%versions%
 REM Xemu uses an additional console window that cannot be GREPped:
 REM XMEGA65 -version -headless>>%versions%
@@ -140,41 +138,67 @@ REM Reformat the .md to give it a table of contents:
 pandoc -s ..\docsrc\readmesrc.md --toc -t gfm -o ..\readme.md
 
 REM DEL %TEMP%\*.o
-REM -c does a .o without linking:
-CALL %LLVM_BAT% -c -o unmap-basic-basepage.o unmap-basic-basepage.S
-CALL %LLVM_BAT% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %cfiles% %libcfiles%
+REM CALL %CC6502% -Os %opts% -o %PRJ%.s -Wl,--lto-emit-asm %cfiles% %libcfiles%
+
+GOTO SKIPFUNCT
+
+:compile
+FOR /F "tokens=1,* delims= " %%i IN ("%~1") DO (
+  ECHO %%i ...
+  SET c="%%i"
+  SET obj="%%~dpni.o"
+  SET lst="%%~dpni.lst"
+  SET asm="%%~dpni.s"
+
+  IF "%%~dpnxi" == !asm! (
+    %CA6502% --target=mega65 --list-file=!lst! -o !obj! !asm!
+  ) ELSE (
+    %CC6502% %calopts% -S !c!
+    %CC6502% --list-file=!lst! %calopts% -o !obj! !c!
+  )
+  SET objs=!objs! !obj!
+  ECHO:
+  call :compile "%%~j"
+)
+@goto :EOF
+
+:SKIPFUNCT
+SET objs=
+CALL :compile "%cfiles% %libcfiles%"
+
+REM %LN6502% -o %PRJ% --list-file=%prj%.lst --verbose --output-format prg --core 45gs02 --target=mega65
+%LN6502% -o %PRJ%.prg --list-file=%prj%.lst --output-format prg --core 45gs02 --target=mega65 ^
+  !objs! mega65-%PRJ%.scm
+
+REM	hello.prg:  $(OBJS)
+REM		ln6502 --target=mega65 mega65-plain.scm -o $@ $^  --output-format=prg --list-file=hello-mega65.lst
+
+REM  hello.elf: $(OBJS_DEBUG)
+REM	ln6502 --target=mega65 mega65-plain.scm --debug -o $@ $^ --list-file=hello-debug.lst --semi-hosted
 
 :NOBUILD
 IF ERRORLEVEL == 1 (
   PAUSE
 ) ELSE (
-  ECHO ------------------------------------------------------
-  REM  -Wall
-  CALL %LLVM_BAT% -Os -o %PRJ%.prg %opts% -Wl,-Map=%PRJ%.map %cfiles% %libcfiles%
-REM  SET opts=%opts% -DDISKDEBUG
-REM  CALL %LLVM_BAT% -Os -o dbg%PRJ%.prg !opts! %cfiles% %libcfiles%
-REM  SET opts=!opts! -DDELAYDEBUG
-REM  CALL %LLVM_BAT% -Os -o emu%PRJ%.prg !opts! %cfiles% %libcfiles%
-
-  for /f "tokens=1* delims=?" %%i in ('DIR /B /O:DN "%TEMP%\*.o"') do (
-    ECHO File is %%i
-    SET file=%%i
-    SET "f=!file:~-1,1!"
-    ECHO %LLVMDUMP% --disassemble --syms %%i > %PRJ%_!f!_dump.txt
-  )
-
-  %LLVMDUMP% --disassemble --syms %PRJ%.prg.elf > %PRJ%_dump.txt
-
   REM seperate ROM list application
-  CALL %LLVM_BAT% -Os -o %ROMLIST%.prg %opts% -Wl,-Map=%ROMLIST%.map %cfilesrom% %libcfiles%
-  %LLVMDUMP% --disassemble --syms %ROMLIST%.prg.elf > %ROMLIST%_dump.txt
+  SET objs=
+  CALL :compile "%cfilesrom% %libcfiles%"
+  %LN6502% -o %ROMLIST%.prg --list-file=%ROMLIST%.lst --output-format prg --core 45gs02 --target=mega65 ^
+    !objs! mega65-%PRJ%.scm
+
+  ECHO ------------------------------------------------------
 
   %c1541% -format disk%PRJ%,id d81 %PRJ%.d81
   %c1541% -attach %PRJ%.d81 -delete %PRJ%
   %c1541% -attach %PRJ%.d81 -write %PRJ%.prg %PRJ%
+
 REM  %c1541% -attach %PRJ%.d81 -write dbg%PRJ%.prg dbg%PRJ%
 REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
 
+  REM file for loadFileToMemory():
+REM    ECHO this is a sequential file for testing.>%PRJ%.seq
+REM    %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,p
+REM    DEL %PRJ%.seq>NUL
   IF 1 == 2 (
     ECHO this is a sequential file for testing.>%PRJ%.seq
     %c1541% -attach %PRJ%.d81 -write %PRJ%.seq %PRJ%.0,s
@@ -247,10 +271,10 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
     REM c1541 currently destroys neighbouring subpartitions if only 3 tracks
     REM of size. Also with copying two or more files it writes one of them
     REM in tracks lower than the dirtrack:
-    for /l %%j in (0, 1, 1) do (
-      for /l %%i in (0, 1, 1) do (
-  REM      %c1541% -attach %DATADISK%.d81 -@ "/%%j:folder %%j" -delete %PRJ%
-        %c1541% -attach %DATADISK%.d81 -@ "/0:folder %%j" -write %PRJ%.prg %%j%PRJ%.%%i
+  for /l %%j in (0, 1, 1) do (
+    for /l %%i in (0, 1, 1) do (
+REM      %c1541% -attach %DATADISK%.d81 -@ "/%%j:folder %%j" -delete %PRJ%
+      %c1541% -attach %DATADISK%.d81 -@ "/0:folder %%j" -write %PRJ%.prg %%j%PRJ%.%%i
       )
     )
   )
@@ -311,16 +335,16 @@ REM  %c1541% -attach %PRJ%.d81 -write emu%PRJ%.prg emu%PRJ%
 REM  "%MFTP%" -d %IMG% -c "del !PRJSHORT!.d81"
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/!PRJUPPER!.D81"
   IF "%ETH%" == "YES" (
-    "%MFTP%" -e -c "put %HDOSSLASH%/!PRJUPPER!.D81"
+  "%MFTP%" -e -c "put %HDOSSLASH%/!PRJUPPER!.D81"
   )
 REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/!DATADISKUPPER!.D81"
   IF "%ETH%" == "YES" (
-    "%MFTP%" -e -c "put %HDOSSLASH%/!DATADISKUPPER!.D81"
+  "%MFTP%" -e -c "put %HDOSSLASH%/!DATADISKUPPER!.D81"
   )
   "%MFTP%" -d %IMG% -c "put %HDOSSLASH%/FAKEDISK.D81"
   IF "%ETH%" == "YES" (
-    "%MFTP%" -e -c "put %HDOSSLASH%/FAKEDISK.D81"
+  "%MFTP%" -e -c "put %HDOSSLASH%/FAKEDISK.D81"
   )
 
   IF "%HICK%" == "YES" (
@@ -380,7 +404,7 @@ REM    -8 !PRJSHORT!.d81 -9 %DATADISK%.d81 -autoload
   "%MFTP%" -d %IMG% -c "get MEGA65.D81"
   "%MFTP%" -d %IMG% -c "get EXTERNAL.D81"
   START "Readback" /MIN .
-  
+
 REM  "%M65DBG%" -l tcp
 REM  pause
 )

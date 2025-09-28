@@ -1,0 +1,181 @@
+###############################################################################
+#                                                                             #
+# Calypsi ISO C compiler for 6502                                version 5.12 #
+#                                                       28/Sep/2025  20:16:16 #
+# Command line:                                                               #
+#               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\sid.lst #
+#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.6-beta" -I         #
+#               ..\mega65-libc\include -O 2 --core 45gs02 --target MEGA65     #
+#               -D FULLFEATURES -o                                            #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\sid.o #
+#               sid.c                                                         #
+#                                                                             #
+###############################################################################
+
+    \ 0000                      .rtmodel version,"1"
+    \ 0000                      .rtmodel codeModel,"plain"
+    \ 0000                      .rtmodel core,"45gs02"
+    \ 0000                      .rtmodel target,"mega65"
+    \ 0000                      .extern _AllocStackSave
+    \ 0000                      .extern _RestoreRegisters
+    \ 0000                      .extern _Vfp
+    \ 0000                      .extern _Vsp
+    \ 0000                      .extern _Zp
+    \ 0000                      .extern usleep
+0001                #include <mega65/hal.h>  // mega65-libc
+0002                #include <mega65.h>  // taken from KickC
+0003                #include "sid.h"
+0004
+0005                // *********************************************************
+0006                // ***  sid.c Midnight Mega's SID minimal effects        ***
+0007                // *********************************************************
+0008
+0009                // extern struct MOS6581_SID * const SID;
+0010                // struct MOS6581_SID * const SID3 = (struct MOS6581_SID *)0xd440; before Calypsi
+0011
+0012                const int scale[] = {
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .public scale
+    \ 0000 25113f13 scale:      .word   0x1125,0x133f,0x159a,0x16e3,0x19b1,0x1cd6,0x205e,0x22af
+    \ 0004 9a15e316
+    \ 0008 b119d61c
+    \ 000c 5e20af22
+0013                	0x1125,	0x133F,	0x159A,	0x16E3,	
+0014                	0x19B1, 0x1CD6,	0x205E,	0x22AF
+0015                };
+0016
+0017                /*
+0018                    unsigned int freq;
+0019                    /// Channel 1 Pulse Width (0-4095)
+0020                    unsigned int pw;
+0021                    /// Channel 1 Control
+0022                    char ctrl;
+0023                    /// Channel 1 Attack/decay
+0024                    char ad;
+0025                    /// Channel 1 Sustain/Release
+0026                    char CH1_SUSTAIN_RELEASE;
+0027                */
+0028
+0029                void sidtest2 (void) {
+    \ 0000                      .section code,text
+    \ 0000                      .public sidtest2
+    \ 0000 a200     sidtest2:   ldx     #0
+    \ 0002 a000                 ldy     #0
+    \ 0004 20....               jsr     _AllocStackSave
+0030                	unsigned int i;
+0031                	unsigned char t;
+0032                	
+0033                	SID1.v1.pw      = 0x1F; 	// Volume
+    \ 0007 8a                   txa
+    \ 0008 8d03d4               sta     0xd403
+    \ 000b a91f                 lda     #31
+    \ 000d 8d02d4               sta     0xd402
+0034                	SID1.v1.ad    = 0x09; 	// Attack/decay voice 1
+    \ 0010 a909                 lda     #9
+    \ 0012 8d05d4               sta     0xd405
+0035                	
+0036                	for (t = 0 ; t < sizeof(scale) / 2; t++) {
+    \ 0015 a900                 lda     #0
+    \ 0017 85..                 sta     zp:_Zp+24
+    \ 0019          `?L5`:
+    \ 0019 ab....               ldz     _Zp+24
+    \ 001c c208                 cpz     #8
+    \ 001e 9005                 bcc     `?L4`
+0037                		SID1.v1.freq  = scale[t];	// Frequency 
+0038                		SID1.v1.ctrl  = 0x11;	// Control voice 1
+0039                //		for (i = 0 ; i < 5000; i++) {}
+0040                	    usleep(2000000); // microseconds
+0041                		SID1.v1.ctrl  = 0x10;
+0042                //		for (i = 0 ; i < 1000 ; i++) {}
+0043                	    usleep(2000000); // microseconds
+0044                	}		
+0045                }
+    \ 0020 a000                 ldy     #0
+    \ 0022 4c....               jmp     _RestoreRegisters
+    \ 0025          `?L4`:
+    \ 0025 a5..                 lda     zp:_Zp+24
+    \ 0027 0a                   asl     a
+    \ 0028 aa                   tax
+    \ 0029 bd....               lda     scale+1,x
+    \ 002c 8d01d4               sta     0xd401
+    \ 002f bd....               lda     scale,x
+    \ 0032 8d00d4               sta     0xd400
+    \ 0035 a911                 lda     #17
+    \ 0037 20....               jsr     `?L15`
+    \ 003a a910                 lda     #16
+    \ 003c 20....               jsr     `?L15`
+    \ 003f e6..                 inc     zp:_Zp+24
+    \ 0041 80d6                 bra     `?L5`
+0046
+0047                void sidbong(void) {
+    \ 0000                      .section code,text
+    \ 0000                      .public sidbong
+    \ 0000          sidbong:
+0048                	unsigned int i;
+0049                	unsigned char t;
+0050                	
+0051                	SID1.v1.pw      = 0x1F; 	// Volume
+    \ 0000 a900                 lda     #0
+    \ 0002 8d03d4               sta     0xd403
+    \ 0005 a91f                 lda     #31
+    \ 0007 8d02d4               sta     0xd402
+0052                	SID1.v1.ad    = 0x09; 	// Attack/decay voice 1
+    \ 000a a909                 lda     #9
+    \ 000c 8d05d4               sta     0xd405
+0053                	
+0054                	SID1.v1.freq  = 0x1125;	// Frequency 
+    \ 000f a911                 lda     #17
+    \ 0011 8d01d4               sta     0xd401
+    \ 0014 a925                 lda     #37
+    \ 0016 8d00d4               sta     0xd400
+0055                	SID1.v1.ctrl  = 0x11;	// Control voice 1
+    \ 0019 a911                 lda     #17
+    \ 001b 8d04d4               sta     0xd404
+0056                	
+0057                	SID3.v1.pw      = 0x1F; 	// Volume
+    \ 001e a900                 lda     #0
+    \ 0020 8d43d4               sta     0xd443
+    \ 0023 a91f                 lda     #31
+    \ 0025 8d42d4               sta     0xd442
+0058                	SID3.v1.ad    = 0x09; 	// Attack/decay voice 1
+    \ 0028 a909                 lda     #9
+    \ 002a 8d45d4               sta     0xd445
+0059                	
+0060                	SID3.v1.freq  = 0x159A;	// Frequency 
+    \ 002d a915                 lda     #21
+    \ 002f 8d41d4               sta     0xd441
+    \ 0032 a99a                 lda     #154
+    \ 0034 8d40d4               sta     0xd440
+0061                	SID3.v1.ctrl  = 0x11;	// Control voice 1
+    \ 0037 a911                 lda     #17
+    \ 0039 8d44d4               sta     0xd444
+0062
+0063                	usleep(200000); // microseconds
+    \ 003c a940                 lda     #64
+    \ 003e a20d                 ldx     #13
+    \ 0040 a003                 ldy     #3
+    \ 0042 20....               jsr     `?L16`
+0064                	SID1.v1.ctrl  = 0x10;
+    \ 0045 a910                 lda     #16
+    \ 0047 8d04d4               sta     0xd404
+0065                	SID3.v1.ctrl  = 0x10;
+    \ 004a 8d44d4               sta     0xd444
+0066                }
+    \ 004d 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 8d04d4   `?L15`:     sta     0xd404
+    \ 0003 a980                 lda     #128
+    \ 0005 a284                 ldx     #132
+    \ 0007 a01e                 ldy     #30
+    \ 0009 a300     `?L16`:     ldz     #0
+    \ 000b 424285..             stq     zp:_Zp
+    \ 000f 4c....               jmp     usleep
+
+##########################
+#                        #
+# Memory sizes (decimal) #
+#                        #
+##########################
+
+Executable  (Text): 163 bytes
+Constant          :  16 bytes

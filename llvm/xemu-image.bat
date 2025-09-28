@@ -14,13 +14,15 @@ REM "-c exit" to all lines:
 SET MTOO=D:\Game Collections\C64\Mega65\Tools\M65Tools\
 REM SET MTOO=%MTOO%m65tools-release-1.00-windows
 SET MTOO=%MTOO%m65tools-develo-165-c2b03a-windows
-SET MFTP=%MTOO%\mega65_ftp.exe
+SET M65=%MTOO%\m65.exe
+REM SET MFTP=%MTOO%\mega65_ftp.exe
 SET MFTP=F:\Entwicklungsprojekte\github-nobru\mega65-tools\bin\mega65_ftp.exe
 SET DEST=-e
 SET XMEGA65=D:\Game Collections\C64\Mega65\Xemu\xemu-binaries-win64\
 SET HDOS=%APPDATA%\xemu-lgb\mega65\hdos\
 SET D81=D:\Game Collections\C64\Mega65\disks
 SET D81INTRO=D:\Game Collections\C64\Mega65\disks unsorted\Intro\ALL_INTROS\sdcard-files
+SET D81INTRO=D:\Game Collections\C64\Mega65\disks unsorted\Intro\2025 INTRO4\ALL_INTROS\sdcard-files
 SET D81FNX=D:\Game Collections\C64\FNX1591\disks
 SET D81C64=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme
 SET D81MM=F:\Entwicklungsprojekte\github-nobru\midnightmega\llvm
@@ -56,11 +58,15 @@ echo (l) put latest Midnight Mega
 echo (s) change destination ethernet/Xemu
 echo (t) test
 echo (r) populate "ROMS"
+echo (0) do stuff manually in DESTRUCTIVE mode
+echo (1) make a screenshot
 echo (q) quit
 echo ==========================
-choice /c mdif6oaehclstrq /n /m "Type key of option to be executed: "
+choice /c mdif6oaehclstr01q /n /m "Type key of option to be executed: "
 
-if errorlevel 15 goto end
+if errorlevel 17 goto end
+if errorlevel 16 goto screenshot
+if errorlevel 15 goto dopromptdestructive
 if errorlevel 14 goto roms
 if errorlevel 13 goto test
 if errorlevel 12 goto doswap
@@ -84,6 +90,13 @@ goto menu
 title MEGA65_FTP CLI mode
 CD /D "%D81%"
 "%MFTP%" %DEST%
+pause
+goto menu
+
+:dopromptdestructive
+title MEGA65_FTP CLI mode DESTRUCTIVE mode
+CD /D "%D81%"
+"%MFTP%" %DEST% -y
 pause
 goto menu
 
@@ -281,7 +294,11 @@ ECHO 3 print " 3) midnight mega">>mega65.bas
 ECHO 4 print " 4) petterm">>mega65.bas
 ECHO 5 print " 5) gehaf's imager">>mega65.bas
 ECHO 6 print " 6) intro4 test">>mega65.bas
-ECHO 20 print " / quit to basic">>mega65.bas
+ECHO 7 print " 7) eleven">>mega65.bas
+ECHO 8 print " 8) mega-ip term">>mega65.bas
+ECHO 9 print " 9) mega-ip web server">>mega65.bas
+ECHO 20 print " /  quit to basic">>mega65.bas
+
 ECHO 25 getkey a$>>mega65.bas
 ECHO 30 if a$ = "1" then 100 : rem intro>>mega65.bas
 ECHO 31 if a$ = "2" then 200 : rem geos>>mega65.bas
@@ -289,14 +306,18 @@ ECHO 32 if a$ = "3" then 300 : rem midnight>>mega65.bas
 ECHO 33 if a$ = "4" then 400 : rem petterm>>mega65.bas
 ECHO 34 if a$ = "5" then 500 : rem imager>>mega65.bas
 ECHO 35 if a$ = "6" then 600 : rem intro4>>mega65.bas
-ECHO 39 if a$ = "/" then end>>mega65.bas
+ECHO 36 if a$ = "7" then 700 : rem eleven>>mega65.bas
+ECHO 37 if a$ = "8" then 800 : rem mega-ip term>>mega65.bas
+ECHO 38 if a$ = "9" then 900 : rem mega-ip web server>>mega65.bas
+ECHO 49 if a$ = "/" then end>>mega65.bas
+ECHO 50 goto 25>>mega65.bas
 
 ECHO 100 chdir "intro",u12>>mega65.bas
 ECHO 110 mount "mega65.d81">>mega65.bas
 ECHO 120 boot>>mega65.bas
 
 ECHO 200 chdir "geos",u12>>mega65.bas
-ECHO 210 mount "mega65.d81">>mega65.bas
+ECHO 210 mount "geos65v4.0.d81">>mega65.bas
 ECHO 220 boot>>mega65.bas
 
 ECHO 300 rem is in root folder>>mega65.bas
@@ -313,9 +334,23 @@ ECHO 501 chdir "geehaf",u12>>mega65.bas
 ECHO 510 mount "imager20 fat support.d81">>mega65.bas
 ECHO 520 run "*">>mega65.bas
 
-ECHO 600 rem chdir "intro",u12>>mega65.bas
+ECHO 600 chdir "intro4",u12>>mega65.bas
 ECHO 610 mount "intro4.d81">>mega65.bas
 ECHO 620 boot>>mega65.bas
+
+ECHO 700 rem is in root folder>>mega65.bas
+ECHO 710 mount "11distnobru.d81">>mega65.bas
+ECHO 720 boot>>mega65.bas
+
+ECHO 800 chdir "community",u12>>mega65.bas
+ECHO 801 chdir "xlar54",u12>>mega65.bas
+ECHO 810 mount "mega-ip.d81">>mega65.bas
+ECHO 820 run "term">>mega65.bas
+
+ECHO 900 chdir "community",u12>>mega65.bas
+ECHO 901 chdir "xlar54",u12>>mega65.bas
+ECHO 910 mount "mega-ip.d81">>mega65.bas
+ECHO 920 run "web server">>mega65.bas
 
 %petcat% -w65 -o mega65.prg -- mega65.bas
 %c1541% -format mega65,id d81 mega65.d81
@@ -485,6 +520,14 @@ REM mirrored onto the storage card (image file):
     CD ..
   )
 EXIT /B 0
+
+:screenshot
+SET DATUM=%date:~8,2%%date:~3,2%%date:~0,2%-%time:~0,2%%time:~3,2%%time:~6,2%
+
+CD /D "D:\Game Collections\C64\Mega65\doc\screenshots"
+"%M65%" -l COM4 -S%DATUM%.png
+pause
+goto menu
 
 :end
 CD /D %~dp0
