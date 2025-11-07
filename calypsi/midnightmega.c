@@ -25,6 +25,7 @@
 
 // char* inputstr = (char*) INPUTSTRPAGE;
 
+#include "calypsi.h"
 #include "testjmp.h"
 extern unsigned char lfnname[LFNFILENAMELEN];
 #include "fileio.h"
@@ -32,6 +33,7 @@ extern BAM * BAMsector[2];
 
 // KickC calls conio_mega65_init() before doing main():
 int main() {
+  bank_start();
   // setscreensize(80, 50);  or 40 25
   setscreensize(80, 25);
   // Init takes actual screensize from the before call to work with:
@@ -45,7 +47,7 @@ int main() {
 /*
   setuppercase();
   for (int i = 0; i <= 255; i++)  {
-    cputcxy(i % 40, i / 40, i);
+	cputcxy(i % 40, i / 40, i);
   }
   cgetc();
 */
@@ -61,10 +63,9 @@ int main() {
 
 //  if (messagebox(1, "is currently beta and may destroy data structures on",
 //                    ".d81 and real disks! Please work on backed up media.",
-//                    "Press RETURN to continue, STOP to halt.", 0))  {
+//			        "Press RETURN to continue, STOP to halt.", 0))  {
     navi(0);
 //  }
-
   clrhome();
   msprintf("Have fun with your MEGA65!");
   usleep(2000000); // microseconds
@@ -73,5 +74,6 @@ int main() {
 //  flushkeybuf();
   hyppo_reset();
 
+  bank_end();
   return 0;
 }

@@ -1,0 +1,1620 @@
+###############################################################################
+#                                                                             #
+# Calypsi linker for 6502                                        version 5.12 #
+#                                                       07/Nov/2025  20:26:24 #
+# Command line: -o romlister.prg --list-file=romlister.lst --output-format    #
+#               prg --core 45gs02 --target=mega65                             #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o #
+#                                                                             #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o #
+#                                                                             #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\fileio.o #
+#                                                                             #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o #
+#                                                                             #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o #
+#                                                                             #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o #
+#                                                                             #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o #
+#                                                                             #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\hal.o #
+#               mega65-midnightmega.scm                                       #
+#                                                                             #
+###############################################################################
+
+####################
+#                  #
+# Memories summary #
+#                  #
+####################
+
+Name               Range             Size     Used     Checksum  Largest unallocated
+------------------------------------------------------------------------------------
+zeroPage           00000002-0000007f 0000007e  44.4%   none      00000046
+stackPage          00001600-000016ff 00000100   0.0%   none      00000100
+program            00002001-0000cfff 0000afff  15.2%   none      none
+  > program-nobits 00003668-00003ac2 0000045b 100.0%   none      0000953d
+
+
+####################
+#                  #
+# Sections summary #
+#                  #
+####################
+
+Name            Range              Size     Memory         Fragments
+--------------------------------------------------------------------
+registers       00000002-00000039  00000038 zeroPage       1
+programStart    00002001-0000200d  0000000d program        1
+startup         0000200e-0000203b  0000002e program        4
+cdata           0000203c-00002048  0000000d program        3
+data_init_table 00002049-00002052  0000000a program        1
+cdata           00002053-000020e8  00000096 program        8
+code            000020e9-00003660  00001578 program        141
+data            00003661-00003667  00000007 program        3
+cstack          00003668-00003766  000000ff program-nobits 1
+zdata           00003767-00003ac2  0000035c program-nobits 12
+
+
+###################
+#                 #
+# Placement rules #
+#                 #
+###################
+
+Name               Address range     Key
+----------------------------------------------------------------------
+program            00002001-0000cfff 
+  > (programStart 00002001)
+  > (startup 0000200e)
+  program-bits     00002001-0000cfff DATA
+    > data
+  program-nobits   00002001-0000cfff BSS
+    > zdata
+    > cstack
+  program-text     00002001-0000cfff TEXT
+    > code
+  program-const    00002001-0000cfff RODATA
+    > data_init_table and cdata
+stackPage          00001600-000016ff 
+  stackPage-bits   00001600-000016ff DATA
+    > data
+  stackPage-nobits 00001600-000016ff BSS
+    > zdata
+    > cstack
+zeroPage           00000002-0000007f ZPage
+  > (registers 00000002)
+  zeroPage-nobits  00000002-0000007f ZPage and BSS
+    > 
+
+Name   Size     Align
+----------------------
+cstack 000000ff no
+
+################
+#              #
+# Object files #
+#              #
+################
+
+Unit Filename                                                                    Archive
+-----------------------------------------------------------------------------------------------------
+  0  F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o       -
+          >  cdata 00000037
+          >  code  00000091
+  1  F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o           -
+          >  cdata 00000002
+          >  code  00000093
+          >  zdata 00000001
+  2  F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\fileio.o          -
+          >  data 00000004
+  3  F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o -
+          >  code 0000052c
+          >  data 00000002
+  4  F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o         -
+          >  cdata 0000006a
+          >  code  0000013f
+  5  F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o   -
+          >  code  00000798
+          >  data  00000001
+          >  zdata 00000301
+  6  F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o  -
+          >  code  000001fc
+          >  zdata 00000015
+  7  F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\hal.o     -
+          >  code 00000030
+ 10  commodore-startup.o                                                         sdk-45gs02-mega65.a
+          # picked based on cstartup=mega65 (default for MEGA65 board support)
+          >  code         00000001
+          >  programStart 0000000d
+          >  startup      0000002e
+          >  zdata        00000001
+ 12  pseudoRegisters.o                                                           clib-45gs02-mega65.a
+          >  registers 00000038
+ 13  exit.o                                                                      clib-45gs02-mega65.a
+          # picked based on exit=stdexit (built-in default)
+          >  code 00000057
+ 15  controlFlow.o                                                               clib-45gs02-mega65.a
+          >  code 00000003
+ 16  atexit.o                                                                    clib-45gs02-mega65.a
+          >  zdata 00000042
+ 17  enter.o                                                                     clib-45gs02-mega65.a
+          >  code 0000004d
+ 18  exitC99.o                                                                   clib-45gs02-mega65.a
+          >  code 00000004
+ 19  stub_exit.o                                                                 sdk-45gs02-mega65.a
+          # picked based on cstartup=mega65 (default for MEGA65 board support)
+          >  code 00000005
+ 22  integer.o                                                                   clib-45gs02-mega65.a
+          >  code 000001ac
+ 23  stack.o                                                                     clib-45gs02-mega65.a
+          >  code 0000002b
+ 24  lib_strlen.o                                                                clib-45gs02-mega65.a
+          >  code 00000020
+ 25  spill.o                                                                     clib-45gs02-mega65.a
+          >  code 00000057
+ 27  lib_strcpy.o                                                                clib-45gs02-mega65.a
+          >  code 00000027
+ 29  streamlist.o                                                                clib-45gs02-mega65.a
+          >  zdata 00000002
+ 30  initialize.o                                                                clib-45gs02-mega65.a
+          # picked based on initialize=normal (built-in default)
+          >  code 00000097
+ 32  memset_far.o                                                                clib-45gs02-mega65.a
+          >  code 0000002b
+ 33  memcpy_far.o                                                                clib-45gs02-mega65.a
+          >  code 0000003d
+
+###################
+#                 #
+# Cross reference #
+#                 #
+###################
+
+_Zp in section 'registers'
+ placed at address 00000002-00000039 of size 00000038
+(pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Defines:
+        _Zp = 00000002
+        _Vsp = 00000032
+        _Vfp = 00000034
+        _Temp = 00000036
+        _MapShadow = 00000038
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 3)
+        hyppo_setname (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 10)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 45)
+        cputln (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+        csputdec (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 12)
+        asciitoscreencode_s (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 14)
+        mprintf (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 19)
+        ... 101 more
+
+__program_root_section in section 'programStart'
+ placed at address 00002001-0000200d of size 0000000d
+(commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 3)
+    Defines:
+        __program_root_section = 00002001
+
+__program_start in section 'startup'
+ placed at address 0000200e of size 00000000
+(commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 4)
+    Defines:
+        __program_start = 0000200e
+
+Section 'startup'  placed at address 0000200e-00002018 of size 0000000b
+(commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 6)
+    References:
+        .sectionEnd(cstack)
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        __low_level_init in (commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 2)
+
+__data_initialization_needed in section 'startup'
+ placed at address 00002019-0000202b of size 00000013
+(commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 7)
+    Defines:
+        __data_initialization_needed = 00002019
+    References:
+        .sectionEnd(data_init_table)
+        .sectionStart(data_init_table)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        __initialize_sections in (initialize.o (from clib-45gs02-mega65.a) unit 30 section index 2)
+
+Section 'startup'  placed at address 0000202c-0000203b of size 00000010
+(commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 10)
+    References:
+        _InitialStack in (commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 11)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        exit in (exit.o (from clib-45gs02-mega65.a) unit 13 section index 2)
+        main in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+`_StringLiteral_.` in section 'cdata'
+ placed at address 0000203c-0000203d of size 00000002
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 5)
+    Defines:
+        `_StringLiteral_.` = 0000203c
+    Referenced from:
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 3)
+
+hyppofn in section 'cdata'
+ placed at address 0000203e-0000203f of size 00000002
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 2)
+    Defines:
+        hyppofn = 0000203e
+    Referenced from:
+        hyppo_setname (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 10)
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 3)
+
+`_StringLiteral_,  HDOS ` in section 'cdata'
+ placed at address 00002040-00002048 of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 4)
+    Defines:
+        `_StringLiteral_,  HDOS ` = 00002040
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+Section 'data_init_table'  placed at address 00002049-00002052 of size 0000000a
+(linker generated)
+
+`_StringLiteral_MEGA65.ROM` in section 'cdata'
+ placed at address 00002053-0000205d of size 0000000b
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 5)
+    Defines:
+        `_StringLiteral_MEGA65.ROM` = 00002053
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+`_StringLiteral_MEGA650.ROM` in section 'cdata'
+ placed at address 0000205e-00002069 of size 0000000c
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 6)
+    Defines:
+        `_StringLiteral_MEGA650.ROM` = 0000205e
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+`_StringLiteral_file not found.` in section 'cdata'
+ placed at address 0000206a-00002079 of size 00000010
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 8)
+    Defines:
+        `_StringLiteral_file not found.` = 0000206a
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+`_StringLiteral_Versions: Hyppo ` in section 'cdata'
+ placed at address 0000207a-0000208a of size 00000011
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 7)
+    Defines:
+        `_StringLiteral_Versions: Hyppo ` = 0000207a
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+`_StringLiteral_file is a directory.` in section 'cdata'
+ placed at address 0000208b-0000209f of size 00000015
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 7)
+    Defines:
+        `_StringLiteral_file is a directory.` = 0000208b
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+`_StringLiteral_too many open files.` in section 'cdata'
+ placed at address 000020a0-000020b4 of size 00000015
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 10)
+    Defines:
+        `_StringLiteral_too many open files.` = 000020a0
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+`_StringLiteral_invalid file descriptor.` in section 'cdata'
+ placed at address 000020b5-000020cd of size 00000019
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 9)
+    Defines:
+        `_StringLiteral_invalid file descriptor.` = 000020b5
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+`_StringLiteral_Have fun with your MEGA65!` in section 'cdata'
+ placed at address 000020ce-000020e8 of size 0000001b
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 6)
+    Defines:
+        `_StringLiteral_Have fun with your MEGA65!` = 000020ce
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+escNOP in section 'code'  placed at address 000020e9-000020e9 of size 00000001
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 6)
+
+__low_level_init in section 'code'
+ placed at address 000020ea-000020ea of size 00000001
+(commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 2)
+    Defines:
+        __low_level_init = 000020ea
+    Referenced from:
+        (commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 6)
+
+_JmpInd in section 'code'  placed at address 000020eb-000020ed of size 00000003
+(controlFlow.o (from clib-45gs02-mega65.a) unit 15 section index 2)
+    Defines:
+        _JmpInd = 000020eb
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        exit (exit.o (from clib-45gs02-mega65.a) unit 13 section index 2)
+
+msprintf in section 'code'
+ placed at address 000020ee-000020f1 of size 00000004
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 18)
+    Defines:
+        msprintf = 000020ee
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+gotoxy in section 'code'  placed at address 000020f2-000020f5 of size 00000004
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 36)
+    Defines:
+        gotoxy = 000020f2
+    Referenced from:
+        cputln (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 5)
+
+wherey in section 'code'  placed at address 000020f6-000020f9 of size 00000004
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 40)
+    Defines:
+        wherey = 000020f6
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+        cputln (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+
+_Exit in section 'code'  placed at address 000020fa-000020fd of size 00000004
+(exitC99.o (from clib-45gs02-mega65.a) unit 18 section index 2)
+    Defines:
+        _Exit = 000020fa
+    References:
+        _Stub_exit in (stub_exit.o (from sdk-45gs02-mega65.a) unit 19 section index 2)
+    Referenced from:
+        exit (exit.o (from clib-45gs02-mega65.a) unit 13 section index 2)
+
+`?L290` in section 'code'  placed at address 000020fe-00002102 of size 00000005
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 38)
+    References:
+        HTRAP00 in (hyppo.o (from sdk-45gs02-mega65.a) unit 26 section index 65521)
+
+`?L617` in section 'code'  placed at address 00002103-00002108 of size 00000006
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 49)
+    References:
+        asciitoscreencode_s in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 14)
+        cputs in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 50)
+
+clrscr_ in section 'code'  placed at address 00002109-0000210e of size 00000006
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 4)
+    References:
+        clrscr in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 24)
+
+`?L83` in section 'code'  placed at address 0000210f-00002114 of size 00000006
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 18)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+_Stub_exit in section 'code'
+ placed at address 00002115-00002118 of size 00000004
+(stub_exit.o (from sdk-45gs02-mega65.a) unit 19 section index 2)
+    Defines:
+        _Stub_exit = 00002115
+    References:
+        _InitialStack in (commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 11)
+    Referenced from:
+        _Exit (exitC99.o (from clib-45gs02-mega65.a) unit 18 section index 2)
+
+Section 'code'  placed at address 00002119-00002119 of size 00000001
+(stub_exit.o (from sdk-45gs02-mega65.a) unit 19 section index 4)
+
+clrhome in section 'code'  placed at address 0000211a-00002120 of size 00000007
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 16)
+    Defines:
+        clrhome = 0000211a
+    References:
+        clrscr in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 24)
+        gohome in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 35)
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+`?L613` in section 'code'  placed at address 00002121-00002127 of size 00000007
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 46)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L620` in section 'code'  placed at address 00002128-0000212e of size 00000007
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 51)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L626` in section 'code'  placed at address 0000212f-00002135 of size 00000007
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 56)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        cputcxy in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 52)
+
+`?L643` in section 'code'  placed at address 00002136-0000213c of size 00000007
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 68)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L646` in section 'code'  placed at address 0000213d-00002143 of size 00000007
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 71)
+    References:
+        _AllocStackSave in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+
+`?L662` in section 'code'  placed at address 00002144-0000214a of size 00000007
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 85)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L675` in section 'code'  placed at address 0000214b-00002151 of size 00000007
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 96)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L679` in section 'code'  placed at address 00002152-00002158 of size 00000007
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 100)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L689` in section 'code'  placed at address 00002159-0000215f of size 00000007
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 110)
+    References:
+        _AllocStackSave in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+
+hyppo_openfile in section 'code'
+ placed at address 00002160-00002167 of size 00000008
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 19)
+    Defines:
+        hyppo_openfile = 00002160
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+gohome_ in section 'code'  placed at address 00002168-0000216f of size 00000008
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 5)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        gotoxy in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 36)
+
+movedown in section 'code'
+ placed at address 00002170-00002177 of size 00000008
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 44)
+    Defines:
+        movedown = 00002170
+    Referenced from:
+        conioinit (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 7)
+
+moveright in section 'code'
+ placed at address 00002178-0000217f of size 00000008
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 46)
+    Defines:
+        moveright = 00002178
+    Referenced from:
+        conioinit (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 7)
+
+`?L663` in section 'code'  placed at address 00002180-00002187 of size 00000008
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 86)
+    References:
+        _Mul8 in (integer.o (from clib-45gs02-mega65.a) unit 22 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L676` in section 'code'  placed at address 00002188-0000218f of size 00000008
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 97)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+lpoke in section 'code'  placed at address 00002190-00002197 of size 00000008
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 6)
+    Defines:
+        lpoke = 00002190
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        dma_poke in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 7)
+    Referenced from:
+        cellcolor (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 28)
+        cputcxy (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 52)
+
+hyppo_findfirst in section 'code'
+ placed at address 00002198-000021a0 of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 18)
+    Defines:
+        hyppo_findfirst = 00002198
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+`?L300` in section 'code'  placed at address 000021a1-000021a9 of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 45)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L622` in section 'code'  placed at address 000021aa-000021b2 of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 53)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L644` in section 'code'  placed at address 000021b3-000021bb of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 69)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L645` in section 'code'  placed at address 000021bc-000021c4 of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 70)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L649` in section 'code'  placed at address 000021c5-000021cd of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 74)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+gohome in section 'code'  placed at address 000021ce-000021d6 of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 35)
+    Defines:
+        gohome = 000021ce
+    Referenced from:
+        clrhome (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 16)
+
+`?L652` in section 'code'  placed at address 000021d7-000021df of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 76)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L655` in section 'code'  placed at address 000021e0-000021e8 of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 78)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L664` in section 'code'  placed at address 000021e9-000021f1 of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 87)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L674` in section 'code'  placed at address 000021f2-000021fa of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 95)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L683` in section 'code'  placed at address 000021fb-00002203 of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 104)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L684` in section 'code'  placed at address 00002204-0000220c of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 105)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L688` in section 'code'  placed at address 0000220d-00002215 of size 00000009
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 109)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L633` in section 'code'  placed at address 00002216-0000221f of size 0000000a
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 61)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        cputcxy in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 52)
+
+`?L639` in section 'code'  placed at address 00002220-00002229 of size 0000000a
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 65)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+cputs in section 'code'  placed at address 0000222a-00002233 of size 0000000a
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 50)
+    Defines:
+        cputs = 0000222a
+    References:
+        cputsxy in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 51)
+    Referenced from:
+        csputdec (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 12)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 49)
+
+`?L657` in section 'code'  placed at address 00002234-0000223d of size 0000000a
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 80)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L677` in section 'code'  placed at address 0000223e-00002247 of size 0000000a
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 98)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        setcharsetaddr in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 12)
+
+`?L85` in section 'code'  placed at address 00002248-00002251 of size 0000000a
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 20)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        dmalist in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 24)
+
+`?L610` in section 'code'  placed at address 00002252-0000225c of size 0000000b
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 43)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L612` in section 'code'  placed at address 0000225d-00002267 of size 0000000b
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 45)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L616` in section 'code'  placed at address 00002268-00002272 of size 0000000b
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 48)
+    References:
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L43` in section 'code'  placed at address 00002273-0000227d of size 0000000b
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 3)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        hyppofn in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 2)
+
+moveup in section 'code'  placed at address 0000227e-00002288 of size 0000000b
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 43)
+    Defines:
+        moveup = 0000227e
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        conioinit (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 7)
+
+moveleft in section 'code'
+ placed at address 00002289-00002293 of size 0000000b
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 45)
+    Defines:
+        moveleft = 00002289
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        conioinit (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 7)
+
+`?L668` in section 'code'  placed at address 00002294-0000229e of size 0000000b
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 91)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L84` in section 'code'  placed at address 0000229f-000022a9 of size 0000000b
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 19)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        dmalist in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 24)
+
+hyppo_readfile in section 'code'
+ placed at address 000022aa-000022b5 of size 0000000c
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 20)
+    Defines:
+        hyppo_readfile = 000022aa
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+hyppo_closefile in section 'code'
+ placed at address 000022b6-000022c1 of size 0000000c
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 21)
+    Defines:
+        hyppo_closefile = 000022b6
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+hyppo_getversion_minorhyppo in section 'code'
+ placed at address 000022c2-000022cd of size 0000000c
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 31)
+    Defines:
+        hyppo_getversion_minorhyppo = 000022c2
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+hyppo_getversion_majorHDOS in section 'code'
+ placed at address 000022ce-000022d9 of size 0000000c
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 32)
+    Defines:
+        hyppo_getversion_majorHDOS = 000022ce
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+hyppo_getversion_minorHDOS in section 'code'
+ placed at address 000022da-000022e5 of size 0000000c
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 33)
+    Defines:
+        hyppo_getversion_minorHDOS = 000022da
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+`?L624` in section 'code'  placed at address 000022e6-000022f1 of size 0000000c
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 55)
+    References:
+        _IncVsp in (stack.o (from clib-45gs02-mega65.a) unit 23 section index 3)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        lcopy in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 8)
+
+`?L628` in section 'code'  placed at address 000022f2-000022fd of size 0000000c
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 58)
+    References:
+        _AllocStackSave in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L658` in section 'code'  placed at address 000022fe-00002309 of size 0000000c
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 81)
+    References:
+        _DivMod16 in (integer.o (from clib-45gs02-mega65.a) unit 22 section index 7)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+_LoadVspEA in section 'code'
+ placed at address 0000230a-00002315 of size 0000000c
+(stack.o (from clib-45gs02-mega65.a) unit 23 section index 6)
+    Defines:
+        _LoadVspEA = 0000230a
+    References:
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        cputln (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+        mcbox (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 34)
+
+getscreensize in section 'code'
+ placed at address 00002316-00002322 of size 0000000d
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 17)
+    Defines:
+        getscreensize = 00002316
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        cputln (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+        mcbox (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 34)
+
+flushkeybuf in section 'code'
+ placed at address 00002323-0000232f of size 0000000d
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 61)
+    Defines:
+        flushkeybuf = 00002323
+    Referenced from:
+        conioinit (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 7)
+
+hyppo_getversion_majorhyppo in section 'code'
+ placed at address 00002330-0000233d of size 0000000e
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 30)
+    Defines:
+        hyppo_getversion_majorhyppo = 00002330
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+`?L604` in section 'code'  placed at address 0000233e-0000234b of size 0000000e
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 39)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        asciitoscreencode_s in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 14)
+
+`?L621` in section 'code'  placed at address 0000234c-00002359 of size 0000000e
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 52)
+    References:
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L623` in section 'code'  placed at address 0000235a-00002367 of size 0000000e
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 54)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L44` in section 'code'  placed at address 00002368-00002375 of size 0000000e
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 4)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L646` in section 'code'  placed at address 00002376-00002383 of size 0000000e
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 73)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L619` in section 'code'  placed at address 00002384-00002392 of size 0000000f
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 50)
+    References:
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        fillrect in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 54)
+
+sethotregs in section 'code'
+ placed at address 00002393-000023a1 of size 0000000f
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 19)
+    Defines:
+        sethotregs = 00002393
+    Referenced from:
+        conioinit (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 7)
+
+revers in section 'code'  placed at address 000023a2-000023b0 of size 0000000f
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 29)
+    Defines:
+        revers = 000023a2
+    Referenced from:
+        conioinit (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 7)
+
+blink in section 'code'  placed at address 000023b1-000023bf of size 0000000f
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 31)
+    Defines:
+        blink = 000023b1
+    Referenced from:
+        conioinit (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 7)
+
+underline in section 'code'
+ placed at address 000023c0-000023ce of size 0000000f
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 32)
+    Defines:
+        underline = 000023c0
+    Referenced from:
+        conioinit (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 7)
+
+`?L82` in section 'code'  placed at address 000023cf-000023dd of size 0000000f
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 17)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        dmalist in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 24)
+
+_DecVspY0 in section 'code'
+ placed at address 000023de-000023ec of size 0000000f
+(stack.o (from clib-45gs02-mega65.a) unit 23 section index 2)
+    Defines:
+        _DecVspY0 = 000023de
+        _DecVsp = 000023e0
+    References:
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        cputln (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+        cputsxy (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 51)
+        __initialize_sections (initialize.o (from clib-45gs02-mega65.a) unit 30 section index 2)
+
+`?L607` in section 'code'  placed at address 000023ed-000023fc of size 00000010
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 41)
+    References:
+        _AllocStackSave in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+setcharsetaddr in section 'code'
+ placed at address 000023fd-0000240c of size 00000010
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 12)
+    Defines:
+        setcharsetaddr = 000023fd
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 98)
+
+mega65_io_enable in section 'code'
+ placed at address 0000240d-0000241c of size 00000010
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 11)
+    Defines:
+        mega65_io_enable = 0000240d
+    Referenced from:
+        do_dma (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 2)
+
+`?L79` in section 'code'  placed at address 0000241d-0000242c of size 00000010
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 14)
+    References:
+        dmalist in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 24)
+
+`?L81` in section 'code'  placed at address 0000242d-0000243c of size 00000010
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 16)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        dmalist in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 24)
+
+_IncVsp in section 'code'  placed at address 0000243d-0000244c of size 00000010
+(stack.o (from clib-45gs02-mega65.a) unit 23 section index 3)
+    Defines:
+        _IncVsp = 0000243d
+    References:
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 55)
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+        cputsxy (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 51)
+        __initialize_sections (initialize.o (from clib-45gs02-mega65.a) unit 30 section index 2)
+
+`?L667` in section 'code'  placed at address 0000244d-0000245e of size 00000012
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 90)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L644` in section 'code'  placed at address 0000245f-00002471 of size 00000013
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 71)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L665` in section 'code'  placed at address 00002472-00002484 of size 00000013
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 88)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L666` in section 'code'  placed at address 00002485-00002497 of size 00000013
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 89)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L24` in section 'code'  placed at address 00002498-000024ac of size 00000015
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 3)
+    References:
+        `_StringLiteral_.` in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 5)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        mprintf in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 19)
+
+textcolor in section 'code'
+ placed at address 000024ad-000024c1 of size 00000015
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 27)
+    Defines:
+        textcolor = 000024ad
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+        mcbox (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 34)
+        conioinit (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 7)
+
+do_dma in section 'code'  placed at address 000024c2-000024d7 of size 00000016
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 2)
+    Defines:
+        do_dma = 000024c2
+    References:
+        dmalist in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 24)
+        mega65_io_enable in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 11)
+    Referenced from:
+        lfill_skip (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 10)
+
+`?L609` in section 'code'  placed at address 000024d8-000024ee of size 00000017
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 42)
+    References:
+        _DivMod32 in (integer.o (from clib-45gs02-mega65.a) unit 22 section index 9)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+_FillQ in section 'code'  placed at address 000024ef-00002505 of size 00000017
+(spill.o (from clib-45gs02-mega65.a) unit 25 section index 10)
+    Defines:
+        _FillQ = 000024ef
+    References:
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        cputln (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+        usleep (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\hal.o unit 7 section index 2)
+
+`?L77` in section 'code'  placed at address 00002506-00002520 of size 0000001b
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 13)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+mprintf in section 'code'  placed at address 00002521-0000253c of size 0000001c
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 19)
+    Defines:
+        mprintf = 00002521
+    References:
+        _RestoreRegisters in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        csputdec in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 12)
+    Referenced from:
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 3)
+
+mcputsxy in section 'code'
+ placed at address 0000253d-00002559 of size 0000001d
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 23)
+    Defines:
+        mcputsxy = 0000253d
+    References:
+        _RestoreRegisters in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        cputsxy in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 51)
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+`?L659` in section 'code'  placed at address 0000255a-00002577 of size 0000001e
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 82)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+`?L75` in section 'code'  placed at address 00002578-00002597 of size 00000020
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 12)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        dmalist in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 24)
+
+strlen in section 'code'  placed at address 00002598-000025b7 of size 00000020
+(lib_strlen.o (from clib-45gs02-mega65.a) unit 24 section index 2)
+    Defines:
+        strlen = 00002598
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        cputsxy (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 51)
+
+lfill in section 'code'  placed at address 000025b8-000025d8 of size 00000021
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 9)
+    Defines:
+        lfill = 000025b8
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        dmalist in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 24)
+    Referenced from:
+        cputln (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+        mcbox (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 34)
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+        clrscr (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 24)
+        cputsxy (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 51)
+        fillrect (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 54)
+
+_DeallocStackRestore in section 'code'
+ placed at address 000025d9-000025f9 of size 00000021
+(enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+    Defines:
+        _RestoreRegisters = 000025dc
+        _DeallocStackRestore = 000025d9
+        _DeallocStack = 000025ea
+    References:
+        _DeallocStack in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        csputdec (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 12)
+        asciitoscreencode_s (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 14)
+        mprintf (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 19)
+        mcputsxy (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 23)
+        mcbox (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 34)
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+        clrscr (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 24)
+        cputsxy (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 51)
+        ... 5 more
+
+`?L656` in section 'code'  placed at address 000025fa-0000261c of size 00000023
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 79)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+strcpy in section 'code'  placed at address 0000261d-00002643 of size 00000027
+(lib_strcpy.o (from clib-45gs02-mega65.a) unit 27 section index 2)
+    Defines:
+        strcpy = 0000261d
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        hyppo_setname (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 10)
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+`?L645` in section 'code'  placed at address 00002644-0000266b of size 00000028
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 72)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+hyppo_setname in section 'code'
+ placed at address 0000266c-00002695 of size 0000002a
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 10)
+    Defines:
+        hyppo_setname = 0000266c
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        hyppofn in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 2)
+        strcpy in (lib_strcpy.o (from clib-45gs02-mega65.a) unit 27 section index 2)
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+_Mul16 in section 'code'  placed at address 00002696-000026c0 of size 0000002b
+(integer.o (from clib-45gs02-mega65.a) unit 22 section index 3)
+    Defines:
+        _Mul16 = 00002696
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        mcbox (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 34)
+        clrscr (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 24)
+
+__memset_far in section 'code'
+ placed at address 000026c1-000026eb of size 0000002b
+(memset_far.o (from clib-45gs02-mega65.a) unit 32 section index 2)
+    Defines:
+        __memset_far = 000026c1
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        __initialize_sections (initialize.o (from clib-45gs02-mega65.a) unit 30 section index 2)
+
+_AllocStackSave in section 'code'
+ placed at address 000026ec-00002717 of size 0000002c
+(enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+    Defines:
+        _AllocStackSave = 000026ec
+        _AllocStack = 00002706
+    References:
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        cputln (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+        csputdec (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 12)
+        asciitoscreencode_s (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 14)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 41)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 58)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 71)
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+        clrscr (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 24)
+        cputcxy (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 52)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 110)
+        exit (exit.o (from clib-45gs02-mega65.a) unit 13 section index 2)
+        __initialize_sections (initialize.o (from clib-45gs02-mega65.a) unit 30 section index 2)
+
+`?L643` in section 'code'  placed at address 00002718-00002744 of size 0000002d
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 70)
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+
+usleep in section 'code'  placed at address 00002745-00002774 of size 00000030
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\hal.o unit 7 section index 2)
+    Defines:
+        usleep = 00002745
+    References:
+        _FillQ in (spill.o (from clib-45gs02-mega65.a) unit 25 section index 10)
+        _SpillZP in (spill.o (from clib-45gs02-mega65.a) unit 25 section index 8)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+cellcolor in section 'code'
+ placed at address 00002775-000027a6 of size 00000032
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 28)
+    Defines:
+        cellcolor = 00002775
+    References:
+        _Mul8 in (integer.o (from clib-45gs02-mega65.a) unit 22 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        lpoke in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 6)
+    Referenced from:
+        mcbox (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 34)
+
+_Mul8 in section 'code'  placed at address 000027a7-000027d8 of size 00000032
+(integer.o (from clib-45gs02-mega65.a) unit 22 section index 2)
+    Defines:
+        _Mul8 = 000027a7
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        cputln (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+        clrscr (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 24)
+        cellcolor (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 28)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 86)
+
+_UDivMod16 in section 'code'
+ placed at address 000027d9-0000280a of size 00000032
+(integer.o (from clib-45gs02-mega65.a) unit 22 section index 8)
+    Defines:
+        _UDivMod16 = 000027d9
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        _DivMod16 (integer.o (from clib-45gs02-mega65.a) unit 22 section index 7)
+
+asciitoscreencode in section 'code'
+ placed at address 0000280b-00002846 of size 0000003c
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 13)
+    Defines:
+        asciitoscreencode = 0000280b
+    Referenced from:
+        asciitoscreencode_s (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 14)
+
+getscreenaddr in section 'code'
+ placed at address 00002847-00002883 of size 0000003d
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 11)
+    Defines:
+        getscreenaddr = 00002847
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        cputln (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+
+__memcpy_far in section 'code'
+ placed at address 00002884-000028c0 of size 0000003d
+(memcpy_far.o (from clib-45gs02-mega65.a) unit 33 section index 2)
+    Defines:
+        __memcpy_far = 00002884
+    References:
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        __initialize_sections (initialize.o (from clib-45gs02-mega65.a) unit 30 section index 2)
+
+_SpillZP in section 'code'
+ placed at address 000028c1-00002900 of size 00000040
+(spill.o (from clib-45gs02-mega65.a) unit 25 section index 8)
+    Defines:
+        _SpillZP = 000028c1
+    References:
+        _Temp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        cputln (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+        usleep (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\hal.o unit 7 section index 2)
+
+dma_poke in section 'code'
+ placed at address 00002901-00002948 of size 00000048
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 7)
+    Defines:
+        dma_poke = 00002901
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        dma_byte in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 25)
+        dmalist in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 24)
+    Referenced from:
+        lpoke (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 6)
+
+lfill_skip in section 'code'
+ placed at address 00002949-00002992 of size 0000004a
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 10)
+    Defines:
+        lfill_skip = 00002949
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        dmalist in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 24)
+        do_dma in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 2)
+
+_DivMod16 in section 'code'
+ placed at address 00002993-000029dc of size 0000004a
+(integer.o (from clib-45gs02-mega65.a) unit 22 section index 7)
+    Defines:
+        _DivMod16 = 00002993
+    References:
+        _UDivMod16 in (integer.o (from clib-45gs02-mega65.a) unit 22 section index 8)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 81)
+
+exit in section 'code'  placed at address 000029dd-00002a33 of size 00000057
+(exit.o (from clib-45gs02-mega65.a) unit 13 section index 2)
+    Defines:
+        exit = 000029dd
+    References:
+        _AllocStackSave in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+        _Exit in (exitC99.o (from clib-45gs02-mega65.a) unit 18 section index 2)
+        _ExitCloseStreams in (streamlist.o (from clib-45gs02-mega65.a) unit 29 section index 2)
+        _JmpInd in (controlFlow.o (from clib-45gs02-mega65.a) unit 15 section index 2)
+        _RestoreRegisters in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        __atexit in (atexit.o (from clib-45gs02-mega65.a) unit 16 section index 2)
+        __atexit_index in (atexit.o (from clib-45gs02-mega65.a) unit 16 section index 3)
+    Referenced from:
+        (commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 10)
+
+asciitoscreencode_s in section 'code'
+ placed at address 00002a34-00002a8c of size 00000059
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 14)
+    Defines:
+        asciitoscreencode_s = 00002a34
+    References:
+        _AllocStackSave in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+        _RestoreRegisters in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        asciitoscreencode in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 13)
+    Referenced from:
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 39)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 49)
+
+setscreensize in section 'code'
+ placed at address 00002a8d-00002ae9 of size 0000005d
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 16)
+    Defines:
+        setscreensize = 00002a8d
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+_UDivMod32 in section 'code'
+ placed at address 00002aea-00002b4a of size 00000061
+(integer.o (from clib-45gs02-mega65.a) unit 22 section index 10)
+    Defines:
+        _UDivMod32 = 00002aea
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        _DivMod32 (integer.o (from clib-45gs02-mega65.a) unit 22 section index 9)
+
+clrscr in section 'code'  placed at address 00002b4b-00002bba of size 00000070
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 24)
+    Defines:
+        clrscr = 00002b4b
+    References:
+        _AllocStackSave in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+        _Mul16 in (integer.o (from clib-45gs02-mega65.a) unit 22 section index 3)
+        _Mul8 in (integer.o (from clib-45gs02-mega65.a) unit 22 section index 2)
+        _RestoreRegisters in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        lfill in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 9)
+    Referenced from:
+        clrhome (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 16)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 4)
+
+_DivMod32 in section 'code'
+ placed at address 00002bbb-00002c2c of size 00000072
+(integer.o (from clib-45gs02-mega65.a) unit 22 section index 9)
+    Defines:
+        _DivMod32 = 00002bbb
+    References:
+        _UDivMod32 in (integer.o (from clib-45gs02-mega65.a) unit 22 section index 10)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+    Referenced from:
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 42)
+
+main in section 'code'  placed at address 00002c2d-00002ca8 of size 0000007c
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+    Defines:
+        main = 00002c2d
+    References:
+        `_StringLiteral_,  HDOS ` in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 4)
+        `_StringLiteral_Have fun with your MEGA65!` in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 6)
+        `_StringLiteral_Versions: Hyppo ` in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 7)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        clrhome in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 16)
+        conioinit in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 7)
+        cputln in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+        hyppo_getversion_majorHDOS in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 32)
+        ... 9 more
+    Referenced from:
+        (commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 10)
+
+lcopy in section 'code'  placed at address 00002ca9-00002d3e of size 00000096
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 8)
+    Defines:
+        lcopy = 00002ca9
+    References:
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        dmalist in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 24)
+    Referenced from:
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 55)
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+        cputsxy (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 51)
+
+cputcxy in section 'code'  placed at address 00002d3f-00002dd5 of size 00000097
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 52)
+    Defines:
+        cputcxy = 00002d3f
+    References:
+        _AllocStackSave in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+        _RestoreRegisters in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        lpoke in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 6)
+    Referenced from:
+        mcbox (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 34)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 56)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 61)
+
+__initialize_sections in section 'code'
+ placed at address 00002dd6-00002e6c of size 00000097
+(initialize.o (from clib-45gs02-mega65.a) unit 30 section index 2)
+    Defines:
+        __initialize_sections = 00002dd6
+    References:
+        _AllocStackSave in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+        _DecVsp in (stack.o (from clib-45gs02-mega65.a) unit 23 section index 2)
+        _IncVsp in (stack.o (from clib-45gs02-mega65.a) unit 23 section index 3)
+        _RestoreRegisters in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        __memcpy_far in (memcpy_far.o (from clib-45gs02-mega65.a) unit 33 section index 2)
+        __memset_far in (memset_far.o (from clib-45gs02-mega65.a) unit 32 section index 2)
+    Referenced from:
+        __data_initialization_needed (commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 7)
+
+csputdec in section 'code'
+ placed at address 00002e6d-00002f16 of size 000000aa
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 12)
+    Defines:
+        csputdec = 00002e6d
+    References:
+        _AllocStack in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+        _DeallocStack in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        cputs in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 50)
+    Referenced from:
+        mprintf (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 19)
+
+fillrect in section 'code'
+ placed at address 00002f17-00002fc5 of size 000000af
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 54)
+    Defines:
+        fillrect = 00002f17
+    References:
+        _RestoreRegisters in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        lfill in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 9)
+    Referenced from:
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 50)
+
+cputsxy in section 'code'  placed at address 00002fc6-000030a1 of size 000000dc
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 51)
+    Defines:
+        cputsxy = 00002fc6
+    References:
+        _DecVsp in (stack.o (from clib-45gs02-mega65.a) unit 23 section index 2)
+        _IncVsp in (stack.o (from clib-45gs02-mega65.a) unit 23 section index 3)
+        _RestoreRegisters in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        lcopy in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 8)
+        lfill in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 9)
+        strlen in (lib_strlen.o (from clib-45gs02-mega65.a) unit 24 section index 2)
+    Referenced from:
+        mcputsxy (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 23)
+        cputs (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 50)
+
+romlist in section 'code'  placed at address 000030a2-000031c7 of size 00000126
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+    Defines:
+        romlist = 000030a2
+    References:
+        _AllocStackSave in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+        _DecVsp in (stack.o (from clib-45gs02-mega65.a) unit 23 section index 2)
+        _IncVsp in (stack.o (from clib-45gs02-mega65.a) unit 23 section index 3)
+        _RestoreRegisters in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        `_StringLiteral_MEGA65.ROM` in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 5)
+        `_StringLiteral_MEGA650.ROM` in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 6)
+        `_StringLiteral_file is a directory.` in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 7)
+        `_StringLiteral_file not found.` in (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 8)
+        ... 15 more
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+cputln in section 'code'  placed at address 000031c8-0000330b of size 00000144
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 9)
+    Defines:
+        cputln = 000031c8
+    References:
+        _AllocStackSave in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 2)
+        _DecVsp in (stack.o (from clib-45gs02-mega65.a) unit 23 section index 2)
+        _FillQ in (spill.o (from clib-45gs02-mega65.a) unit 25 section index 10)
+        _LoadVspEA in (stack.o (from clib-45gs02-mega65.a) unit 23 section index 6)
+        _Mul8 in (integer.o (from clib-45gs02-mega65.a) unit 22 section index 2)
+        _SpillZP in (spill.o (from clib-45gs02-mega65.a) unit 25 section index 8)
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        ... 5 more
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+mcbox in section 'code'  placed at address 0000330c-00003476 of size 0000016b
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 34)
+    Defines:
+        mcbox = 0000330c
+    References:
+        _DeallocStackRestore in (enter.o (from clib-45gs02-mega65.a) unit 17 section index 4)
+        _LoadVspEA in (stack.o (from clib-45gs02-mega65.a) unit 23 section index 6)
+        _Mul16 in (integer.o (from clib-45gs02-mega65.a) unit 22 section index 3)
+        _Vsp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        cellcolor in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 28)
+        cputcxy in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 52)
+        getscreensize in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 17)
+        lfill in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 9)
+        textcolor in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 27)
+
+conioinit in section 'code'
+ placed at address 00003477-00003660 of size 000001ea
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 7)
+    Defines:
+        conioinit = 00003477
+    References:
+        _Zp in (pseudoRegisters.o (from clib-45gs02-mega65.a) unit 12 section index 2)
+        blink in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 31)
+        flushkeybuf in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 61)
+        movedown in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 44)
+        moveleft in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 45)
+        moveright in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 46)
+        moveup in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 43)
+        revers in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 29)
+        sethotregs in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 19)
+        textcolor in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 27)
+        underline in (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 32)
+    Referenced from:
+        main (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o unit 0 section index 2)
+
+g_curTextColor in section 'data'
+ placed at address 00003661-00003661 of size 00000001
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 3)
+
+p2sbuf in section 'data'  placed at address 00003662-00003663 of size 00000002
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o unit 3 section index 2)
+
+worksector in section 'data'
+ placed at address 00003664-00003667 of size 00000004
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\fileio.o unit 2 section index 3)
+    Defines:
+        worksector = 00003664
+    Referenced from:
+        romlist (F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o unit 4 section index 2)
+
+Section 'cstack'  placed at address 00003668-00003766 of size 000000ff
+(linker generated)
+
+_InitialStack in section 'zdata'
+ placed at address 00003767-00003767 of size 00000001
+(commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 11)
+    Defines:
+        _InitialStack = 00003767
+    Referenced from:
+        (commodore-startup.o (from sdk-45gs02-mega65.a) unit 10 section index 10)
+        _Stub_exit (stub_exit.o (from sdk-45gs02-mega65.a) unit 19 section index 2)
+
+__atexit_index in section 'zdata'
+ placed at address 00003768-00003769 of size 00000002
+(atexit.o (from clib-45gs02-mega65.a) unit 16 section index 3)
+    Defines:
+        __atexit_index = 00003768
+    Referenced from:
+        exit (exit.o (from clib-45gs02-mega65.a) unit 13 section index 2)
+
+__atexit in section 'zdata'
+ placed at address 0000376a-000037a9 of size 00000040
+(atexit.o (from clib-45gs02-mega65.a) unit 16 section index 2)
+    Defines:
+        __atexit = 0000376a
+    Referenced from:
+        exit (exit.o (from clib-45gs02-mega65.a) unit 13 section index 2)
+
+_ExitCloseStreams in section 'zdata'
+ placed at address 000037aa-000037ab of size 00000002
+(streamlist.o (from clib-45gs02-mega65.a) unit 29 section index 2)
+    Defines:
+        _ExitCloseStreams = 000037aa
+    Referenced from:
+        exit (exit.o (from clib-45gs02-mega65.a) unit 13 section index 2)
+
+dma_byte in section 'zdata'
+ placed at address 000037ac-000037ac of size 00000001
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 25)
+    Defines:
+        dma_byte = 000037ac
+    Referenced from:
+        dma_poke (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 7)
+
+dmalist in section 'zdata'
+ placed at address 000037ad-000037c0 of size 00000014
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 24)
+    Defines:
+        dmalist = 000037ad
+    Referenced from:
+        do_dma (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 2)
+        dma_poke (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 7)
+        lcopy (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 8)
+        lfill (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 9)
+        lfill_skip (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 10)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 12)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 14)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 16)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 17)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 19)
+        (F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\memory.o unit 6 section index 20)
+
+g_curScreenH in section 'zdata'
+ placed at address 000037c1-000037c1 of size 00000001
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 115)
+
+g_curScreenW in section 'zdata'
+ placed at address 000037c2-000037c2 of size 00000001
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 114)
+
+g_curY in section 'zdata'  placed at address 000037c3-000037c3 of size 00000001
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 113)
+
+g_curX in section 'zdata'  placed at address 000037c4-000037c4 of size 00000001
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 112)
+
+escapeCode in section 'zdata'
+ placed at address 000037c5-00003ac1 of size 000002fd
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\mega65-libc\src\conio.o unit 5 section index 111)
+
+fnamehi in section 'zdata'
+ placed at address 00003ac2-00003ac2 of size 00000001
+(F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o unit 1 section index 46)
+
+##########################
+#                        #
+# Memory sizes (decimal) #
+#                        #
+##########################
+
+Executable       (Text): 5735 bytes
+Data                   :  860 bytes
+Non-initialized        :  311 bytes

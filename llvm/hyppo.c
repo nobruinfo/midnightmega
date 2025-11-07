@@ -627,6 +627,7 @@ void hyppo_freeze_self(void)  {
 }
 
 // https://www.felixcloutier.com/documents/gcc-asm.html#outputs
+/*
 void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
                       unsigned char * majorHDOS,  unsigned char * minorHDOS)  {
 // void hyppo_getversion(void)  {
@@ -647,12 +648,105 @@ void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
                                                       // llvm doesn't know the z reg
   : "=a" (*majorhyppo), "=x" (*minorhyppo), "=y" (*majorHDOS) // , "=z" (*minorHDOS)
 //  : // "=a" (majhyp), "=x" (minhyp), "=y" (majdos) // , "=z" (*minorHDOS)
-  :  : /* "a", "x", "y" / * , "z" */ );
+  :  : / * "a", "x", "y" / * , "z" * / );
 
 //  *majorhyppo = majhyp;
 //  *minorhyppo = minhyp;
 //  *majorHDOS = majdos;
   *minorHDOS = PEEK(0x1703);
+}
+*/
+
+unsigned char hyppo_getversion_majorhyppo(void)  {
+  unsigned char ret;
+
+  asm volatile(
+    " lda #0x00\n"
+      " ldx #0x00\n"  // @@@@ testing
+      " ldy #0x00\n"
+      " ldz #0x00\n"
+	" sta HTRAP00\n"
+	" clv\n"
+	" bcc errmajhyp\n"
+    "sta %0\n"
+	" jmp donemajhyp\n"
+"errmajhyp:\n"
+    " lda #0xff\n"
+	" sta %0\n"
+"donemajhyp:\n"
+	" nop\n"
+	// llvm doesn't know the z reg
+    "ldz #0\n"      // make z zero for llvm-mos indirect addressing
+  : "=r"(ret) :: "a", "x", "y");
+
+  return ret;
+}
+
+unsigned char hyppo_getversion_minorhyppo(void)  {
+  unsigned char ret;
+
+  asm volatile(
+    " lda #0x00\n"
+	" sta HTRAP00\n"
+	" clv\n"
+	" bcc errminhyp\n"
+    "stx %0\n"
+	" jmp doneminhyp\n"
+"errminhyp:\n"
+    " ldx #0xff\n"
+	" stx %0\n"
+"doneminhyp:\n"
+	" nop\n"
+	// llvm doesn't know the z reg
+    "ldz #0\n"      // make z zero for llvm-mos indirect addressing
+  : "=r"(ret) :: "a", "x", "y");
+
+  return ret;
+}
+
+unsigned char hyppo_getversion_majorHDOS(void)  {
+  unsigned char ret;
+
+  asm volatile(
+    " lda #0x00\n"
+	" sta HTRAP00\n"
+	" clv\n"
+	" bcc errmajdos\n"
+    "sty %0\n"
+	" jmp donemajdos\n"
+"errmajdos:\n"
+    " ldy #0xff\n"
+	" sty %0\n"
+"donemajdos:\n"
+	" nop\n"
+	// llvm doesn't know the z reg
+    "ldz #0\n"      // make z zero for llvm-mos indirect addressing
+  : "=r"(ret) :: "a", "x", "y");
+
+  return ret;
+}
+
+unsigned char hyppo_getversion_minorHDOS(void)  {
+  unsigned char ret;
+
+  asm volatile(
+    " lda #0x00\n"
+	" sta HTRAP00\n"
+	" clv\n"
+	" bcc errmindos\n"
+	" tza\n"
+    "sta %0\n"
+	" jmp donemindos\n"
+"errmindos:\n"
+    " lda #0xff\n"
+	" sta %0\n"
+"donemindos:\n"
+	" nop\n"
+	// llvm doesn't know the z reg
+    "ldz #0\n"      // make z zero for llvm-mos indirect addressing
+  : "=r"(ret) :: "a", "x", "y");
+
+  return ret;
 }
 
 // ******************************************

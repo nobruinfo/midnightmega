@@ -1,0 +1,160 @@
+{1}{0}{22}The function keys shown in the bottom line are meant to be used with
+{1}{0}{23}and without [Shift] and [Mega] after the messagebox is dismissed:
+{1}{30}{1}{RVSON}Zweiter{RVSOFF} Text.
+{1}{1}{11}Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+{1}{1}{12}Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+{1}{11}{13}Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+{1}{13}{14}Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+{1}{15}{15}Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+{1}{17}{16}Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{12}{6}Make a selection and press RETURN:
+{1}{14}{8}Sorting directory
+{1}{14}{9}Setup
+{10}
+{1}{0}{0}.
+{1}{0}{0}.
+{1}{0}{0}.
+{2}{4}{0}{76}{24}
+{1}{14}{0}{RVSON}{space}Midnight Mega{space}
+{1}{31}{0}{space}Help{space}
+{1}{40}{0}{space}The MEGA65 file commander{space}{RVSOFF}
+{1}{52}{24}{space}github.com/nobruinfo{space}
+{10}
+{1}{6}{2}{11}Basic usage{12}
+{1}{6}{4}Use the {RVSON}{space}Tab{space}{RVSOFF}{space}to switch panes.
+{1}{6}{5}The cursor arrow keys allow for file navigation, left/right to go
+{1}{6}{6}in bigger steps.
+{1}{6}{8}To select/deselect multiple files use the {RVSON}{space}Space{space}{RVSOFF}{space} key.
+{1}{6}{9}Files can as well be copied into and from subdirectories.
+{1}{6}{11}{RVSON}{space}{31}{space}{RVSOFF}{space}in the upper left of your keyboard can be used instead of the
+{1}{6}{12}{RVSON}{space}..{space}{RVSOFF}{space}directory entry to climb to the parent directory.
+{1}{6}{13}{RVSON}{space}{31}{space}{RVSOFF}{space}can also be used to climb from a subdirectory within a .D81
+{1}{6}{14}image file or a real 1581 format disk where no {RVSON}{space}..{space}{RVSOFF}{space} is shown.
+{1}{6}{16}Currently the left pane is always drive 0 and the right one drive 1,
+{1}{6}{17}a later handling within the same drive is planned allowing you
+{1}{6}{18}to copy files within one disk.
+{1}{36}{22}{RVSON}{space}{space}OK{space}{space}{RVSOFF}
+{1}{60}{22}{RVSON}{dark gray}{space}{space}{30}{space}{space}{RVSOFF}{cyan}
+{1}{69}{22}{RVSON}{space}{space}v{space}{space}{RVSOFF}
+{10}
+{1}{6}{2}{RVSON}{space}F2{space}{RVSOFF}{space}({RVSON}{space}Shift{space}{RVSOFF}{space}{RVSON}{space}F1{space}{RVSOFF}{space}on the MEGA65 of course) is used for switching
+{1}{6}{3}from a mounted .d81 to the selection within the storage card and
+{1}{6}{4}back.{space}{RVSON}{space}F11{space}{RVSOFF}{space}unmounts the current side to reach a real floppy drive.
+{1}{6}{5}Bear in mind the MEGA65 in its factory delivered state has no
+{1}{6}{6}hardware drive 1, so the right side unmount will greet you with
+{1}{6}{7}an error message.
+{1}{6}{9}{11}Advanced operations{12}
+{1}{6}{11}If you want to use the{space}{ensh}Freezer{dish}{space}to change drive configurations do{space}{ensh}not{dish}
+{1}{6}{12}use the {RVSON}{space}RESTORE{space}{RVSOFF} key. Please use{space}{RVSON}{space}Mega{space}{RVSOFF}{space}{RVSON}{space}F3{space}{RVSOFF}{space}instead.
+{1}{6}{13}After leaving the Freezer's own menu both disk drives (images) will
+{1}{6}{14}be re-read completely to ensure proper operation.
+{1}{6}{16}{RVSON}{space}F7{space}{RVSOFF}{space}is to create a subdirectory.
+{1}{6}{17}{RVSON}{space}Mega{space}{RVSOFF}{space}{RVSON}{space}Shift{space}{RVSOFF}{space}{RVSON}{space}F7{space}{RVSOFF}{space}to format the disk/image file completely.
+{1}{6}{18}This only writes a few blocks, there is no low level format.
+{1}{36}{22}{RVSON}{space}{space}OK{space}{space}{RVSOFF}
+{1}{60}{22}{RVSON}{space}{space}{30}{space}{space}{RVSOFF}
+{1}{69}{22}{RVSON}{space}{space}v{space}{space}{RVSOFF}
+{10}
+{1}{6}{2}{11}Advanced operations (cont.){12}
+{1}{6}{4}{RVSON}{space}Ctrl{space}{RVSOFF}{space}{RVSON}{space}r{space}{RVSOFF}{space}to rescan current file panel (left or right).
+{1}{6}{5}Due to Hypervisor limitations .d81 image files can neither be copied
+{1}{6}{6}as a whole nor be created, use{space}{RVSON}{space}Mega{space}{RVSOFF}{space}{RVSON}{space}F3{space}{RVSOFF}{space}for the freezer to do so.
+{1}{6}{8}{RVSON}{space}F5{space}{RVSOFF}{space}copies all single or multiple selected files to the opposite
+{1}{6}{9}side, so from left to right or vice versa. Same name files will not
+{1}{6}{10}be overwritten but can't be accessed by name from BASIC.
+{1}{6}{12}{RVSON}{space}Mega{space}{RVSOFF}{space}{RVSON}{space}F5{space}{RVSOFF}{space}copies all blocks (allocated ones if configured) to
+{1}{6}{13}the opposite side, this will{space}{ensh}overwrite{dish}{space}a whole disk (image)
+{1}{6}{14}contents irrevocably.
+{1}{6}{16}With {RVSON}{space}F6{space}{RVSOFF}{space}you can rename files and folders within your beloved {ensh}.d81{dish}
+{1}{6}{17}disk image files and on real diskettes of course. Things on your
+{1}{6}{18}storage cards can't be renamed as this is not supported by the Hyppo
+{1}{6}{19}functions it relies on.
+{1}{36}{22}{RVSON}{space}{space}OK{space}{space}{RVSOFF}
+{1}{60}{22}{RVSON}{space}{space}{30}{space}{space}{RVSOFF}
+{1}{69}{22}{RVSON}{dark gray}{space}{space}v{space}{space}{RVSOFF}{cyan}
+{10}
+{0}

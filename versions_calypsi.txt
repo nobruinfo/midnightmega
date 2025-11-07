@@ -1,0 +1,13 @@
+versions for Midnight Mega v0.6.6-beta
+
+c1541 (VICE 3.8)
+
+petcat (VICE 3.8)
+
+version: 20250718.15-develo-731f9ce
+
+Calypsi ISO C compiler for 6502 version 5.12
+
+Calypsi assembler for 6502 version 5.12
+
+

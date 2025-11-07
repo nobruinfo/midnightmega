@@ -365,3 +365,29 @@ more features. Currently still lots of strings are within the
 #define readdir_direntasm BLOCKDIRENT
 __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
 ```
+
+# Changelog
+
+* v0.6.6-beta (shown as v2.2 on the filehost) fixes a major bug
+  in the sorting routine for the shown entries reachable with
+  [F9] *Menu*, this version also switches the project's focus
+  from `llvm-mos` towards `Calypsi` with mainly internal adaptions
+* v0.6.5-beta (shown as v2.1 on the filehost) reinitiating motor
+  spin up on physical drive number change
+* v0.6.4-beta (shown as v2 on the filehost) fix of GUI glitches
+  and an added help text
+* v0.6.3-beta (shown as v1.9 on the filehost) sorting dirents,
+  renaming files/directories, drive LED handling
+* v0.6.2-beta (shown as v1.8 on the filehost) dirent, the maximum
+  number of entries is now 248. Thanks adtbm for the bug report.
+* v0.6.1-beta (shown as v1.7 on the filehost) dirty fix for HDOS
+  v1.2 users. Thanks to adtbm and deft for having tested and found bugs.
+* v0.6.0-beta (shown as v1.6 on the filehost) Fixed disk
+  read/write, removed splash message. Altered .md handling to create a
+  table of contents using Pandoc. Edited help texts.
+* v0.5.22-beta (shown as v1.5 on the filehost) Fixed create subdir
+  and format disk, key combo for romlister has changed
+* v0.5.21-beta (shown as v1.4 on the filehost) gives us
+  subdirectories
+* v0.5.18-beta (shown as v1.4 on the filehost) provides mounting support
+  for Hyppo v1.2, HDOS v1.3. It is backwards compatible.

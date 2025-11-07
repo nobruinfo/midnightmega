@@ -53,7 +53,7 @@
       40       40        0     1 __zp_bss_size = SIZEOF(.zp.bss)
       40       40       22     1 .zp
       40       40       22     1         romlister.prg.lto.o:(.zp.noinit)
-    201c     201c      b9d     1 .text
+    201c     201c      bdf     1 .text
     201c     201c        0     1         _init = .
     201c     201c        0     1         _start = .
     201c     201c        e     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\unmap-basic.o:(.init.010)
@@ -79,81 +79,89 @@
     2064     2064       13     1                 __zero_zp_bss
     2077     2077       17     1         F:\Entwicklungsprojekte\Mega65\llvm-mos\llvm-mos\bin/../mos-platform/mega65/lib\libcrt0.a(copy-zp-data.c.obj):(.text.__copy_zp_data)
     2077     2077       17     1                 __copy_zp_data
-    208e     208e      37a     1         romlister.prg.lto.o:(.text.main)
-    208e     208e      37a     1                 main
-    2235     2235        0     1                 errhypsetnam0
-    2239     2239        0     1                 donehypsetnam0
-    225c     225c        0     1                 errhypfindfirst1
-    225e     225e        0     1                 donehypfindfirst1
-    227d     227d        0     1                 errhypopenfile2
-    227f     227f        0     1                 donehypopenfile2
-    22a9     22a9        0     1                 errhypreadfile3
-    22ad     22ad        0     1                 donehypreadfile3
-    22cc     22cc        0     1                 errhypclosefile4
-    22d0     22d0        0     1                 donehypclosefile4
-    2408     2408      12a     1         romlister.prg.lto.o:(.text.cputln)
-    2408     2408      12a     1                 cputln
-    2532     2532       51     1         romlister.prg.lto.o:(.text.asciitoscreencode_s)
-    2532     2532       51     1                 asciitoscreencode_s
-    2583     2583       cd     1         romlister.prg.lto.o:(.text.mprintf)
-    2583     2583       cd     1                 mprintf
-    2650     2650       16     1         romlister.prg.lto.o:(.text.mcputsxy)
-    2650     2650       16     1                 mcputsxy
-    2666     2666       18     1         romlister.prg.lto.o:(.text.getscreenaddr)
-    2666     2666       18     1                 getscreenaddr
-    267e     267e        7     1         romlister.prg.lto.o:(.text.cputs)
-    267e     267e        7     1                 cputs
-    2685     2685       d5     1         romlister.prg.lto.o:(.text.cputsxy)
-    2685     2685       d5     1                 cputsxy
-    275a     275a       27     1         romlister.prg.lto.o:(.text.do_dma)
-    275a     275a       27     1                 do_dma
-    2781     2781       67     1         romlister.prg.lto.o:(.text.lcopy)
-    2781     2781       67     1                 lcopy
-    27e8     27e8       50     1         romlister.prg.lto.o:(.text.lfill)
-    27e8     27e8       50     1                 lfill
-    2838     2838        5     1         romlister.prg.lto.o:(.text.exit)
-    2838     2838        5     1                 exit
-    283d     283d       19     1         romlister.prg.lto.o:(.text.strcpy)
-    283d     283d       19     1                 strcpy
-    2856     2856       3c     1         romlister.prg.lto.o:(.text.strlen)
-    2856     2856       3c     1                 strlen
-    2892     2892       13     1         romlister.prg.lto.o:(.text.__ashlhi3)
-    2892     2892       13     1                 __ashlhi3
-    28a5     28a5       32     1         romlister.prg.lto.o:(.text.__mulhi3)
-    28a5     28a5       32     1                 __mulhi3
-    28d7     28d7       dc     1         romlister.prg.lto.o:(.text.__udivmodhi4)
-    28d7     28d7       dc     1                 __udivmodhi4
-    29b3     29b3      1ba     1         romlister.prg.lto.o:(.text.__udivmodsi4)
-    29b3     29b3      1ba     1                 __udivmodsi4
-    2b6d     2b6d       2c     1         romlister.prg.lto.o:(.text.memcpy)
-    2b6d     2b6d       2c     1                 memcpy
-    2b99     2b99       20     1         romlister.prg.lto.o:(.text.__memset)
-    2b99     2b99       20     1                 __memset
-    2bb9     2bb9        0     1         __init_array_start = .
-    2bb9     2bb9        0     1         __init_array_end = .
-    2bb9     2bb9        0     1         __fini_array_start = .
-    2bb9     2bb9        0     1         __fini_array_end = .
-    2bb9     2bb9       a1     1 .rodata
-    2bb9     2bb9       a1     1         <internal>:(.rodata.str1.1)
-    2c5a     2c5a        0     1 .data
-    2c5a     2c5a        0     1         __data_start = .
-    2c5a     2c5a        0     1         __data_end = .
-    2c5a     2c5a        0     1 __data_load_start = LOADADDR(.data)
-    2c5a     2c5a        0     1 __data_size = SIZEOF(.data)
-    2c5a     2c5a        1     1 .bss
-    2c5a     2c5a        0     1         __bss_start = .
-    2c5a     2c5a        1     1         romlister.prg.lto.o:(.bss.g_curScreenH)
-    2c5a     2c5a        1     1                 g_curScreenH
-    2c5b     2c5b        0     1         __bss_end = .
-    2c5b     2c5b        0     1 __bss_size = SIZEOF(.bss)
-    2c5b     2c5b        0     1 .noinit
-    2c5b     2c5b        0     1         __heap_start = ALIGN(., 2)
-    2c5b     2c5b        0     1 __stack = 0xd000
+    208e     208e      3bc     1         romlister.prg.lto.o:(.text.main)
+    208e     208e      3bc     1                 main
+    2192     2192        0     1                 errmajhyp
+    2196     2196        0     1                 donemajhyp
+    21b9     21b9        0     1                 errminhyp
+    21bd     21bd        0     1                 doneminhyp
+    21e0     21e0        0     1                 errmajdos
+    21e4     21e4        0     1                 donemajdos
+    2208     2208        0     1                 errmindos
+    220c     220c        0     1                 donemindos
+    2277     2277        0     1                 errhypsetnam0
+    227b     227b        0     1                 donehypsetnam0
+    229e     229e        0     1                 errhypfindfirst1
+    22a0     22a0        0     1                 donehypfindfirst1
+    22bf     22bf        0     1                 errhypopenfile2
+    22c1     22c1        0     1                 donehypopenfile2
+    22eb     22eb        0     1                 errhypreadfile3
+    22ef     22ef        0     1                 donehypreadfile3
+    230e     230e        0     1                 errhypclosefile4
+    2312     2312        0     1                 donehypclosefile4
+    244a     244a      12a     1         romlister.prg.lto.o:(.text.cputln)
+    244a     244a      12a     1                 cputln
+    2574     2574       51     1         romlister.prg.lto.o:(.text.asciitoscreencode_s)
+    2574     2574       51     1                 asciitoscreencode_s
+    25c5     25c5       cd     1         romlister.prg.lto.o:(.text.mprintf)
+    25c5     25c5       cd     1                 mprintf
+    2692     2692       16     1         romlister.prg.lto.o:(.text.mcputsxy)
+    2692     2692       16     1                 mcputsxy
+    26a8     26a8       18     1         romlister.prg.lto.o:(.text.getscreenaddr)
+    26a8     26a8       18     1                 getscreenaddr
+    26c0     26c0        7     1         romlister.prg.lto.o:(.text.cputs)
+    26c0     26c0        7     1                 cputs
+    26c7     26c7       d5     1         romlister.prg.lto.o:(.text.cputsxy)
+    26c7     26c7       d5     1                 cputsxy
+    279c     279c       27     1         romlister.prg.lto.o:(.text.do_dma)
+    279c     279c       27     1                 do_dma
+    27c3     27c3       67     1         romlister.prg.lto.o:(.text.lcopy)
+    27c3     27c3       67     1                 lcopy
+    282a     282a       50     1         romlister.prg.lto.o:(.text.lfill)
+    282a     282a       50     1                 lfill
+    287a     287a        5     1         romlister.prg.lto.o:(.text.exit)
+    287a     287a        5     1                 exit
+    287f     287f       19     1         romlister.prg.lto.o:(.text.strcpy)
+    287f     287f       19     1                 strcpy
+    2898     2898       3c     1         romlister.prg.lto.o:(.text.strlen)
+    2898     2898       3c     1                 strlen
+    28d4     28d4       13     1         romlister.prg.lto.o:(.text.__ashlhi3)
+    28d4     28d4       13     1                 __ashlhi3
+    28e7     28e7       32     1         romlister.prg.lto.o:(.text.__mulhi3)
+    28e7     28e7       32     1                 __mulhi3
+    2919     2919       dc     1         romlister.prg.lto.o:(.text.__udivmodhi4)
+    2919     2919       dc     1                 __udivmodhi4
+    29f5     29f5      1ba     1         romlister.prg.lto.o:(.text.__udivmodsi4)
+    29f5     29f5      1ba     1                 __udivmodsi4
+    2baf     2baf       2c     1         romlister.prg.lto.o:(.text.memcpy)
+    2baf     2baf       2c     1                 memcpy
+    2bdb     2bdb       20     1         romlister.prg.lto.o:(.text.__memset)
+    2bdb     2bdb       20     1                 __memset
+    2bfb     2bfb        0     1         __init_array_start = .
+    2bfb     2bfb        0     1         __init_array_end = .
+    2bfb     2bfb        0     1         __fini_array_start = .
+    2bfb     2bfb        0     1         __fini_array_end = .
+    2bfb     2bfb       a1     1 .rodata
+    2bfb     2bfb       a1     1         <internal>:(.rodata.str1.1)
+    2c9c     2c9c        0     1 .data
+    2c9c     2c9c        0     1         __data_start = .
+    2c9c     2c9c        0     1         __data_end = .
+    2c9c     2c9c        0     1 __data_load_start = LOADADDR(.data)
+    2c9c     2c9c        0     1 __data_size = SIZEOF(.data)
+    2c9c     2c9c        1     1 .bss
+    2c9c     2c9c        0     1         __bss_start = .
+    2c9c     2c9c        1     1         romlister.prg.lto.o:(.bss.g_curScreenH)
+    2c9c     2c9c        1     1                 g_curScreenH
+    2c9d     2c9d        0     1         __bss_end = .
+    2c9d     2c9d        0     1 __bss_size = SIZEOF(.bss)
+    2c9d     2c9d        0     1 .noinit
+    2c9d     2c9d        0     1         __heap_start = ALIGN(., 2)
+    2c9d     2c9d        0     1 __stack = 0xd000
        0        0       cc     1 .comment
        0        0       cc     1         <internal>:(.comment)
-       0        0      c30     4 .symtab
-       0        0      c30     4         <internal>:(.symtab)
+       0        0      cb0     4 .symtab
+       0        0      cb0     4         <internal>:(.symtab)
        0        0       68     1 .shstrtab
        0        0       68     1         <internal>:(.shstrtab)
-       0        0      6f3     1 .strtab
-       0        0      6f3     1         <internal>:(.strtab)
+       0        0      747     1 .strtab
+       0        0      747     1         <internal>:(.strtab)

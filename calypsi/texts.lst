@@ -1,0 +1,488 @@
+###############################################################################
+#                                                                             #
+# Calypsi ISO C compiler for 6502                                version 5.12 #
+#                                                       07/Nov/2025  20:26:15 #
+# Command line:                                                               #
+#               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\texts.lst #
+#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.6-beta" -I         #
+#               ..\mega65-libc\include -O 2 --core 45gs02 --target MEGA65     #
+#               -D FULLFEATURES -o                                            #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\texts.o #
+#               texts.c                                                       #
+#                                                                             #
+###############################################################################
+
+    \ 0000                      .rtmodel version,"1"
+    \ 0000                      .rtmodel codeModel,"plain"
+    \ 0000                      .rtmodel core,"45gs02"
+    \ 0000                      .rtmodel doubleSize,"32"
+    \ 0000                      .rtmodel target,"mega65"
+    \ 0000                      .extern _AllocStackSave
+    \ 0000                      .extern _DeallocStackRestore
+    \ 0000                      .extern _DecVsp
+    \ 0000                      .extern _IncVsp
+    \ 0000                      .extern _RestoreRegisters
+    \ 0000                      .extern _ValueSwitch16
+    \ 0000                      .extern _Vfp
+    \ 0000                      .extern _Vsp
+    \ 0000                      .extern _Zp
+    \ 0000                      .extern cgetc
+    \ 0000                      .extern cputcctrl
+    \ 0000                      .extern gotoxy
+    \ 0000                      .extern lcopy
+    \ 0000                      .extern mcbox
+    \ 0000                      .extern mprintf
+0001                #include <stdlib.h>
+0002                #include <stdint.h>
+0003                #include <stdio.h>
+0004                #include <string.h>
+0005                #include <limits.h>
+0006                #include <mega65/conio.h>  // llvm instead of <printf.h>
+0007                #include <mega65/memory.h>  // mega65-libc
+0008                #include <mega65/hal.h>  // mega65-libc
+0009                #include "regions.h"
+0010                #include "conioextensions.h"
+0011                #include "hyppo.h"
+0012                #include "fileio.h"
+0013
+0014                // *********************************************************
+0015                // ***  texts.c Midnight Mega's text mgmt                ***
+0016                // *********************************************************
+0017
+0018                unsigned char blockreadbyte(unsigned int byte, unsigned char raw)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public blockreadbyte
+    \ 0000          blockreadbyte:
+    \ 0000 a2ff                 ldx     #255
+    \ 0002 a000                 ldy     #0
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 85..                 sta     zp:_Zp+24
+0019                  unsigned char data;
+0020                  unsigned int b = 0; // higher byte number that skips t/s bytes
+    \ 0009 a900                 lda     #0
+    \ 000b 85..                 sta     zp:_Zp+8
+    \ 000d 85..                 sta     zp:_Zp+9
+0021                  unsigned int i;
+0022
+0023                  for (i = 0; i <= byte; i++)  {
+    \ 000f 85..                 sta     zp:_Zp+2
+    \ 0011 85..                 sta     zp:_Zp+3
+    \ 0013          `?L5`:
+    \ 0013 a5..                 lda     zp:_Zp
+    \ 0015 c5..                 cmp     zp:_Zp+2
+    \ 0017 a5..                 lda     zp:_Zp+1
+    \ 0019 e5..                 sbc     zp:_Zp+3
+    \ 001b b056                 bcs     `?L4`
+0024                    // skip track/sector bytes:
+0025                    if ((b & 0xff) == 0)  {
+0026                      b += 2;
+0027                    }
+0028                    b++;
+0029                    // valuesbox(0, "bytes", "i=", i, "b=", b);
+0030                  }
+0031                  // b is pointing to the next data byte, so use previous one:
+0032                  b--;
+    \ 001d c3..                 dew     zp:_Zp+8
+0033                  lcopy(ATTICTEXTBUFFER + b, (uint32_t) &data, 1);
+    \ 001f a9fe                 lda     #-2
+    \ 0021 20....               jsr     _DecVsp
+    \ 0024 a001                 ldy     #1
+    \ 0026 a900                 lda     #0
+    \ 0028 91..                 sta     (_Vsp),y
+    \ 002a 88                   dey
+    \ 002b a901                 lda     #1
+    \ 002d 91..                 sta     (_Vsp),y
+    \ 002f a5..                 lda     zp:_Vsp
+    \ 0031 18                   clc
+    \ 0032 6902                 adc     #2
+    \ 0034 85..                 sta     zp:_Zp+4
+    \ 0036 a5..                 lda     zp:_Vsp+1
+    \ 0038 6900                 adc     #0
+    \ 003a 85..                 sta     zp:_Zp+5
+    \ 003c 98                   tya
+    \ 003d 85..                 sta     zp:_Zp+6
+    \ 003f 85..                 sta     zp:_Zp+7
+    \ 0041 85..                 sta     zp:_Zp+10
+    \ 0043 85..                 sta     zp:_Zp+11
+    \ 0045 a2ea                 ldx     #234
+    \ 0047 a00c                 ldy     #12
+    \ 0049 a308                 ldz     #8
+    \ 004b 18                   clc
+    \ 004c 424265..             adcq    zp:_Zp+8
+    \ 0050 424285..             stq     zp:_Zp
+    \ 0054 20....               jsr     lcopy
+    \ 0057 a001                 ldy     #1
+    \ 0059 20....               jsr     _IncVsp
+0034                  // treat carriage return as terminator to use Petcat:
+0035                  if (data == 13 && raw == TRUE)  data = 0;
+    \ 005c 88                   dey
+    \ 005d b1..                 lda     (_Vsp),y
+    \ 005f c90d                 cmp     #13
+    \ 0061 d009                 bne     `?L12`
+    \ 0063 ab....               ldz     _Zp+24
+    \ 0066 3b                   dez
+    \ 0067 d003                 bne     `?L12`
+    \ 0069 98                   tya
+    \ 006a 91..                 sta     (_Vsp),y
+    \ 006c          `?L12`:
+0036                  // lpoke(getscreenaddr(), data);
+0037                  // valuesbox(0, "bytes", "i=", i, "b=", b);
+0038                  return data;
+    \ 006c b1..                 lda     (_Vsp),y
+0039                }
+    \ 006e a201                 ldx     #1
+    \ 0070 4c....               jmp     _DeallocStackRestore
+    \ 0073          `?L4`:
+    \ 0073 a5..                 lda     zp:_Zp+8
+    \ 0075 29ff                 and     #255
+    \ 0077 d004                 bne     `?L9`
+    \ 0079 e3..                 inw     zp:_Zp+8
+    \ 007b e3..                 inw     zp:_Zp+8
+    \ 007d          `?L9`:
+    \ 007d e3..                 inw     zp:_Zp+8
+    \ 007f e3..                 inw     zp:_Zp+2
+    \ 0081 8090                 bra     `?L5`
+0040
+0041                /*
+0042                unsigned char readblockstring(unsigned char b, char *str) {
+0043                    char * src = str;
+0044                    while(blockreadbyte(b)) {
+0045                        *src = blockreadbyte(b);
+0046                        src++;
+0047                        b++;
+0048                    }
+0049                    *src = 0;
+0050                    return b;
+0051                }
+0052                */
+0053
+0054                // char str[60] = "";
+0055                void text(unsigned char instance, unsigned char continuous)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public text
+    \ 0000 a200     text:       ldx     #0
+    \ 0002 a00a                 ldy     #10
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 85..                 sta     zp:_Zp+1
+    \ 0009 a5..                 lda     zp:_Zp
+    \ 000b 85..                 sta     zp:_Zp+30
+0056                  unsigned int b = 0;
+    \ 000d 8a                   txa
+    \ 000e 85..                 sta     zp:_Zp+24
+    \ 0010 85..                 sta     zp:_Zp+25
+0057                  unsigned int curinstance = 0;
+    \ 0012 85..                 sta     zp:_Zp+32
+    \ 0014 85..                 sta     zp:_Zp+33
+0058                  unsigned char c;
+0059                  unsigned char clear = 1;  // @@@@
+    \ 0016 a901                 lda     #1
+    \ 0018 85..                 sta     zp:_Zp+29
+0060                  unsigned char shadow = 1; // @@@@
+    \ 001a 85..                 sta     zp:_Zp+28
+0061
+0062                  while (curinstance <= instance)  {
+    \ 001c a5..                 lda     zp:_Zp+1
+    \ 001e 85..                 sta     zp:_Zp+31
+    \ 0020          `?L18`:
+    \ 0020 a5..                 lda     zp:_Zp+31
+    \ 0022 c5..                 cmp     zp:_Zp+32
+    \ 0024 a900                 lda     #0
+    \ 0026 e5..                 sbc     zp:_Zp+33
+    \ 0028 932801               lbcc    `?L17`
+0063                    switch (blockreadbyte(b, FALSE)) {
+    \ 002b 20....               jsr     `?L100`
+    \ 002e 20....               jsr     `?L102`
+    \ 0031 85..                 sta     zp:_Zp
+    \ 0033 a900                 lda     #0
+    \ 0035 85..                 sta     zp:_Zp+1
+    \ 0037 a9..                 lda     #.byte0 `?L69`
+    \ 0039 85..                 sta     zp:_Zp+2
+    \ 003b a9..                 lda     #.byte1 `?L69`
+    \ 003d 85..                 sta     zp:_Zp+3
+    \ 003f 20....               jsr     _ValueSwitch16
+    \ 0042          `?L24`:
+0064                      case 0: // terminator
+0065                        mprintf("ERROR text data instance not found! ", instance);
+0066                        cgetc();
+0067                        return;
+0068                      break;
+0069                      case 1: // print with x/y
+0070                        if (curinstance == instance)  {
+0071                          gotoxy(blockreadbyte(b + 1, FALSE), blockreadbyte(b + 2, FALSE));
+0072                        }
+0073                        // b = readblockstring(b + 3, str);
+0074                        b += 3;
+0075                        while ((c = blockreadbyte(b, TRUE)))  {
+0076                          if (curinstance == instance)  {
+0077                            cputcctrl(c);
+0078                          }
+0079                          b++;
+0080                        }
+0081                        b++;  // skip string terminator
+0082
+0083                        if (curinstance == instance)  {
+0084                          // valuesbox(0, "after string", "highbyte=", (b / 256),
+0085                          //              "next byte=", (b % 256));
+0086                          // cgetc();
+0087                          if (!continuous)  {  // if found the whole function needs to end:
+0088                            return;
+0089                          } else {  // exceed found instance if in continuous mode:
+0090                            instance++;
+0091                          }
+0092                        }
+0093                        curinstance++;
+0094                      break;
+0095
+0096                      case 2: // draw box
+0097                        if (curinstance == instance)  {
+0098                          mcbox(blockreadbyte(b + 1, FALSE),
+0099                                blockreadbyte(b + 2, FALSE),
+0100                                blockreadbyte(b + 3, FALSE),
+0101                                blockreadbyte(b + 4, FALSE),
+0102                                COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+0103                        }
+0104                        b += 6; // four data and one terminator to skip
+0105
+0106                        if (curinstance == instance)  {
+0107                          if (!continuous)  {  // if found the whole function needs to end:
+0108                            return;
+0109                          } else {  // exceed found instance if in continuous mode:
+0110                            instance++;
+0111                          }
+0112                        }
+0113                        curinstance++;
+0114                      break;
+0115
+0116                      case 10: // stop continuous
+0117                        if (curinstance == instance)  {
+    \ 0042 20....               jsr     `?L101`
+    \ 0045          `?L59`:
+0118                        }
+0119                        b += 2; // one terminator to skip
+    \ 0045 e3..                 inw     zp:_Zp+24
+    \ 0047 e3..                 inw     zp:_Zp+24
+0120
+0121                        // if found the whole function needs to end:
+0122                        if (curinstance == instance)  {
+    \ 0049 20....               jsr     `?L101`
+    \ 004c d3be00               lbne    `?L62`
+0123                          return;
+    \ 004f 4c....               jmp     `?L17`
+    \ 0052          `?L25`:
+    \ 0052 20....               jsr     `?L101`
+    \ 0055 d04f                 bne     `?L48`
+    \ 0057 20....               jsr     `?L100`
+    \ 005a e3..                 inw     zp:_Zp
+    \ 005c 20....               jsr     `?L102`
+    \ 005f 85..                 sta     zp:_Zp+34
+    \ 0061 20....               jsr     `?L100`
+    \ 0064 e3..                 inw     zp:_Zp
+    \ 0066 e3..                 inw     zp:_Zp
+    \ 0068 20....               jsr     `?L102`
+    \ 006b 85..                 sta     zp:_Zp+27
+    \ 006d 20....               jsr     `?L100`
+    \ 0070 e3..                 inw     zp:_Zp
+    \ 0072 e3..                 inw     zp:_Zp
+    \ 0074 e3..                 inw     zp:_Zp
+    \ 0076 20....               jsr     `?L102`
+    \ 0079 85..                 sta     zp:_Zp+26
+    \ 007b 20....               jsr     `?L100`
+    \ 007e e3..                 inw     zp:_Zp
+    \ 0080 e3..                 inw     zp:_Zp
+    \ 0082 e3..                 inw     zp:_Zp
+    \ 0084 e3..                 inw     zp:_Zp
+    \ 0086 20....               jsr     `?L102`
+    \ 0089 85..                 sta     zp:_Zp+2
+    \ 008b a5..                 lda     zp:_Zp+28
+    \ 008d 85..                 sta     zp:_Zp+6
+    \ 008f a5..                 lda     zp:_Zp+29
+    \ 0091 85..                 sta     zp:_Zp+5
+    \ 0093 85..                 sta     zp:_Zp+4
+    \ 0095 a903                 lda     #3
+    \ 0097 85..                 sta     zp:_Zp+3
+    \ 0099 a5..                 lda     zp:_Zp+26
+    \ 009b 85..                 sta     zp:_Zp+1
+    \ 009d a5..                 lda     zp:_Zp+27
+    \ 009f 85..                 sta     zp:_Zp
+    \ 00a1 a5..                 lda     zp:_Zp+34
+    \ 00a3 20....               jsr     mcbox
+    \ 00a6          `?L48`:
+    \ 00a6 a5..                 lda     zp:_Zp+24
+    \ 00a8 18                   clc
+    \ 00a9 6906                 adc     #6
+    \ 00ab 85..                 sta     zp:_Zp+24
+    \ 00ad a5..                 lda     zp:_Zp+25
+    \ 00af 6900                 adc     #0
+    \ 00b1 85..                 sta     zp:_Zp+25
+    \ 00b3 20....               jsr     `?L101`
+    \ 00b6 d054                 bne     `?L62`
+    \ 00b8 a5..                 lda     zp:_Zp+30
+    \ 00ba d04e                 bne     `?L53`
+    \ 00bc 4c....               jmp     `?L17`
+    \ 00bf          `?L26`:
+    \ 00bf 20....               jsr     `?L101`
+    \ 00c2 d01b                 bne     `?L31`
+    \ 00c4 20....               jsr     `?L100`
+    \ 00c7 e3..                 inw     zp:_Zp
+    \ 00c9 20....               jsr     `?L102`
+    \ 00cc 85..                 sta     zp:_Zp+26
+    \ 00ce 20....               jsr     `?L100`
+    \ 00d1 e3..                 inw     zp:_Zp
+    \ 00d3 e3..                 inw     zp:_Zp
+    \ 00d5 20....               jsr     `?L102`
+    \ 00d8 85..                 sta     zp:_Zp
+    \ 00da a5..                 lda     zp:_Zp+26
+    \ 00dc 20....               jsr     gotoxy
+    \ 00df          `?L31`:
+    \ 00df e3..                 inw     zp:_Zp+24
+    \ 00e1 e3..                 inw     zp:_Zp+24
+    \ 00e3          `?L37`:
+    \ 00e3 e3..                 inw     zp:_Zp+24
+    \ 00e5 20....               jsr     `?L100`
+    \ 00e8 a901                 lda     #1
+    \ 00ea 20....               jsr     blockreadbyte
+    \ 00ed 85..                 sta     zp:_Zp
+    \ 00ef a5..                 lda     zp:_Zp
+    \ 00f1 f00c                 beq     `?L34`
+    \ 00f3 20....               jsr     `?L101`
+    \ 00f6 d0eb                 bne     `?L37`
+    \ 00f8 a5..                 lda     zp:_Zp
+    \ 00fa 20....               jsr     cputcctrl
+    \ 00fd 80e4                 bra     `?L37`
+    \ 00ff          `?L34`:
+    \ 00ff e3..                 inw     zp:_Zp+24
+    \ 0101 20....               jsr     `?L101`
+    \ 0104 d006                 bne     `?L62`
+    \ 0106 a5..                 lda     zp:_Zp+30
+    \ 0108 f048                 beq     `?L17`
+    \ 010a          `?L53`:
+    \ 010a e6..                 inc     zp:_Zp+31
+    \ 010c          `?L62`:
+0124                        }
+0125                        curinstance++;
+    \ 010c e3..                 inw     zp:_Zp+32
+0126                      break;
+    \ 010e 4c....               jmp     `?L18`
+    \ 0111          `?L27`:
+    \ 0111 a6..                 ldx     zp:_Zp+31
+    \ 0113 86..                 stx     zp:_Zp+4
+    \ 0115 20....               jsr     `?L103`
+    \ 0118 a9..                 lda     #.byte0 `_StringLiteral_ERROR text data instance not found! `
+    \ 011a 85..                 sta     zp:_Zp
+    \ 011c a9..                 lda     #.byte1 `_StringLiteral_ERROR text data instance not found! `
+    \ 011e 802a                 bra     `?L99`
+    \ 0120          `?L23`:
+0127
+0128                      default:
+0129                        mprintf("ERROR text data instance function undefined! ",
+    \ 0120 20....               jsr     `?L100`
+    \ 0123 20....               jsr     `?L102`
+    \ 0126 85..                 sta     zp:_Zp+4
+    \ 0128 20....               jsr     `?L103`
+    \ 012b a9..                 lda     #.byte0 `_StringLiteral_ERROR text data instance function undefined! `
+    \ 012d 85..                 sta     zp:_Zp
+    \ 012f a9..                 lda     #.byte1 `_StringLiteral_ERROR text data instance function undefined! `
+    \ 0131 85..                 sta     zp:_Zp+1
+    \ 0133 20....               jsr     mprintf
+0130                                blockreadbyte(b, FALSE));
+0131                        mprintf(" byte=", b);
+    \ 0136 a5..                 lda     zp:_Zp+25
+    \ 0138 85..                 sta     zp:_Zp+5
+    \ 013a a5..                 lda     zp:_Zp+24
+    \ 013c 85..                 sta     zp:_Zp+4
+    \ 013e a900                 lda     #0
+    \ 0140 85..                 sta     zp:_Zp+6
+    \ 0142 85..                 sta     zp:_Zp+7
+    \ 0144 a9..                 lda     #.byte0 `_StringLiteral_ byte=`
+    \ 0146 85..                 sta     zp:_Zp
+    \ 0148 a9..                 lda     #.byte1 `_StringLiteral_ byte=`
+    \ 014a          `?L99`:
+    \ 014a 85..                 sta     zp:_Zp+1
+    \ 014c 20....               jsr     mprintf
+0132                        cgetc();
+0133                        return;
+    \ 014f 20....               jsr     cgetc
+    \ 0152          `?L17`:
+0134                      break;
+0135                    }
+0136                    // valuesbox(0, "text", "i=", instance, "byte=", blockreadbyte(instance));
+0137                  }
+0138                }
+    \ 0152 a00a                 ldy     #10
+    \ 0154 4c....               jmp     _RestoreRegisters
+    \ 0000                      .section code,text
+    \ 0000          `?L100`:
+    \ 0000 a5..                 lda     zp:_Zp+24
+    \ 0002 85..                 sta     zp:_Zp
+    \ 0004 a5..                 lda     zp:_Zp+25
+    \ 0006 85..                 sta     zp:_Zp+1
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L101`:
+    \ 0000 a5..                 lda     zp:_Zp+31
+    \ 0002 38                   sec
+    \ 0003 e5..                 sbc     zp:_Zp+32
+    \ 0005 05..                 ora     zp:_Zp+33
+    \ 0007 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a900     `?L102`:    lda     #0
+    \ 0002 4c....               jmp     blockreadbyte
+    \ 0000                      .section code,text
+    \ 0000 a900     `?L103`:    lda     #0
+    \ 0002 85..                 sta     zp:_Zp+5
+    \ 0004 85..                 sta     zp:_Zp+6
+    \ 0006 85..                 sta     zp:_Zp+7
+    \ 0008 60                   rts
+    \ 0000                      .section switch,rodata
+    \ 0000 0300     `?L69`:     .word   3
+    \ 0002 ....                 .word   `?L23`-1
+    \ 0004 0000                 .word   0
+    \ 0006 ....                 .word   `?L27`-1
+    \ 0008 0100                 .word   1
+    \ 000a ....                 .word   `?L26`-1
+    \ 000c 0200                 .word   2
+    \ 000e ....                 .word   `?L25`-1
+    \ 0010 0a00                 .word   10
+    \ 0012 ....                 .word   `?L24`-1
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_ byte=`
+    \ 0000          `_StringLiteral_ byte=`:
+    \ 0000 20627974             .byte   32,98,121,116,101,61,0
+    \ 0004 653d00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_ERROR text data instance function undefined! `
+    \ 0000          `_StringLiteral_ERROR text data instance function undefined! `:
+    \ 0000 4552524f             .byte   69,82,82,79,82,32,116,101,120,116,32,100,97,116,97,32,105,110,115,116,97,110,99,101,32,102,117,110,99,116,105,111,110,32,117,110,100,101,102,105,110,101,100,33,32,0
+    \ 0004 52207465
+    \ 0008 78742064
+    \ 000c 61746120
+    \ 0010 696e7374
+    \ 0014 616e6365
+    \ 0018 2066756e
+    \ 001c 6374696f
+    \ 0020 6e20756e
+    \ 0024 64656669
+    \ 0028 6e656421
+    \ 002c 2000
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_ERROR text data instance not found! `
+    \ 0000          `_StringLiteral_ERROR text data instance not found! `:
+    \ 0000 4552524f             .byte   69,82,82,79,82,32,116,101,120,116,32,100,97,116,97,32,105,110,115,116,97,110,99,101,32,110,111,116,32,102,111,117,110,100,33,32,0
+    \ 0004 52207465
+    \ 0008 78742064
+    \ 000c 61746120
+    \ 0010 696e7374
+    \ 0014 616e6365
+    \ 0018 206e6f74
+    \ 001c 20666f75
+    \ 0020 6e642120
+    \ 0024 00
+
+##########################
+#                        #
+# Memory sizes (decimal) #
+#                        #
+##########################
+
+Executable  (Text): 505 bytes
+Constant          : 110 bytes

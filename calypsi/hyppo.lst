@@ -1,0 +1,1677 @@
+###############################################################################
+#                                                                             #
+# Calypsi ISO C compiler for 6502                                version 5.12 #
+#                                                       07/Nov/2025  20:26:17 #
+# Command line:                                                               #
+#               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.lst #
+#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.6-beta" -I         #
+#               ..\mega65-libc\include -O 2 --core 45gs02 --target MEGA65     #
+#               -D FULLFEATURES -o                                            #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o #
+#               hyppo.c                                                       #
+#                                                                             #
+###############################################################################
+
+    \ 0000                      .rtmodel version,"1"
+    \ 0000                      .rtmodel codeModel,"plain"
+    \ 0000                      .rtmodel core,"45gs02"
+    \ 0000                      .rtmodel doubleSize,"32"
+    \ 0000                      .rtmodel target,"mega65"
+    \ 0000                      .extern _AllocStackSave
+    \ 0000                      .extern _DecVsp
+    \ 0000                      .extern _FillQ
+    \ 0000                      .extern _IncVsp
+    \ 0000                      .extern _RestoreRegisters
+    \ 0000                      .extern _SpillZP
+    \ 0000                      .extern _Vfp
+    \ 0000                      .extern _Vsp
+    \ 0000                      .extern _Zp
+    \ 0000                      .extern cgetcd
+    \ 0000                      .extern cputlnd
+    \ 0000                      .extern lcopy
+    \ 0000                      .extern msprintfd
+    \ 0000                      .extern strcpy
+0001                #include <stdlib.h>
+0002                #include <stdint.h>
+0003                #include <string.h>
+0004                #include <mega65/memory.h>  // mega65-libc
+0005                #include "regions.h"
+0006                #include "conioextensions.h"
+0007                #include "hyppo.h"
+0008                #include "fileio.h"
+0009
+0010                // *********************************************************
+0011                // ***  hyppo.c abstraction to hyppo mount handling      ***
+0012                // *********************************************************
+0013
+0014                // need to be at a page frame border, CAREFUL as this define does not throw warnings:
+0015                #define readdir_direntasm BLOCKDIRENT
+0016                struct HYPPODIRENT* const /* __attribute__((used)) */
+0017                                    readdir_dirent = (struct HYPPODIRENT*) BLOCKDIRENT;
+0018
+0019                // static char * __attribute__((used)) HTRAP00asm = HTRAP00;
+0020                // unsigned int HTRAP00asm = 0xd640;
+0021                // unsigned int HTRAP3Fasm = 0xd67f;
+0022                #define STR(x) #x
+0023                #define XSTR(s) STR(s)
+0024                // __asm__(".set HTRAP00, " XSTR(HTRAP00asm) );
+0025                // __asm__(".set HTRAP3F, " XSTR(HTRAP3Fasm) );
+0026                // __asm(" .set readdir_dirent, " XSTR(readdir_direntasm) );
+0027
+0028                // please be aware the following structures are the same RAM page:
+0029                struct HYPPOFILENAME* const hyppofn = (struct HYPPOFILENAME*) FILENAMEPAGE;
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .public hyppofn
+    \ 0000 001c     hyppofn:    .word   0x1c00
+0030                struct TASKBLOCK* const taskblock = (struct TASKBLOCK*) FILENAMEPAGE;
+0031
+0032                // Calypsi 5.7 change notes:
+0033                // MEGA65: The symbols HTRAP00 to HTRAP3F are now recognized as having arbitrary
+0034                // register effects and setting the carry flag. This prevents instructions from
+0035                // being optimized away when doing a Hyppo call from inline assembly. You will
+0036                // need to import the symbol used, e.g. " .extern HTRAP00"\\n. The HTRAP symbols
+0037                // are defined in the supplied MEGA65 library which is automatically linked with
+0038                // when using --target=mega65.
+0039                // This is done in the first function as __asm can't be in global scope.
+0040
+0041                // https://stackoverflow.com/questions/8810390/how-to-use-a-global-variable-in-gcc-inline-assembly
+0042                // define fnamehi (unsigned char)((unsigned int)hyppofn->name >> 8)
+0043                static unsigned char /* __attribute__((used)) */ fnamehi;
+    \ 0000                      .section zdata,bss
+    \ 0000          fnamehi:    .space  1
+0044                unsigned char hyppo_setup_transfer_area(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_setup_transfer_area
+    \ 0000          hyppo_setup_transfer_area:
+0045                  unsigned char retval;
+0046
+0047                  fnamehi = (unsigned int)hyppofn->name >> 8;
+    \ 0000 ad....               lda     hyppofn+1
+    \ 0003 8d....               sta     fnamehi
+0048
+0049                  __asm(
+0050                	" .extern HTRAP00\n"   // global but can't stand outside of a C function
+0051                	" .extern HTRAP3F\n"
+0052
+0053                  " ldx #0x00\n"         // shouldn't be necessary
+0054                //	"ldy #>(fnamehi)\n"  // works only because "name" is first in struct
+0055                    " lda #0x3a\n"
+0056                	" sta HTRAP00\n"
+0057                	" clv\n"
+0058                	" bcc errsettrans\n"
+0059                //    "sta %0\n"  Calypsi
+0060                	" jmp donesettrans\n"
+0061                "errsettrans:\n"
+0062                    " lda #0xff\n"
+0063                //	" sta %0\n"  Calypsi
+0064                "donesettrans:\n"
+0065                    " nop\n"
+0066                	: "=Ka"(retval) : "Ky"(fnamehi) : "a", "x");
+    \ 0006 ac....               ldy     fnamehi
+    \ 0009                      .extern HTRAP00
+    \ 0009                      .extern HTRAP3F
+    \ 0009 a200                 ldx     #0
+    \ 000b a93a                 lda     #58
+    \ 000d 20....               jsr     `?L290`
+    \ 0010 b002                 bcs     `?L158`
+    \ 0012 a9ff                 lda     #255
+    \ 0014 ea       `?L158`:    nop
+0067                  return retval;
+0068                }
+    \ 0015 60                   rts
+0069                unsigned char hyppo_get_proc_desc(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_get_proc_desc
+    \ 0000          hyppo_get_proc_desc:
+0070                  unsigned char retval;
+0071
+0072                  fnamehi = (unsigned int)taskblock >> 8;
+    \ 0000 ad....               lda     taskblock+1
+    \ 0003 8d....               sta     fnamehi
+0073
+0074                  __asm(
+0075                	" ldx #0x00\n"         // shouldn't be necessary
+0076                //	"ldy #>(fnamehi)\n"  // works only because "name" is first in struct
+0077                    " lda #0x48\n"
+0078                	" sta HTRAP00\n"
+0079                	" clv\n"
+0080                	" bcc errgetproc\n"
+0081                //    "sta %0\n"  Calypsi
+0082                	" jmp donegetproc\n"
+0083                "errgetproc:\n"
+0084                    " lda #0xff\n"
+0085                //	"sta %0\n"  Calypsi
+0086                "donegetproc:\n"
+0087                    " nop\n"
+0088                	: "=Ka"(retval) : "Ky"(fnamehi) : "a", "x");
+    \ 0006 ac....               ldy     fnamehi
+    \ 0009 a200                 ldx     #0
+    \ 000b a948                 lda     #72
+    \ 000d 20....               jsr     `?L290`
+    \ 0010 b002                 bcs     `?L161`
+    \ 0012 a9ff                 lda     #255
+    \ 0014 ea       `?L161`:    nop
+0089                  return retval;
+0090                }
+    \ 0015 60                   rts
+0091
+0092                unsigned char hyppo_getcurrentdrive(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_getcurrentdrive
+    \ 0000          hyppo_getcurrentdrive:
+0093                	unsigned char retval;
+0094
+0095                  // ; Get the current drive
+0096                  __asm(
+0097                	" ldx #0x00\n"    // shouldn't be necessary
+0098                    " lda #0x04\n"
+0099                	" sta HTRAP00\n"
+0100                	" clv\n"
+0101                	" bcc errgetcurdrv\n"
+0102                //    "sta %0\n"  Calypsi
+0103                	" jmp donegetcurdrv\n"
+0104                "errgetcurdrv:\n"
+0105                    " lda #0xff\n"
+0106                //	"sta %0\n"  Calypsi
+0107                "donegetcurdrv:\n"
+0108                    " nop"
+0109                	: "=Ka"(retval) :: "a", "x");
+    \ 0000 a200                 ldx     #0
+    \ 0002 a904                 lda     #4
+    \ 0004 20....               jsr     `?L290`
+    \ 0007 b002                 bcs     `?L164`
+    \ 0009 a9ff                 lda     #255
+    \ 000b ea       `?L164`:    nop
+0110
+0111                  return retval;
+0112                }
+    \ 000c 60                   rts
+0113
+0114                // https://llvm-mos.org/wiki/C_Inline_Assembly
+0115                // https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html
+0116                //                            : %0  :  %1  :
+0117                //                asm         :input:output:clobber  comma separated
+0118                // __asm ("st%0 0x1234"::"R"(value));
+0119
+0120                unsigned char hyppo_selectdrive(unsigned char nb)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_selectdrive
+    \ 0000          hyppo_selectdrive:
+0121                	unsigned char retval;
+0122
+0123                  __asm(
+0124                //    "ldx %1\n"
+0125                	" lda #0x06\n"
+0126                	" sta HTRAP00\n"
+0127                	" clv\n"
+0128                	" bcc errseldrv\n"
+0129                    " txa\n"  //   Calypsi stx %0\n"
+0130                	" jmp doneseldrv\n"
+0131                "errseldrv:\n"
+0132                    " lda #0xff\n"
+0133                //	"sta %0\n"  Calypsi
+0134                "doneseldrv:\n"
+0135                    " nop\n"
+0136                    : "=Ka"(retval)  // output
+0137                    : "Kx"(nb)       // input
+0138                	: "a"           // clobber
+    \ 0000 aa                   tax
+    \ 0001 a906                 lda     #6
+    \ 0003 20....               jsr     `?L290`
+    \ 0006 9003                 bcc     `?L166`
+    \ 0008 8a                   txa
+    \ 0009 8002                 bra     `?L167`
+    \ 000b a9ff     `?L166`:    lda     #255
+    \ 000d ea       `?L167`:    nop
+0139                	);
+0140
+0141                  return retval;
+0142                }
+    \ 000e 60                   rts
+0143
+0144                unsigned char hyppo_setname(char *filename)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_setname
+    \ 0000          hyppo_setname:
+0145                	unsigned char retval;
+0146
+0147                fnamehi = (unsigned int)hyppofn->name >> 8;
+    \ 0000 ad....               lda     hyppofn+1
+    \ 0003 8d....               sta     fnamehi
+0148
+0149                  strcpy(hyppofn->name, filename);
+    \ 0006 20....               jsr     `?L300`
+    \ 0009 ad....               lda     hyppofn
+    \ 000c 85..                 sta     zp:_Zp
+    \ 000e ad....               lda     hyppofn+1
+    \ 0011 85..                 sta     zp:_Zp+1
+    \ 0013 20....               jsr     strcpy
+0150
+0151                  __asm(
+0152                	" ldx #0x00\n"         // shouldn't be necessary
+0153                //	"ldy #>(fnamehi)\n"  // works only because "name" is first in struct
+0154                    " lda #0x2e\n"
+0155                	" sta HTRAP00\n"
+0156                	" clv\n"
+0157                	" bcc errhypsetnam\n"
+0158                	" lda #0\n"           // upon success return 0
+0159                //    "sta %0\n"  Calypsi
+0160                	" jmp donehypsetnam\n"
+0161                "errhypsetnam:\n"
+0162                	" lda #0xff\n"
+0163                //    "sta %0\n"  Calypsi
+0164                "donehypsetnam:\n"
+0165                    " nop\n"
+0166                	: "=Ka"(retval) : "Ky"(fnamehi) : "a", "x");
+    \ 0016 ac....               ldy     fnamehi
+    \ 0019 a200                 ldx     #0
+    \ 001b a92e                 lda     #46
+    \ 001d 20....               jsr     `?L290`
+    \ 0020 9004                 bcc     `?L170`
+    \ 0022 a900                 lda     #0
+    \ 0024 8002                 bra     `?L171`
+    \ 0026 a9ff     `?L170`:    lda     #255
+    \ 0028 ea       `?L171`:    nop
+0167                  return retval;
+0168                }
+    \ 0029 60                   rts
+0169
+0170                unsigned char hyppo_d81attach0(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_d81attach0
+    \ 0000          hyppo_d81attach0:
+0171                	unsigned char retval;
+0172
+0173                  __asm(
+0174                	" ldx #0x00\n"    // shouldn't be necessary
+0175                    " lda #0x40\n"
+0176                	" sta HTRAP00\n"
+0177                	" clv\n"
+0178                	" bcc errhyp0att\n"
+0179                    " lda #0x00\n"
+0180                //    "sta %0\n"  Calypsi
+0181                	" jmp donehyp0att\n"
+0182                "errhyp0att:\n"
+0183                    " lda #0xff\n"
+0184                //	"sta %0\n"  Calypsi
+0185                "donehyp0att:\n"
+0186                    " nop\n"
+0187                	: "=Ka"(retval) : : "a", "x");
+    \ 0000 a200                 ldx     #0
+    \ 0002 a940                 lda     #64
+    \ 0004 20....               jsr     `?L290`
+    \ 0007 9004                 bcc     `?L173`
+    \ 0009 a900                 lda     #0
+    \ 000b 8002                 bra     `?L174`
+    \ 000d a9ff     `?L173`:    lda     #255
+    \ 000f ea       `?L174`:    nop
+0188                  return retval;
+0189                }
+    \ 0010 60                   rts
+0190
+0191                unsigned char hyppo_d81attach1(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_d81attach1
+    \ 0000          hyppo_d81attach1:
+0192                	unsigned char retval;
+0193
+0194                  __asm(
+0195                	" ldx #0x00\n"    // shouldn't be necessary
+0196                    " lda #0x46\n"
+0197                	" sta HTRAP00\n"
+0198                	" clv\n"
+0199                	" bcc errhyp1att\n"
+0200                    " lda #0x00\n"
+0201                //    "sta %0\n"  Calypsi
+0202                	" jmp donehyp1att\n"
+0203                "errhyp1att:\n"
+0204                    " lda #0xff\n"
+0205                //	"sta %0\n"  Calypsi
+0206                "donehyp1att:\n"
+0207                    " nop\n"
+0208                  : "=Ka"(retval) : : "a", "x");
+    \ 0000 a200                 ldx     #0
+    \ 0002 a946                 lda     #70
+    \ 0004 20....               jsr     `?L290`
+    \ 0007 9004                 bcc     `?L176`
+    \ 0009 a900                 lda     #0
+    \ 000b 8002                 bra     `?L177`
+    \ 000d a9ff     `?L176`:    lda     #255
+    \ 000f ea       `?L177`:    nop
+0209                  return retval;
+0210                }
+    \ 0010 60                   rts
+0211                /*
+0212                unsigned char hyppo_d81detach(void)  {
+0213                	unsigned char retval;
+0214
+0215                  __asm(
+0216                	" ldx #0x00\n"    // shouldn't be necessary
+0217                    " lda #0x42\n"
+0218                	" sta HTRAP00\n"
+0219                	" clv\n"
+0220                	" bcc errhypd81detach\n"
+0221                //    "sta %0\n"  Calypsi
+0222                	" jmp donehypd81detach\n"
+0223                "errhypd81detach:\n"
+0224                    " lda #0xff\n"
+0225                //	"sta %0\n"  Calypsi
+0226                "donehypd81detach:\n"
+0227                    " nop\n"
+0228                  : "=Ka"(retval) : : "a", "x");
+0229                  return retval;
+0230                }
+0231                */
+0232                unsigned char hyppo_dos_attach(unsigned char mountbits)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_dos_attach
+    \ 0000          hyppo_dos_attach:
+0233                	unsigned char retval;
+0234
+0235                  __asm(
+0236                    " lda #0x4a\n"
+0237                	" sta HTRAP00\n"
+0238                	" clv\n"
+0239                	" bcc errhypd81dosattach\n"
+0240                //    "sta %0\n"  Calypsi
+0241                	" jmp donehypd81dosattach\n"
+0242                "errhypd81dosattach:\n"
+0243                    " lda #0xff\n"
+0244                //	"sta %0\n"  Calypsi
+0245                "donehypd81dosattach:\n"
+0246                    " nop\n"
+0247                  : "=Ka"(retval) : "Kx"(mountbits) : "a", "y");
+    \ 0000 aa                   tax
+    \ 0001 a94a                 lda     #74
+    \ 0003 20....               jsr     `?L290`
+    \ 0006 b002                 bcs     `?L180`
+    \ 0008 a9ff                 lda     #255
+    \ 000a ea       `?L180`:    nop
+0248                  return retval;
+0249                }
+    \ 000b 60                   rts
+0250                /*
+0251                unsigned char hyppo_d81attach0() {return hyppo_dos_attach(0b00000000);}
+0252                unsigned char hyppo_d81attach1() {return hyppo_dos_attach(0b00000001);}
+0253                unsigned char hyppo_d81detach()  {return hyppo_dos_attach(0b10000010);}
+0254                */
+0255
+0256                /*
+0257                hyppo_loadfile
+0258                HTRAP00
+0259
+0260                void hyppo_loadfile(__zp unsigned long addr) {
+0261                  // Use the 45GS02 32-bit addressing mode
+0262                  asm {
+0263                        ldz #0
+0264                        lda val
+0265                        sta ((addr)),z
+0266                		
+0267                		
+0268                	; Assume the current Hyppo filename has already been set.
+0269                	; No need to find the file first.
+0270                	LDZ #0x04 ; Most significant byte
+0271                	LDY #0x80 ; Middle byte
+0272                	LDX #0x00 ; Least significant byte
+0273                	LDA #0x36 : STA HTRAP00 : CLV : BCC error
+0274                  }
+0275                }
+0276                */
+0277
+0278                unsigned char hyppo_opendir(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_opendir
+    \ 0000          hyppo_opendir:
+0279                	unsigned char retval;
+0280
+0281                  __asm(
+0282                	" ldx #0x00\n"    // shouldn't be necessary
+0283                    " lda #0x12\n"
+0284                	" sta HTRAP00\n"
+0285                	" clv\n"
+0286                	" bcc errhypopendir\n"
+0287                //    "sta %0\n"  Calypsi
+0288                	" jmp donehypopendir\n"
+0289                "errhypopendir:\n"
+0290                    " lda #0xff\n"
+0291                //	"sta %0\n"  Calypsi
+0292                "donehypopendir:\n"
+0293                    " nop\n"
+0294                  : "=Ka"(retval) : : "a", "x");
+    \ 0000 a200                 ldx     #0
+    \ 0002 a912                 lda     #18
+    \ 0004 20....               jsr     `?L290`
+    \ 0007 b002                 bcs     `?L183`
+    \ 0009 a9ff                 lda     #255
+    \ 000b ea       `?L183`:    nop
+0295                  return retval;
+0296                }
+    \ 000c 60                   rts
+0297
+0298                unsigned char hyppo_chdir(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_chdir
+    \ 0000          hyppo_chdir:
+0299                	unsigned char retval;
+0300
+0301                  __asm(
+0302                	" ldx #0x00\n"    // shouldn't be necessary
+0303                    " lda #0x34\n"    // hyppo_findfile
+0304                	" sta HTRAP00\n"
+0305                	" clv\n"
+0306                	" bcc errhypchdir\n"
+0307
+0308                //	"ldx #0x00\n"    // shouldn't be necessary
+0309                    " lda #0x0c\n"    // hyppo_chdir
+0310                	" sta HTRAP00\n"
+0311                	" clv\n"
+0312                //	"bcc errhypchdir\n"
+0313                //    "sta %0\n"  Calypsi
+0314                	" jmp donehypchdir\n"
+0315                "errhypchdir:\n"
+0316                    " lda #0xff\n"
+0317                //	"sta %0\n"  Calypsi
+0318                "donehypchdir:\n"
+0319                    " nop\n"
+0320                  : "=Ka"(retval) : : "a", "x");
+    \ 0000 a200                 ldx     #0
+    \ 0002 a934                 lda     #52
+    \ 0004 20....               jsr     `?L290`
+    \ 0007 9007                 bcc     `?L185`
+    \ 0009 a90c                 lda     #12
+    \ 000b 20....               jsr     `?L290`
+    \ 000e 8002                 bra     `?L186`
+    \ 0010 a9ff     `?L185`:    lda     #255
+    \ 0012 ea       `?L186`:    nop
+0321                  return retval;
+0322                }
+    \ 0013 60                   rts
+0323
+0324                unsigned char hyppo_closedir(unsigned char filedescriptor)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_closedir
+    \ 0000          hyppo_closedir:
+0325                	unsigned char retval;
+0326
+0327                  __asm(
+0328                //	"ldx filedescriptor\n"
+0329                    " lda #0x16\n"
+0330                	" sta HTRAP00\n"
+0331                	" clv\n"
+0332                	" bcc errhypclosedir\n"
+0333                    " txa\n" //   Calypsi stx %0\n"
+0334                	" jmp donehypclosedir\n"
+0335                "errhypclosedir:\n"
+0336                //	"sta %0\n"  Calypsi
+0337                "donehypclosedir:\n"
+0338                    " nop\n"
+0339                  : "=Ka"(retval) : "Kx"(filedescriptor) : "a");
+    \ 0000 aa                   tax
+    \ 0001 a916                 lda     #22
+    \ 0003 20....               jsr     `?L290`
+    \ 0006 9001                 bcc     `?L189`
+    \ 0008 8a                   txa
+    \ 0009 ea       `?L189`:    nop
+0340                  return retval;
+0341                }
+    \ 000a 60                   rts
+0342
+0343                unsigned char hyppo_readdir(unsigned char filedescriptor)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_readdir
+    \ 0000          hyppo_readdir:
+0344                	unsigned char retval;
+0345
+0346                // @@ ideas for optimisation: skip the whole emptying of the dirent completely
+0347                  __asm(
+0348                	// pha
+0349                	" phx\n"
+0350                	// First, clear out the dirent
+0351                	" ldx #0\n"
+0352                	" txa\n"
+0353                "hypreaddirloop: sta " XSTR(readdir_direntasm) ",x\n"
+0354                	" dex\n"
+0355                	" bne hypreaddirloop\n"
+0356                	" plx\n"
+0357                //	"ldx filedescriptor\n"
+0358                	" tya\n"
+0359                	" tax\n"
+0360
+0361                	// Third, call the hypervisor trap
+0362                	// File descriptor gets passed in in X.
+0363                	// Result gets written to transfer area we setup at $0400
+0364                	" ldy #.byte1 (" XSTR(readdir_direntasm) ")\n"  // before Calypsi #>readdir_dirent
+0365                	" sty 0x1630\n"  // @@@@ testing
+0366                	" lda #0x14\n"
+0367                	" sta HTRAP00\n"
+0368                	" clv\n"
+0369                	" bcc errhypreaddir\n"
+0370                    " txa\n" //   Calypsi stx %0\n"
+0371                	" jmp donehypreaddir\n"
+0372                "errhypreaddir:\n"
+0373                //	"sta %0\n"  Calypsi
+0374                "donehypreaddir:\n"
+0375                    " nop\n"
+0376                  : "=Ka"(retval) : "Ky"(filedescriptor) : "a", "x");
+    \ 0000 a8                   tay
+    \ 0001 da                   phx
+    \ 0002 a200                 ldx     #0
+    \ 0004 8a                   txa
+    \ 0005 9d001b   `?L191`:    sta     0x1b00,x
+    \ 0008 ca                   dex
+    \ 0009 d0fa                 bne     `?L191`
+    \ 000b fa                   plx
+    \ 000c 98                   tya
+    \ 000d aa                   tax
+    \ 000e a01b                 ldy     #27
+    \ 0010 8c3016               sty     0x1630
+    \ 0013 a914                 lda     #20
+    \ 0015 20....               jsr     `?L290`
+    \ 0018 9001                 bcc     `?L193`
+    \ 001a 8a                   txa
+    \ 001b ea       `?L193`:    nop
+    \ 001c 85..                 sta     zp:_Zp
+0377
+0378                  if (readdir_dirent->length >= LFNFILENAMELEN)  {
+    \ 001e 20....               jsr     `?L297`
+    \ 0021 a040                 ldy     #64
+    \ 0023 b1..                 lda     (_Zp+2),y
+    \ 0025 c940                 cmp     #64
+    \ 0027 900a                 bcc     `?L48`
+0379                    readdir_dirent->lfn[LFNFILENAMELEN - 1] = 0;     // cut last character :(
+    \ 0029 20....               jsr     `?L297`
+    \ 002c a900                 lda     #0
+    \ 002e 88                   dey
+    \ 002f 91..                 sta     (_Zp+2),y
+    \ 0031 801b                 bra     `?L49`
+    \ 0033          `?L48`:
+0380                  } else {
+0381                    readdir_dirent->lfn[readdir_dirent->length] = 0; // put str terminate null
+    \ 0033 ae....               ldx     readdir_dirent
+    \ 0036 86..                 stx     zp:_Zp+2
+    \ 0038 ae....               ldx     readdir_dirent+1
+    \ 003b 86..                 stx     zp:_Zp+3
+    \ 003d ae....               ldx     readdir_dirent
+    \ 0040 86..                 stx     zp:_Zp+4
+    \ 0042 ae....               ldx     readdir_dirent+1
+    \ 0045 86..                 stx     zp:_Zp+5
+    \ 0047 b1..                 lda     (_Zp+4),y
+    \ 0049 4b                   taz
+    \ 004a a900                 lda     #0
+    \ 004c 92..                 sta     (_Zp+2),z
+    \ 004e          `?L49`:
+0382                  }
+0383
+0384                  return retval;
+    \ 004e a5..                 lda     zp:_Zp
+0385                }
+    \ 0050 60                   rts
+0386
+0387                unsigned char hyppo_findfirst(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_findfirst
+    \ 0000          hyppo_findfirst:
+0388                	unsigned char retval;
+0389
+0390                  __asm(
+0391                	" ldx #0x00\n"    // reset number of found file entries
+0392                    " lda #0x30\n"
+0393                	" sta HTRAP00\n"
+0394                	" clv\n"
+0395                	" bcc errhypfindfirst\n"
+0396                //    "sta %0\n"  Calypsi
+0397                	" jmp donehypfindfirst\n"
+0398                "errhypfindfirst:\n"
+0399                /*  a already carries the return (error) code
+0400                    "lda #0xff\n"
+0401                */
+0402                //	"sta %0\n"  Calypsi
+0403                "donehypfindfirst:\n"
+0404                    " nop\n"
+0405                  : "=Ka"(retval) : : "a", "x");
+    \ 0000 a200                 ldx     #0
+    \ 0002 a930                 lda     #48
+    \ 0004 20....               jsr     `?L290`
+    \ 0007 ea       `?L197`:    nop
+0406                  return retval;
+0407                }
+    \ 0008 60                   rts
+0408
+0409                unsigned char hyppo_openfile(unsigned char filedescriptor)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_openfile
+    \ 0000          hyppo_openfile:
+0410                	unsigned char retval;
+0411
+0412                  __asm(
+0413                //	"ldx #0x00\n"    // shouldn't be necessary
+0414                    " lda #0x18\n"
+0415                	" sta HTRAP00\n"
+0416                	" clv\n"
+0417                	" bcc errhypopenfile\n"
+0418                //    "sta %0\n"  Calypsi
+0419                	" jmp donehypopenfile\n"
+0420                "errhypopenfile:\n"
+0421                /*  a already carries the return (error) code
+0422                    "lda #0xff\n"
+0423                */
+0424                //	"sta %0\n"  Calypsi
+0425                "donehypopenfile:\n"
+0426                    " nop\n"
+0427                  : "=Ka"(retval) : "Kx"(filedescriptor) : "a" );
+    \ 0000 aa                   tax
+    \ 0001 a918                 lda     #24
+    \ 0003 20....               jsr     `?L290`
+    \ 0006 ea       `?L200`:    nop
+0428                  return retval;
+0429                }
+    \ 0007 60                   rts
+0430
+0431                unsigned char hyppo_readfile(unsigned char filedescriptor)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_readfile
+    \ 0000          hyppo_readfile:
+0432                	unsigned char retval;
+0433
+0434                  __asm(
+0435                //	"ldx #0x00\n"    // shouldn't be necessary
+0436                    " lda #0x1a\n"
+0437                	" sta HTRAP00\n"
+0438                	" clv\n"
+0439                	" bcc errhypreadfile\n"
+0440                //    "sta %0\n"  Calypsi
+0441                	" jmp donehypreadfile\n"
+0442                "errhypreadfile:\n"
+0443                    " lda #0xff\n"
+0444                //	"sta %0\n"  Calypsi
+0445                "donehypreadfile:\n"
+0446                    " nop\n"
+0447                  : "=Ka"(retval) : "Kx"(filedescriptor) : "a");
+    \ 0000 aa                   tax
+    \ 0001 a91a                 lda     #26
+    \ 0003 20....               jsr     `?L290`
+    \ 0006 b002                 bcs     `?L203`
+    \ 0008 a9ff                 lda     #255
+    \ 000a ea       `?L203`:    nop
+0448                  return retval;
+0449                }
+    \ 000b 60                   rts
+0450
+0451                unsigned char hyppo_closefile(unsigned char filedescriptor)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_closefile
+    \ 0000          hyppo_closefile:
+0452                	unsigned char retval;
+0453
+0454                  __asm(
+0455                //	"ldx #0x00\n"    // shouldn't be necessary
+0456                    " lda #0x20\n"
+0457                	" sta HTRAP00\n"
+0458                	" clv\n"
+0459                	" bcc errhypclosefile\n"
+0460                //    "sta %0\n"  Calypsi
+0461                	" jmp donehypclosefile\n"
+0462                "errhypclosefile:\n"
+0463                    " lda #0xff\n"
+0464                //	"sta %0\n"  Calypsi
+0465                "donehypclosefile:\n"
+0466                    " nop\n"
+0467                  : "=Ka"(retval) : "Kx"(filedescriptor) : "a");
+    \ 0000 aa                   tax
+    \ 0001 a920                 lda     #32
+    \ 0003 20....               jsr     `?L290`
+    \ 0006 b002                 bcs     `?L206`
+    \ 0008 a9ff                 lda     #255
+    \ 000a ea       `?L206`:    nop
+0468                  return retval;
+0469                }
+    \ 000b 60                   rts
+0470
+0471                unsigned char hyppo_rmfile(unsigned char filedescriptor)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_rmfile
+    \ 0000          hyppo_rmfile:
+0472                  unsigned char retval;
+0473
+0474                  __asm(
+0475                //    "ldx #$00\n"    // shouldn't be necessary
+0476                    " lda #0x26\n"
+0477                    " sta HTRAP00\n"
+0478                    " clv\n"
+0479                    " bcc errhyprmfile\n"
+0480                //    "sta %0\n"  Calypsi
+0481                    " jmp donehyprmfile\n"
+0482                "errhyprmfile:\n"
+0483                    " lda #0xFF\n"
+0484                //    "sta %0\n"  Calypsi
+0485                "donehyprmfile:\n"
+0486                    " nop\n"
+0487                  : "=Ka"(retval) : "Kx"(filedescriptor) : "a");
+    \ 0000 aa                   tax
+    \ 0001 a926                 lda     #38
+    \ 0003 20....               jsr     `?L290`
+    \ 0006 b002                 bcs     `?L209`
+    \ 0008 a9ff                 lda     #255
+    \ 000a ea       `?L209`:    nop
+0488                  return retval;
+0489                }
+    \ 000b 60                   rts
+0490
+0491                unsigned char hyppo_rmdir(unsigned char filedescriptor)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_rmdir
+    \ 0000          hyppo_rmdir:
+0492                  unsigned char retval;
+0493
+0494                  __asm(
+0495                //    "ldx #$00\n"    // shouldn't be necessary
+0496                    " lda #0x10\n"
+0497                    " sta HTRAP00\n"
+0498                    " clv\n"
+0499                    " bcc errhyprmfile\n"
+0500                //    "sta %0\n"  Calypsi
+0501                    " jmp donehyprmfile\n"
+0502                "errhyprmfile:\n"
+0503                    " lda #0xFF\n"
+0504                //    "sta %0\n"  Calypsi
+0505                "donehyprmfile:\n"
+0506                    " nop\n"
+0507                  : "=Ka"(retval) : "Kx"(filedescriptor) : "a");
+    \ 0000 aa                   tax
+    \ 0001 a910                 lda     #16
+    \ 0003 20....               jsr     `?L290`
+    \ 0006 b002                 bcs     `?L212`
+    \ 0008 a9ff                 lda     #255
+    \ 000a ea       `?L212`:    nop
+0508                  return retval;
+0509                }
+    \ 000b 60                   rts
+0510
+0511                char * getsfn() {
+    \ 0000                      .section code,text
+    \ 0000                      .public getsfn
+    \ 0000          getsfn:
+0512                  unsigned char i;
+0513                //  char sfn[20]; //    [13];
+0514                  char c = 0;
+    \ 0000 a900                 lda     #0
+    \ 0002 85..                 sta     zp:_Zp+4
+0515                  char dotpos;
+0516
+0517                  for (int i = 0; i < 8 && readdir_dirent->sfn[i] != 32; i++) {
+    \ 0004 85..                 sta     zp:_Zp
+    \ 0006 85..                 sta     zp:_Zp+1
+    \ 0008          `?L80`:
+    \ 0008 a5..                 lda     zp:_Zp
+    \ 000a c908                 cmp     #8
+    \ 000c a5..                 lda     zp:_Zp+1
+    \ 000e e900                 sbc     #0
+    \ 0010 5002                 bvc     `?L214`
+    \ 0012 4980                 eor     #-128
+    \ 0014 1051     `?L214`:    bpl     `?L82`
+    \ 0016 20....               jsr     `?L288`
+    \ 0019 a900                 lda     #0
+    \ 001b 20....               jsr     `?L287`
+    \ 001e 9002                 bcc     `?L216`
+    \ 0020 e6..                 inc     zp:_Zp+7
+    \ 0022 a000     `?L216`:    ldy     #0
+    \ 0024 b1..                 lda     (_Zp+6),y
+    \ 0026 c920                 cmp     #32
+    \ 0028 f03d                 beq     `?L82`
+0518                	if (readdir_dirent->sfn[i] > 0x20) {
+    \ 002a a320                 ldz     #32
+    \ 002c 20....               jsr     `?L288`
+    \ 002f 98                   tya
+    \ 0030 20....               jsr     `?L287`
+    \ 0033 9002                 bcc     `?L218`
+    \ 0035 e6..                 inc     zp:_Zp+7
+    \ 0037          `?L218`:
+    \ 0037 b1..                 lda     (_Zp+6),y
+    \ 0039 85..                 sta     zp:_Zp+2
+    \ 003b d4..                 cpz     zp:_Zp+2
+    \ 003d b024                 bcs     `?L81`
+0519                	  hyppofn->sfn[c] = readdir_dirent->sfn[i];
+    \ 003f 20....               jsr     `?L288`
+    \ 0042 98                   tya
+    \ 0043 20....               jsr     `?L287`
+    \ 0046 9002                 bcc     `?L220`
+    \ 0048 e6..                 inc     zp:_Zp+7
+    \ 004a          `?L220`:
+    \ 004a b1..                 lda     (_Zp+6),y
+    \ 004c 48                   pha
+    \ 004d 18                   clc
+    \ 004e a941                 lda     #65
+    \ 0050 6d....               adc     hyppofn
+    \ 0053 85..                 sta     zp:_Zp+2
+    \ 0055 98                   tya
+    \ 0056 6d....               adc     hyppofn+1
+    \ 0059 85..                 sta     zp:_Zp+3
+    \ 005b ab....               ldz     _Zp+4
+    \ 005e 68                   pla
+    \ 005f 92..                 sta     (_Zp+2),z
+0520                	  c++;
+    \ 0061 e6..                 inc     zp:_Zp+4
+    \ 0063          `?L81`:
+    \ 0063 e3..                 inw     zp:_Zp
+    \ 0065 80a1                 bra     `?L80`
+    \ 0067          `?L82`:
+0521                	}
+0522                  }
+0523                  hyppofn->sfn[c] = '.';
+0524                  dotpos = c;
+0525                  c++;
+0526                  for (int i = 8; i < 11 && readdir_dirent->sfn[i] != 32; i++) {
+    \ 0067 20....               jsr     `?L289`
+    \ 006a ab....               ldz     _Zp+4
+    \ 006d a92e                 lda     #46
+    \ 006f 92..                 sta     (_Zp),z
+    \ 0071 a5..                 lda     zp:_Zp+4
+    \ 0073 85..                 sta     zp:_Zp+3
+    \ 0075 e6..                 inc     zp:_Zp+4
+    \ 0077 a908                 lda     #8
+    \ 0079 85..                 sta     zp:_Zp
+    \ 007b 20....               jsr     `?L295`
+    \ 007e          `?L87`:
+    \ 007e a5..                 lda     zp:_Zp
+    \ 0080 c90b                 cmp     #11
+    \ 0082 a5..                 lda     zp:_Zp+1
+    \ 0084 e900                 sbc     #0
+    \ 0086 5002                 bvc     `?L222`
+    \ 0088 4980                 eor     #-128
+    \ 008a 1051     `?L222`:    bpl     `?L89`
+    \ 008c 20....               jsr     `?L288`
+    \ 008f a900                 lda     #0
+    \ 0091 20....               jsr     `?L287`
+    \ 0094 9002                 bcc     `?L224`
+    \ 0096 e6..                 inc     zp:_Zp+7
+    \ 0098 a000     `?L224`:    ldy     #0
+    \ 009a b1..                 lda     (_Zp+6),y
+    \ 009c c920                 cmp     #32
+    \ 009e f03d                 beq     `?L89`
+0527                	if (readdir_dirent->sfn[i] > 0x20) {
+    \ 00a0 a320                 ldz     #32
+    \ 00a2 20....               jsr     `?L288`
+    \ 00a5 98                   tya
+    \ 00a6 20....               jsr     `?L287`
+    \ 00a9 9002                 bcc     `?L226`
+    \ 00ab e6..                 inc     zp:_Zp+7
+    \ 00ad          `?L226`:
+    \ 00ad b1..                 lda     (_Zp+6),y
+    \ 00af 85..                 sta     zp:_Zp+2
+    \ 00b1 d4..                 cpz     zp:_Zp+2
+    \ 00b3 b024                 bcs     `?L88`
+0528                	  hyppofn->sfn[c] = readdir_dirent->sfn[i];
+    \ 00b5 20....               jsr     `?L288`
+    \ 00b8 98                   tya
+    \ 00b9 20....               jsr     `?L287`
+    \ 00bc 9002                 bcc     `?L228`
+    \ 00be e6..                 inc     zp:_Zp+7
+    \ 00c0          `?L228`:
+    \ 00c0 b1..                 lda     (_Zp+6),y
+    \ 00c2 48                   pha
+    \ 00c3 18                   clc
+    \ 00c4 a941                 lda     #65
+    \ 00c6 6d....               adc     hyppofn
+    \ 00c9 85..                 sta     zp:_Zp+6
+    \ 00cb 98                   tya
+    \ 00cc 6d....               adc     hyppofn+1
+    \ 00cf 85..                 sta     zp:_Zp+7
+    \ 00d1 ab....               ldz     _Zp+4
+    \ 00d4 68                   pla
+    \ 00d5 92..                 sta     (_Zp+6),z
+0529                	  c++;
+    \ 00d7 e6..                 inc     zp:_Zp+4
+    \ 00d9          `?L88`:
+    \ 00d9 e3..                 inw     zp:_Zp
+    \ 00db 80a1                 bra     `?L87`
+    \ 00dd          `?L89`:
+0530                	}
+0531                  }
+0532                  if (dotpos + 1 == c)  c = dotpos;
+    \ 00dd a6..                 ldx     zp:_Zp+3
+    \ 00df 20....               jsr     `?L294`
+    \ 00e2 e3..                 inw     zp:_Zp
+    \ 00e4 a5..                 lda     zp:_Zp+4
+    \ 00e6 38                   sec
+    \ 00e7 e5..                 sbc     zp:_Zp
+    \ 00e9 05..                 ora     zp:_Zp+1
+    \ 00eb d004                 bne     `?L94`
+    \ 00ed a5..                 lda     zp:_Zp+3
+    \ 00ef 85..                 sta     zp:_Zp+4
+    \ 00f1          `?L94`:
+0533                  hyppofn->sfn[c] = 0;
+0534                  return /*strlowr(*/hyppofn->sfn;  // );
+    \ 00f1 20....               jsr     `?L289`
+    \ 00f4 ab....               ldz     _Zp+4
+    \ 00f7 a900                 lda     #0
+    \ 00f9 92..                 sta     (_Zp),z
+    \ 00fb 20....               jsr     `?L289`
+0535                }
+    \ 00fe 60                   rts
+0536
+0537                char * getlfn() {
+    \ 0000                      .section code,text
+    \ 0000                      .public getlfn
+    \ 0000          getlfn:
+0538                  return readdir_dirent->lfn;
+    \ 0000 20....               jsr     `?L286`
+0539                }
+    \ 0003 60                   rts
+0540
+0541                DIRENT direntryblock2; // @@@@ to be changed to an own array
+    \ 0000                      .section zdata,bss
+    \ 0000                      .public direntryblock2
+    \ 0000          direntryblock2:
+    \ 0000                      .space  32
+0542                // misuse a DOS dirent to store Hyppo dirent:
+0543                unsigned char getallhyppoentries(unsigned char drive, unsigned char side,
+0544                                                 unsigned char maxentries)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public getallhyppoentries
+    \ 0000          getallhyppoentries:
+    \ 0000 a200                 ldx     #0
+    \ 0002 a005                 ldy     #5
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 a5..                 lda     zp:_Zp
+    \ 0009 85..                 sta     zp:_Zp+25
+    \ 000b a5..                 lda     zp:_Zp+1
+    \ 000d 85..                 sta     zp:_Zp+24
+0545                  unsigned char i;
+0546                  unsigned char curdrv = 0;
+0547                  unsigned char fd = 0xff;
+0548                  unsigned char readerr;
+0549                  unsigned char entries = 0;
+    \ 000f 8a                   txa
+    \ 0010 85..                 sta     zp:_Zp+26
+0550                //  DIRENT* ds;
+0551
+0552                  // @@ later to be changed to switch storage card drives according to
+0553                  // Lydon's undocumented traps 0xc0 and 0xc1:
+0554                  curdrv = hyppo_getcurrentdrive();
+    \ 0012 20....               jsr     hyppo_getcurrentdrive
+    \ 0015 85..                 sta     zp:_Zp
+0555
+0556                  if (curdrv < 0xff)  {
+    \ 0017 ab....               ldz     _Zp
+    \ 001a c2ff                 cpz     #-1
+    \ 001c b36c02               lbcs    `?L105`
+0557                    fd = hyppo_opendir();
+    \ 001f 20....               jsr     hyppo_opendir
+    \ 0022 85..                 sta     zp:_Zp+27
+0558
+0559                    if (fd != 0x84 && fd != 0x87 && fd != 0xff) {
+    \ 0024 a284                 ldx     #-124
+    \ 0026 e4..                 cpx     zp:_Zp+27
+    \ 0028 f36002               lbeq    `?L105`
+    \ 002b a287                 ldx     #-121
+    \ 002d e4..                 cpx     zp:_Zp+27
+    \ 002f f35902               lbeq    `?L105`
+    \ 0032 ab....               ldz     _Zp+27
+    \ 0035 1b                   inz
+    \ 0036 f35202               lbeq    `?L105`
+0560                      readerr = 0;
+    \ 0039 a900                 lda     #0
+    \ 003b 85..                 sta     zp:_Zp+28
+0561                	  i = 0;
+    \ 003d 85..                 sta     zp:_Zp+29
+    \ 003f          `?L110`:
+0562                	  // @@ 255 because "i" is a byte, error $85 is bad cluster meaning end of dir:
+0563                      while (entries < maxentries && i < 255 && readerr != 0x85) {
+    \ 003f ab....               ldz     _Zp+26
+    \ 0042 d4..                 cpz     zp:_Zp+24
+    \ 0044 b33f02               lbcs    `?L111`
+    \ 0047 ab....               ldz     _Zp+29
+    \ 004a c2ff                 cpz     #-1
+    \ 004c b33702               lbcs    `?L111`
+    \ 004f a285                 ldx     #-123
+    \ 0051 e4..                 cpx     zp:_Zp+28
+    \ 0053 f33002               lbeq    `?L111`
+0564                //        ds = (DIRENT *) direntryblock2;
+0565                        readerr = hyppo_readdir(fd);
+    \ 0056 a5..                 lda     zp:_Zp+27
+    \ 0058 20....               jsr     hyppo_readdir
+    \ 005b 85..                 sta     zp:_Zp+28
+0566                		
+0567                		// @@ add check to exclude non-.d81 and non-dir entries!
+0568                		// @@ see #386, attributes for it in big book.
+0569                		
+0570                        // No error apparent, must be a dir entry, a file with extension .d81
+0571                		// and must not be a directory entry named ".":
+0572                		if (readerr != 0x85 && readerr != 0xff &&
+0573                		    (((readdir_dirent->attr & HYPPODIRENTATTRDIR) &&
+0574                			  !(readdir_dirent->sfn[0] == '.' && readdir_dirent->sfn[1] == ' ')) ||
+0575                			 ((readdir_dirent->ext[0] == 'd' || readdir_dirent->ext[0] == 'D') &&
+0576                			  readdir_dirent->ext[1] == '8' &&
+0577                			  readdir_dirent->ext[2] == '1')))
+    \ 005d a285                 ldx     #-123
+    \ 005f e4..                 cpx     zp:_Zp+28
+    \ 0061 f31302               lbeq    `?L113`
+    \ 0064 ab....               ldz     _Zp+28
+    \ 0067 1b                   inz
+    \ 0068 f30c02               lbeq    `?L113`
+    \ 006b 20....               jsr     `?L286`
+    \ 006e a910                 lda     #16
+    \ 0070 a356                 ldz     #86
+    \ 0072 32..                 and     (_Zp),z
+    \ 0074 f015                 beq     `?L151`
+    \ 0076 20....               jsr     `?L286`
+    \ 0079 a041                 ldy     #65
+    \ 007b b1..                 lda     (_Zp),y
+    \ 007d c92e                 cmp     #46
+    \ 007f d035                 bne     `?L115`
+    \ 0081 20....               jsr     `?L286`
+    \ 0084 c8                   iny
+    \ 0085 b1..                 lda     (_Zp),y
+    \ 0087 c920                 cmp     #32
+    \ 0089 d02b                 bne     `?L115`
+    \ 008b          `?L151`:
+    \ 008b 20....               jsr     `?L286`
+    \ 008e a049                 ldy     #73
+    \ 0090 b1..                 lda     (_Zp),y
+    \ 0092 c964                 cmp     #100
+    \ 0094 f00a                 beq     `?L155`
+    \ 0096 20....               jsr     `?L286`
+    \ 0099 b1..                 lda     (_Zp),y
+    \ 009b c944                 cmp     #68
+    \ 009d d3d701               lbne    `?L113`
+    \ 00a0          `?L155`:
+    \ 00a0 20....               jsr     `?L286`
+    \ 00a3 c8                   iny
+    \ 00a4 b1..                 lda     (_Zp),y
+    \ 00a6 c938                 cmp     #56
+    \ 00a8 d3cc01               lbne    `?L113`
+    \ 00ab 20....               jsr     `?L286`
+    \ 00ae c8                   iny
+    \ 00af b1..                 lda     (_Zp),y
+    \ 00b1 c931                 cmp     #49
+    \ 00b3 d3c101               lbne    `?L113`
+    \ 00b6          `?L115`:
+0578                		{
+0579                          msprintfd("filename is: ");
+    \ 00b6 a9..                 lda     #.byte0 `_StringLiteral_filename is: `
+    \ 00b8 85..                 sta     zp:_Zp
+    \ 00ba a9..                 lda     #.byte1 `_StringLiteral_filename is: `
+    \ 00bc 85..                 sta     zp:_Zp+1
+    \ 00be 20....               jsr     msprintfd
+0580                          msprintfd(getsfn()); // already null terminated
+    \ 00c1 20....               jsr     getsfn
+    \ 00c4 20....               jsr     msprintfd
+0581                		  cputlnd();
+    \ 00c7 20....               jsr     cputlnd
+0582                		  cgetcd();
+    \ 00ca 20....               jsr     cgetcd
+0583                		  strcpy((char *) direntryblock2.name, getsfn());
+    \ 00cd 20....               jsr     getsfn
+    \ 00d0 20....               jsr     `?L300`
+    \ 00d3 a9..                 lda     #.byte0 (direntryblock2+5)
+    \ 00d5 85..                 sta     zp:_Zp
+    \ 00d7 a9..                 lda     #.byte1 (direntryblock2+5)
+    \ 00d9 85..                 sta     zp:_Zp+1
+    \ 00db 20....               jsr     strcpy
+0584                		  direntryblock2.chntrack = (readdir_dirent->clusternumber >> 24) | 0x80; // Highest bit set
+0585                		  direntryblock2.chnsector = (readdir_dirent->clusternumber >> 16) & 0xff;
+0586                		  direntryblock2.track = (readdir_dirent->clusternumber >> 8) & 0xff | 0x80; // Highest bit set
+0587                		  direntryblock2.sector = readdir_dirent->clusternumber & 0xff;
+0588                		  direntryblock2.type = readdir_dirent->attr | HYPPODIRENTATTR; // to determine from mounted
+0589                		  direntryblock2.size = readdir_dirent->size / 1024; // kB
+    \ 00de 20....               jsr     `?L286`
+    \ 00e1 a34e                 ldz     #78
+    \ 00e3 4242b2..             ldq     (_Zp),z
+    \ 00e7 424285..             stq     zp:_Zp
+    \ 00eb a5..                 lda     zp:_Zp+3
+    \ 00ed 85..                 sta     zp:_Zp
+    \ 00ef f7..                 smb7    zp:_Zp
+    \ 00f1 a5..                 lda     zp:_Zp
+    \ 00f3 8d....               sta     direntryblock2
+    \ 00f6 20....               jsr     `?L286`
+    \ 00f9 a34e                 ldz     #78
+    \ 00fb 4242b2..             ldq     (_Zp),z
+    \ 00ff 424285..             stq     zp:_Zp
+    \ 0103 a5..                 lda     zp:_Zp+2
+    \ 0105 85..                 sta     zp:_Zp
+    \ 0107 a5..                 lda     zp:_Zp+3
+    \ 0109 85..                 sta     zp:_Zp+1
+    \ 010b a900                 lda     #0
+    \ 010d 85..                 sta     zp:_Zp+2
+    \ 010f 85..                 sta     zp:_Zp+3
+    \ 0111 20....               jsr     `?L291`
+    \ 0114 a5..                 lda     zp:_Zp
+    \ 0116 8d....               sta     direntryblock2+1
+    \ 0119 20....               jsr     `?L286`
+    \ 011c a34e                 ldz     #78
+    \ 011e 4242b2..             ldq     (_Zp),z
+    \ 0122 424285..             stq     zp:_Zp
+    \ 0126 a5..                 lda     zp:_Zp+1
+    \ 0128 85..                 sta     zp:_Zp
+    \ 012a a5..                 lda     zp:_Zp+2
+    \ 012c 85..                 sta     zp:_Zp+1
+    \ 012e a5..                 lda     zp:_Zp+3
+    \ 0130 85..                 sta     zp:_Zp+2
+    \ 0132 a900                 lda     #0
+    \ 0134 85..                 sta     zp:_Zp+3
+    \ 0136 20....               jsr     `?L291`
+    \ 0139 f7..                 smb7    zp:_Zp
+    \ 013b a5..                 lda     zp:_Zp
+    \ 013d 8d....               sta     direntryblock2+3
+    \ 0140 20....               jsr     `?L286`
+    \ 0143 a34e                 ldz     #78
+    \ 0145 b2..                 lda     (_Zp),z
+    \ 0147 8d....               sta     direntryblock2+4
+    \ 014a 20....               jsr     `?L286`
+    \ 014d a940                 lda     #64
+    \ 014f a356                 ldz     #86
+    \ 0151 12..                 ora     (_Zp),z
+    \ 0153 8d....               sta     direntryblock2+2
+    \ 0156 20....               jsr     `?L286`
+    \ 0159 a352                 ldz     #82
+    \ 015b 4242b2..             ldq     (_Zp),z
+    \ 015f 424285..             stq     zp:_Zp
+    \ 0163 a90a                 lda     #10
+    \ 0165 aa                   tax
+    \ 0166 f007                 beq     `?L241`
+    \ 0168          `?L242`:
+    \ 0168 424246..             lsrq    zp:_Zp
+    \ 016c ca                   dex
+    \ 016d d0f9                 bne     `?L242`
+    \ 016f          `?L241`:
+    \ 016f a5..                 lda     zp:_Zp+1
+    \ 0171 8d....               sta     direntryblock2+31
+    \ 0174 a5..                 lda     zp:_Zp
+    \ 0176 8d....               sta     direntryblock2+30
+0590                //		  direntryblock2.access = 0;
+0591                	      lcopy((uint32_t) &direntryblock2,
+    \ 0179 a6..                 ldx     zp:_Zp+25
+    \ 017b 20....               jsr     `?L294`
+    \ 017e 85..                 sta     zp:_Zp+3
+    \ 0180 a5..                 lda     zp:_Zp+1
+    \ 0182 85..                 sta     zp:_Zp+2
+    \ 0184 a5..                 lda     zp:_Zp
+    \ 0186 85..                 sta     zp:_Zp+1
+    \ 0188 a900                 lda     #0
+    \ 018a 85..                 sta     zp:_Zp
+    \ 018c 4242a5..             ldq     zp:_Zp
+    \ 0190 424285..             stq     zp:_Zp+4
+    \ 0194 a905                 lda     #5
+    \ 0196 aa                   tax
+    \ 0197 f007                 beq     `?L244`
+    \ 0199          `?L245`:
+    \ 0199 424206..             aslq    zp:_Zp+4
+    \ 019d ca                   dex
+    \ 019e d0f9                 bne     `?L245`
+    \ 01a0          `?L244`:
+    \ 01a0 20....               jsr     _SpillZP
+    \ 01a3 04..                 .byte   4,_Zp+4
+    \ 01a5 20....               jsr     _FillQ
+    \ 01a8 38                   sec
+    \ 01a9 4242e5..             sbcq    zp:_Zp
+    \ 01ad 20....               jsr     `?L292`
+    \ 01b0 91..                 sta     (_Vsp),y
+    \ 01b2 88                   dey
+    \ 01b3 a920                 lda     #32
+    \ 01b5 91..                 sta     (_Vsp),y
+    \ 01b7 a900                 lda     #0
+    \ 01b9 aa                   tax
+    \ 01ba a308                 ldz     #8
+    \ 01bc 20....               jsr     `?L296`
+    \ 01bf 48                   pha
+    \ 01c0 da                   phx
+    \ 01c1 5a                   phy
+    \ 01c2 db                   phz
+    \ 01c3 a6..                 ldx     zp:_Zp+26
+    \ 01c5 20....               jsr     `?L294`
+    \ 01c8 a905                 lda     #5
+    \ 01ca aa                   tax
+    \ 01cb f006                 beq     `?L248`
+    \ 01cd          `?L249`:
+    \ 01cd cb....               asw     _Zp
+    \ 01d0 ca                   dex
+    \ 01d1 d0fa                 bne     `?L249`
+    \ 01d3          `?L248`:
+    \ 01d3 a5..                 lda     zp:_Zp+1
+    \ 01d5 097f                 ora     #127
+    \ 01d7 3002                 bmi     `?L251`
+    \ 01d9 a900                 lda     #0
+    \ 01db          `?L251`:
+    \ 01db 85..                 sta     zp:_Zp+2
+    \ 01dd 85..                 sta     zp:_Zp+3
+    \ 01df fb                   plz
+    \ 01e0 7a                   ply
+    \ 01e1 fa                   plx
+    \ 01e2 68                   pla
+    \ 01e3 20....               jsr     `?L296`
+    \ 01e6 424285..             stq     zp:_Zp+4
+    \ 01ea a9..                 lda     #.byte0 direntryblock2
+    \ 01ec a2..                 ldx     #.byte1 direntryblock2
+    \ 01ee a000                 ldy     #0
+    \ 01f0 a300                 ldz     #0
+    \ 01f2 424285..             stq     zp:_Zp
+    \ 01f6 20....               jsr     `?L298`
+0592                	            ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + entries * DIRENTSIZE,
+0593                			    DIRENTSIZE);
+0594                	      lcopy((uint32_t) readdir_dirent->lfn,
+    \ 01f9 a6..                 ldx     zp:_Zp+25
+    \ 01fb 86..                 stx     zp:_Zp+4
+    \ 01fd a900                 lda     #0
+    \ 01ff 85..                 sta     zp:_Zp+5
+    \ 0201 85..                 sta     zp:_Zp+6
+    \ 0203 85..                 sta     zp:_Zp+7
+    \ 0205 a90a                 lda     #10
+    \ 0207 aa                   tax
+    \ 0208 f007                 beq     `?L255`
+    \ 020a          `?L256`:
+    \ 020a 424206..             aslq    zp:_Zp+4
+    \ 020e ca                   dex
+    \ 020f d0f9                 bne     `?L256`
+    \ 0211          `?L255`:
+    \ 0211 4242a5..             ldq     zp:_Zp+4
+    \ 0215 424285..             stq     zp:_Zp
+    \ 0219 424206..             aslq    zp:_Zp+4
+    \ 021d 424206..             aslq    zp:_Zp+4
+    \ 0221 4242a5..             ldq     zp:_Zp+4
+    \ 0225 20....               jsr     `?L296`
+    \ 0228 20....               jsr     `?L292`
+    \ 022b 91..                 sta     (_Vsp),y
+    \ 022d 88                   dey
+    \ 022e a940                 lda     #64
+    \ 0230 91..                 sta     (_Vsp),y
+    \ 0232 a900                 lda     #0
+    \ 0234 a23e                 ldx     #62
+    \ 0236 a308                 ldz     #8
+    \ 0238 20....               jsr     `?L296`
+    \ 023b 48                   pha
+    \ 023c da                   phx
+    \ 023d 5a                   phy
+    \ 023e db                   phz
+    \ 023f a6..                 ldx     zp:_Zp+26
+    \ 0241 20....               jsr     `?L294`
+    \ 0244 a906                 lda     #6
+    \ 0246 aa                   tax
+    \ 0247 f006                 beq     `?L259`
+    \ 0249          `?L260`:
+    \ 0249 cb....               asw     _Zp
+    \ 024c ca                   dex
+    \ 024d d0fa                 bne     `?L260`
+    \ 024f          `?L259`:
+    \ 024f a5..                 lda     zp:_Zp+1
+    \ 0251 097f                 ora     #127
+    \ 0253 3002                 bmi     `?L262`
+    \ 0255 a900                 lda     #0
+    \ 0257          `?L262`:
+    \ 0257 85..                 sta     zp:_Zp+2
+    \ 0259 85..                 sta     zp:_Zp+3
+    \ 025b fb                   plz
+    \ 025c 7a                   ply
+    \ 025d fa                   plx
+    \ 025e 68                   pla
+    \ 025f 20....               jsr     `?L296`
+    \ 0262 424285..             stq     zp:_Zp+4
+    \ 0266 20....               jsr     `?L286`
+    \ 0269 a900                 lda     #0
+    \ 026b 85..                 sta     zp:_Zp+2
+    \ 026d 85..                 sta     zp:_Zp+3
+    \ 026f 20....               jsr     `?L298`
+0595                	            ATTICLFNBUFFER + side * ATTICLFNBUFFERSIZE + entries * LFNFILENAMELEN,
+0596                			    LFNFILENAMELEN);
+0597                		  entries++;
+    \ 0272 e6..                 inc     zp:_Zp+26
+    \ 0274 800a                 bra     `?L114`
+    \ 0276          `?L113`:
+0598                        } else  {
+0599                		  // empty string usually crash when printed, so:
+0600                		  direntryblock2.name[0] = 32; direntryblock2.name[1] = 0;
+    \ 0276 a920                 lda     #32
+    \ 0278 8d....               sta     direntryblock2+5
+    \ 027b a900                 lda     #0
+    \ 027d 8d....               sta     direntryblock2+6
+    \ 0280          `?L114`:
+0601                /*
+0602                		  snprintf( filelist[i], 65, "%d", i);
+0603                		  messagebox(0, "error at reading storage card entry",
+0604                                     filelist[i],
+0605                			         "for current directory.");
+0606                */
+0607                		}
+0608                		i++;
+    \ 0280 e6..                 inc     zp:_Zp+29
+    \ 0282 4c....               jmp     `?L110`
+    \ 0285          `?L111`:
+0609                	  }
+0610                	  hyppo_closedir(fd);
+    \ 0285 a5..                 lda     zp:_Zp+27
+    \ 0287 20....               jsr     hyppo_closedir
+    \ 028a          `?L105`:
+0611                	}
+0612                  }
+0613
+0614                  // snprintf( ds->name, 65, "%d", entries);
+0615                //  messagebox(0, "returning", ds->name, "entries.");
+0616                  return entries - 1;
+    \ 028a c6..                 dec     zp:_Zp+26
+    \ 028c a5..                 lda     zp:_Zp+26
+0617                }
+    \ 028e a005                 ldy     #5
+    \ 0290 4c....               jmp     _RestoreRegisters
+0618                unsigned char gethyppodirent(unsigned char drive, unsigned char side,
+0619                                             unsigned char maxentries)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public gethyppodirent
+    \ 0000          gethyppodirent:
+0620                  unsigned char i;
+0621
+0622                  i = getallhyppoentries(drive, side, maxentries);
+    \ 0000 20....               jsr     getallhyppoentries
+0623                  return i;
+0624                }
+    \ 0003 60                   rts
+0625
+0626                void hyppo_reset(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_reset
+    \ 0000          hyppo_reset:
+0627                  __asm(
+0628                    " lda #0x7e\n"
+0629                	  " sta HTRAP00\n"
+0630                	  " clv\n"
+0631                    " bcc errhypreset\n"
+0632                //    "sta %0\n"  Calypsi
+0633                    " jmp donehypreset\n"
+0634                "errhypreset:\n"
+0635                    " lda #0xFF\n"
+0636                //    "sta %0\n"  Calypsi
+0637                "donehypreset:\n"
+0638                    " nop\n"
+0639                  :  :  : "a");
+    \ 0000 a97e                 lda     #126
+    \ 0002 20....               jsr     `?L290`
+    \ 0005 ea       `?L269`:    nop
+0640                }
+    \ 0006 60                   rts
+0641
+0642                void hyppo_freeze_self(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_freeze_self
+    \ 0000          hyppo_freeze_self:
+0643                  __asm(
+0644                    " lda #0x00\n"     // book says value is "xx"
+0645                	  " sta HTRAP3F\n"  // mind the different trap
+0646                	  " clv\n"
+0647                    " bcc errhypfreeze\n"
+0648                //    "sta %0\n"  Calypsi
+0649                    " jmp donehypfreeze\n"
+0650                "errhypfreeze:\n"
+0651                    " lda #0xFF\n"
+0652                //    "sta %0\n"  Calypsi
+0653                "donehypfreeze:\n"
+0654                    " nop\n"
+0655                  :  :  : "a");
+    \ 0000 a900                 lda     #0
+    \ 0002 8d....               sta     HTRAP3F
+    \ 0005 b8                   clv
+    \ 0006 ea       `?L272`:    nop
+0656                }
+    \ 0007 60                   rts
+0657
+0658                // https://www.felixcloutier.com/documents/gcc-asm.html#outputs
+0659                // @@ minorHDOS not yet implemented
+0660                /*
+0661                unsigned char hyppo_getversion(unsigned char * _majorhyppo, unsigned char * _minorhyppo,
+0662                                      unsigned char * _majorHDOS,  unsigned char * _minorHDOS)  {
+0663                  unsigned char _majhyp;
+0664                  unsigned char _minhyp;
+0665                  unsigned char _majdos;
+0666                  unsigned char _mindos;
+0667                */
+0668                unsigned char hyppo_getversion_majorhyppo(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_getversion_majorhyppo
+    \ 0000          hyppo_getversion_majorhyppo:
+0669                  unsigned char ret;
+0670
+0671                  __asm(
+0672                    " lda #0x00\n"
+0673                      " ldx #0x00\n"  // @@@@ testing
+0674                      " ldy #0x00\n"
+0675                      " ldz #0x00\n"
+0676                	" sta HTRAP00\n"
+0677                	" clv\n"
+0678                	" bcc errmajhyp\n"
+0679                //    "sta %0\n"  Calypsi
+0680                	" jmp donemajhyp\n"
+0681                "errmajhyp:\n"
+0682                    " lda #0xff\n"
+0683                //	" sta %0\n"  Calypsi
+0684                "donemajhyp:\n"
+0685                	" nop\n"
+0686                  : "=Ka" (ret)
+0687                  :  : "a", "x", "y", "z" );
+    \ 0000 a900                 lda     #0
+    \ 0002 aa                   tax
+    \ 0003 a8                   tay
+    \ 0004 4b                   taz
+    \ 0005 20....               jsr     `?L290`
+    \ 0008 b002                 bcs     `?L275`
+    \ 000a a9ff                 lda     #255
+    \ 000c ea       `?L275`:    nop
+0688                //  *_majorhyppo = _majhyp;
+0689
+0690                  return ret;
+0691                }
+    \ 000d 60                   rts
+0692
+0693                unsigned char hyppo_getversion_minorhyppo(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_getversion_minorhyppo
+    \ 0000          hyppo_getversion_minorhyppo:
+0694                  unsigned char ret;
+0695
+0696                  __asm(
+0697                    " lda #0x00\n"
+0698                	" sta HTRAP00\n"
+0699                	" clv\n"
+0700                	" bcc errminhyp\n"
+0701                //    "sta %0\n"  Calypsi
+0702                	" jmp doneminhyp\n"
+0703                "errminhyp:\n"
+0704                    " ldx #0xff\n"
+0705                //	" sta %0\n"  Calypsi
+0706                "doneminhyp:\n"
+0707                	" nop\n"
+0708                  : "=Kx" (ret)
+0709                  :  : "a", "x", "y", "z" );
+    \ 0000 a900                 lda     #0
+    \ 0002 20....               jsr     `?L290`
+    \ 0005 b002                 bcs     `?L278`
+    \ 0007 a2ff                 ldx     #255
+    \ 0009 ea       `?L278`:    nop
+    \ 000a 8a                   txa
+0710                //  *_minorhyppo = _minhyp;
+0711
+0712                  return ret;
+0713                }
+    \ 000b 60                   rts
+0714
+0715                unsigned char hyppo_getversion_majorHDOS(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_getversion_majorHDOS
+    \ 0000          hyppo_getversion_majorHDOS:
+0716                  unsigned char ret;
+0717
+0718                  __asm(
+0719                    " lda #0x00\n"
+0720                	" sta HTRAP00\n"
+0721                	" clv\n"
+0722                	" bcc errmajdos\n"
+0723                //    "sta %0\n"  Calypsi
+0724                	" jmp donemajdos\n"
+0725                "errmajdos:\n"
+0726                    " ldy #0xff\n"
+0727                //	" sta %0\n"  Calypsi
+0728                "donemajdos:\n"
+0729                	" nop\n"
+0730                  : "=Ky" (ret)
+0731                  :  : "a", "x", "y", "z" );
+    \ 0000 a900                 lda     #0
+    \ 0002 20....               jsr     `?L290`
+    \ 0005 b002                 bcs     `?L281`
+    \ 0007 a0ff                 ldy     #255
+    \ 0009 ea       `?L281`:    nop
+    \ 000a 98                   tya
+0732                //  *_majorHDOS = _majdos;
+0733
+0734                  return ret;
+0735                }
+    \ 000b 60                   rts
+0736
+0737                unsigned char hyppo_getversion_minorHDOS(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public hyppo_getversion_minorHDOS
+    \ 0000          hyppo_getversion_minorHDOS:
+0738                  unsigned char ret;
+0739
+0740                  __asm(
+0741                    " lda #0x00\n"
+0742                	" sta HTRAP00\n"
+0743                	" clv\n"
+0744                	" bcc errmindos\n"
+0745                //    "sta %0\n"  Calypsi
+0746                	" jmp donemindos\n"
+0747                "errmindos:\n"
+0748                    " ldz #0xff\n"
+0749                //	" sta %0\n"  Calypsi
+0750                "donemindos:\n"
+0751                	" nop\n"
+0752                	// llvm doesn't know the z reg
+0753
+0754                //    " sta 0x1700\n"   // @@@@ testing
+0755                //    " stx 0x1701\n"
+0756                //    " sty 0x1702\n"
+0757                //    " stz 0x1703\n"
+0758
+0759                //	" tza\n"
+0760                  : "=Kz" (ret)
+0761                  :  : "a", "x", "y", "z" );
+    \ 0000 a900                 lda     #0
+    \ 0002 20....               jsr     `?L290`
+    \ 0005 b002                 bcs     `?L284`
+    \ 0007 a3ff                 ldz     #255
+    \ 0009 ea       `?L284`:    nop
+    \ 000a 6b                   tza
+0762                //  *_minorHDOS = _mindos;
+0763
+0764                  return ret;
+0765                }
+    \ 000b 60                   rts
+0766
+0767                // ******************************************
+0768                // ***  End of hyppo related functions    ***
+0769                // ******************************************
+0770
+0771                // to test
+0772                // - loop both drives but only use "0" as the parameter
+    \ 0000                      .section code,text
+    \ 0000          `?L286`:
+    \ 0000 ad....               lda     readdir_dirent
+    \ 0003 85..                 sta     zp:_Zp
+    \ 0005 ad....               lda     readdir_dirent+1
+    \ 0008 85..                 sta     zp:_Zp+1
+    \ 000a 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L287`:
+    \ 0000 6d....               adc     readdir_dirent+1
+    \ 0003 85..                 sta     zp:_Zp+7
+    \ 0005 a5..                 lda     zp:_Zp
+    \ 0007 85..                 sta     zp:_Zp+2
+    \ 0009 18                   clc
+    \ 000a a5..                 lda     zp:_Zp+6
+    \ 000c 65..                 adc     zp:_Zp+2
+    \ 000e 85..                 sta     zp:_Zp+6
+    \ 0010 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 18       `?L288`:    clc
+    \ 0001 a941                 lda     #65
+    \ 0003 6d....               adc     readdir_dirent
+    \ 0006 85..                 sta     zp:_Zp+6
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 18       `?L289`:    clc
+    \ 0001 a941                 lda     #65
+    \ 0003 6d....               adc     hyppofn
+    \ 0006 85..                 sta     zp:_Zp
+    \ 0008 a900                 lda     #0
+    \ 000a 6d....               adc     hyppofn+1
+    \ 000d 85..                 sta     zp:_Zp+1
+    \ 000f 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L290`:
+    \ 0000 8d....               sta     HTRAP00
+    \ 0003 b8                   clv
+    \ 0004 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a9ff     `?L291`:    lda     #255
+    \ 0002 a200                 ldx     #0
+    \ 0004 a000                 ldy     #0
+    \ 0006 a300                 ldz     #0
+    \ 0008 424225..             andq    zp:_Zp
+    \ 000c 424285..             stq     zp:_Zp
+    \ 0010 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L292`:
+    \ 0000 424285..             stq     zp:_Zp
+    \ 0004 a9fe                 lda     #-2
+    \ 0006 20....               jsr     _DecVsp
+    \ 0009 a001                 ldy     #1
+    \ 000b a900                 lda     #0
+    \ 000d 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L294`:
+    \ 0000 86..                 stx     zp:_Zp
+    \ 0002 a900     `?L295`:    lda     #0
+    \ 0004 85..                 sta     zp:_Zp+1
+    \ 0006 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 18       `?L296`:    clc
+    \ 0001 424265..             adcq    zp:_Zp
+    \ 0005 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L297`:
+    \ 0000 ad....               lda     readdir_dirent
+    \ 0003 85..                 sta     zp:_Zp+2
+    \ 0005 ad....               lda     readdir_dirent+1
+    \ 0008 85..                 sta     zp:_Zp+3
+    \ 000a 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L298`:
+    \ 0000 20....               jsr     lcopy
+    \ 0003 a001                 ldy     #1
+    \ 0005 4c....               jmp     _IncVsp
+    \ 0000                      .section code,text
+    \ 0000          `?L300`:
+    \ 0000 a5..                 lda     zp:_Zp
+    \ 0002 85..                 sta     zp:_Zp+2
+    \ 0004 a5..                 lda     zp:_Zp+1
+    \ 0006 85..                 sta     zp:_Zp+3
+    \ 0008 60                   rts
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .public readdir_dirent
+    \ 0000          readdir_dirent:
+    \ 0000 001b                 .word   0x1b00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .public taskblock
+    \ 0000 001c     taskblock:  .word   0x1c00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_filename is: `
+    \ 0000          `_StringLiteral_filename is: `:
+    \ 0000 66696c65             .byte   102,105,108,101,110,97,109,101,32,105,115,58,32,0
+    \ 0004 6e616d65
+    \ 0008 2069733a
+    \ 000c 2000
+
+##########################
+#                        #
+# Memory sizes (decimal) #
+#                        #
+##########################
+
+Executable        (Text): 1467 bytes
+Zero initialized   (BSS):   33 bytes
+Constant                :   20 bytes

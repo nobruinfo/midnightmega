@@ -1,0 +1,313 @@
+###############################################################################
+#                                                                             #
+# Calypsi ISO C compiler for 6502                                version 5.12 #
+#                                                       07/Nov/2025  20:26:22 #
+# Command line:                                                               #
+#               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.lst #
+#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.6-beta" -I         #
+#               ..\mega65-libc\include -O 2 --core 45gs02 --target MEGA65     #
+#               -D FULLFEATURES -o                                            #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o #
+#               romlist.c                                                     #
+#                                                                             #
+###############################################################################
+
+    \ 0000                      .rtmodel version,"1"
+    \ 0000                      .rtmodel codeModel,"plain"
+    \ 0000                      .rtmodel core,"45gs02"
+    \ 0000                      .rtmodel target,"mega65"
+    \ 0000                      .extern _AllocStackSave
+    \ 0000                      .extern _DecVsp
+    \ 0000                      .extern _IncVsp
+    \ 0000                      .extern _RestoreRegisters
+    \ 0000                      .extern _Vfp
+    \ 0000                      .extern _Vsp
+    \ 0000                      .extern _Zp
+    \ 0000                      .extern hyppo_closefile
+    \ 0000                      .extern hyppo_findfirst
+    \ 0000                      .extern hyppo_openfile
+    \ 0000                      .extern hyppo_readfile
+    \ 0000                      .extern hyppo_setname
+    \ 0000                      .extern hyppofn
+    \ 0000                      .extern lcopy
+    \ 0000                      .extern lfill
+    \ 0000                      .extern mcputsxy
+    \ 0000                      .extern strcpy
+    \ 0000                      .extern worksector
+0001                #include <string.h>
+0002                #include <stdint.h>
+0003                #include <mega65/conio.h>  // llvm instead of <printf.h>
+0004                #include <mega65/memory.h>  // mega65-libc
+0005                #include <mega65/hal.h>  // mega65-libc
+0006                #include "regions.h"
+0007                #include "hyppo.h"
+0008                #include "fileio.h"
+0009                #include "conioextensions.h"
+0010
+0011                #define SECTHYPLOAD      0xFFD6E00
+0012                #define FILENAMECOLON 17
+0013                #define TEXTCOLON     30
+0014
+0015                extern DATABLOCK * worksector[2];
+0016                extern struct HYPPOFILENAME* const hyppofn;
+0017
+0018                void romlist(unsigned char ypos)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public romlist
+    \ 0000 a200     romlist:    ldx     #0
+    \ 0002 a004                 ldy     #4
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 85..                 sta     zp:_Zp+28
+0019                  unsigned char fd = 0;
+0020                  unsigned int i;
+0021
+0022                  for (i = 0; i < 11; i++)  {
+    \ 0009 8a                   txa
+    \ 000a 85..                 sta     zp:_Zp+26
+    \ 000c 85..                 sta     zp:_Zp+27
+    \ 000e          `?L5`:
+    \ 000e a5..                 lda     zp:_Zp+26
+    \ 0010 c90b                 cmp     #11
+    \ 0012 a5..                 lda     zp:_Zp+27
+    \ 0014 e900                 sbc     #0
+    \ 0016 9005                 bcc     `?L4`
+0023                    if (i < 10)  {
+0024                      strcpy(hyppofn->name, "MEGA650.ROM");
+0025                      hyppofn->name[6] = '0' + i;
+0026                    } else {
+0027                      strcpy(hyppofn->name, "MEGA65.ROM");
+0028                    }
+0029                    hyppo_setname(hyppofn->name);
+0030                    mcputsxy(FILENAMECOLON, i + ypos, hyppofn->name);
+0031                    fd = hyppo_findfirst();
+0032                    if (fd == 0x88)  {
+0033                      mcputsxy(TEXTCOLON, i + ypos, "file not found.");
+0034                    } else {
+0035                      fd = hyppo_openfile(fd);
+0036                      if (fd == 0x84)  {
+0037                        mcputsxy(TEXTCOLON, i + ypos, "too many open files.");
+0038                      } else {
+0039                        if (fd == 0x86)  {
+0040                          mcputsxy(TEXTCOLON, i + ypos, "file is a directory.");
+0041                        } else {
+0042                          if (hyppo_readfile(fd) == 0x89)  {
+0043                            mcputsxy(TEXTCOLON, i + ypos, "invalid file descriptor.");
+0044                          } else {
+0045                            hyppo_closefile(fd);
+0046                            // mcputsxy(TEXTCOLON, i + ypos, "file loaded into $FFD6E00 .. $FFD6FF");
+0047
+0048                            DATABLOCK* ws = worksector[0];
+0049                            
+0050                            lfill((uint32_t) ws, 0, BLOCKSIZE);
+0051                            lcopy(SECTHYPLOAD + 0x16, (uint32_t) ws, BLOCKSIZE);
+0052                            mcputsxy(TEXTCOLON, i + ypos, (char *) ws);
+0053                            
+0054                //            cgetc();
+0055                          }
+0056                        }
+0057                      }
+0058                    }
+0059                  }
+0060                }
+    \ 0018 a004                 ldy     #4
+    \ 001a 4c....               jmp     _RestoreRegisters
+    \ 001d          `?L4`:
+    \ 001d a5..                 lda     zp:_Zp+26
+    \ 001f c90a                 cmp     #10
+    \ 0021 a5..                 lda     zp:_Zp+27
+    \ 0023 e900                 sbc     #0
+    \ 0025 b027                 bcs     `?L8`
+    \ 0027 a9..                 lda     #.byte0 `_StringLiteral_MEGA650.ROM`
+    \ 0029 85..                 sta     zp:_Zp+2
+    \ 002b a9..                 lda     #.byte1 `_StringLiteral_MEGA650.ROM`
+    \ 002d 85..                 sta     zp:_Zp+3
+    \ 002f 20....               jsr     `?L43`
+    \ 0032 20....               jsr     strcpy
+    \ 0035 a5..                 lda     zp:_Zp+26
+    \ 0037 85..                 sta     zp:_Zp
+    \ 0039 a930                 lda     #48
+    \ 003b 18                   clc
+    \ 003c 65..                 adc     zp:_Zp
+    \ 003e ae....               ldx     hyppofn
+    \ 0041 86..                 stx     zp:_Zp
+    \ 0043 ae....               ldx     hyppofn+1
+    \ 0046 86..                 stx     zp:_Zp+1
+    \ 0048 a006                 ldy     #6
+    \ 004a 91..                 sta     (_Zp),y
+    \ 004c 800e                 bra     `?L9`
+    \ 004e          `?L8`:
+    \ 004e a9..                 lda     #.byte0 `_StringLiteral_MEGA65.ROM`
+    \ 0050 85..                 sta     zp:_Zp+2
+    \ 0052 a9..                 lda     #.byte1 `_StringLiteral_MEGA65.ROM`
+    \ 0054 85..                 sta     zp:_Zp+3
+    \ 0056 20....               jsr     `?L43`
+    \ 0059 20....               jsr     strcpy
+    \ 005c          `?L9`:
+    \ 005c 20....               jsr     `?L43`
+    \ 005f 20....               jsr     hyppo_setname
+    \ 0062 ad....               lda     hyppofn
+    \ 0065 85..                 sta     zp:_Zp+2
+    \ 0067 ad....               lda     hyppofn+1
+    \ 006a 20....               jsr     `?L44`
+    \ 006d a911                 lda     #17
+    \ 006f 20....               jsr     mcputsxy
+    \ 0072 20....               jsr     hyppo_findfirst
+    \ 0075 85..                 sta     zp:_Zp
+    \ 0077 a388                 ldz     #-120
+    \ 0079 d4..                 cpz     zp:_Zp
+    \ 007b d009                 bne     `?L11`
+    \ 007d a9..                 lda     #.byte0 `_StringLiteral_file not found.`
+    \ 007f 85..                 sta     zp:_Zp+2
+    \ 0081 a9..                 lda     #.byte1 `_StringLiteral_file not found.`
+    \ 0083 4c....               jmp     `?L42`
+    \ 0086          `?L11`:
+    \ 0086 a5..                 lda     zp:_Zp
+    \ 0088 20....               jsr     hyppo_openfile
+    \ 008b 85..                 sta     zp:_Zp+24
+    \ 008d a384                 ldz     #-124
+    \ 008f d4..                 cpz     zp:_Zp+24
+    \ 0091 d008                 bne     `?L14`
+    \ 0093 a9..                 lda     #.byte0 `_StringLiteral_too many open files.`
+    \ 0095 85..                 sta     zp:_Zp+2
+    \ 0097 a9..                 lda     #.byte1 `_StringLiteral_too many open files.`
+    \ 0099 807e                 bra     `?L42`
+    \ 009b a386     `?L14`:     ldz     #-122
+    \ 009d d4..                 cpz     zp:_Zp+24
+    \ 009f d008                 bne     `?L17`
+    \ 00a1 a9..                 lda     #.byte0 `_StringLiteral_file is a directory.`
+    \ 00a3 85..                 sta     zp:_Zp+2
+    \ 00a5 a9..                 lda     #.byte1 `_StringLiteral_file is a directory.`
+    \ 00a7 8070                 bra     `?L42`
+    \ 00a9          `?L17`:
+    \ 00a9 a5..                 lda     zp:_Zp+24
+    \ 00ab 20....               jsr     hyppo_readfile
+    \ 00ae c989                 cmp     #-119
+    \ 00b0 d008                 bne     `?L20`
+    \ 00b2 a9..                 lda     #.byte0 `_StringLiteral_invalid file descriptor.`
+    \ 00b4 85..                 sta     zp:_Zp+2
+    \ 00b6 a9..                 lda     #.byte1 `_StringLiteral_invalid file descriptor.`
+    \ 00b8 805f                 bra     `?L42`
+    \ 00ba          `?L20`:
+    \ 00ba a5..                 lda     zp:_Zp+24
+    \ 00bc 20....               jsr     hyppo_closefile
+    \ 00bf ad....               lda     worksector
+    \ 00c2 85..                 sta     zp:_Zp+24
+    \ 00c4 ad....               lda     worksector+1
+    \ 00c7 85..                 sta     zp:_Zp+25
+    \ 00c9 a900                 lda     #0
+    \ 00cb 85..                 sta     zp:_Zp+4
+    \ 00cd a901                 lda     #1
+    \ 00cf 85..                 sta     zp:_Zp+5
+    \ 00d1 a5..                 lda     zp:_Zp+25
+    \ 00d3 85..                 sta     zp:_Zp+1
+    \ 00d5 a5..                 lda     zp:_Zp+24
+    \ 00d7 85..                 sta     zp:_Zp
+    \ 00d9 a900                 lda     #0
+    \ 00db 85..                 sta     zp:_Zp+2
+    \ 00dd 85..                 sta     zp:_Zp+3
+    \ 00df 20....               jsr     lfill
+    \ 00e2 a9fe                 lda     #-2
+    \ 00e4 20....               jsr     _DecVsp
+    \ 00e7 a001                 ldy     #1
+    \ 00e9 a901                 lda     #1
+    \ 00eb 91..                 sta     (_Vsp),y
+    \ 00ed 88                   dey
+    \ 00ee a900                 lda     #0
+    \ 00f0 91..                 sta     (_Vsp),y
+    \ 00f2 a5..                 lda     zp:_Zp+25
+    \ 00f4 85..                 sta     zp:_Zp+5
+    \ 00f6 a5..                 lda     zp:_Zp+24
+    \ 00f8 85..                 sta     zp:_Zp+4
+    \ 00fa 98                   tya
+    \ 00fb 85..                 sta     zp:_Zp+6
+    \ 00fd 85..                 sta     zp:_Zp+7
+    \ 00ff a916                 lda     #22
+    \ 0101 a26e                 ldx     #110
+    \ 0103 a0fd                 ldy     #253
+    \ 0105 a30f                 ldz     #15
+    \ 0107 424285..             stq     zp:_Zp
+    \ 010b 20....               jsr     lcopy
+    \ 010e a001                 ldy     #1
+    \ 0110 20....               jsr     _IncVsp
+    \ 0113 a5..                 lda     zp:_Zp+24
+    \ 0115 85..                 sta     zp:_Zp+2
+    \ 0117 a5..                 lda     zp:_Zp+25
+    \ 0119          `?L42`:
+    \ 0119 20....               jsr     `?L44`
+    \ 011c a91e                 lda     #30
+    \ 011e 20....               jsr     mcputsxy
+    \ 0121 e3..                 inw     zp:_Zp+26
+    \ 0123 4c....               jmp     `?L5`
+    \ 0000                      .section code,text
+    \ 0000          `?L43`:
+    \ 0000 ad....               lda     hyppofn
+    \ 0003 85..                 sta     zp:_Zp
+    \ 0005 ad....               lda     hyppofn+1
+    \ 0008 85..                 sta     zp:_Zp+1
+    \ 000a 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L44`:
+    \ 0000 85..                 sta     zp:_Zp+3
+    \ 0002 a5..                 lda     zp:_Zp+26
+    \ 0004 85..                 sta     zp:_Zp
+    \ 0006 a5..                 lda     zp:_Zp+28
+    \ 0008 18                   clc
+    \ 0009 65..                 adc     zp:_Zp
+    \ 000b 85..                 sta     zp:_Zp
+    \ 000d 60                   rts
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_MEGA65.ROM`
+    \ 0000          `_StringLiteral_MEGA65.ROM`:
+    \ 0000 4d454741             .byte   77,69,71,65,54,53,46,82,79,77,0
+    \ 0004 36352e52
+    \ 0008 4f4d00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_MEGA650.ROM`
+    \ 0000          `_StringLiteral_MEGA650.ROM`:
+    \ 0000 4d454741             .byte   77,69,71,65,54,53,48,46,82,79,77,0
+    \ 0004 3635302e
+    \ 0008 524f4d00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_file is a directory.`
+    \ 0000          `_StringLiteral_file is a directory.`:
+    \ 0000 66696c65             .byte   102,105,108,101,32,105,115,32,97,32,100,105,114,101,99,116,111,114,121,46,0
+    \ 0004 20697320
+    \ 0008 61206469
+    \ 000c 72656374
+    \ 0010 6f72792e
+    \ 0014 00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_file not found.`
+    \ 0000          `_StringLiteral_file not found.`:
+    \ 0000 66696c65             .byte   102,105,108,101,32,110,111,116,32,102,111,117,110,100,46,0
+    \ 0004 206e6f74
+    \ 0008 20666f75
+    \ 000c 6e642e00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_invalid file descriptor.`
+    \ 0000          `_StringLiteral_invalid file descriptor.`:
+    \ 0000 696e7661             .byte   105,110,118,97,108,105,100,32,102,105,108,101,32,100,101,115,99,114,105,112,116,111,114,46,0
+    \ 0004 6c696420
+    \ 0008 66696c65
+    \ 000c 20646573
+    \ 0010 63726970
+    \ 0014 746f722e
+    \ 0018 00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_too many open files.`
+    \ 0000          `_StringLiteral_too many open files.`:
+    \ 0000 746f6f20             .byte   116,111,111,32,109,97,110,121,32,111,112,101,110,32,102,105,108,101,115,46,0
+    \ 0004 6d616e79
+    \ 0008 206f7065
+    \ 000c 6e206669
+    \ 0010 6c65732e
+    \ 0014 00
+
+##########################
+#                        #
+# Memory sizes (decimal) #
+#                        #
+##########################
+
+Executable  (Text): 319 bytes
+Constant          : 106 bytes

@@ -1,0 +1,2218 @@
+###############################################################################
+#                                                                             #
+# Calypsi ISO C compiler for 6502                                version 5.12 #
+#                                                       07/Nov/2025  20:26:22 #
+# Command line:                                                               #
+#               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.lst #
+#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.6-beta" -I         #
+#               ..\mega65-libc\include -O 2 --core 45gs02 --target MEGA65     #
+#               -D FULLFEATURES -o                                            #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o #
+#               conioextensions.c                                             #
+#                                                                             #
+###############################################################################
+
+    \ 0000                      .rtmodel version,"1"
+    \ 0000                      .rtmodel codeModel,"plain"
+    \ 0000                      .rtmodel core,"45gs02"
+    \ 0000                      .rtmodel doubleSize,"32"
+    \ 0000                      .rtmodel target,"mega65"
+    \ 0000                      .extern _AllocStack
+    \ 0000                      .extern _AllocStackSave
+    \ 0000                      .extern _DeallocStack
+    \ 0000                      .extern _DeallocStackRestore
+    \ 0000                      .extern _DecVsp
+    \ 0000                      .extern _DivMod32
+    \ 0000                      .extern _FillQ
+    \ 0000                      .extern _IncVsp
+    \ 0000                      .extern _LoadVspEA
+    \ 0000                      .extern _Mul16
+    \ 0000                      .extern _Mul8
+    \ 0000                      .extern _RestoreRegisters
+    \ 0000                      .extern _SpillZP
+    \ 0000                      .extern _ValueSwitch16
+    \ 0000                      .extern _Vfp
+    \ 0000                      .extern _Vsp
+    \ 0000                      .extern _Zp
+    \ 0000                      .extern blink
+    \ 0000                      .extern cellcolor
+    \ 0000                      .extern cgetc
+    \ 0000                      .extern clrscr
+    \ 0000                      .extern cputc
+    \ 0000                      .extern cputcxy
+    \ 0000                      .extern cputhex
+    \ 0000                      .extern cputs
+    \ 0000                      .extern cputsxy
+    \ 0000                      .extern dma_peek
+    \ 0000                      .extern dma_poke
+    \ 0000                      .extern fillrect
+    \ 0000                      .extern flushkeybuf
+    \ 0000                      .extern getscreenaddr
+    \ 0000                      .extern getscreensize
+    \ 0000                      .extern gohome
+    \ 0000                      .extern gotoxy
+    \ 0000                      .extern highlight
+    \ 0000                      .extern lcopy
+    \ 0000                      .extern lfill
+    \ 0000                      .extern moveleft
+    \ 0000                      .extern petsciitoscreencode
+    \ 0000                      .extern revers
+    \ 0000                      .extern textcolor
+    \ 0000                      .extern underline
+    \ 0000                      .extern wherex
+    \ 0000                      .extern wherey
+0001                #include <stdlib.h>
+0002                #include <stdint.h>
+0003                #include <stdio.h>
+0004                #include <string.h>
+0005                #include <mega65/conio.h>  // llvm instead of <printf.h>
+0006                #include <mega65/memory.h>  // mega65-libc
+0007                #include "regions.h"
+0008                #include "conioextensions.h"
+0009                #include "hyppo.h"
+0010                #include "fileio.h"
+0011
+0012                // *********************************************************
+0013                // ***  conioextensions.c strings and scrolling          ***
+0014                // *********************************************************
+0015
+0016                static char* p2sbuf = (char*)0x334;
+    \ 0000                      .section data,data
+    \ 0000 3403     p2sbuf:     .word   0x334
+0017
+0018                char tolowerchar(char ch) {
+    \ 0000                      .section code,text
+    \ 0000                      .public tolowerchar
+    \ 0000          tolowerchar:
+0019                    if(ch>='A' && ch<='Z') {
+    \ 0000 c941                 cmp     #65
+    \ 0002 9008                 bcc     `?L4`
+    \ 0004 c95b                 cmp     #91
+    \ 0006 b004                 bcs     `?L4`
+0020                        return ch + ('a'-'A');
+    \ 0008 18                   clc
+    \ 0009 6920                 adc     #32
+    \ 000b 60                   rts
+    \ 000c          `?L4`:
+0021                    } else {
+0022                        return ch;
+    \ 000c 60                   rts
+0023                    }
+0024                }
+0025
+0026                char * strlowr(char *str) {
+    \ 0000                      .section code,text
+    \ 0000                      .public strlowr
+    \ 0000          strlowr:
+0027                    char * src = str;
+    \ 0000 a5..                 lda     zp:_Zp
+    \ 0002 85..                 sta     zp:_Zp+2
+    \ 0004 a5..                 lda     zp:_Zp+1
+    \ 0006 85..                 sta     zp:_Zp+3
+    \ 0008          `?L12`:
+0028                    while(*src) {
+    \ 0008 a000                 ldy     #0
+    \ 000a b1..                 lda     (_Zp+2),y
+    \ 000c f013                 beq     `?L13`
+0029                        *src = tolowerchar(*src);
+    \ 000e b1..                 lda     (_Zp+2),y
+    \ 0010 c941                 cmp     #65
+    \ 0012 9007                 bcc     `?L383`
+    \ 0014 c95b                 cmp     #91
+    \ 0016 b003                 bcs     `?L383`
+    \ 0018 18                   clc
+    \ 0019 6920                 adc     #32
+    \ 001b          `?L383`:
+    \ 001b 91..                 sta     (_Zp+2),y
+0030                        src++;
+    \ 001d e3..                 inw     zp:_Zp+2
+    \ 001f 80e7                 bra     `?L12`
+    \ 0021          `?L13`:
+0031                    }
+0032                    return str;
+0033                }
+    \ 0021 60                   rts
+0034
+0035                char * strsan(char *str) {
+    \ 0000                      .section code,text
+    \ 0000                      .public strsan
+    \ 0000          strsan:
+    \ 0000          `?L19`:
+0036                  char * s = str;
+0037                  
+0038                  while (*s) {
+    \ 0000 a000                 ldy     #0
+    \ 0002 b1..                 lda     (_Zp),y
+    \ 0004 f018                 beq     `?L20`
+0039                //  for (int i=0; i < sizeof(s); s++) {
+0040                    if (*s < 0x20 || *s > 0x7d) *s = '?';
+    \ 0006 b1..                 lda     (_Zp),y
+    \ 0008 c920                 cmp     #32
+    \ 000a 900a                 bcc     `?L24`
+    \ 000c a37d                 ldz     #125
+    \ 000e b1..                 lda     (_Zp),y
+    \ 0010 85..                 sta     zp:_Zp+2
+    \ 0012 d4..                 cpz     zp:_Zp+2
+    \ 0014 b004                 bcs     `?L23`
+    \ 0016 a93f     `?L24`:     lda     #63
+    \ 0018 91..                 sta     (_Zp),y
+    \ 001a          `?L23`:
+0041                    s++;
+    \ 001a e3..                 inw     zp:_Zp
+    \ 001c 80e2                 bra     `?L19`
+    \ 001e          `?L20`:
+0042                  }
+0043                  return s;
+0044                }
+    \ 001e 60                   rts
+0045
+0046                void strcopy(char *src, char *dest, unsigned char len) {
+    \ 0000                      .section code,text
+    \ 0000                      .public strcopy
+    \ 0000          strcopy:
+    \ 0000 85..                 sta     zp:_Zp+4
+0047                  unsigned char c = 0;  // build up a string
+    \ 0002 a900                 lda     #0
+    \ 0004 85..                 sta     zp:_Zp+5
+    \ 0006          `?L29`:
+0048
+0049                  while (src[c] != 0 && c < len)  {
+    \ 0006 ab....               ldz     _Zp+5
+    \ 0009 b2..                 lda     (_Zp),z
+    \ 000b f011                 beq     `?L30`
+    \ 000d 20....               jsr     `?L642`
+    \ 0010 b00c                 bcs     `?L30`
+0050                    dest[c] = src[c];
+    \ 0012 20....               jsr     `?L606`
+    \ 0015 9002                 bcc     `?L390`
+    \ 0017 e6..                 inc     zp:_Zp+7
+    \ 0019          `?L390`:
+0051                    c++;
+    \ 0019 20....               jsr     `?L632`
+    \ 001c 80e8                 bra     `?L29`
+    \ 001e          `?L30`:
+0052                  }
+0053                  dest[c] = 0;
+    \ 001e a900                 lda     #0
+    \ 0020 ab....               ldz     _Zp+5
+    \ 0023 92..                 sta     (_Zp+2),z
+0054                }
+    \ 0025 60                   rts
+0055
+0056                void strmakefilename(char *src, char *dest, unsigned char len) {
+    \ 0000                      .section code,text
+    \ 0000                      .public strmakefilename
+    \ 0000          strmakefilename:
+    \ 0000 85..                 sta     zp:_Zp+4
+0057                  unsigned char c = 0;  // build up a string
+    \ 0002 a900                 lda     #0
+    \ 0004 85..                 sta     zp:_Zp+5
+    \ 0006          `?L35`:
+0058
+0059                  while (src[c] != 0 && c < len)  {
+    \ 0006 ab....               ldz     _Zp+5
+    \ 0009 b2..                 lda     (_Zp),z
+    \ 000b f011                 beq     `?L38`
+    \ 000d 20....               jsr     `?L642`
+    \ 0010 b00c                 bcs     `?L38`
+0060                    dest[c] = src[c];
+    \ 0012 20....               jsr     `?L606`
+    \ 0015 9002                 bcc     `?L392`
+    \ 0017 e6..                 inc     zp:_Zp+7
+    \ 0019          `?L392`:
+0061                    c++;
+    \ 0019 20....               jsr     `?L632`
+    \ 001c 80e8                 bra     `?L35`
+    \ 001e          `?L38`:
+0062                  }
+0063                  while (c < len)  {
+    \ 001e 20....               jsr     `?L642`
+    \ 0021 b00b                 bcs     `?L39`
+0064                    dest[c] = 0xa0;
+    \ 0023 a9a0                 lda     #-96
+    \ 0025 ab....               ldz     _Zp+5
+    \ 0028 92..                 sta     (_Zp+2),z
+0065                    c++;
+    \ 002a e6..                 inc     zp:_Zp+5
+    \ 002c 80f0                 bra     `?L38`
+    \ 002e          `?L39`:
+0066                  }
+0067                }
+    \ 002e 60                   rts
+0068
+0069                unsigned char mstrcmp(char *src, char *dest, unsigned char len) {
+    \ 0000                      .section code,text
+    \ 0000                      .public mstrcmp
+    \ 0000          mstrcmp:
+    \ 0000 85..                 sta     zp:_Zp+4
+0070                  unsigned char c = 0;  // build up a string
+    \ 0002 a900                 lda     #0
+    \ 0004 85..                 sta     zp:_Zp+5
+    \ 0006          `?L44`:
+0071
+0072                  while (src[c] == dest[c])  {
+    \ 0006 20....               jsr     `?L606`
+    \ 0009 9002                 bcc     `?L394`
+    \ 000b e6..                 inc     zp:_Zp+7
+    \ 000d a000     `?L394`:    ldy     #0
+    \ 000f b1..                 lda     (_Zp+6),y
+    \ 0011 85..                 sta     zp:_Zp+6
+    \ 0013 a5..                 lda     zp:_Zp+2
+    \ 0015 85..                 sta     zp:_Zp+8
+    \ 0017 a5..                 lda     zp:_Zp+3
+    \ 0019 85..                 sta     zp:_Zp+9
+    \ 001b 18                   clc
+    \ 001c a5..                 lda     zp:_Zp+8
+    \ 001e 65..                 adc     zp:_Zp+5
+    \ 0020 85..                 sta     zp:_Zp+8
+    \ 0022 9002                 bcc     `?L396`
+    \ 0024 e6..                 inc     zp:_Zp+9
+    \ 0026          `?L396`:
+    \ 0026 b1..                 lda     (_Zp+8),y
+    \ 0028 c5..                 cmp     zp:_Zp+6
+    \ 002a d012                 bne     `?L45`
+0073                    // valuesbox(0, "mstrcmp", "c=", c, "char=", src[c]);
+0074                    if (c >= len)  return 0;
+    \ 002c 20....               jsr     `?L642`
+    \ 002f b007                 bcs     `?L53`
+0075                    if (src[c] == 0)  return 0;
+    \ 0031 ab....               ldz     _Zp+5
+    \ 0034 b2..                 lda     (_Zp),z
+    \ 0036 d002                 bne     `?L52`
+    \ 0038 98       `?L53`:     tya
+    \ 0039 60                   rts
+    \ 003a          `?L52`:
+0076                    c++;
+    \ 003a e6..                 inc     zp:_Zp+5
+    \ 003c 80c8                 bra     `?L44`
+    \ 003e          `?L45`:
+0077                  }
+0078                  // valuesbox(0, "mstrcmp done", "c=", c, "char=", src[c]);
+0079                  return c + 1;
+    \ 003e e6..                 inc     zp:_Zp+5
+    \ 0040 a5..                 lda     zp:_Zp+5
+    \ 0042 60                   rts
+0080                }
+0081
+0082                #define COLOR_RAM_BASE 0xFF80000UL
+0083                // to by replaced by a getter function
+0084                void cputln(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public cputln
+    \ 0000 a2fe     cputln:     ldx     #254
+    \ 0002 a007                 ldy     #7
+    \ 0004 20....               jsr     _AllocStackSave
+0085                  unsigned char width;
+0086                  unsigned char height;
+0087                  unsigned int screenbytes;
+0088                  
+0089                  getscreensize(&width, &height);
+    \ 0007 a5..                 lda     zp:_Vsp
+    \ 0009 85..                 sta     zp:_Zp+2
+    \ 000b a5..                 lda     zp:_Vsp+1
+    \ 000d 85..                 sta     zp:_Zp+3
+    \ 000f a2..                 ldx     #_Zp
+    \ 0011 a901                 lda     #1
+    \ 0013 20....               jsr     _LoadVspEA
+    \ 0016 20....               jsr     getscreensize
+0090                  screenbytes = width * height;
+    \ 0019 a001                 ldy     #1
+    \ 001b b1..                 lda     (_Vsp),y
+    \ 001d 85..                 sta     zp:_Zp
+    \ 001f 88                   dey
+    \ 0020 b1..                 lda     (_Vsp),y
+    \ 0022 20....               jsr     _Mul8
+0091                  if (wherey() + 1 >= height)  {
+    \ 0025 20....               jsr     `?L645`
+    \ 0028 20....               jsr     wherey
+    \ 002b 20....               jsr     `?L620`
+    \ 002e e3..                 inw     zp:_Zp
+    \ 0030 a8                   tay
+    \ 0031 b1..                 lda     (_Vsp),y
+    \ 0033 85..                 sta     zp:_Zp+2
+    \ 0035 98                   tya
+    \ 0036 20....               jsr     `?L612`
+    \ 0039 5002                 bvc     `?L403`
+    \ 003b 4980                 eor     #-128
+    \ 003d 33f500   `?L403`:    lbmi    `?L59`
+0092                    lcopy(getscreenaddr() + width, getscreenaddr(), screenbytes - width);
+    \ 0040 20....               jsr     getscreenaddr
+    \ 0043 20....               jsr     `?L616`
+    \ 0046 20....               jsr     `?L623`
+    \ 0049 424285..             stq     zp:_Zp+24
+    \ 004d 20....               jsr     getscreenaddr
+    \ 0050 a9fe                 lda     #-2
+    \ 0052 20....               jsr     _DecVsp
+    \ 0055 a5..                 lda     zp:_Zp+28
+    \ 0057 85..                 sta     zp:_Zp+4
+    \ 0059 a5..                 lda     zp:_Zp+29
+    \ 005b 85..                 sta     zp:_Zp+5
+    \ 005d a003                 ldy     #3
+    \ 005f b1..                 lda     (_Vsp),y
+    \ 0061 85..                 sta     zp:_Zp+6
+    \ 0063 38                   sec
+    \ 0064 a5..                 lda     zp:_Zp+4
+    \ 0066 e5..                 sbc     zp:_Zp+6
+    \ 0068 85..                 sta     zp:_Zp+4
+    \ 006a b002                 bcs     `?L408`
+    \ 006c c6..                 dec     zp:_Zp+5
+    \ 006e a001     `?L408`:    ldy     #1
+    \ 0070 a5..                 lda     zp:_Zp+5
+    \ 0072 91..                 sta     (_Vsp),y
+    \ 0074 88                   dey
+    \ 0075 a5..                 lda     zp:_Zp+4
+    \ 0077 91..                 sta     (_Vsp),y
+    \ 0079 4242a5..             ldq     zp:_Zp
+    \ 007d 424285..             stq     zp:_Zp+4
+    \ 0081 4242a5..             ldq     zp:_Zp+24
+    \ 0085 20....               jsr     `?L624`
+0093                    lcopy(COLOR_RAM_BASE + width, COLOR_RAM_BASE, screenbytes - width);
+    \ 0088 a9fe                 lda     #-2
+    \ 008a 20....               jsr     _DecVsp
+    \ 008d 20....               jsr     `?L643`
+    \ 0090 85..                 sta     zp:_Zp+1
+    \ 0092 a003                 ldy     #3
+    \ 0094 b1..                 lda     (_Vsp),y
+    \ 0096 85..                 sta     zp:_Zp+2
+    \ 0098 38                   sec
+    \ 0099 a5..                 lda     zp:_Zp
+    \ 009b e5..                 sbc     zp:_Zp+2
+    \ 009d 85..                 sta     zp:_Zp
+    \ 009f b002                 bcs     `?L413`
+    \ 00a1 c6..                 dec     zp:_Zp+1
+    \ 00a3 a001     `?L413`:    ldy     #1
+    \ 00a5 a5..                 lda     zp:_Zp+1
+    \ 00a7 91..                 sta     (_Vsp),y
+    \ 00a9 88                   dey
+    \ 00aa a5..                 lda     zp:_Zp
+    \ 00ac 91..                 sta     (_Vsp),y
+    \ 00ae 98                   tya
+    \ 00af aa                   tax
+    \ 00b0 a0f8                 ldy     #248
+    \ 00b2 a30f                 ldz     #15
+    \ 00b4 424285..             stq     zp:_Zp+4
+    \ 00b8 a003                 ldy     #3
+    \ 00ba b1..                 lda     (_Vsp),y
+    \ 00bc 85..                 sta     zp:_Zp
+    \ 00be 8a                   txa
+    \ 00bf 85..                 sta     zp:_Zp+1
+    \ 00c1 85..                 sta     zp:_Zp+2
+    \ 00c3 85..                 sta     zp:_Zp+3
+    \ 00c5 a0f8                 ldy     #248
+    \ 00c7 18                   clc
+    \ 00c8 424265..             adcq    zp:_Zp
+    \ 00cc 20....               jsr     `?L624`
+0094                    lfill(getscreenaddr() + screenbytes - width, ' ', width);
+    \ 00cf 20....               jsr     getscreenaddr
+    \ 00d2 a5..                 lda     zp:_Zp+29
+    \ 00d4 85..                 sta     zp:_Zp+5
+    \ 00d6 a5..                 lda     zp:_Zp+28
+    \ 00d8 85..                 sta     zp:_Zp+4
+    \ 00da a900                 lda     #0
+    \ 00dc 20....               jsr     `?L623`
+    \ 00df 48                   pha
+    \ 00e0 da                   phx
+    \ 00e1 5a                   phy
+    \ 00e2 db                   phz
+    \ 00e3 a001                 ldy     #1
+    \ 00e5 b1..                 lda     (_Vsp),y
+    \ 00e7 20....               jsr     `?L620`
+    \ 00ea 85..                 sta     zp:_Zp+2
+    \ 00ec 85..                 sta     zp:_Zp+3
+    \ 00ee fb                   plz
+    \ 00ef 7a                   ply
+    \ 00f0 fa                   plx
+    \ 00f1 68                   pla
+    \ 00f2 20....               jsr     `?L639`
+    \ 00f5 20....               jsr     `?L616`
+    \ 00f8 a920                 lda     #32
+    \ 00fa 20....               jsr     lfill
+0095                    lfill(COLOR_RAM_BASE + screenbytes - width, COLOUR_WHITE, width);
+    \ 00fd a900                 lda     #0
+    \ 00ff 85..                 sta     zp:_Zp+30
+    \ 0101 85..                 sta     zp:_Zp+31
+    \ 0103 aa                   tax
+    \ 0104 a0f8                 ldy     #248
+    \ 0106 a30f                 ldz     #15
+    \ 0108 18                   clc
+    \ 0109 424265..             adcq    zp:_Zp+28
+    \ 010d 424285..             stq     zp:_Zp
+    \ 0111 20....               jsr     `?L616`
+    \ 0114 20....               jsr     _SpillZP
+    \ 0117 04..                 .byte   4,_Zp
+    \ 0119 a005                 ldy     #5
+    \ 011b b1..                 lda     (_Vsp),y
+    \ 011d 20....               jsr     `?L620`
+    \ 0120 85..                 sta     zp:_Zp+2
+    \ 0122 85..                 sta     zp:_Zp+3
+    \ 0124 20....               jsr     _FillQ
+    \ 0127 20....               jsr     `?L639`
+    \ 012a a901                 lda     #1
+    \ 012c 20....               jsr     lfill
+0096                        // COLOUR_WHITE to be replaced by a getter function
+0097                        // COLOR_RAM_BASE calculation supports one-byte colours only
+0098                    gotoxy(0, wherey());
+    \ 012f 20....               jsr     wherey
+    \ 0132 8004                 bra     `?L576`
+    \ 0134          `?L59`:
+0099                  } else {
+0100                    gotoxy(0, wherey() + 1);
+    \ 0134 20....               jsr     wherey
+    \ 0137 1a                   inc     a
+    \ 0138          `?L576`:
+    \ 0138 85..                 sta     zp:_Zp
+    \ 013a a900                 lda     #0
+    \ 013c 20....               jsr     gotoxy
+0101                  }
+0102                }
+    \ 013f a202                 ldx     #2
+    \ 0141 4c....               jmp     `?L603`
+0103
+0104                // taken from mega65-libc memory.c being inactive by #ifdef:
+0105                uint8_t lpeek__________(uint32_t address)
+0106                {
+    \ 0000                      .section code,text
+    \ 0000                      .public lpeek__________
+    \ 0000          lpeek__________:
+0107                  return dma_peek(address);
+    \ 0000 20....               jsr     dma_peek
+0108                }
+    \ 0003 60                   rts
+0109                void lpoke___________(uint32_t address, uint8_t value)
+0110                {
+    \ 0000                      .section code,text
+    \ 0000                      .public lpoke___________
+    \ 0000          lpoke___________:
+    \ 0000 85..                 sta     zp:_Zp+4
+0111                  dma_poke(address, value);
+    \ 0002 a5..                 lda     zp:_Zp+4
+    \ 0004 20....               jsr     dma_poke
+0112                }
+    \ 0007 60                   rts
+0113
+0114                #define MAXDECDIGITS 10
+0115                void csputdec(long n, unsigned char padding, unsigned char leadingZeros)
+0116                {
+    \ 0000                      .section code,text
+    \ 0000                      .public csputdec
+    \ 0000 a2f5     csputdec:   ldx     #245
+    \ 0002 20....               jsr     _AllocStack
+    \ 0005 85..                 sta     zp:_Zp+22
+    \ 0007 a5..                 lda     zp:_Zp+4
+    \ 0009 85..                 sta     zp:_Zp+20
+0117                  unsigned char buffer[MAXDECDIGITS + 1];
+0118                  unsigned char rem = 0, i = 0;
+0119                  char digit = MAXDECDIGITS - 1;
+    \ 000b a909                 lda     #9
+    \ 000d 85..                 sta     zp:_Zp+21
+0120                  buffer[MAXDECDIGITS] = 0;
+    \ 000f a900                 lda     #0
+    \ 0011 a00a                 ldy     #10
+    \ 0013 91..                 sta     (_Vsp),y
+0121                  do {
+    \ 0015 20....               jsr     `?L644`
+    \ 0018          `?L72`:
+0122                      rem = n % 10;
+    \ 0018 20....               jsr     `?L609`
+    \ 001b a5..                 lda     zp:_Zp+4
+    \ 001d 85..                 sta     zp:_Zp+23
+0123                      n /= 10;
+    \ 001f 20....               jsr     `?L609`
+0124                      buffer[digit--] = '0' + rem; // static: hexDigits[rem];
+    \ 0022 a5..                 lda     zp:_Zp+21
+    \ 0024 85..                 sta     zp:_Zp+4
+    \ 0026 a930                 lda     #48
+    \ 0028 18                   clc
+    \ 0029 65..                 adc     zp:_Zp+23
+    \ 002b 48                   pha
+    \ 002c a6..                 ldx     zp:_Vsp
+    \ 002e 86..                 stx     zp:_Zp+6
+    \ 0030 a6..                 ldx     zp:_Vsp+1
+    \ 0032 86..                 stx     zp:_Zp+7
+    \ 0034 a5..                 lda     zp:_Zp+4
+    \ 0036 c6..                 dec     zp:_Zp+4
+    \ 0038 4b                   taz
+    \ 0039 68                   pla
+    \ 003a 92..                 sta     (_Zp+6),z
+0125                  } while (((int)digit >= 0) && (n != 0));
+    \ 003c ab....               ldz     _Zp+4
+    \ 003f c200                 cpz     #0
+    \ 0041 9011                 bcc     `?L75`
+    \ 0043 20....               jsr     `?L644`
+    \ 0046 a5..                 lda     zp:_Zp+4
+    \ 0048 85..                 sta     zp:_Zp+21
+    \ 004a 4242e6..             inq     zp:_Zp
+    \ 004e 4242c6..             deq     zp:_Zp
+    \ 0052 d0c4                 bne     `?L72`
+    \ 0054          `?L75`:
+0126
+0127                  while (digit > 0)  {
+    \ 0054 a5..                 lda     zp:_Zp+4
+    \ 0056 f035                 beq     `?L76`
+0128                    if (leadingZeros > 0)  {
+    \ 0058 a5..                 lda     zp:_Zp+20
+    \ 005a f009                 beq     `?L78`
+0129                      leadingZeros--;
+    \ 005c c6..                 dec     zp:_Zp+20
+0130                      buffer[digit--] = '0'; // static: hexDigits[0];
+    \ 005e 20....               jsr     `?L621`
+    \ 0061 a930                 lda     #48
+    \ 0063 8024                 bra     `?L578`
+    \ 0065          `?L78`:
+0131                    } else if (digit > (MAXDECDIGITS - padding))  {  // padding actually aligns
+    \ 0065 a90a                 lda     #10
+    \ 0067 20....               jsr     `?L620`
+    \ 006a 38                   sec
+    \ 006b a5..                 lda     zp:_Zp
+    \ 006d e5..                 sbc     zp:_Zp+22
+    \ 006f 85..                 sta     zp:_Zp
+    \ 0071 b002                 bcs     `?L429`
+    \ 0073 c6..                 dec     zp:_Zp+1
+    \ 0075          `?L429`:
+    \ 0075 a6..                 ldx     zp:_Zp+4
+    \ 0077 86..                 stx     zp:_Zp+2
+    \ 0079 a900                 lda     #0
+    \ 007b 20....               jsr     `?L612`
+    \ 007e 5002                 bvc     `?L431`
+    \ 0080 4980                 eor     #-128
+    \ 0082 1009     `?L431`:    bpl     `?L76`
+0132                      buffer[digit--] = ' ';
+    \ 0084 20....               jsr     `?L621`
+    \ 0087 a920                 lda     #32
+    \ 0089          `?L578`:
+    \ 0089 92..                 sta     (_Zp),z
+    \ 008b 80c7                 bra     `?L75`
+    \ 008d          `?L76`:
+0133                    } else break;
+0134                  }
+0135
+0136                  cputs(&buffer[digit + 1]);
+    \ 008d a5..                 lda     zp:_Vsp
+    \ 008f 85..                 sta     zp:_Zp
+    \ 0091 a5..                 lda     zp:_Vsp+1
+    \ 0093 85..                 sta     zp:_Zp+1
+    \ 0095 e6..                 inc     zp:_Zp+4
+    \ 0097 18                   clc
+    \ 0098 a5..                 lda     zp:_Zp
+    \ 009a 65..                 adc     zp:_Zp+4
+    \ 009c 85..                 sta     zp:_Zp
+    \ 009e 9002                 bcc     `?L433`
+    \ 00a0 e6..                 inc     zp:_Zp+1
+    \ 00a2          `?L433`:
+    \ 00a2 20....               jsr     cputs
+0137                }
+    \ 00a5 a20b                 ldx     #11
+    \ 00a7 4c....               jmp     _DeallocStack
+0138
+0139                char asciitoscreencode(char c)
+0140                {
+    \ 0000                      .section code,text
+    \ 0000                      .public asciitoscreencode
+    \ 0000          asciitoscreencode:
+0141                //    if (c >= 64 && c <= 95) {
+0142                //        return c - 64;
+0143                //    }
+0144
+0145                  if (c == 0xa0) return 32; // unused dos file name characters
+    \ 0000 c9a0                 cmp     #-96
+    \ 0002 d003                 bne     `?L89`
+    \ 0004 a920                 lda     #32
+    \ 0006 60                   rts
+    \ 0007          `?L89`:
+0146
+0147                  if (c >= 192) {
+    \ 0007 c9c0                 cmp     #-64
+    \ 0009 9004                 bcc     `?L93`
+0148                      return c - 128;
+    \ 000b 38                   sec
+    \ 000c e980                 sbc     #-128
+    \ 000e 60                   rts
+    \ 000f          `?L93`:
+0149                  }
+0150
+0151                  if (c >= 96 && c < 192) {
+    \ 000f c960                 cmp     #96
+    \ 0011 9008                 bcc     `?L97`
+    \ 0013 c9c0                 cmp     #-64
+    \ 0015 b004                 bcs     `?L97`
+0152                      return c - 96;
+    \ 0017 38                   sec
+    \ 0018 e960                 sbc     #96
+    \ 001a 60                   rts
+    \ 001b          `?L97`:
+0153                  }
+0154
+0155                  if (c == '[') return 27;
+    \ 001b c95b                 cmp     #91
+    \ 001d d003                 bne     `?L101`
+    \ 001f a91b                 lda     #27
+    \ 0021 60                   rts
+    \ 0022          `?L101`:
+0156                  if (c == '\\') return 105;
+    \ 0022 c95c                 cmp     #92
+    \ 0024 d003                 bne     `?L105`
+    \ 0026 a969                 lda     #105
+    \ 0028 60                   rts
+    \ 0029          `?L105`:
+0157                  if (c == ']') return 29;
+    \ 0029 c95d                 cmp     #93
+    \ 002b d003                 bne     `?L109`
+    \ 002d a91d                 lda     #29
+    \ 002f 60                   rts
+    \ 0030          `?L109`:
+0158                  if (c == '^') return 100;
+    \ 0030 c95e                 cmp     #94
+    \ 0032 f004                 beq     `?L118`
+0159                  if (c == '_') return 100;
+    \ 0034 c95f                 cmp     #95
+    \ 0036 d003                 bne     `?L117`
+    \ 0038 a964     `?L118`:    lda     #100
+    \ 003a 60                   rts
+    \ 003b          `?L117`:
+0160
+0161                  return c;
+    \ 003b 60                   rts
+0162                }
+0163
+0164                char* asciitoscreencode_s(char* s)
+0165                {
+    \ 0000                      .section code,text
+    \ 0000                      .public asciitoscreencode_s
+    \ 0000          asciitoscreencode_s:
+    \ 0000 a200                 ldx     #0
+    \ 0002 a005                 ldy     #5
+    \ 0004 20....               jsr     _AllocStackSave
+0166                  char* src = s;
+0167                  char* dest = p2sbuf;
+    \ 0007 ad....               lda     p2sbuf
+    \ 000a 85..                 sta     zp:_Zp+28
+    \ 000c ad....               lda     p2sbuf+1
+    \ 000f 85..                 sta     zp:_Zp+29
+    \ 0011          `?L124`:
+0168                  while ((*dest++ = asciitoscreencode(*src++)))
+    \ 0011 a5..                 lda     zp:_Zp+28
+    \ 0013 85..                 sta     zp:_Zp+26
+    \ 0015 a5..                 lda     zp:_Zp+29
+    \ 0017 85..                 sta     zp:_Zp+27
+    \ 0019 e3..                 inw     zp:_Zp+28
+    \ 001b a000                 ldy     #0
+    \ 001d b1..                 lda     (_Zp),y
+    \ 001f e3..                 inw     zp:_Zp
+    \ 0021 a6..                 ldx     zp:_Zp
+    \ 0023 86..                 stx     zp:_Zp+24
+    \ 0025 a6..                 ldx     zp:_Zp+1
+    \ 0027 86..                 stx     zp:_Zp+25
+    \ 0029 20....               jsr     asciitoscreencode
+    \ 002c a000                 ldy     #0
+    \ 002e 91..                 sta     (_Zp+26),y
+    \ 0030 b1..                 lda     (_Zp+26),y
+    \ 0032 f007                 beq     `?L125`
+0169                      ;
+    \ 0034 20....               jsr     `?L613`
+    \ 0037 85..                 sta     zp:_Zp+1
+    \ 0039 80d6                 bra     `?L124`
+    \ 003b          `?L125`:
+0170                  if (p2sbuf[0] == 0)  {
+    \ 003b 20....               jsr     `?L610`
+    \ 003e b1..                 lda     (_Zp),y
+    \ 0040 d00f                 bne     `?L128`
+0171                    p2sbuf[0] = ' ';  // print crash prevention
+0172                    p2sbuf[1] = 0;
+    \ 0042 20....               jsr     `?L610`
+    \ 0045 a920                 lda     #32
+    \ 0047 91..                 sta     (_Zp),y
+    \ 0049 20....               jsr     `?L610`
+    \ 004c e3..                 inw     zp:_Zp
+    \ 004e 98                   tya
+    \ 004f 91..                 sta     (_Zp),y
+    \ 0051          `?L128`:
+0173                  }
+0174                  return p2sbuf;
+    \ 0051 20....               jsr     `?L610`
+0175                }
+    \ 0054 a005                 ldy     #5
+    \ 0056 4c....               jmp     _RestoreRegisters
+0176
+0177                void cputcctrl(unsigned char c)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public cputcctrl
+    \ 0000          cputcctrl:
+    \ 0000 20....               jsr     `?L640`
+0178                  switch (c) {
+    \ 0003 a9..                 lda     #.byte0 `?L324`
+    \ 0005 85..                 sta     zp:_Zp+2
+    \ 0007 a9..                 lda     #.byte1 `?L324`
+    \ 0009 85..                 sta     zp:_Zp+3
+    \ 000b 20....               jsr     `?L622`
+    \ 000e 20....               jsr     _ValueSwitch16
+    \ 0011          `?L137`:
+0179                    case 18: // {RVSON}
+0180                      revers(1);
+0181                    break;
+0182                    case 146: // {RVSOFF}
+0183                      revers(0);
+0184                    break;
+0185
+0186                    case 9: // {ensh} used to highlight
+0187                      highlight(1);
+0188                    break;
+0189                    case 8: // {dish} used for highlight off
+0190                      highlight(0);
+0191                    break;
+0192
+0193                    case 130: // {130} flashing on
+0194                      blink(1);
+0195                    break;
+0196                    case 132: // {132} flashing off
+0197                      blink(0);
+0198                    break;
+0199
+0200                    case 11: // {11} underline on
+0201                      underline(1);
+0202                    break;
+0203                    case 12: // {12} underline off
+0204                      underline(0);
+0205                    break;
+0206
+0207                    case 151: // {dark gray}
+0208                      textcolor(COLOUR_GREY1);
+0209                    break;
+0210
+0211                    case 154: // {light blue}
+0212                      textcolor(COLOUR_LIGHTBLUE);
+0213                    break;
+0214
+0215                    case 159: // {cyan}
+0216                      textcolor(COLOUR_CYAN);
+    \ 0011 a903                 lda     #3
+    \ 0013 8006                 bra     `?L580`
+    \ 0015 a90e     `?L138`:    lda     #14
+    \ 0017 8002                 bra     `?L580`
+    \ 0019 a90b     `?L139`:    lda     #11
+    \ 001b          `?L580`:
+0217                    break;
+0218
+0219                /*
+0220                void revers(unsigned char enable)
+0221                void highlight(unsigned char enable)
+0222                void blink(unsigned char enable)
+0223                void underline(unsigned char enable)
+0224                */
+0225
+0226                    default:
+0227                      cputc(petsciitoscreencode(c));
+0228                    break;
+    \ 001b 20....               jsr     textcolor
+    \ 001e 8034                 bra     `?L133`
+    \ 0020 a900     `?L146`:    lda     #0
+    \ 0022 800d                 bra     `?L588`
+    \ 0024 a900     `?L142`:    lda     #0
+    \ 0026 8002                 bra     `?L582`
+    \ 0028 a901     `?L143`:    lda     #1
+    \ 002a          `?L582`:
+    \ 002a 20....               jsr     blink
+    \ 002d 8025                 bra     `?L133`
+    \ 002f a901     `?L147`:    lda     #1
+    \ 0031          `?L588`:
+    \ 0031 20....               jsr     revers
+    \ 0034 801e                 bra     `?L133`
+    \ 0036 a900     `?L140`:    lda     #0
+    \ 0038 8002                 bra     `?L584`
+    \ 003a a901     `?L141`:    lda     #1
+    \ 003c          `?L584`:
+    \ 003c 20....               jsr     underline
+    \ 003f 8013                 bra     `?L133`
+    \ 0041 a901     `?L145`:    lda     #1
+    \ 0043 8002                 bra     `?L586`
+    \ 0045 a900     `?L144`:    lda     #0
+    \ 0047          `?L586`:
+    \ 0047 20....               jsr     highlight
+    \ 004a 8008                 bra     `?L133`
+    \ 004c          `?L136`:
+    \ 004c a5..                 lda     zp:_Zp+24
+    \ 004e 20....               jsr     petsciitoscreencode
+    \ 0051 20....               jsr     cputc
+    \ 0054          `?L133`:
+0229                  }
+0230                }
+    \ 0054 a000                 ldy     #0
+    \ 0056 4c....               jmp     _RestoreRegisters
+0231
+0232                void clrhome(void)
+0233                {
+    \ 0000                      .section code,text
+    \ 0000                      .public clrhome
+    \ 0000          clrhome:
+0234                  clrscr();
+    \ 0000 20....               jsr     clrscr
+0235                  gohome();
+    \ 0003 20....               jsr     gohome
+0236                }
+    \ 0006 60                   rts
+0237
+0238                // instead of printf() variants:
+0239                void mcputc(char c)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public mcputc
+    \ 0000          mcputc:
+0240                  cputc(asciitoscreencode(c));
+    \ 0000 20....               jsr     asciitoscreencode
+    \ 0003 20....               jsr     cputc
+0241                }
+    \ 0006 60                   rts
+0242                void msprintf(char* str)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public msprintf
+    \ 0000          msprintf:
+0243                  cputs((const unsigned char*) asciitoscreencode_s(str));
+    \ 0000 20....               jsr     `?L617`
+0244                }
+    \ 0003 60                   rts
+0245                void mprintf(char* str, long n)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public mprintf
+    \ 0000          mprintf:
+    \ 0000 20....               jsr     `?L607`
+0246                  cputs((const unsigned char*) asciitoscreencode_s(str));
+    \ 0003 20....               jsr     `?L617`
+0247                  csputdec(n, 0, 0);
+    \ 0006 a900                 lda     #0
+    \ 0008 85..                 sta     zp:_Zp+4
+    \ 000a 4242a5..             ldq     zp:_Zp+24
+    \ 000e 424285..             stq     zp:_Zp
+    \ 0012 a900                 lda     #0
+    \ 0014 20....               jsr     csputdec
+    \ 0017          `?L597`:
+0248                }
+0249                void mhprintf(char* str, long n)  {
+0250                  cputs((const unsigned char*) asciitoscreencode_s(str));
+0251                  cputhex(n, 2);
+0252                }
+0253                void mh4printf(char* str, long n)  {
+0254                  cputs((const unsigned char*) asciitoscreencode_s(str));
+0255                  cputhex(n, 4);
+0256                }
+    \ 0017 a003                 ldy     #3
+    \ 0019 4c....               jmp     _RestoreRegisters
+    \ 0000                      .section code,text
+    \ 0000                      .public mhprintf
+    \ 0000          mhprintf:
+    \ 0000 20....               jsr     `?L607`
+    \ 0003 20....               jsr     `?L617`
+    \ 0006 4242a5..             ldq     zp:_Zp+24
+    \ 000a 424285..             stq     zp:_Zp
+    \ 000e a902                 lda     #2
+    \ 0010 4c....               jmp     `?L602`
+    \ 0000                      .section code,text
+    \ 0000                      .public mh4printf
+    \ 0000          mh4printf:
+    \ 0000 20....               jsr     `?L607`
+    \ 0003 20....               jsr     `?L617`
+    \ 0006 4242a5..             ldq     zp:_Zp+24
+    \ 000a 424285..             stq     zp:_Zp
+    \ 000e a904                 lda     #4
+    \ 0010          `?L602`:
+    \ 0010 20....               jsr     cputhex
+    \ 0013 4c....               jmp     `?L597`
+0257                void mcprintf(char* str, char c)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public mcprintf
+    \ 0000          mcprintf:
+    \ 0000 20....               jsr     `?L640`
+0258                  cputs((const unsigned char*) asciitoscreencode_s(str));
+    \ 0003 20....               jsr     `?L617`
+0259                  cputc(c);
+    \ 0006 a5..                 lda     zp:_Zp+24
+    \ 0008 20....               jsr     cputc
+0260                }
+    \ 000b a000                 ldy     #0
+    \ 000d 4c....               jmp     _RestoreRegisters
+0261                void mcputsxy(unsigned char x, unsigned char y, char* str)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public mcputsxy
+    \ 0000          mcputsxy:
+    \ 0000 20....               jsr     `?L646`
+    \ 0003 85..                 sta     zp:_Zp+25
+    \ 0005 a5..                 lda     zp:_Zp
+    \ 0007 85..                 sta     zp:_Zp+24
+0262                    cputsxy(x, y, (const unsigned char *) asciitoscreencode_s(str));
+    \ 0009 a5..                 lda     zp:_Zp+2
+    \ 000b 85..                 sta     zp:_Zp
+    \ 000d a5..                 lda     zp:_Zp+3
+    \ 000f 20....               jsr     `?L604`
+    \ 0012 20....               jsr     `?L613`
+    \ 0015 20....               jsr     cputsxy
+0263                }
+    \ 0018 a001                 ldy     #1
+    \ 001a 4c....               jmp     _RestoreRegisters
+0264                // Debug defined:
+0265                void msprintfd(char* str)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public msprintfd
+    \ 0000          msprintfd:
+0266                #ifdef DEBUG
+0267                  msprintf(str);
+0268                #endif
+0269                }
+    \ 0000 60                   rts
+0270                void mprintfd(char* str, long n)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public mprintfd
+    \ 0000          mprintfd:
+0271                #ifdef DEBUG
+0272                  mprintf(str, n);
+0273                #endif
+0274                }
+    \ 0000 60                   rts
+0275                void mhprintfd(char* str, long n)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public mhprintfd
+    \ 0000          mhprintfd:
+0276                #ifdef DEBUG
+0277                  mhprintf(str, n);
+0278                #endif
+0279                }
+    \ 0000 60                   rts
+0280                void mh4printfd(char* str, long n)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public mh4printfd
+    \ 0000          mh4printfd:
+0281                #ifdef DEBUG
+0282                  mh4printf(str, n);
+0283                #endif
+0284                }
+    \ 0000 60                   rts
+0285                void mcprintfd(char* str, char c)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public mcprintfd
+    \ 0000          mcprintfd:
+0286                #ifdef DEBUG
+0287                  mcprintf(str, c);
+0288                #endif
+0289                }
+    \ 0000 60                   rts
+0290                void cputcd(unsigned char c)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public cputcd
+    \ 0000          cputcd:
+0291                #ifdef DEBUG
+0292                  cputc(c);
+0293                #endif
+0294                }
+    \ 0000 60                   rts
+0295                void clrhomed(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public clrhomed
+    \ 0000          clrhomed:
+0296                #ifdef DEBUG
+0297                  clrhome();
+0298                #endif
+0299                }
+    \ 0000 60                   rts
+0300                void cputlnd(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public cputlnd
+    \ 0000          cputlnd:
+0301                #ifdef DEBUG
+0302                  cputln();
+0303                #endif
+0304                }
+    \ 0000 60                   rts
+0305                unsigned char cgetcd(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public cgetcd
+    \ 0000          cgetcd:
+0306                  unsigned char c = 0;
+    \ 0000 a900                 lda     #0
+0307                #ifdef DEBUG
+0308                  c = cgetc();
+0309                #endif
+0310                  return c;
+0311                }
+    \ 0002 60                   rts
+0312
+0313                unsigned char cinput2(
+0314                  unsigned char* buffer2, unsigned char buflen, unsigned char flags)
+0315                {
+    \ 0000                      .section code,text
+    \ 0000                      .public cinput2
+    \ 0000 a200     cinput2:    ldx     #0
+    \ 0002 a009                 ldy     #9
+    \ 0004 20....               jsr     `?L628`
+    \ 0007 85..                 sta     zp:_Zp+27
+    \ 0009 a5..                 lda     zp:_Zp+2
+    \ 000b 85..                 sta     zp:_Zp+28
+0316                  register unsigned char numch = 0, i, ch;
+    \ 000d 8a                   txa
+    \ 000e 85..                 sta     zp:_Zp+29
+0317                  const int sx = wherex();
+    \ 0010 20....               jsr     wherex
+    \ 0013 85..                 sta     zp:_Zp+32
+0318                  const int sy = wherey();
+    \ 0015 20....               jsr     wherey
+    \ 0018 85..                 sta     zp:_Zp+24
+0319
+0320                  if (buffer2 == NULL || buflen == 0) {
+    \ 001a a5..                 lda     zp:_Zp+26
+    \ 001c 05..                 ora     zp:_Zp+27
+    \ 001e f3fd00               lbeq    `?L217`
+    \ 0021 a5..                 lda     zp:_Zp+30
+    \ 0023 f3f800               lbeq    `?L217`
+0321                    return 0;
+0322                  }
+0323
+0324                  flushkeybuf();
+    \ 0026 20....               jsr     flushkeybuf
+0325
+0326                  for (i = 0; i < buflen; ++i) {
+    \ 0029 a900                 lda     #0
+    \ 002b 85..                 sta     zp:_Zp
+    \ 002d          `?L220`:
+    \ 002d ab....               ldz     _Zp
+    \ 0030 d4..                 cpz     zp:_Zp+30
+    \ 0032 93df00               lbcc    `?L219`
+    \ 0035          `?L225`:
+0327                    buffer2[i] = '\0';
+0328                  }
+0329
+0330                  while (1) {
+0331                    if (buffer2[0]!=0)  cputsxy(sx, sy, buffer2);
+    \ 0035 a000                 ldy     #0
+    \ 0037 b1..                 lda     (_Zp+26),y
+    \ 0039 f013                 beq     `?L226`
+    \ 003b a5..                 lda     zp:_Zp+26
+    \ 003d 85..                 sta     zp:_Zp+2
+    \ 003f a5..                 lda     zp:_Zp+27
+    \ 0041 85..                 sta     zp:_Zp+3
+    \ 0043 a5..                 lda     zp:_Zp+24
+    \ 0045 85..                 sta     zp:_Zp
+    \ 0047 a5..                 lda     zp:_Zp+32
+    \ 0049 20....               jsr     cputsxy
+    \ 004c 8009                 bra     `?L227`
+    \ 004e          `?L226`:
+0332                    else gotoxy(sx, sy);
+    \ 004e a5..                 lda     zp:_Zp+24
+    \ 0050 85..                 sta     zp:_Zp
+    \ 0052 a5..                 lda     zp:_Zp+32
+    \ 0054 20....               jsr     gotoxy
+    \ 0057          `?L227`:
+0333                    blink(1);
+    \ 0057 a901                 lda     #1
+    \ 0059 20....               jsr     blink
+0334                    cputc(224);
+    \ 005c a9e0                 lda     #-32
+    \ 005e 20....               jsr     cputc
+0335                    blink(0);
+    \ 0061 a900                 lda     #0
+    \ 0063 20....               jsr     blink
+0336                    ch = cgetc();
+    \ 0066 20....               jsr     cgetc
+    \ 0069 85..                 sta     zp:_Zp
+0337
+0338                    if (ch == 13) {
+    \ 006b a30d                 ldz     #13
+    \ 006d d4..                 cpz     zp:_Zp
+    \ 006f d008                 bne     `?L230`
+0339                        break;
+0340                    }
+0341
+0342                    if (ch == 20) {
+0343                      if (numch > 0) {
+0344                        moveleft(1);
+0345                        cputc(' ');
+0346                        buffer2[--numch] = '\0';
+0347                      }
+0348                    }
+0349                    else if (numch < buflen - 1) {
+0350                      if ((((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'))
+0351                          && (flags & CINPUT_ACCEPT_LETTER))
+0352                        || ((ch >= '0' && ch <= '9') && (flags & CINPUT_ACCEPT_NUMERIC))
+0353                        || (flags & CINPUT_ACCEPT_ALL)) {
+0354                        if ((ch >= 0x61 && ch <= 0x7a) && (PEEK(0x0D18) & ~2)
+0355                          && (flags & ~CINPUT_NO_AUTOTRANSLATE)) {
+0356                          ch -= 0x20;
+0357                        }
+0358
+0359                        buffer2[numch++] = ch;
+0360                      }
+0361                    }
+0362                  }
+0363
+0364                  moveleft(1);
+    \ 0071 20....               jsr     `?L630`
+0365                  cputc(' ');  // remove blinking cursor after last entered char
+0366                  return numch;
+    \ 0074 a5..                 lda     zp:_Zp+29
+    \ 0076 4c....               jmp     `?L214`
+    \ 0079 a314     `?L230`:    ldz     #20
+    \ 007b d4..                 cpz     zp:_Zp
+    \ 007d d010                 bne     `?L233`
+    \ 007f a5..                 lda     zp:_Zp+29
+    \ 0081 f0b2                 beq     `?L225`
+    \ 0083 20....               jsr     `?L630`
+    \ 0086 c6..                 dec     zp:_Zp+29
+    \ 0088 a900                 lda     #0
+    \ 008a ab....               ldz     _Zp+29
+    \ 008d 807c                 bra     `?L589`
+    \ 008f          `?L233`:
+    \ 008f a6..                 ldx     zp:_Zp+29
+    \ 0091 86..                 stx     zp:_Zp+2
+    \ 0093 a900                 lda     #0
+    \ 0095 85..                 sta     zp:_Zp+3
+    \ 0097 a6..                 ldx     zp:_Zp+30
+    \ 0099 86..                 stx     zp:_Zp+4
+    \ 009b 85..                 sta     zp:_Zp+5
+    \ 009d c3..                 dew     zp:_Zp+4
+    \ 009f a5..                 lda     zp:_Zp+2
+    \ 00a1 c5..                 cmp     zp:_Zp+4
+    \ 00a3 a5..                 lda     zp:_Zp+3
+    \ 00a5 e5..                 sbc     zp:_Zp+5
+    \ 00a7 5002                 bvc     `?L492`
+    \ 00a9 4980                 eor     #-128
+    \ 00ab 1088     `?L492`:    bpl     `?L225`
+    \ 00ad ab....               ldz     _Zp
+    \ 00b0 c261                 cpz     #97
+    \ 00b2 9006                 bcc     `?L329`
+    \ 00b4 a37a                 ldz     #122
+    \ 00b6 d4..                 cpz     zp:_Zp
+    \ 00b8 b00d                 bcs     `?L328`
+    \ 00ba          `?L329`:
+    \ 00ba ab....               ldz     _Zp
+    \ 00bd c241                 cpz     #65
+    \ 00bf 9009                 bcc     `?L327`
+    \ 00c1 a35a                 ldz     #90
+    \ 00c3 d4..                 cpz     zp:_Zp
+    \ 00c5 9003                 bcc     `?L327`
+    \ 00c7          `?L328`:
+    \ 00c7 9f..13               bbs1    zp:_Zp+28,`?L244`
+    \ 00ca          `?L327`:
+    \ 00ca ab....               ldz     _Zp
+    \ 00cd c230                 cpz     #48
+    \ 00cf 9009                 bcc     `?L326`
+    \ 00d1 a339                 ldz     #57
+    \ 00d3 d4..                 cpz     zp:_Zp
+    \ 00d5 9003                 bcc     `?L326`
+    \ 00d7 8f..03               bbs0    zp:_Zp+28,`?L244`
+    \ 00da          `?L326`:
+    \ 00da 2f..33               bbr2    zp:_Zp+28,`?L242`
+    \ 00dd          `?L244`:
+    \ 00dd ab....               ldz     _Zp
+    \ 00e0 c261                 cpz     #97
+    \ 00e2 901e                 bcc     `?L246`
+    \ 00e4 a37a                 ldz     #122
+    \ 00e6 d4..                 cpz     zp:_Zp
+    \ 00e8 9018                 bcc     `?L246`
+    \ 00ea ad180d               lda     0xd18
+    \ 00ed 89fd                 bit     #-3
+    \ 00ef f011                 beq     `?L246`
+    \ 00f1 a5..                 lda     zp:_Zp+28
+    \ 00f3 85..                 sta     zp:_Zp+1
+    \ 00f5 37..                 rmb3    zp:_Zp+1
+    \ 00f7 a5..                 lda     zp:_Zp+1
+    \ 00f9 f007                 beq     `?L246`
+    \ 00fb a5..                 lda     zp:_Zp
+    \ 00fd 38                   sec
+    \ 00fe e920                 sbc     #32
+    \ 0100 85..                 sta     zp:_Zp
+    \ 0102          `?L246`:
+    \ 0102 a5..                 lda     zp:_Zp
+    \ 0104 48                   pha
+    \ 0105 a5..                 lda     zp:_Zp+29
+    \ 0107 e6..                 inc     zp:_Zp+29
+    \ 0109 4b                   taz
+    \ 010a 68                   pla
+    \ 010b          `?L589`:
+    \ 010b 92..                 sta     (_Zp+26),z
+    \ 010d 4c....               jmp     `?L225`
+    \ 0110          `?L242`:
+    \ 0110 4c....               jmp     `?L225`
+    \ 0113          `?L219`:
+    \ 0113 ab....               ldz     _Zp
+    \ 0116 92..                 sta     (_Zp+26),z
+    \ 0118 e6..                 inc     zp:_Zp
+    \ 011a 4c....               jmp     `?L220`
+    \ 011d a900     `?L217`:    lda     #0
+    \ 011f          `?L214`:
+0367                }
+    \ 011f a009                 ldy     #9
+    \ 0121 4c....               jmp     _RestoreRegisters
+0368
+0369                void mcbox(unsigned char left, unsigned char top, unsigned char right, unsigned char bottom,
+0370                  unsigned char color, unsigned char style, unsigned char clear, unsigned char shadow)
+0371                {
+    \ 0000                      .section code,text
+    \ 0000                      .public mcbox
+    \ 0000 a2fa     mcbox:      ldx     #250
+    \ 0002 a007                 ldy     #7
+    \ 0004 20....               jsr     `?L628`
+    \ 0007 85..                 sta     zp:_Zp+25
+    \ 0009 a5..                 lda     zp:_Zp+2
+    \ 000b 85..                 sta     zp:_Zp+24
+    \ 000d a5..                 lda     zp:_Zp+3
+    \ 000f 85..                 sta     zp:_Zp+29
+    \ 0011 a5..                 lda     zp:_Zp+5
+    \ 0013 85..                 sta     zp:_Zp+28
+    \ 0015 a5..                 lda     zp:_Zp+6
+    \ 0017 85..                 sta     zp:_Zp+27
+0372                  RECT rc = { left, top, right, bottom };
+    \ 0019 a5..                 lda     zp:_Zp+30
+    \ 001b a000                 ldy     #0
+    \ 001d 91..                 sta     (_Vsp),y
+    \ 001f a5..                 lda     zp:_Zp+26
+    \ 0021 c8                   iny
+    \ 0022 91..                 sta     (_Vsp),y
+    \ 0024 a5..                 lda     zp:_Zp+25
+    \ 0026 c8                   iny
+    \ 0027 91..                 sta     (_Vsp),y
+    \ 0029 a5..                 lda     zp:_Zp+24
+    \ 002b c8                   iny
+    \ 002c 91..                 sta     (_Vsp),y
+0373                  register unsigned char i = 0;
+0374                  const unsigned char len = right - left;
+    \ 002e a5..                 lda     zp:_Zp+25
+    \ 0030 38                   sec
+    \ 0031 e5..                 sbc     zp:_Zp+30
+    \ 0033 85..                 sta     zp:_Zp+31
+0375                //  unsigned char prevCol = g_curTextColor;
+0376
+0377                  textcolor(color);
+    \ 0035 a5..                 lda     zp:_Zp+29
+    \ 0037 20....               jsr     textcolor
+0378                  if (clear) {
+    \ 003a a5..                 lda     zp:_Zp+28
+    \ 003c f005                 beq     `?L253`
+0379                    fillrect(&rc, ' ', color); // g_curTextColor);
+    \ 003e a5..                 lda     zp:_Zp+29
+    \ 0040 20....               jsr     `?L619`
+    \ 0043          `?L253`:
+0380                  }
+0381
+0382                  // https://c64os.com/post/c64screencodes
+0383                  cputcxy(left, top, 112); // 176);
+    \ 0043 a970                 lda     #112
+    \ 0045 85..                 sta     zp:_Zp+1
+    \ 0047 a5..                 lda     zp:_Zp+26
+    \ 0049 20....               jsr     `?L626`
+0384                  cputcxy(left, bottom, 109); // 173);
+    \ 004c a96d                 lda     #109
+    \ 004e 85..                 sta     zp:_Zp+1
+    \ 0050 a5..                 lda     zp:_Zp+24
+    \ 0052 20....               jsr     `?L626`
+0385                  cputcxy(right, top, 110); // 174);
+    \ 0055 a96e                 lda     #110
+    \ 0057 20....               jsr     `?L649`
+    \ 005a 20....               jsr     cputcxy
+0386                  cputcxy(right, bottom, 125); // 189);
+    \ 005d a97d                 lda     #125
+    \ 005f 85..                 sta     zp:_Zp+1
+    \ 0061 20....               jsr     `?L613`
+    \ 0064 20....               jsr     cputcxy
+0387
+0388                  for (i = 1; i < len; ++i) {
+    \ 0067 a901                 lda     #1
+    \ 0069 85..                 sta     zp:_Zp+28
+    \ 006b          `?L256`:
+    \ 006b ab....               ldz     _Zp+28
+    \ 006e d4..                 cpz     zp:_Zp+31
+    \ 0070 93e200               lbcc    `?L255`
+0389                    cputcxy(left + i, top, 64); // 99);
+0390                    cputcxy(left + i, bottom, 64); // 99);
+0391                  }
+0392
+0393                  for (i = top + 1; i <= bottom - 1; ++i) {
+    \ 0073 a5..                 lda     zp:_Zp+26
+    \ 0075 85..                 sta     zp:_Zp+28
+    \ 0077          `?L593`:
+    \ 0077 e6..                 inc     zp:_Zp+28
+    \ 0079 20....               jsr     `?L622`
+    \ 007c c3..                 dew     zp:_Zp
+    \ 007e a6..                 ldx     zp:_Zp+28
+    \ 0080 86..                 stx     zp:_Zp+2
+    \ 0082 20....               jsr     `?L612`
+    \ 0085 5002                 bvc     `?L501`
+    \ 0087 4980                 eor     #-128
+    \ 0089 13b000   `?L501`:    lbpl    `?L259`
+0394                    cputcxy(left, i, 93); // 98);
+0395                    cputcxy(right, i, 93); // 98);
+0396                  }
+0397
+0398                  unsigned char width;
+0399                  unsigned char height;
+0400                  getscreensize(&width, &height);
+    \ 008c a2..                 ldx     #_Zp+2
+    \ 008e a904                 lda     #4
+    \ 0090 20....               jsr     _LoadVspEA
+    \ 0093 a2..                 ldx     #_Zp
+    \ 0095 a905                 lda     #5
+    \ 0097 20....               jsr     _LoadVspEA
+    \ 009a 20....               jsr     getscreensize
+0401
+0402                  if (shadow && bottom < height && right < width) {
+    \ 009d a5..                 lda     zp:_Zp+27
+    \ 009f f39300               lbeq    `?L251`
+    \ 00a2 ab....               ldz     _Zp+24
+    \ 00a5 a004                 ldy     #4
+    \ 00a7 b1..                 lda     (_Vsp),y
+    \ 00a9 85..                 sta     zp:_Zp
+    \ 00ab d4..                 cpz     zp:_Zp
+    \ 00ad b38500               lbcs    `?L251`
+    \ 00b0 ab....               ldz     _Zp+25
+    \ 00b3 c8                   iny
+    \ 00b4 b1..                 lda     (_Vsp),y
+    \ 00b6 85..                 sta     zp:_Zp
+    \ 00b8 d4..                 cpz     zp:_Zp
+    \ 00ba b078                 bcs     `?L251`
+0403                    lfill(COLOR_RAM_BASE + ((bottom + 1) * (unsigned int)width)
+    \ 00bc a6..                 ldx     zp:_Zp+31
+    \ 00be 86..                 stx     zp:_Zp+4
+    \ 00c0 a900                 lda     #0
+    \ 00c2 85..                 sta     zp:_Zp+5
+    \ 00c4 a6..                 ldx     zp:_Zp+24
+    \ 00c6 86..                 stx     zp:_Zp+2
+    \ 00c8 85..                 sta     zp:_Zp+3
+    \ 00ca e3..                 inw     zp:_Zp+2
+    \ 00cc b1..                 lda     (_Vsp),y
+    \ 00ce 20....               jsr     `?L620`
+    \ 00d1 20....               jsr     _Mul16
+    \ 00d4 a900                 lda     #0
+    \ 00d6 85..                 sta     zp:_Zp+2
+    \ 00d8 85..                 sta     zp:_Zp+3
+    \ 00da aa                   tax
+    \ 00db a0f8                 ldy     #248
+    \ 00dd a30f                 ldz     #15
+    \ 00df 18                   clc
+    \ 00e0 424265..             adcq    zp:_Zp
+    \ 00e4 48                   pha
+    \ 00e5 da                   phx
+    \ 00e6 5a                   phy
+    \ 00e7 db                   phz
+    \ 00e8 a6..                 ldx     zp:_Zp+30
+    \ 00ea 86..                 stx     zp:_Zp
+    \ 00ec a900                 lda     #0
+    \ 00ee 85..                 sta     zp:_Zp+1
+    \ 00f0 e3..                 inw     zp:_Zp
+    \ 00f2 a5..                 lda     zp:_Zp+1
+    \ 00f4 097f                 ora     #127
+    \ 00f6 3002                 bmi     `?L507`
+    \ 00f8 a900                 lda     #0
+    \ 00fa          `?L507`:
+    \ 00fa 85..                 sta     zp:_Zp+2
+    \ 00fc 85..                 sta     zp:_Zp+3
+    \ 00fe fb                   plz
+    \ 00ff 7a                   ply
+    \ 0100 fa                   plx
+    \ 0101 68                   pla
+    \ 0102 18                   clc
+    \ 0103 424265..             adcq    zp:_Zp
+    \ 0107 424285..             stq     zp:_Zp
+    \ 010b a90b                 lda     #11
+    \ 010d 20....               jsr     lfill
+    \ 0110          `?L590`:
+0404                              + (1 + left),
+0405                    COLOUR_DARKGREY, len);
+0406                    for (i = top + 1; i <= bottom + 1; ++i) {
+    \ 0110 e6..                 inc     zp:_Zp+26
+    \ 0112 20....               jsr     `?L622`
+    \ 0115 e3..                 inw     zp:_Zp
+    \ 0117 a6..                 ldx     zp:_Zp+26
+    \ 0119 86..                 stx     zp:_Zp+2
+    \ 011b 20....               jsr     `?L612`
+    \ 011e 5002                 bvc     `?L510`
+    \ 0120 4980                 eor     #-128
+    \ 0122 3010     `?L510`:    bmi     `?L251`
+0407                      cellcolor(right + 1, i, COLOUR_DARKGREY);
+    \ 0124 a90b                 lda     #11
+    \ 0126 20....               jsr     `?L649`
+    \ 0129 85..                 sta     zp:_Zp+2
+    \ 012b e6..                 inc     zp:_Zp+2
+    \ 012d a5..                 lda     zp:_Zp+2
+    \ 012f 20....               jsr     cellcolor
+    \ 0132 80dc                 bra     `?L590`
+    \ 0134          `?L251`:
+0408                    }
+0409                  }
+0410                //    textcolor(prevCol);
+0411                }
+    \ 0134 a206                 ldx     #6
+    \ 0136 a007     `?L603`:    ldy     #7
+    \ 0138 4c....               jmp     _DeallocStackRestore
+    \ 013b a95d     `?L259`:    lda     #93
+    \ 013d 85..                 sta     zp:_Zp+1
+    \ 013f a5..                 lda     zp:_Zp+28
+    \ 0141 20....               jsr     `?L626`
+    \ 0144 a95d                 lda     #93
+    \ 0146 85..                 sta     zp:_Zp+1
+    \ 0148 a5..                 lda     zp:_Zp+28
+    \ 014a 85..                 sta     zp:_Zp
+    \ 014c a5..                 lda     zp:_Zp+25
+    \ 014e 20....               jsr     cputcxy
+    \ 0151 4c....               jmp     `?L593`
+    \ 0154 a940     `?L255`:    lda     #64
+    \ 0156 85..                 sta     zp:_Zp+1
+    \ 0158 a5..                 lda     zp:_Zp+26
+    \ 015a 20....               jsr     `?L633`
+    \ 015d a940                 lda     #64
+    \ 015f 85..                 sta     zp:_Zp+1
+    \ 0161 a5..                 lda     zp:_Zp+24
+    \ 0163 20....               jsr     `?L633`
+    \ 0166 e6..                 inc     zp:_Zp+28
+    \ 0168 4c....               jmp     `?L256`
+0412
+0413                unsigned char messagebox(unsigned char mode, char* message, char* message2,
+0414                                         char* message3, long n)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public messagebox
+    \ 0000          messagebox:
+    \ 0000 20....               jsr     `?L647`
+    \ 0003 85..                 sta     zp:_Zp+30
+    \ 0005 20....               jsr     `?L645`
+    \ 0008 a5..                 lda     zp:_Zp+2
+    \ 000a 85..                 sta     zp:_Zp+26
+    \ 000c a5..                 lda     zp:_Zp+3
+    \ 000e 85..                 sta     zp:_Zp+27
+    \ 0010 a5..                 lda     zp:_Zp+4
+    \ 0012 85..                 sta     zp:_Zp+24
+    \ 0014 a5..                 lda     zp:_Zp+5
+    \ 0016 85..                 sta     zp:_Zp+25
+0415                  unsigned char clear = 1;
+    \ 0018 a901                 lda     #1
+    \ 001a 85..                 sta     zp:_Zp+5
+0416                  unsigned char shadow = 1;
+    \ 001c 85..                 sta     zp:_Zp+6
+0417                  char c;
+0418                  unsigned char x;
+0419
+0420                  mcbox(10, 4, 70, 12, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+    \ 001e 85..                 sta     zp:_Zp+4
+    \ 0020 a903                 lda     #3
+    \ 0022 85..                 sta     zp:_Zp+3
+    \ 0024 a90c                 lda     #12
+    \ 0026 85..                 sta     zp:_Zp+2
+    \ 0028 a946                 lda     #70
+    \ 002a 85..                 sta     zp:_Zp+1
+    \ 002c a904                 lda     #4
+    \ 002e 85..                 sta     zp:_Zp
+    \ 0030 a90a                 lda     #10
+    \ 0032 20....               jsr     mcbox
+0421                  
+0422                  revers(1);
+    \ 0035 a901                 lda     #1
+    \ 0037 20....               jsr     revers
+    \ 003a a9..                 lda     #.byte0 `_StringLiteral_ Midnight Mega `
+    \ 003c 85..                 sta     zp:_Zp
+    \ 003e a9..                 lda     #.byte1 `_StringLiteral_ Midnight Mega `
+    \ 0040 20....               jsr     `?L604`
+    \ 0043 a904                 lda     #4
+    \ 0045 85..                 sta     zp:_Zp
+    \ 0047 a90e                 lda     #14
+    \ 0049 20....               jsr     cputsxy
+    \ 004c a9..                 lda     #.byte0 `_StringLiteral_ The MEGA65 file commander `
+    \ 004e 85..                 sta     zp:_Zp
+    \ 0050 a9..                 lda     #.byte1 `_StringLiteral_ The MEGA65 file commander `
+    \ 0052 20....               jsr     `?L604`
+    \ 0055 a904                 lda     #4
+    \ 0057 85..                 sta     zp:_Zp
+    \ 0059 a928                 lda     #40
+    \ 005b 20....               jsr     `?L635`
+    \ 005e 20....               jsr     `?L643`
+    \ 0061 20....               jsr     `?L604`
+    \ 0064 a906                 lda     #6
+    \ 0066 20....               jsr     `?L611`
+    \ 0069 a5..                 lda     zp:_Zp+26
+    \ 006b 85..                 sta     zp:_Zp
+    \ 006d a5..                 lda     zp:_Zp+27
+    \ 006f 20....               jsr     `?L604`
+    \ 0072 a907                 lda     #7
+    \ 0074 20....               jsr     `?L611`
+    \ 0077 20....               jsr     `?L613`
+    \ 007a 20....               jsr     `?L604`
+    \ 007d a908                 lda     #8
+    \ 007f 20....               jsr     `?L611`
+0423                  mcputsxy(14, 4, " Midnight Mega ");
+0424                  mcputsxy(40, 4, " The MEGA65 file commander ");
+0425                  revers(0);
+0426
+0427                  mcputsxy(12, 6, message);
+0428                  mcputsxy(12, 7, message2);
+0429                  mcputsxy(12, 8, message3);
+0430                  if (mode == MBOXNUMBER)  {
+    \ 0082 a303                 ldz     #3
+    \ 0084 d4..                 cpz     zp:_Zp+30
+    \ 0086 d015                 bne     `?L274`
+0431                    mh4printf("=", n);
+    \ 0088 a307                 ldz     #7
+    \ 008a 4242b2..             ldq     (_Vsp),z
+    \ 008e 424285..             stq     zp:_Zp+4
+    \ 0092 a9..                 lda     #.byte0 `_StringLiteral_=`
+    \ 0094 85..                 sta     zp:_Zp
+    \ 0096 a9..                 lda     #.byte1 `_StringLiteral_=`
+    \ 0098 85..                 sta     zp:_Zp+1
+    \ 009a 20....               jsr     mh4printf
+    \ 009d          `?L274`:
+0432                  }
+0433
+0434                  revers(1);
+    \ 009d a901                 lda     #1
+    \ 009f 20....               jsr     revers
+0435                  if (mode == MBOXNOCANCEL)  {
+    \ 00a2 a304                 ldz     #4
+    \ 00a4 d4..                 cpz     zp:_Zp+30
+    \ 00a6 d006                 bne     `?L276`
+0436                    x = 37;
+    \ 00a8 a925                 lda     #37
+    \ 00aa 85..                 sta     zp:_Zp+24
+    \ 00ac 8010                 bra     `?L361`
+    \ 00ae          `?L276`:
+0437                  } else {
+0438                    x = 12;
+    \ 00ae a90c                 lda     #12
+    \ 00b0 85..                 sta     zp:_Zp+24
+    \ 00b2 a9..                 lda     #.byte0 `_StringLiteral_ Cancel `
+    \ 00b4 85..                 sta     zp:_Zp
+    \ 00b6 a9..                 lda     #.byte1 `_StringLiteral_ Cancel `
+    \ 00b8 20....               jsr     `?L604`
+    \ 00bb 20....               jsr     `?L634`
+    \ 00be          `?L361`:
+    \ 00be a9..                 lda     #.byte0 `_StringLiteral_   OK   `
+    \ 00c0 85..                 sta     zp:_Zp
+    \ 00c2 a9..                 lda     #.byte1 `_StringLiteral_   OK   `
+    \ 00c4 20....               jsr     `?L604`
+    \ 00c7 a90a                 lda     #10
+    \ 00c9 85..                 sta     zp:_Zp
+    \ 00cb a5..                 lda     zp:_Zp+24
+    \ 00cd 20....               jsr     `?L635`
+0439                    mcputsxy(60, 10, " Cancel ");
+0440                  }
+0441                  mcputsxy( x, 10, "   OK   ");
+0442                  revers(0);
+0443                //  gotoxy(1, 10);
+0444                  if (mode == MBOXVERSION)  {
+    \ 00d0 ab....               ldz     _Zp+30
+    \ 00d3 3b                   dez
+    \ 00d4 d024                 bne     `?L280`
+    \ 00d6 a9..                 lda     #.byte0 `_StringLiteral_v0.6.6-beta`
+    \ 00d8 85..                 sta     zp:_Zp
+    \ 00da a9..                 lda     #.byte1 `_StringLiteral_v0.6.6-beta`
+    \ 00dc 20....               jsr     `?L604`
+    \ 00df a901                 lda     #1
+    \ 00e1 85..                 sta     zp:_Zp
+    \ 00e3 a902                 lda     #2
+    \ 00e5 20....               jsr     cputsxy
+    \ 00e8 a9..                 lda     #.byte0 `_StringLiteral_github.com/nobruinfo`
+    \ 00ea 85..                 sta     zp:_Zp
+    \ 00ec a9..                 lda     #.byte1 `_StringLiteral_github.com/nobruinfo`
+    \ 00ee 20....               jsr     `?L604`
+    \ 00f1 a901                 lda     #1
+    \ 00f3 85..                 sta     zp:_Zp
+    \ 00f5 a93a                 lda     #58
+    \ 00f7 20....               jsr     cputsxy
+    \ 00fa          `?L280`:
+0445                    mcputsxy(2, 1, VERSION);
+0446                    mcputsxy(58, 1, "github.com/nobruinfo");
+0447                  }
+0448                  
+0449                  if (mode != MBOXFALLTHROUGH)  {
+    \ 00fa a202                 ldx     #2
+    \ 00fc e4..                 cpx     zp:_Zp+30
+    \ 00fe f019                 beq     `?L283`
+    \ 0100          `?L287`:
+0450                    while(1)  {
+0451                      c = cgetc();
+    \ 0100 20....               jsr     cgetc
+0452                      switch (c) {
+    \ 0103 c903                 cmp     #3
+    \ 0105 f00e                 beq     `?L291`
+    \ 0107 c90d                 cmp     #13
+    \ 0109 f006                 beq     `?L293`
+    \ 010b c91b                 cmp     #27
+    \ 010d f006                 beq     `?L291`
+    \ 010f 80ef                 bra     `?L287`
+    \ 0111          `?L293`:
+0453                        case 13: // RETURN
+0454                          return TRUE;
+    \ 0111 a901                 lda     #1
+    \ 0113 8006                 bra     `?L272`
+    \ 0115          `?L291`:
+0455                        break;
+0456
+0457                        case 3:  // STOP
+0458                        case 27: // Esc
+0459                          return FALSE;
+    \ 0115 a900                 lda     #0
+    \ 0117 8002                 bra     `?L272`
+    \ 0119          `?L283`:
+0460                        break;
+0461
+0462                        default:
+0463                //          mprintf("val=", c);
+0464                //          cputc(' ');
+0465                        break;
+0466                      }
+0467                    }
+0468                  }
+0469                  return TRUE;
+    \ 0119 a901                 lda     #1
+    \ 011b          `?L272`:
+0470                }
+    \ 011b 4c....               jmp     `?L302`
+0471
+0472                unsigned char valuesbox(unsigned char mode, char* message, char* message2, long val2,
+0473                                        char* message3, long val3)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public valuesbox
+    \ 0000          valuesbox:
+    \ 0000 20....               jsr     `?L647`
+    \ 0003 85..                 sta     zp:_Zp+8
+    \ 0005 a5..                 lda     zp:_Zp+2
+    \ 0007 85..                 sta     zp:_Zp+28
+    \ 0009 a5..                 lda     zp:_Zp+3
+    \ 000b 85..                 sta     zp:_Zp+29
+    \ 000d 4242a5..             ldq     zp:_Zp+4
+    \ 0011 424285..             stq     zp:_Zp+24
+0474                  unsigned char ret = messagebox(mode, message, " ", " ", 0);
+    \ 0015 20....               jsr     `?L614`
+    \ 0018 a9..                 lda     #.byte0 `_StringLiteral_ `
+    \ 001a 85..                 sta     zp:_Zp+4
+    \ 001c a9..                 lda     #.byte1 `_StringLiteral_ `
+    \ 001e 85..                 sta     zp:_Zp+5
+    \ 0020 a9..                 lda     #.byte0 `_StringLiteral_ `
+    \ 0022 85..                 sta     zp:_Zp+2
+    \ 0024 a9..                 lda     #.byte1 `_StringLiteral_ `
+    \ 0026 85..                 sta     zp:_Zp+3
+    \ 0028 a5..                 lda     zp:_Zp+8
+    \ 002a 20....               jsr     `?L637`
+    \ 002d 85..                 sta     zp:_Zp+30
+0475                  gotoxy(12, 7);
+    \ 002f a907                 lda     #7
+    \ 0031 20....               jsr     `?L627`
+0476                  mprintf(message2, val2);
+    \ 0034 4242a5..             ldq     zp:_Zp+24
+    \ 0038 424285..             stq     zp:_Zp+4
+    \ 003c 20....               jsr     `?L643`
+    \ 003f 20....               jsr     `?L648`
+0477                  gotoxy(12, 8);
+    \ 0042 a908                 lda     #8
+    \ 0044 20....               jsr     `?L627`
+0478                  mprintf(message3, val3);
+    \ 0047 a309                 ldz     #9
+    \ 0049 4242b2..             ldq     (_Vsp),z
+    \ 004d 424285..             stq     zp:_Zp+4
+    \ 0051 a007                 ldy     #7
+    \ 0053 b1..                 lda     (_Vsp),y
+    \ 0055 85..                 sta     zp:_Zp
+    \ 0057 c8                   iny
+    \ 0058 b1..                 lda     (_Vsp),y
+    \ 005a 20....               jsr     `?L648`
+0479                  cgetc();
+    \ 005d 20....               jsr     cgetc
+0480                  return ret;
+    \ 0060 a5..                 lda     zp:_Zp+30
+    \ 0062          `?L302`:
+0481                }
+    \ 0062 a006                 ldy     #6
+    \ 0064 4c....               jmp     _RestoreRegisters
+0482
+0483                // used to be put over previously printed messagebox:
+0484                void progress(char* message, char* message2, unsigned char progresspercent)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public progress
+    \ 0000 a2fc     progress:   ldx     #252
+    \ 0002 a004                 ldy     #4
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 85..                 sta     zp:_Zp+28
+    \ 0009 a5..                 lda     zp:_Zp
+    \ 000b 85..                 sta     zp:_Zp+26
+    \ 000d a5..                 lda     zp:_Zp+1
+    \ 000f 85..                 sta     zp:_Zp+27
+    \ 0011 a5..                 lda     zp:_Zp+2
+    \ 0013 85..                 sta     zp:_Zp+24
+    \ 0015 a5..                 lda     zp:_Zp+3
+    \ 0017 85..                 sta     zp:_Zp+25
+0485                  unsigned char i;
+0486
+0487                  //        left top right bottom  to clear out previous box contents
+0488                  RECT rc = { 12, 6, 68, 8 };
+    \ 0019 a90c                 lda     #12
+    \ 001b a000                 ldy     #0
+    \ 001d 91..                 sta     (_Vsp),y
+    \ 001f a906                 lda     #6
+    \ 0021 c8                   iny
+    \ 0022 91..                 sta     (_Vsp),y
+    \ 0024 a944                 lda     #68
+    \ 0026 c8                   iny
+    \ 0027 91..                 sta     (_Vsp),y
+    \ 0029 a908                 lda     #8
+    \ 002b c8                   iny
+    \ 002c 91..                 sta     (_Vsp),y
+0489                  fillrect(&rc, ' ', COLOUR_CYAN);
+    \ 002e a903                 lda     #3
+    \ 0030 20....               jsr     `?L619`
+    \ 0033 a5..                 lda     zp:_Zp+26
+    \ 0035 85..                 sta     zp:_Zp
+    \ 0037 a5..                 lda     zp:_Zp+27
+    \ 0039 20....               jsr     `?L604`
+    \ 003c a906                 lda     #6
+    \ 003e 20....               jsr     `?L611`
+    \ 0041 20....               jsr     `?L613`
+    \ 0044 20....               jsr     `?L604`
+    \ 0047 a907                 lda     #7
+    \ 0049 20....               jsr     `?L611`
+0490
+0491                  mcputsxy(12, 6, message);
+0492                  mcputsxy(12, 7, message2);
+0493                  cputcxy(12, 9, 0xa0); // filled space
+    \ 004c a9a0                 lda     #-96
+    \ 004e 85..                 sta     zp:_Zp+1
+    \ 0050 a909                 lda     #9
+    \ 0052 85..                 sta     zp:_Zp
+    \ 0054 a90c                 lda     #12
+    \ 0056 20....               jsr     cputcxy
+0494                  for (i = 0; i < 50; i++)  {
+    \ 0059 a900                 lda     #0
+    \ 005b 85..                 sta     zp:_Zp+24
+    \ 005d          `?L308`:
+    \ 005d ab....               ldz     _Zp+24
+    \ 0060 c232                 cpz     #50
+    \ 0062 9040                 bcc     `?L307`
+0495                    if (progresspercent / 2 > i)  {
+0496                      cputc(0xa0); // filled space
+0497                    } else {
+0498                      cputc(0x7b); // '. '
+0499                    }
+0500                  }
+0501                  cputc(0x65); // '| '
+    \ 0064 a965                 lda     #101
+    \ 0066 20....               jsr     cputc
+0502                  mprintf(" ", progresspercent);
+    \ 0069 a6..                 ldx     zp:_Zp+28
+    \ 006b 86..                 stx     zp:_Zp+4
+    \ 006d a900                 lda     #0
+    \ 006f 85..                 sta     zp:_Zp+5
+    \ 0071 85..                 sta     zp:_Zp+6
+    \ 0073 85..                 sta     zp:_Zp+7
+    \ 0075 a9..                 lda     #.byte0 `_StringLiteral_ `
+    \ 0077 85..                 sta     zp:_Zp
+    \ 0079 a9..                 lda     #.byte1 `_StringLiteral_ `
+    \ 007b 20....               jsr     `?L648`
+0503                  cputc('%');
+    \ 007e a925                 lda     #37
+    \ 0080 20....               jsr     cputc
+    \ 0083 a9..                 lda     #.byte0 `_StringLiteral_        `
+    \ 0085 85..                 sta     zp:_Zp
+    \ 0087 a9..                 lda     #.byte1 `_StringLiteral_        `
+    \ 0089 20....               jsr     `?L604`
+    \ 008c a90a                 lda     #10
+    \ 008e 20....               jsr     `?L611`
+    \ 0091 a9..                 lda     #.byte0 `_StringLiteral_        `
+    \ 0093 85..                 sta     zp:_Zp
+    \ 0095 a9..                 lda     #.byte1 `_StringLiteral_        `
+    \ 0097 20....               jsr     `?L604`
+    \ 009a 20....               jsr     `?L634`
+0504
+0505                  mcputsxy(12, 10, "        ");
+0506                  mcputsxy(60, 10, "        ");
+0507                }
+    \ 009d a204                 ldx     #4
+    \ 009f a004                 ldy     #4
+    \ 00a1 4c....               jmp     _DeallocStackRestore
+    \ 00a4          `?L307`:
+    \ 00a4 ab....               ldz     _Zp+24
+    \ 00a7 a5..                 lda     zp:_Zp+28
+    \ 00a9 85..                 sta     zp:_Zp
+    \ 00ab 46..                 lsr     zp:_Zp
+    \ 00ad d4..                 cpz     zp:_Zp
+    \ 00af b004                 bcs     `?L311`
+    \ 00b1 a9a0                 lda     #-96
+    \ 00b3 8002                 bra     `?L596`
+    \ 00b5 a97b     `?L311`:    lda     #123
+    \ 00b7          `?L596`:
+    \ 00b7 20....               jsr     cputc
+    \ 00ba e6..                 inc     zp:_Zp+24
+    \ 00bc 809f                 bra     `?L308`
+0508
+0509                char* inputbox(char* inputstr, char* message)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public inputbox
+    \ 0000          inputbox:
+    \ 0000 20....               jsr     `?L646`
+    \ 0003 a5..                 lda     zp:_Zp
+    \ 0005 85..                 sta     zp:_Zp+24
+    \ 0007 a5..                 lda     zp:_Zp+1
+    \ 0009 85..                 sta     zp:_Zp+25
+    \ 000b a5..                 lda     zp:_Zp+2
+    \ 000d 85..                 sta     zp:_Zp+6
+    \ 000f a5..                 lda     zp:_Zp+3
+    \ 0011 85..                 sta     zp:_Zp+7
+0510                  messagebox(2, message, "", "", 0);
+    \ 0013 20....               jsr     `?L614`
+    \ 0016 a9..                 lda     #.byte0 _StringLiteral_
+    \ 0018 85..                 sta     zp:_Zp+4
+    \ 001a a9..                 lda     #.byte1 _StringLiteral_
+    \ 001c 85..                 sta     zp:_Zp+5
+    \ 001e a9..                 lda     #.byte0 _StringLiteral_
+    \ 0020 85..                 sta     zp:_Zp+2
+    \ 0022 a9..                 lda     #.byte1 _StringLiteral_
+    \ 0024 85..                 sta     zp:_Zp+3
+    \ 0026 a5..                 lda     zp:_Zp+6
+    \ 0028 85..                 sta     zp:_Zp
+    \ 002a a5..                 lda     zp:_Zp+7
+    \ 002c 85..                 sta     zp:_Zp+1
+    \ 002e a902                 lda     #2
+    \ 0030 20....               jsr     `?L637`
+0511                  gotoxy(12, 8);
+    \ 0033 a908                 lda     #8
+    \ 0035 20....               jsr     `?L627`
+0512                  cinput2((unsigned char*) inputstr, 56, CINPUT_ACCEPT_ALL); // | CINPUT_NO_AUTOTRANSLATE);
+    \ 0038 a904                 lda     #4
+    \ 003a 85..                 sta     zp:_Zp+2
+    \ 003c 20....               jsr     `?L613`
+    \ 003f 85..                 sta     zp:_Zp+1
+    \ 0041 a938                 lda     #56
+    \ 0043 20....               jsr     cinput2
+0513
+0514                  gotoxy(1, 10);
+    \ 0046 a90a                 lda     #10
+    \ 0048 85..                 sta     zp:_Zp
+    \ 004a a901                 lda     #1
+    \ 004c 20....               jsr     gotoxy
+0515                  return inputstr;
+    \ 004f 20....               jsr     `?L613`
+    \ 0052 85..                 sta     zp:_Zp+1
+0516                }
+    \ 0054 a001                 ldy     #1
+    \ 0056 4c....               jmp     _RestoreRegisters
+    \ 0000                      .section code,text
+    \ 0000          `?L604`:
+    \ 0000 85..                 sta     zp:_Zp+1
+    \ 0002 20....               jsr     asciitoscreencode_s
+    \ 0005 a5..                 lda     zp:_Zp
+    \ 0007 85..                 sta     zp:_Zp+2
+    \ 0009 a5..                 lda     zp:_Zp+1
+    \ 000b 85..                 sta     zp:_Zp+3
+    \ 000d 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L606`:
+    \ 0000 a5..                 lda     zp:_Zp
+    \ 0002 85..                 sta     zp:_Zp+6
+    \ 0004 a5..                 lda     zp:_Zp+1
+    \ 0006 85..                 sta     zp:_Zp+7
+    \ 0008 18                   clc
+    \ 0009 a5..                 lda     zp:_Zp+6
+    \ 000b 65..                 adc     zp:_Zp+5
+    \ 000d 85..                 sta     zp:_Zp+6
+    \ 000f 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a200     `?L607`:    ldx     #0
+    \ 0002 a003                 ldy     #3
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 4242a5..             ldq     zp:_Zp+4
+    \ 000b 424285..             stq     zp:_Zp+24
+    \ 000f 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L609`:
+    \ 0000 4242a5..             ldq     zp:_Zp+16
+    \ 0004 424285..             stq     zp:_Zp
+    \ 0008 a90a                 lda     #10
+    \ 000a a200                 ldx     #0
+    \ 000c a000                 ldy     #0
+    \ 000e a300                 ldz     #0
+    \ 0010 424285..             stq     zp:_Zp+12
+    \ 0014 4c....               jmp     _DivMod32
+    \ 0000                      .section code,text
+    \ 0000          `?L610`:
+    \ 0000 ad....               lda     p2sbuf
+    \ 0003 85..                 sta     zp:_Zp
+    \ 0005 ad....               lda     p2sbuf+1
+    \ 0008 85..                 sta     zp:_Zp+1
+    \ 000a 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L611`:
+    \ 0000 85..                 sta     zp:_Zp
+    \ 0002 a90c                 lda     #12
+    \ 0004 4c....               jmp     cputsxy
+    \ 0000                      .section code,text
+    \ 0000          `?L612`:
+    \ 0000 85..                 sta     zp:_Zp+3
+    \ 0002 a5..                 lda     zp:_Zp
+    \ 0004 c5..                 cmp     zp:_Zp+2
+    \ 0006 a5..                 lda     zp:_Zp+1
+    \ 0008 e5..                 sbc     zp:_Zp+3
+    \ 000a 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L613`:
+    \ 0000 a5..                 lda     zp:_Zp+24
+    \ 0002 85..                 sta     zp:_Zp
+    \ 0004 a5..                 lda     zp:_Zp+25
+    \ 0006 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a9fc     `?L614`:    lda     #-4
+    \ 0002 20....               jsr     _DecVsp
+    \ 0005 a003                 ldy     #3
+    \ 0007 a900                 lda     #0
+    \ 0009 91..                 sta     (_Vsp),y
+    \ 000b 88                   dey
+    \ 000c 91..                 sta     (_Vsp),y
+    \ 000e 88                   dey
+    \ 000f 91..                 sta     (_Vsp),y
+    \ 0011 88                   dey
+    \ 0012 91..                 sta     (_Vsp),y
+    \ 0014 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a001     `?L616`:    ldy     #1
+    \ 0002 b1..                 lda     (_Vsp),y
+    \ 0004 85..                 sta     zp:_Zp+4
+    \ 0006 a900                 lda     #0
+    \ 0008 85..                 sta     zp:_Zp+5
+    \ 000a 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L617`:
+    \ 0000 20....               jsr     asciitoscreencode_s
+    \ 0003 4c....               jmp     cputs
+    \ 0000                      .section code,text
+    \ 0000          `?L619`:
+    \ 0000 85..                 sta     zp:_Zp+2
+    \ 0002 a5..                 lda     zp:_Vsp
+    \ 0004 85..                 sta     zp:_Zp
+    \ 0006 a5..                 lda     zp:_Vsp+1
+    \ 0008 85..                 sta     zp:_Zp+1
+    \ 000a a920                 lda     #32
+    \ 000c 4c....               jmp     fillrect
+    \ 0000                      .section code,text
+    \ 0000          `?L620`:
+    \ 0000 85..                 sta     zp:_Zp
+    \ 0002 a900                 lda     #0
+    \ 0004 85..                 sta     zp:_Zp+1
+    \ 0006 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L621`:
+    \ 0000 a6..                 ldx     zp:_Vsp
+    \ 0002 86..                 stx     zp:_Zp
+    \ 0004 a6..                 ldx     zp:_Vsp+1
+    \ 0006 86..                 stx     zp:_Zp+1
+    \ 0008 a5..                 lda     zp:_Zp+4
+    \ 000a c6..                 dec     zp:_Zp+4
+    \ 000c 4b                   taz
+    \ 000d 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L622`:
+    \ 0000 a6..                 ldx     zp:_Zp+24
+    \ 0002 86..                 stx     zp:_Zp
+    \ 0004 a900                 lda     #0
+    \ 0006 85..                 sta     zp:_Zp+1
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L623`:
+    \ 0000 85..                 sta     zp:_Zp+6
+    \ 0002 85..                 sta     zp:_Zp+7
+    \ 0004 4242a5..             ldq     zp:_Zp+4
+    \ 0008 18                   clc
+    \ 0009 424265..             adcq    zp:_Zp
+    \ 000d 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L624`:
+    \ 0000 424285..             stq     zp:_Zp
+    \ 0004 20....               jsr     lcopy
+    \ 0007 a001                 ldy     #1
+    \ 0009 4c....               jmp     _IncVsp
+    \ 0000                      .section code,text
+    \ 0000          `?L626`:
+    \ 0000 85..                 sta     zp:_Zp
+    \ 0002 a5..                 lda     zp:_Zp+30
+    \ 0004 4c....               jmp     cputcxy
+    \ 0000                      .section code,text
+    \ 0000          `?L627`:
+    \ 0000 85..                 sta     zp:_Zp
+    \ 0002 a90c                 lda     #12
+    \ 0004 4c....               jmp     gotoxy
+    \ 0000                      .section code,text
+    \ 0000          `?L628`:
+    \ 0000 20....               jsr     _AllocStackSave
+    \ 0003 85..                 sta     zp:_Zp+30
+    \ 0005 a5..                 lda     zp:_Zp
+    \ 0007 85..                 sta     zp:_Zp+26
+    \ 0009 a5..                 lda     zp:_Zp+1
+    \ 000b 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a901     `?L630`:    lda     #1
+    \ 0002 20....               jsr     moveleft
+    \ 0005 a920                 lda     #32
+    \ 0007 4c....               jmp     cputc
+    \ 0000                      .section code,text
+    \ 0000 a000     `?L632`:    ldy     #0
+    \ 0002 b1..                 lda     (_Zp+6),y
+    \ 0004 ab....               ldz     _Zp+5
+    \ 0007 92..                 sta     (_Zp+2),z
+    \ 0009 e6..                 inc     zp:_Zp+5
+    \ 000b 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L633`:
+    \ 0000 85..                 sta     zp:_Zp
+    \ 0002 a5..                 lda     zp:_Zp+28
+    \ 0004 18                   clc
+    \ 0005 65..                 adc     zp:_Zp+30
+    \ 0007 4c....               jmp     cputcxy
+    \ 0000                      .section code,text
+    \ 0000 a90a     `?L634`:    lda     #10
+    \ 0002 85..                 sta     zp:_Zp
+    \ 0004 a93c                 lda     #60
+    \ 0006 4c....               jmp     cputsxy
+    \ 0000                      .section code,text
+    \ 0000          `?L635`:
+    \ 0000 20....               jsr     cputsxy
+    \ 0003 a900                 lda     #0
+    \ 0005 4c....               jmp     revers
+    \ 0000                      .section code,text
+    \ 0000          `?L637`:
+    \ 0000 20....               jsr     messagebox
+    \ 0003 a003                 ldy     #3
+    \ 0005 4c....               jmp     _IncVsp
+    \ 0000                      .section code,text
+    \ 0000 38       `?L639`:    sec
+    \ 0001 4242e5..             sbcq    zp:_Zp
+    \ 0005 424285..             stq     zp:_Zp
+    \ 0009 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a200     `?L640`:    ldx     #0
+    \ 0002 a000                 ldy     #0
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 85..                 sta     zp:_Zp+24
+    \ 0009 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L642`:
+    \ 0000 ab....               ldz     _Zp+5
+    \ 0003 d4..                 cpz     zp:_Zp+4
+    \ 0005 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L643`:
+    \ 0000 a5..                 lda     zp:_Zp+28
+    \ 0002 85..                 sta     zp:_Zp
+    \ 0004 a5..                 lda     zp:_Zp+29
+    \ 0006 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L644`:
+    \ 0000 4242a5..             ldq     zp:_Zp
+    \ 0004 424285..             stq     zp:_Zp+16
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L645`:
+    \ 0000 a5..                 lda     zp:_Zp
+    \ 0002 85..                 sta     zp:_Zp+28
+    \ 0004 a5..                 lda     zp:_Zp+1
+    \ 0006 85..                 sta     zp:_Zp+29
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a200     `?L646`:    ldx     #0
+    \ 0002 a001                 ldy     #1
+    \ 0004 4c....               jmp     _AllocStackSave
+    \ 0000                      .section code,text
+    \ 0000 a200     `?L647`:    ldx     #0
+    \ 0002 a006                 ldy     #6
+    \ 0004 4c....               jmp     _AllocStackSave
+    \ 0000                      .section code,text
+    \ 0000          `?L648`:
+    \ 0000 85..                 sta     zp:_Zp+1
+    \ 0002 4c....               jmp     mprintf
+    \ 0000                      .section code,text
+    \ 0000          `?L649`:
+    \ 0000 85..                 sta     zp:_Zp+1
+    \ 0002 a5..                 lda     zp:_Zp+26
+    \ 0004 85..                 sta     zp:_Zp
+    \ 0006 a5..                 lda     zp:_Zp+25
+    \ 0008 60                   rts
+    \ 0000                      .section switch,rodata
+    \ 0000 0a00     `?L324`:    .word   10
+    \ 0002 ....                 .word   `?L136`-1
+    \ 0004 0800                 .word   8
+    \ 0006 ....                 .word   `?L144`-1
+    \ 0008 0900                 .word   9
+    \ 000a ....                 .word   `?L145`-1
+    \ 000c 0b00                 .word   11
+    \ 000e ....                 .word   `?L141`-1
+    \ 0010 0c00                 .word   12
+    \ 0012 ....                 .word   `?L140`-1
+    \ 0014 1200                 .word   18
+    \ 0016 ....                 .word   `?L147`-1
+    \ 0018 8200                 .word   130
+    \ 001a ....                 .word   `?L143`-1
+    \ 001c 8400                 .word   132
+    \ 001e ....                 .word   `?L142`-1
+    \ 0020 9200                 .word   146
+    \ 0022 ....                 .word   `?L146`-1
+    \ 0024 9700                 .word   151
+    \ 0026 ....                 .word   `?L139`-1
+    \ 0028 9a00                 .word   154
+    \ 002a ....                 .word   `?L138`-1
+    \ 002c 9f00                 .word   159
+    \ 002e ....                 .word   `?L137`-1
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak _StringLiteral_
+    \ 0000          _StringLiteral_:
+    \ 0000 00                   .byte   0
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_ `
+    \ 0000          `_StringLiteral_ `:
+    \ 0000 2000                 .byte   32,0
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_        `
+    \ 0000          `_StringLiteral_        `:
+    \ 0000 20202020             .byte   32,32,32,32,32,32,32,32,0
+    \ 0004 20202020
+    \ 0008 00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_   OK   `
+    \ 0000          `_StringLiteral_   OK   `:
+    \ 0000 2020204f             .byte   32,32,32,79,75,32,32,32,0
+    \ 0004 4b202020
+    \ 0008 00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_ Cancel `
+    \ 0000          `_StringLiteral_ Cancel `:
+    \ 0000 2043616e             .byte   32,67,97,110,99,101,108,32,0
+    \ 0004 63656c20
+    \ 0008 00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_ Midnight Mega `
+    \ 0000          `_StringLiteral_ Midnight Mega `:
+    \ 0000 204d6964             .byte   32,77,105,100,110,105,103,104,116,32,77,101,103,97,32,0
+    \ 0004 6e696768
+    \ 0008 74204d65
+    \ 000c 67612000
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_ The MEGA65 file commander `
+    \ 0000          `_StringLiteral_ The MEGA65 file commander `:
+    \ 0000 20546865             .byte   32,84,104,101,32,77,69,71,65,54,53,32,102,105,108,101,32,99,111,109,109,97,110,100,101,114,32,0
+    \ 0004 204d4547
+    \ 0008 41363520
+    \ 000c 66696c65
+    \ 0010 20636f6d
+    \ 0014 6d616e64
+    \ 0018 65722000
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_=`
+    \ 0000          `_StringLiteral_=`:
+    \ 0000 3d00                 .byte   61,0
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_github.com/nobruinfo`
+    \ 0000          `_StringLiteral_github.com/nobruinfo`:
+    \ 0000 67697468             .byte   103,105,116,104,117,98,46,99,111,109,47,110,111,98,114,117,105,110,102,111,0
+    \ 0004 75622e63
+    \ 0008 6f6d2f6e
+    \ 000c 6f627275
+    \ 0010 696e666f
+    \ 0014 00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_v0.6.6-beta`
+    \ 0000          `_StringLiteral_v0.6.6-beta`:
+    \ 0000 76302e36             .byte   118,48,46,54,46,54,45,98,101,116,97,0
+    \ 0004 2e362d62
+    \ 0008 65746100
+
+##########################
+#                        #
+# Memory sizes (decimal) #
+#                        #
+##########################
+
+Executable  (Text): 2816 bytes
+Data              :    2 bytes
+Constant          :  157 bytes

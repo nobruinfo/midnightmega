@@ -1,10 +1,10 @@
-versions for Midnight Mega v0.6.5-beta
+versions for Midnight Mega v0.6.6-beta
 
 c1541 (VICE 3.8)
 
 petcat (VICE 3.8)
 
-version: 20241109.10-22mega-163e656
+version: 20250718.15-develo-731f9ce
 
 clang version 20.0.0git (https://github.com/llvm-mos/llvm-mos 53d247613243fefde9e012b318052bd379aefb14)
 Target: mos
