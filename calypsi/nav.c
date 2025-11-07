@@ -69,6 +69,19 @@ void listbox(unsigned char iscurrent, unsigned char side,
     else                                    textcolor(COLOUR_CYAN);
     if ((n + ofs == currentitem) && iscurrent)  revers(1);
     else  revers(0);
+    /* new colour scheme for Deft's can't del DEL:
+    if ((direntflags[side][n + ofs].flags & DIRFLAGSisselected) ||
+        ((n + ofs == currentitem) && iscurrent))  {
+      revers(1);
+    } else {
+      revers(0);
+    }
+    if (direntflags[side][n + ofs].flags & DIRFLAGSisselected)  {
+      if ((n + ofs == currentitem) && iscurrent)  textcolor(COLOUR_GREY2);
+      else                                        textcolor(COLOUR_YELLOW);
+    } else if (ds->type == VAL_DOSFTYPE_DEL)  textcolor(COLOUR_GREY2);
+    else                                      textcolor(COLOUR_CYAN);
+    */
     cputsxy(x, y + n, s);  // print what we've got so far
     // i = i + sprintf((char*) &s[i], "%4d", ds->size);
     if (ds->size > 0)  {
@@ -637,7 +650,7 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
   unsigned char sethyppo;  // failures set "storage selection dirent mode"
 
   midnight[side]->flags &= (~MIDNIGHTFLAGdirsortactive);
-
+  
   if (midnight[side]->flags & MIDNIGHTFLAGismounted)  {
     // This would actually only have to be done once for both drives:
     hyppo_get_proc_desc();
@@ -790,6 +803,14 @@ messagebox(MBOXNUMBER, "after legacy()",
     midnight[i]->lasttrack = LASTTRACK;
     midnight[i]->pos = 0;
     midnight[i]->flags |= MIDNIGHTFLAGismounted;
+
+    // Momentary fix for Deft's no .d81 in drv 1 must show no error:
+    if ((i == 1) && !legacyHDOSstate &&
+        (midnight[i]->flags & MIDNIGHTFLAGismounted) &&
+        (PEEK(0xd68b) & D68B_IMG1) == 0)  {
+      midnight[i]->flags &= (~MIDNIGHTFLAGismounted);
+    }
+
     messagebox(MBOXFALLTHROUGH, " ", " ", " ", 0);
     progress("Initialising...", "reading disk drives", i * 40 + 40);
     UpdateSectors(midnight[i]->drive, i);

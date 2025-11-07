@@ -26,6 +26,7 @@ SET D81INTRO=D:\Game Collections\C64\Mega65\disks unsorted\Intro\2025 INTRO4\ALL
 SET D81FNX=D:\Game Collections\C64\FNX1591\disks
 SET D81C64=D:\Eigene Programme\Emulatoren-Zusatzdateien\Eigene Programme
 SET D81MM=F:\Entwicklungsprojekte\github-nobru\midnightmega\llvm
+SET D81MMcalypsi=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi
 SET CORE=D:\Game Collections\C64\Mega65\core\CORE
 SET ESSENTIALS=D:\Game Collections\C64\Mega65\core\sdcardfiles
 SET INTRODEST=INTRO
@@ -55,6 +56,7 @@ echo (e) populate "essentials"
 echo (h) show ftp command list
 echo (c) execute ftp dir command
 echo (l) put latest Midnight Mega
+echo (k) put latest Midnight Mega Calypsi
 echo (s) change destination ethernet/Xemu
 echo (t) test
 echo (r) populate "ROMS"
@@ -62,14 +64,15 @@ echo (0) do stuff manually in DESTRUCTIVE mode
 echo (1) make a screenshot
 echo (q) quit
 echo ==========================
-choice /c mdif6oaehclstr01q /n /m "Type key of option to be executed: "
+choice /c mdif6oaehclkstr01q /n /m "Type key of option to be executed: "
 
-if errorlevel 17 goto end
-if errorlevel 16 goto screenshot
-if errorlevel 15 goto dopromptdestructive
-if errorlevel 14 goto roms
-if errorlevel 13 goto test
-if errorlevel 12 goto doswap
+if errorlevel 18 goto end
+if errorlevel 17 goto screenshot
+if errorlevel 16 goto dopromptdestructive
+if errorlevel 15 goto roms
+if errorlevel 14 goto test
+if errorlevel 13 goto doswap
+if errorlevel 12 goto mmputcalypsi
 if errorlevel 11 goto mmput
 if errorlevel 10 goto dodir
 if errorlevel 9 goto dohelp
@@ -396,6 +399,14 @@ goto menu
 :mmput
 title MEGA65_FTP put Midnight Mega files
 CD /D "%D81MM%"
+"%MFTP%" %DEST% -c "put MIDNIGHTMEGA.D81 MIDNIGHT.D81"
+"%MFTP%" %DEST% -c "put DATADISK.D81"
+pause
+goto menu
+
+:mmputcalypsi
+title MEGA65_FTP put Midnight Mega files
+CD /D "%D81MMcalypsi%"
 "%MFTP%" %DEST% -c "put MIDNIGHTMEGA.D81 MIDNIGHT.D81"
 "%MFTP%" %DEST% -c "put DATADISK.D81"
 pause

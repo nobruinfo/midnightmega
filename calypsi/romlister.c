@@ -20,10 +20,10 @@ int main() {
 //  unsigned char majorHDOS;
 //  unsigned char minorHDOS;
 
+  setscreensize(80, 25);
+
   conioinit();
   // ASCII lowercase is in conioinit()
-  
-  setscreensize(80, 25);
 
   clrhome();
   textcolor (COLOUR_CYAN);

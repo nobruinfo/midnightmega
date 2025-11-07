@@ -122,6 +122,9 @@ unsigned char gethyppodirent(unsigned char drive, unsigned char side,
                              unsigned char maxentries);
 void hyppo_reset(void);
 void hyppo_freeze_self(void);
-void hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
-                      unsigned char * majorHDOS,  unsigned char * minorHDOS);
-// void hyppo_getversion(void);
+// unsigned char hyppo_getversion(unsigned char * majorhyppo, unsigned char * minorhyppo,
+//                                unsigned char * majorHDOS,  unsigned char * minorHDOS);
+unsigned char hyppo_getversion_majorhyppo(void);
+unsigned char hyppo_getversion_minorhyppo(void);
+unsigned char hyppo_getversion_majorHDOS(void);
+unsigned char hyppo_getversion_minorHDOS(void);

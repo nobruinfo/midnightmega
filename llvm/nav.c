@@ -69,6 +69,19 @@ void listbox(unsigned char iscurrent, unsigned char side,
     else                                    textcolor(COLOUR_CYAN);
     if ((n + ofs == currentitem) && iscurrent)  revers(1);
     else  revers(0);
+    /* new colour scheme for Deft's can't del DEL:
+    if ((direntflags[side][n + ofs].flags & DIRFLAGSisselected) ||
+        ((n + ofs == currentitem) && iscurrent))  {
+      revers(1);
+    } else {
+      revers(0);
+    }
+    if (direntflags[side][n + ofs].flags & DIRFLAGSisselected)  {
+      if ((n + ofs == currentitem) && iscurrent)  textcolor(COLOUR_GREY2);
+      else                                        textcolor(COLOUR_YELLOW);
+    } else if (ds->type == VAL_DOSFTYPE_DEL)  textcolor(COLOUR_GREY2);
+    else                                      textcolor(COLOUR_CYAN);
+    */
     cputsxy(x, y + n, s);  // print what we've got so far
     // i = i + sprintf((char*) &s[i], "%4d", ds->size);
     if (ds->size > 0)  {
@@ -558,14 +571,14 @@ unsigned char helpbox()  {
 
 // This uses $1703 so has to be called off usage of this memory:
 unsigned char legacyHDOS()  {
-  unsigned char majorhyppo;
-  unsigned char minorhyppo;
-  unsigned char majorHDOS;
-  unsigned char minorHDOS;
+//  unsigned char majorhyppo;
+//  unsigned char minorhyppo;
+//  unsigned char majorHDOS;
+//  unsigned char minorHDOS;
 
-  hyppo_getversion(&majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
-  if ((((majorhyppo * 100) + minorhyppo) < 102) ||
-      (((majorHDOS * 100) + minorHDOS) < 103))  return TRUE;
+//  minorHDOS = hyppo_getversion(&majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
+  if ((((hyppo_getversion_majorhyppo() * 100) + hyppo_getversion_minorhyppo()) < 102) ||
+      (((hyppo_getversion_majorHDOS() * 100) + hyppo_getversion_minorHDOS()) < 103))  return TRUE;
   else return FALSE;
 }
 
@@ -637,7 +650,7 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
   unsigned char sethyppo;  // failures set "storage selection dirent mode"
 
   midnight[side]->flags &= (~MIDNIGHTFLAGdirsortactive);
-
+  
   if (midnight[side]->flags & MIDNIGHTFLAGismounted)  {
     // This would actually only have to be done once for both drives:
     hyppo_get_proc_desc();
@@ -790,6 +803,14 @@ messagebox(MBOXNUMBER, "after legacy()",
     midnight[i]->lasttrack = LASTTRACK;
     midnight[i]->pos = 0;
     midnight[i]->flags |= MIDNIGHTFLAGismounted;
+
+    // Momentary fix for Deft's no .d81 in drv 1 must show no error:
+    if ((i == 1) && !legacyHDOSstate &&
+        (midnight[i]->flags & MIDNIGHTFLAGismounted) &&
+        (PEEK(0xd68b) & D68B_IMG1) == 0)  {
+      midnight[i]->flags &= (~MIDNIGHTFLAGismounted);
+    }
+
     messagebox(MBOXFALLTHROUGH, " ", " ", " ", 0);
     progress("Initialising...", "reading disk drives", i * 40 + 40);
     UpdateSectors(midnight[i]->drive, i);
@@ -1329,7 +1350,7 @@ messagebox(MBOXNUMBER, "after legacy()",
           }
         }
       break;
-
+#ifdef FULLFEATURES
       case 0x8f6: // Mega-F5
         if (((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE) ||
             ((midnight[side?0:1]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
@@ -1464,7 +1485,7 @@ messagebox(MBOXNUMBER, "after legacy()",
       case 0x8fa: // Mega-F9
         rombox();
       break;
-
+#endif
       case 0xf9:
         shortcuts(20, 0);
         if (menubox(side))  {
@@ -1620,7 +1641,7 @@ messagebox(MBOXNUMBER, "after legacy()",
           }
         }
       break;
-
+#ifdef FULLFEATURES
       case 0x1f: // HELP
       case 0xf1: // unused F keys
       case 0x1f1:
@@ -1628,7 +1649,7 @@ messagebox(MBOXNUMBER, "after legacy()",
         shortcuts(20, 0);
         helpbox();
       break;
-
+#endif
       case 0xf3:
       case 0x1f3:
       case 0x2f3:

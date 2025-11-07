@@ -1583,6 +1583,8 @@ void swapdirententry(unsigned char side, unsigned int entry1,
   ds = &readdir_dirent->direntryblock[0];
   dstemp = &readdir_dirent->direntryblock[1];
 
+  // These two loops are to search/skip non-del items until the entry 
+  // matches:
   for (i1 = 0, pos = 0; i1 < max; i1++)  {
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
     lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i1 * DIRENTSIZE,
@@ -1613,17 +1615,18 @@ void swapdirententry(unsigned char side, unsigned int entry1,
     }
   }
 
-  // Temporarily dump first dirent into data block not in use:
-  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i1 * DIRENTSIZE,
-        (uint32_t) dstemp, DIRENTSIZE);
+  // Temporarily dump first dirent into data block not in use. From v0.6.6
+  // this is leaving the first two bytes alone which are the blockchain:
+  lcopy((ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i1 * DIRENTSIZE) + 2,
+        (uint32_t) dstemp, DIRENTSIZE - 2);
   // Copy second one in first:
-  lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i2 * DIRENTSIZE,
-        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i1 * DIRENTSIZE,
-        DIRENTSIZE);
+  lcopy((ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i2 * DIRENTSIZE) + 2,
+        (ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i1 * DIRENTSIZE) + 2,
+        DIRENTSIZE - 2);
   // Now temporary in second:
   lcopy((uint32_t) dstemp,
-        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i2 * DIRENTSIZE,
-        DIRENTSIZE);
+        (ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i2 * DIRENTSIZE) + 2,
+        DIRENTSIZE - 2);
 
 //  cgetc();
 }

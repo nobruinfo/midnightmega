@@ -5,6 +5,10 @@
 // read mount state of real hardware floppy drives:
 #define D6A1_USEREAL0 1
 #define D6A1_USEREAL1 4
+// image in drive used, 0 if real drive:
+#define D68B_IMG1     8
+// real drive media present:
+#define D68B_D1P     16
 
 #define MIDNIGHTFLAGismounted     1
 #define MIDNIGHTFLAGdirsortactive 2

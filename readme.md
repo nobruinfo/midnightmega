@@ -382,6 +382,8 @@ __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
 
 # Changelog
 
+- v0.6.6-beta (shown as v2.2 on the filehost) fixes a major bug in the
+  sorting routine for the shown entries reachable with \[F9\] *Menu*,
 - v0.6.5-beta (shown as v2.1 on the filehost) reinitiating motor spin up
   on physical drive number change
 - v0.6.4-beta (shown as v2 on the filehost) fix of GUI glitches and an

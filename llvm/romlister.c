@@ -15,25 +15,25 @@
 
 // KickC calls conio_mega65_init() before doing main():
 int main() {
-  unsigned char majorhyppo;
-  unsigned char minorhyppo;
-  unsigned char majorHDOS;
-  unsigned char minorHDOS;
+//  unsigned char majorhyppo;
+//  unsigned char minorhyppo;
+//  unsigned char majorHDOS;
+//  unsigned char minorHDOS;
+
+  setscreensize(80, 25);
 
   conioinit();
   // ASCII lowercase is in conioinit()
 
   clrhome();
   textcolor (COLOUR_CYAN);
-  
-  setscreensize(80, 25);
 
-  hyppo_getversion(&majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
+//  minorHDOS = hyppo_getversion(&majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
   // pcputs("file: ");
-  mprintf("Versions: Hyppo ", majorhyppo);
-  mprintf(".", minorhyppo);
-  mprintf(",  HDOS ", majorHDOS);
-  mprintf(".", minorHDOS);
+  mprintf("Versions: Hyppo ", hyppo_getversion_majorhyppo());
+  mprintf(".", hyppo_getversion_minorhyppo());
+  mprintf(",  HDOS ", hyppo_getversion_majorHDOS());
+  mprintf(".", hyppo_getversion_minorHDOS());
   cputln();
 
   romlist(wherey() + 1);

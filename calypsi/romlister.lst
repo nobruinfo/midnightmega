@@ -1,7 +1,7 @@
 ###############################################################################
 #                                                                             #
 # Calypsi linker for 6502                                        version 5.12 #
-#                                                       28/Sep/2025  20:16:24 #
+#                                                       07/Nov/2025  20:26:24 #
 # Command line: -o romlister.prg --list-file=romlister.lst --output-format    #
 #               prg --core 45gs02 --target=mega65                             #
 #               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlister.o #

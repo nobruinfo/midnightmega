@@ -1,7 +1,7 @@
 ###############################################################################
 #                                                                             #
 # Calypsi ISO C compiler for 6502                                version 5.12 #
-#                                                       28/Sep/2025  20:16:16 #
+#                                                       07/Nov/2025  20:26:15 #
 # Command line:                                                               #
 #               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\sid.lst #
 #               -D asm=__asm -I calypsi.h -D VERSION="v0.6.6-beta" -I         #
