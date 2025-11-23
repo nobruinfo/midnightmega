@@ -1,0 +1,2946 @@
+###############################################################################
+#                                                                             #
+# Calypsi ISO C compiler for 6502                                version 5.13 #
+#                                                       23/Nov/2025  19:15:11 #
+# Command line:                                                               #
+#               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conio.lst #
+#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.7-beta" -I         #
+#               ..\mega65-libc\include -O 2 --core 45gs02 --target MEGA65     #
+#               -D FULLFEATURES -o                                            #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conio.o #
+#               conio.c                                                       #
+#                                                                             #
+###############################################################################
+
+    \ 0000                      .rtmodel version,"1"
+    \ 0000                      .rtmodel codeModel,"plain"
+    \ 0000                      .rtmodel core,"45gs02"
+    \ 0000                      .rtmodel target,"mega65"
+    \ 0000                      .extern _AllocStack
+    \ 0000                      .extern _AllocStackSave
+    \ 0000                      .extern _DeallocStack
+    \ 0000                      .extern _DeallocStackRestore
+    \ 0000                      .extern _DecVsp
+    \ 0000                      .extern _DivMod16
+    \ 0000                      .extern _IncVsp
+    \ 0000                      .extern _LoadVspEA
+    \ 0000                      .extern _MoveLong16X
+    \ 0000                      .extern _Mul16
+    \ 0000                      .extern _Mul8
+    \ 0000                      .extern _RestoreRegisters
+    \ 0000                      .extern _UDivMod32
+    \ 0000                      .extern _Vfp
+    \ 0000                      .extern _Vsp
+    \ 0000                      .extern _Zp
+    \ 0000                      .extern lcopy
+    \ 0000                      .extern lfill
+    \ 0000                      .extern lpoke
+    \ 0000                      .extern strlen
+0001                // testing memory leakages by throwing out all parts currently
+0002                // not used
+0003                
+0004                /*  CONIO.H style Text mode support  for the Mega65 libC
+0005                
+0006                    Copyright (c) 2020-2021 Hernán Di Pietro
+0007                
+0008                    This program is free software: you can redistribute it and/or modify
+0009                    it under the terms of the GNU Lesser General Public License as published by
+0010                    the Free Software Foundation, either version 3 of the License, or
+0011                    (at your option) any later version.
+0012                
+0013                    This program is distributed in the hope that it will be useful,
+0014                    but WITHOUT ANY WARRANTY; without even the implied warranty of
+0015                    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+0016                    GNU Lesser General Public License for more details.
+0017                
+0018                    You should have received a copy of the GNU Lesser General Public License
+0019                    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+0020                */
+0021                
+0022                #include <mega65/conio.h>
+0023                #include <mega65/memory.h>
+0024                #include <string.h>
+0025                
+0026                #define VIC_BASE 0xD000UL
+0027                #define IS_H640 (PEEK(VIC_BASE + 0x31) & 128)
+0028                #define IS_V400 (PEEK(VIC_BASE + 0x31) & 8)
+0029                #define SET_H640() POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 128)
+0030                #define CLEAR_H640() POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 127)
+0031                #define SET_V400() POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 8)
+0032                #define CLEAR_V400() POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 0xF7)
+0033                #define IS_16BITCHARSET (PEEK(VIC_BASE + 0x54) & 1)
+0034                #define SET_16BITCHARSET() POKE(VIC_BASE + 0x54, PEEK(VIC_BASE + 0x54) | 1)
+0035                #define CLEAR_16BITCHARSET() POKE(VIC_BASE + 0x54, PEEK(VIC_BASE + 0x54) & 0xFE)
+0036                #define SET_HOTREGS() POKE(VIC_BASE + 0x5D, PEEK(VIC_BASE + 0x5D) | 128)
+0037                #define CLEAR_HOTREGS() POKE(VIC_BASE + 0x5D, PEEK(VIC_BASE + 0x5D) & 127)
+0038                #define IS_EXTATTR() (PEEK(VIC_BASE + 0x31) & 32)
+0039                #define SET_EXTATTR() POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) | 32)
+0040                #define CLEAR_EXTATTR() POKE(VIC_BASE + 0x31, PEEK(VIC_BASE + 0x31) & 0xDF)
+0041                #define SCREEN_RAM_BASE_B0 (PEEK(VIC_BASE + 0x60)) // LSB
+0042                #define SCREEN_RAM_BASE_B1 (PEEK(VIC_BASE + 0x61))
+0043                #define SCREEN_RAM_BASE_B2 (PEEK(VIC_BASE + 0x62))
+0044                #define SCREEN_RAM_BASE_B3 (PEEK(VIC_BASE + 0x63) & 7) // upper nybble
+0045                #define SCREEN_RAM_BASE                                                        \
+0046                    (((unsigned long)SCREEN_RAM_BASE_B3 << 24)                                 \
+0047                        | ((unsigned long)SCREEN_RAM_BASE_B2 << 16)                            \
+0048                        | ((unsigned long)SCREEN_RAM_BASE_B1 << 8)                             \
+0049                        | ((unsigned long)SCREEN_RAM_BASE_B0))
+0050                #define COLOR_RAM_BASE 0xFF80000UL
+0051                
+0052                #define PRINTF_IN_FORMAT_SPEC 0x1
+0053                #define PRINTF_FLAGS_LEADINGZERO 0x2
+0054                #define PRINTF_STATE_INIT 0
+0055                #define PRINTF_STATE_ESCAPE 1
+0056                
+0057                // use 198 bytes of C64 tape buffer as petscii2screencode conversion buffer
+0058                // in order to save bank 0 memory
+0059                static char* p2sbuf = (char*)0x334;
+    \ 0000                      .section data,data
+    \ 0000 3403     p2sbuf:     .word   0x334
+0060                
+0061                // __attribute__((section(".data")))
+0062                static unsigned char g_curTextColor = COLOUR_WHITE;
+    \ 0000                      .section data,data
+    \ 0000          g_curTextColor:
+    \ 0000 01                   .byte   1
+0063                // __attribute__((section(".data")))
+0064                static unsigned char g_curX = 0;
+    \ 0000                      .section zdata,bss
+    \ 0000          g_curX:     .space  1
+0065                // __attribute__((section(".data")))
+0066                static unsigned char g_curY = 0;
+    \ 0000                      .section zdata,bss
+    \ 0000          g_curY:     .space  1
+0067                // __attribute__((section(".data")))
+0068                static unsigned char g_curScreenW = 0;
+    \ 0000                      .section zdata,bss
+    \ 0000          g_curScreenW:
+    \ 0000                      .space  1
+0069                // __attribute__((section(".data")))
+0070                static unsigned char g_curScreenH = 0;
+    \ 0000                      .section zdata,bss
+    \ 0000          g_curScreenH:
+    \ 0000                      .space  1
+0071                // __attribute__((section(".data")))
+0072                // static const unsigned char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6',
+0073                static unsigned char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6',
+    \ 0000                      .section data,data
+    \ 0000 30313233 hexDigits:  .byte   48,49,50,51,52,53,54,55
+    \ 0004 34353637
+    \ 0008 38394142             .byte   56,57,65,66,67,68,69,70
+    \ 000c 43444546
+0074                    '7', '8', '9', 0x41, 0x42, 0x43, 0x44, 0x45, 0x46 };
+0075                
+0076                #ifdef __CC65__
+0077                // Drawing characters for `box` call
+0078                //
+0079                //                                      NONE, INNER   MID    OUTER    ROUND
+0080                const unsigned char chTopLeft[] = { 0x20, 0x20, 0x70, 0x4F, 0x55 };
+0081                const unsigned char chTopRight[] = { 0x20, 0x20, 0x6E, 0x50, 0x49 };
+0082                const unsigned char chBottomLeft[] = { 0x20, 0x20, 0x6D, 0x4C, 0x4A };
+0083                const unsigned char chBottomRight[] = { 0x20, 0x20, 0x7D, 0x7A, 0x4B };
+0084                const unsigned char chHorzTop[] = { 0x20, 0x64, 0x43, 0x77, 0x43 };
+0085                const unsigned char chHorzBottom[] = { 0x20, 0x63, 0x43, 0x6F, 0x43 };
+0086                const unsigned char chVertRight[] = { 0x20, 0x74, 0x5D, 0x6A, 0x5D };
+0087                const unsigned char chVertLeft[] = { 0x20, 0x6A, 0x5D, 0x74, 0x5D };
+0088                #endif
+0089                
+0090                static void clrscr_(unsigned char ignored __attribute__((unused)))
+0091                {
+0092                    clrscr();
+0093                    gohome();
+0094                } // Callable from Escape Code table
+0095                
+0096                static void gohome_(unsigned char ignored __attribute__((unused)))
+0097                {
+0098                    gohome();
+0099                } // Callable from Escape Code table
+0100                
+0101                static void escNOP(unsigned char ignored __attribute__((unused)))
+0102                { /* do nothing */
+0103                }
+0104                
+0105                void conioinit(void)
+0106                {
+    \ 0000                      .section code,text
+    \ 0000                      .public conioinit
+    \ 0000          conioinit:
+0107                    register unsigned char i = 0;
+0108                
+0109                    // Make sure we go to VIC-IV IO mode
+0110                
+0111                    POKE(0xD02fL, 0x47);
+    \ 0000 a947                 lda     #71
+    \ 0002 8d2fd0               sta     0xd02f
+0112                    POKE(0xd02fL, 0x53);
+    \ 0005 a953                 lda     #83
+    \ 0007 8d2fd0               sta     0xd02f
+0113                
+0114                    sethotregs(0);
+    \ 000a a900                 lda     #0
+    \ 000c 20....               jsr     sethotregs
+0115                    setlowercase();
+0116                
+0117                    g_curScreenW = IS_H640 ? 80 : 40;
+0118                    g_curScreenH = IS_V400 ? 50 : 25;
+0119                
+0120                    flushkeybuf();
+0121                }
+0122                
+0123                char petsciitoscreencode(char c)
+0124                {
+0125                    if (c >= 64 && c <= 95) {
+0126                        return c - 64;
+0127                    }
+0128                
+0129                    if (c >= 192) {
+0130                        return c - 128;
+0131                    }
+0132                
+0133                    if (c >= 96 && c < 192) {
+0134                        return c - 32;
+0135                    }
+0136                
+0137                    if (c == '_') {
+0138                        return 100;
+0139                    }
+0140                
+0141                    return c;
+0142                }
+0143                
+0144                char* petsciitoscreencode_s(char* s)
+0145                {
+0146                    char* src = s;
+0147                    char* dest = p2sbuf;
+0148                    // This loop intentionally uses assignment in the test condition
+0149                    while ((*dest++ = petsciitoscreencode(*src++)))
+0150                        ;
+0151                    return p2sbuf;
+0152                }
+0153                
+0154                void setscreenaddr(unsigned long address)
+0155                {
+0156                    POKE(VIC_BASE + 0x60, address & 0x0000FFUL);
+0157                    POKE(VIC_BASE + 0x61, (address & 0xFF00UL) >> 8);
+0158                    POKE(VIC_BASE + 0x62, (address & 0xFF0000UL) >> 16);
+0159                    POKE(VIC_BASE + 0x63,
+0160                        (PEEK(VIC_BASE + 0x63) & 0xF) | ((address & 0xF000000UL) >> 24));
+0161                }
+0162                
+0163                unsigned long getscreenaddr(void)
+0164                {
+0165                    return SCREEN_RAM_BASE;
+0166                }
+0167                
+0168                void setcharsetaddr(unsigned long address)
+0169                {
+0170                    POKE(VIC_BASE + 0x68, address & 0x0000FFUL);
+0171                    POKE(VIC_BASE + 0x69, (address & 0xFF00UL) >> 8);
+0172                    POKE(VIC_BASE + 0x6A, (address & 0xFF0000UL) >> 16);
+0173                }
+0174                
+0175                long getcharsetaddr(void)
+0176                {
+0177                    return ((long)PEEK(VIC_BASE + 0x68)) | ((long)PEEK(VIC_BASE + 0x69) << 8)
+0178                         | (((long)PEEK(VIC_BASE + 0x6A) << 16));
+0179                }
+0180                
+0181                void setcolramoffset(unsigned int offset)
+0182                {
+0183                    POKE(VIC_BASE + 0x64, offset & 0x00FFUL);
+0184                    POKE(VIC_BASE + 0x65, (offset & 0xFF00UL) >> 8);
+0185                }
+0186                
+0187                unsigned int getcolramoffset(void)
+0188                {
+0189                    return ((unsigned int)PEEK(VIC_BASE + 0x64)
+0190                            | ((unsigned int)PEEK(VIC_BASE + 0x65)) << 8);
+0191                }
+0192                
+0193                void setscreensize(unsigned char w, unsigned char h)
+0194                {
+0195                    if (w == 80) {
+0196                        SET_H640();
+0197                        // compensate for vic-iii h640 horizontal positioning bug
+0198                        POKE(0xd04c, 0x50);
+0199                    }
+0200                    else if (w == 40) {
+0201                        CLEAR_H640();
+0202                        POKE(0xd04c, 0x4e);
+0203                    }
+0204                
+0205                    if (h == 50) {
+0206                        SET_V400();
+0207                    }
+0208                    else if (h == 25) {
+0209                        CLEAR_V400();
+0210                    }
+0211                
+0212                    // Cache values.
+0213                    if (w == 40 || w == 80) {
+0214                        g_curScreenW = w;
+0215                    }
+0216                    if (h == 25 || h == 50) {
+0217                        g_curScreenH = h;
+0218                    }
+0219                }
+0220                
+0221                void getscreensize(unsigned char* width, unsigned char* height)
+0222                {
+0223                    *width = g_curScreenW;
+0224                    *height = g_curScreenH;
+0225                }
+0226                
+0227                void set16bitcharmode(unsigned char f)
+0228                {
+0229                    if (f) {
+0230                        SET_16BITCHARSET();
+0231                    }
+0232                    else {
+0233                        CLEAR_16BITCHARSET();
+0234                    }
+0235                }
+0236                
+0237                void sethotregs(unsigned char f)
+0238                {
+0239                    if (f) {
+0240                        SET_HOTREGS();
+0241                    }
+0242                    else {
+0243                        CLEAR_HOTREGS();
+0244                    }
+0245                }
+0246                
+0247                void setextendedattrib(unsigned char f)
+0248                {
+0249                    if (f) {
+0250                        SET_EXTATTR();
+0251                    }
+0252                    else {
+0253                        CLEAR_EXTATTR();
+0254                    }
+0255                }
+0256                
+0257                void setlowercase(void)
+0258                {
+0259                    setcharsetaddr(0x2d800);
+    \ 000f a900                 lda     #0
+    \ 0011 a2d8                 ldx     #216
+    \ 0013 20....               jsr     `?L620`
+    \ 0016 2c31d0               bit     0xd031
+    \ 0019 3004                 bmi     `?L354`
+    \ 001b a928                 lda     #40
+    \ 001d 8002                 bra     `?L576`
+    \ 001f a950     `?L354`:    lda     #80
+    \ 0021          `?L576`:
+    \ 0021 85..                 sta     zp:_Zp
+    \ 0023 a5..                 lda     zp:_Zp
+    \ 0025 8d....               sta     g_curScreenW
+    \ 0028 ad31d0               lda     0xd031
+    \ 002b 8908                 bit     #8
+    \ 002d d004                 bne     `?L357`
+    \ 002f a919                 lda     #25
+    \ 0031 8002                 bra     `?L575`
+    \ 0033 a932     `?L357`:    lda     #50
+    \ 0035          `?L575`:
+    \ 0035 85..                 sta     zp:_Zp
+    \ 0037 a5..                 lda     zp:_Zp
+    \ 0039 8d....               sta     g_curScreenH
+    \ 003c 20....               jsr     flushkeybuf
+    \ 003f 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public petsciitoscreencode
+    \ 0000          petsciitoscreencode:
+    \ 0000 c940                 cmp     #64
+    \ 0002 9008                 bcc     `?L17`
+    \ 0004 c960                 cmp     #96
+    \ 0006 b004                 bcs     `?L17`
+    \ 0008 38                   sec
+    \ 0009 e940                 sbc     #64
+    \ 000b 60                   rts
+    \ 000c c9c0     `?L17`:     cmp     #-64
+    \ 000e 9004                 bcc     `?L21`
+    \ 0010 38                   sec
+    \ 0011 e980                 sbc     #-128
+    \ 0013 60                   rts
+    \ 0014 c960     `?L21`:     cmp     #96
+    \ 0016 9008                 bcc     `?L25`
+    \ 0018 c9c0                 cmp     #-64
+    \ 001a b004                 bcs     `?L25`
+    \ 001c 38                   sec
+    \ 001d e920                 sbc     #32
+    \ 001f 60                   rts
+    \ 0020 c95f     `?L25`:     cmp     #95
+    \ 0022 d003                 bne     `?L29`
+    \ 0024 a964                 lda     #100
+    \ 0026 60                   rts
+    \ 0027 60       `?L29`:     rts
+    \ 0000                      .section code,text
+    \ 0000                      .public petsciitoscreencode_s
+    \ 0000          petsciitoscreencode_s:
+    \ 0000 a200                 ldx     #0
+    \ 0002 a005                 ldy     #5
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 ad....               lda     p2sbuf
+    \ 000a 85..                 sta     zp:_Zp+28
+    \ 000c ad....               lda     p2sbuf+1
+    \ 000f 85..                 sta     zp:_Zp+29
+    \ 0011          `?L36`:
+    \ 0011 a5..                 lda     zp:_Zp+28
+    \ 0013 85..                 sta     zp:_Zp+26
+    \ 0015 a5..                 lda     zp:_Zp+29
+    \ 0017 85..                 sta     zp:_Zp+27
+    \ 0019 e3..                 inw     zp:_Zp+28
+    \ 001b a000                 ldy     #0
+    \ 001d b1..                 lda     (_Zp),y
+    \ 001f e3..                 inw     zp:_Zp
+    \ 0021 a6..                 ldx     zp:_Zp
+    \ 0023 86..                 stx     zp:_Zp+24
+    \ 0025 a6..                 ldx     zp:_Zp+1
+    \ 0027 86..                 stx     zp:_Zp+25
+    \ 0029 20....               jsr     petsciitoscreencode
+    \ 002c a000                 ldy     #0
+    \ 002e 91..                 sta     (_Zp+26),y
+    \ 0030 b1..                 lda     (_Zp+26),y
+    \ 0032 f005                 beq     `?L37`
+    \ 0034 20....               jsr     `?L616`
+    \ 0037 80d8                 bra     `?L36`
+    \ 0039          `?L37`:
+    \ 0039 ad....               lda     p2sbuf
+    \ 003c 85..                 sta     zp:_Zp
+    \ 003e ad....               lda     p2sbuf+1
+    \ 0041 85..                 sta     zp:_Zp+1
+    \ 0043 a005                 ldy     #5
+    \ 0045 4c....               jmp     _RestoreRegisters
+    \ 0000                      .section code,text
+    \ 0000                      .public setscreenaddr
+    \ 0000          setscreenaddr:
+    \ 0000 a5..                 lda     zp:_Zp
+    \ 0002 8d60d0               sta     0xd060
+    \ 0005 a5..                 lda     zp:_Zp+1
+    \ 0007 8d61d0               sta     0xd061
+    \ 000a a5..                 lda     zp:_Zp+2
+    \ 000c 8d62d0               sta     0xd062
+    \ 000f ad63d0               lda     0xd063
+    \ 0012 290f                 and     #15
+    \ 0014 20....               jsr     `?L621`
+    \ 0017 85..                 sta     zp:_Zp+6
+    \ 0019 85..                 sta     zp:_Zp+7
+    \ 001b aa                   tax
+    \ 001c a8                   tay
+    \ 001d a30f                 ldz     #15
+    \ 001f 424225..             andq    zp:_Zp
+    \ 0023 424285..             stq     zp:_Zp
+    \ 0027 a5..                 lda     zp:_Zp+3
+    \ 0029 20....               jsr     `?L590`
+    \ 002c 4242a5..             ldq     zp:_Zp
+    \ 0030 424205..             orq     zp:_Zp+4
+    \ 0034 424285..             stq     zp:_Zp
+    \ 0038 a5..                 lda     zp:_Zp
+    \ 003a 8d63d0               sta     0xd063
+    \ 003d 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public getscreenaddr
+    \ 0000          getscreenaddr:
+    \ 0000 ad63d0               lda     0xd063
+    \ 0003 2907                 and     #7
+    \ 0005 85..                 sta     zp:_Zp+3
+    \ 0007 a900                 lda     #0
+    \ 0009 85..                 sta     zp:_Zp
+    \ 000b 85..                 sta     zp:_Zp+1
+    \ 000d 85..                 sta     zp:_Zp+2
+    \ 000f ad62d0               lda     0xd062
+    \ 0012 20....               jsr     `?L621`
+    \ 0015 a5..                 lda     zp:_Zp+4
+    \ 0017 20....               jsr     `?L608`
+    \ 001a 48                   pha
+    \ 001b da                   phx
+    \ 001c 5a                   phy
+    \ 001d db                   phz
+    \ 001e ad61d0               lda     0xd061
+    \ 0021 20....               jsr     `?L588`
+    \ 0024 85..                 sta     zp:_Zp
+    \ 0026 fb                   plz
+    \ 0027 7a                   ply
+    \ 0028 fa                   plx
+    \ 0029 68                   pla
+    \ 002a 424205..             orq     zp:_Zp
+    \ 002e 48                   pha
+    \ 002f da                   phx
+    \ 0030 5a                   phy
+    \ 0031 db                   phz
+    \ 0032 20....               jsr     `?L589`
+    \ 0035 fb                   plz
+    \ 0036 7a                   ply
+    \ 0037 fa                   plx
+    \ 0038 68                   pla
+    \ 0039 20....               jsr     `?L617`
+    \ 003c 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public setcharsetaddr
+    \ 0000          setcharsetaddr:
+    \ 0000 a5..                 lda     zp:_Zp
+    \ 0002 8d68d0               sta     0xd068
+    \ 0005 a5..                 lda     zp:_Zp+1
+    \ 0007 8d69d0               sta     0xd069
+    \ 000a a5..                 lda     zp:_Zp+2
+    \ 000c 8d6ad0               sta     0xd06a
+    \ 000f 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public getcharsetaddr
+    \ 0000          getcharsetaddr:
+    \ 0000 ad68d0               lda     0xd068
+    \ 0003 20....               jsr     `?L590`
+    \ 0006 ad69d0               lda     0xd069
+    \ 0009 20....               jsr     `?L621`
+    \ 000c 85..                 sta     zp:_Zp+7
+    \ 000e a5..                 lda     zp:_Zp+5
+    \ 0010 85..                 sta     zp:_Zp+6
+    \ 0012 a5..                 lda     zp:_Zp+4
+    \ 0014 85..                 sta     zp:_Zp+5
+    \ 0016 a900                 lda     #0
+    \ 0018 85..                 sta     zp:_Zp+4
+    \ 001a 4242a5..             ldq     zp:_Zp+4
+    \ 001e 424205..             orq     zp:_Zp
+    \ 0022 48                   pha
+    \ 0023 da                   phx
+    \ 0024 5a                   phy
+    \ 0025 db                   phz
+    \ 0026 ad6ad0               lda     0xd06a
+    \ 0029 20....               jsr     `?L611`
+    \ 002c 85..                 sta     zp:_Zp+1
+    \ 002e 20....               jsr     `?L625`
+    \ 0031 85..                 sta     zp:_Zp
+    \ 0033 85..                 sta     zp:_Zp+1
+    \ 0035 fb                   plz
+    \ 0036 7a                   ply
+    \ 0037 fa                   plx
+    \ 0038 68                   pla
+    \ 0039 20....               jsr     `?L617`
+    \ 003c 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public setcolramoffset
+    \ 0000          setcolramoffset:
+    \ 0000 a5..                 lda     zp:_Zp
+    \ 0002 8d64d0               sta     0xd064
+    \ 0005 a5..                 lda     zp:_Zp+1
+    \ 0007 8d65d0               sta     0xd065
+    \ 000a 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public getcolramoffset
+    \ 0000          getcolramoffset:
+    \ 0000 ad64d0               lda     0xd064
+    \ 0003 20....               jsr     `?L611`
+    \ 0006 85..                 sta     zp:_Zp+1
+    \ 0008 ad65d0               lda     0xd065
+    \ 000b 05..                 ora     zp:_Zp+1
+    \ 000d 85..                 sta     zp:_Zp+1
+    \ 000f 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public setscreensize
+    \ 0000          setscreensize:
+    \ 0000 85..                 sta     zp:_Zp+1
+    \ 0002 a350                 ldz     #80
+    \ 0004 d4..                 cpz     zp:_Zp+1
+    \ 0006 d009                 bne     `?L64`
+    \ 0008 a980                 lda     #-128
+    \ 000a 0c31d0               tsb     0xd031
+    \ 000d a950                 lda     #80
+    \ 000f 800d                 bra     `?L577`
+    \ 0011 a328     `?L64`:     ldz     #40
+    \ 0013 d4..                 cpz     zp:_Zp+1
+    \ 0015 d00a                 bne     `?L65`
+    \ 0017 a980                 lda     #-128
+    \ 0019 1c31d0               trb     0xd031
+    \ 001c a94e                 lda     #78
+    \ 001e 8d4cd0   `?L577`:    sta     0xd04c
+    \ 0021 a332     `?L65`:     ldz     #50
+    \ 0023 d4..                 cpz     zp:_Zp
+    \ 0025 d007                 bne     `?L70`
+    \ 0027 a908                 lda     #8
+    \ 0029 0c31d0               tsb     0xd031
+    \ 002c 800b                 bra     `?L71`
+    \ 002e a319     `?L70`:     ldz     #25
+    \ 0030 d4..                 cpz     zp:_Zp
+    \ 0032 d005                 bne     `?L71`
+    \ 0034 a908                 lda     #8
+    \ 0036 1c31d0               trb     0xd031
+    \ 0039 a228     `?L71`:     ldx     #40
+    \ 003b e4..                 cpx     zp:_Zp+1
+    \ 003d f006                 beq     `?L78`
+    \ 003f a350                 ldz     #80
+    \ 0041 d4..                 cpz     zp:_Zp+1
+    \ 0043 d005                 bne     `?L77`
+    \ 0045          `?L78`:
+    \ 0045 a5..                 lda     zp:_Zp+1
+    \ 0047 8d....               sta     g_curScreenW
+    \ 004a a219     `?L77`:     ldx     #25
+    \ 004c e4..                 cpx     zp:_Zp
+    \ 004e f007                 beq     `?L81`
+    \ 0050 a332                 ldz     #50
+    \ 0052 d4..                 cpz     zp:_Zp
+    \ 0054 f001                 beq     `?L81`
+    \ 0056 60                   rts
+    \ 0057          `?L81`:
+    \ 0057 a5..                 lda     zp:_Zp
+    \ 0059 8d....               sta     g_curScreenH
+    \ 005c 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public getscreensize
+    \ 0000          getscreensize:
+    \ 0000 ad....               lda     g_curScreenW
+    \ 0003 a000                 ldy     #0
+    \ 0005 91..                 sta     (_Zp),y
+    \ 0007 ad....               lda     g_curScreenH
+    \ 000a 91..                 sta     (_Zp+2),y
+    \ 000c 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public set16bitcharmode
+    \ 0000          set16bitcharmode:
+    \ 0000 aa                   tax
+    \ 0001 f006                 beq     `?L88`
+    \ 0003 a901                 lda     #1
+    \ 0005 0c54d0               tsb     0xd054
+    \ 0008 60                   rts
+    \ 0009 a901     `?L88`:     lda     #1
+    \ 000b 1c54d0               trb     0xd054
+    \ 000e 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public sethotregs
+    \ 0000 aa       sethotregs: tax
+    \ 0001 f006                 beq     `?L94`
+    \ 0003 a980                 lda     #-128
+    \ 0005 0c5dd0               tsb     0xd05d
+    \ 0008 60                   rts
+    \ 0009 a980     `?L94`:     lda     #-128
+    \ 000b 1c5dd0               trb     0xd05d
+    \ 000e 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public setextendedattrib
+    \ 0000          setextendedattrib:
+    \ 0000 aa                   tax
+    \ 0001 f006                 beq     `?L100`
+    \ 0003 a920                 lda     #32
+    \ 0005 0c31d0               tsb     0xd031
+    \ 0008 60                   rts
+    \ 0009 a920     `?L100`:    lda     #32
+    \ 000b 1c31d0               trb     0xd031
+    \ 000e 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public setlowercase
+    \ 0000          setlowercase:
+    \ 0000 a900                 lda     #0
+    \ 0002 a2d8                 ldx     #216
+    \ 0004 4c....               jmp     `?L586`
+0260                }
+0261                
+0262                void setuppercase(void)
+0263                {
+    \ 0000                      .section code,text
+    \ 0000                      .public setuppercase
+    \ 0000          setuppercase:
+0264                    setcharsetaddr(0x2d000);
+    \ 0000 a900                 lda     #0
+    \ 0002 a2d0                 ldx     #208
+    \ 0004          `?L586`:
+    \ 0004 20....               jsr     `?L620`
+0265                }
+0266                
+0267                void togglecase(void)
+0268                {
+0269                    POKE(0xD018U, PEEK(0xD018U) ^ 0x02);
+0270                }
+0271                
+0272                void clrscr(void)
+0273                {
+0274                    const unsigned int cBytes
+0275                        = (unsigned int)g_curScreenW * g_curScreenH * (IS_16BITCHARSET ? 2 : 1);
+0276                    lfill(SCREEN_RAM_BASE, ' ', cBytes);
+0277                    lfill(COLOR_RAM_BASE, g_curTextColor, cBytes);
+0278                }
+0279                
+0280                void bordercolor(unsigned char c)
+0281                {
+0282                    POKE(VIC_BASE + 0x20, c);
+0283                }
+0284                
+0285                void bgcolor(unsigned char c)
+0286                {
+0287                    POKE(VIC_BASE + 0x21, c);
+0288                }
+0289                
+0290                void textcolor(unsigned char c)
+0291                {
+0292                    g_curTextColor = (g_curTextColor & 0xF0) | (c & 0xf);
+0293                }
+0294                
+0295                void cellcolor(unsigned char x, unsigned char y, unsigned char c)
+0296                {
+0297                    lpoke(COLOR_RAM_BASE + (y * (unsigned int)g_curScreenW) + x, c);
+0298                }
+0299                
+0300                void revers(unsigned char enable)
+0301                {
+0302                    if (enable) {
+0303                        g_curTextColor |= ATTRIB_REVERSE;
+0304                    }
+0305                    else {
+0306                        g_curTextColor &= ~ATTRIB_REVERSE;
+0307                    }
+0308                }
+0309                
+0310                void highlight(unsigned char enable)
+0311                {
+0312                    if (enable) {
+0313                        g_curTextColor |= ATTRIB_HIGHLIGHT;
+0314                    }
+0315                    else {
+0316                        g_curTextColor &= ~ATTRIB_HIGHLIGHT;
+0317                    }
+0318                }
+0319                
+0320                void blink(unsigned char enable)
+0321                {
+0322                    if (enable) {
+0323                        g_curTextColor |= ATTRIB_BLINK;
+0324                    }
+0325                    else {
+0326                        g_curTextColor &= ~ATTRIB_BLINK;
+0327                    }
+0328                }
+0329                
+0330                void underline(unsigned char enable)
+0331                {
+0332                    if (enable) {
+0333                        g_curTextColor |= ATTRIB_UNDERLINE;
+0334                    }
+0335                    else {
+0336                        g_curTextColor &= ~ATTRIB_UNDERLINE;
+0337                    }
+0338                }
+0339                
+0340                void altpal(unsigned char enable)
+0341                {
+0342                    if (enable) {
+0343                        g_curTextColor |= (ATTRIB_HIGHLIGHT | ATTRIB_REVERSE);
+0344                    }
+0345                    else {
+0346                        g_curTextColor &= ~(ATTRIB_HIGHLIGHT | ATTRIB_REVERSE);
+0347                    }
+0348                }
+0349                
+0350                void clearattr(void)
+0351                {
+0352                    g_curTextColor &= 0x0F;
+0353                }
+0354                
+0355                void gohome(void)
+0356                {
+0357                    gotoxy(0, 0);
+0358                }
+0359                
+0360                void gotoxy(unsigned char x, unsigned char y)
+0361                {
+0362                    g_curX = x;
+0363                    g_curY = y;
+0364                }
+0365                
+0366                void gotox(unsigned char x)
+0367                {
+0368                    g_curX = x;
+0369                }
+0370                
+0371                void gotoy(unsigned char y)
+0372                {
+0373                    g_curY = y;
+0374                }
+0375                
+0376                unsigned char wherex(void)
+0377                {
+0378                    return g_curX;
+0379                }
+0380                
+0381                unsigned char wherey(void)
+0382                {
+0383                    return g_curY;
+0384                }
+0385                
+0386                void cputc(unsigned char c)
+0387                {
+0388                    cputcxy(g_curX, g_curY, c);
+0389                }
+0390                
+0391                void cputnc(unsigned char len, unsigned char c)
+0392                {
+0393                    cputncxy(g_curX, g_curY, len, c);
+0394                }
+0395                
+0396                void moveup(unsigned char count)
+0397                {
+0398                    g_curY -= count;
+0399                }
+0400                
+0401                void movedown(unsigned char count)
+0402                {
+0403                    g_curY += count;
+0404                }
+0405                
+0406                void moveleft(unsigned char count)
+0407                {
+0408                    g_curX -= count;
+0409                }
+0410                
+0411                void moveright(unsigned char count)
+0412                {
+0413                    g_curX += count;
+0414                }
+0415                
+0416                unsigned char _cprintf(
+0417                    const unsigned char translateCodes, const unsigned char* fmt, ...)
+0418                {
+0419                //    unsigned char printfState = PRINTF_STATE_INIT;
+0420                //    unsigned char escHash = 0;
+0421                    unsigned char cch = 0;
+0422                
+0423                    while (*fmt) {
+0424                //        switch (printfState) {
+0425                //        case PRINTF_STATE_INIT:
+0426                            switch (*fmt) {
+0427                            case '{':
+0428                //                printfState = PRINTF_STATE_ESCAPE;
+0429                                break;
+0430                
+0431                            case '\t': // Tab
+0432                                // moveleft((g_curX + 7) / 8) * 8, 1);
+0433                                break;
+0434                
+0435                            case '\n': // New-line
+0436                                gotoxy(0, g_curY + 1);
+0437                                break;
+0438                
+0439                            default:
+0440                                cputc(translateCodes ? petsciitoscreencode(*fmt) : *fmt);
+0441                            }
+0442                            break;
+0443                /*
+0444                        case PRINTF_STATE_ESCAPE:
+0445                            if (*fmt == '{') // print literal
+0446                            {
+0447                                cputc(*fmt);
+0448                                printfState = PRINTF_STATE_INIT;
+0449                                break;
+0450                            }
+0451                
+0452                            cch = 0;
+0453                            while (fmt && (*fmt != '}')) {
+0454                                fmt++;
+0455                                cch++;
+0456                            }
+0457                
+0458                            if (*fmt != '}') { // bailout.
+0459                                return 255;
+0460                            }
+0461                
+0462                            escHash = hash(fmt - cch, cch);
+0463                            escapeCode[escHash].fn(escapeCode[escHash].arg);
+0464                            printfState = PRINTF_STATE_INIT;
+0465                            break;
+0466                        }
+0467                */
+0468                
+0469                        fmt++;
+0470                    }
+0471                    // PGS 20240117 - What is the correct return value?
+0472                    return 0;
+0473                }
+0474                
+0475                void cputhex(unsigned long n, unsigned char prec)
+0476                {
+0477                    unsigned char buffer[10];
+0478                    buffer[0] = '$';
+0479                    buffer[1] = hexDigits[(n & 0xF0000000UL) >> 28];
+0480                    buffer[2] = hexDigits[(n & 0x0F000000UL) >> 24];
+0481                    buffer[3] = hexDigits[(n & 0x00F00000UL) >> 20];
+0482                    buffer[4] = hexDigits[(n & 0x000F0000UL) >> 16];
+0483                    buffer[5] = hexDigits[(n & 0x0000F000UL) >> 12];
+0484                    buffer[6] = hexDigits[(n & 0x00000F00UL) >> 8];
+0485                    buffer[7] = hexDigits[(n & 0x000000F0UL) >> 4];
+0486                    buffer[8] = hexDigits[(n & 0x0000000FUL)];
+0487                    buffer[9] = '\0';
+0488                    buffer[8 - prec] = '$';
+0489                    cputs(&buffer[8 - prec]);
+0490                }
+0491                
+0492                void cputdec(unsigned long n, unsigned char padding __attribute__((unused)),
+0493                    unsigned char leadingZeros)
+0494                {
+0495                    unsigned char buffer[11];
+0496                    unsigned char rem = 0;
+0497                    unsigned char digit = 9;
+0498                
+0499                    buffer[10] = '\0';
+0500                    do {
+0501                        rem = n % 10;
+0502                        n /= 10;
+0503                        buffer[digit--] = hexDigits[rem];
+0504                    } while (((int)digit >= 0) && (n != 0));
+0505                
+0506                    while (((int)digit >= 0) && (leadingZeros--)) {
+0507                        buffer[digit--] = hexDigits[0];
+0508                    }
+0509                
+0510                    cputs(&buffer[digit + 1]);
+0511                }
+0512                
+0513                void cputs(const unsigned char* s)
+0514                {
+0515                    cputsxy(g_curX, g_curY, s);
+0516                }
+0517                
+0518                void cputsxy(unsigned char x, unsigned char y, const unsigned char* s)
+0519                {
+0520                    const unsigned char len = (unsigned char)strlen((const char*)s);
+0521                    const unsigned int offset = (y * (unsigned int)g_curScreenW) + x;
+0522                    lcopy((unsigned long)s, SCREEN_RAM_BASE + offset, len);
+0523                    lfill(COLOR_RAM_BASE + offset, g_curTextColor, len);
+0524                    g_curY = y + ((x + len) / g_curScreenW);
+0525                    g_curX = (x + len) % g_curScreenW;
+0526                }
+0527                
+0528                void cputcxy(unsigned char x, unsigned char y, unsigned char c)
+0529                {
+0530                    const unsigned int offset = (y * (unsigned int)g_curScreenW) + x;
+0531                    lpoke(SCREEN_RAM_BASE + offset, c);
+0532                    lpoke(COLOR_RAM_BASE + offset, g_curTextColor);
+0533                    g_curX = (x == g_curScreenW - 1) ? 0 : (x + 1);
+0534                    g_curY = (x == g_curScreenW - 1) ? (y + 1) : y;
+0535                }
+0536                
+0537                void cputncxy(
+0538                    unsigned char x, unsigned char y, unsigned char count, unsigned char c)
+0539                {
+0540                    const unsigned int offset = (y * (unsigned int)g_curScreenW) + x;
+0541                    lfill(SCREEN_RAM_BASE + offset, c, count);
+0542                    lfill(COLOR_RAM_BASE + offset, g_curTextColor, count);
+0543                    g_curY = y + ((x + count) / g_curScreenW);
+0544                    g_curX = (x + count) % g_curScreenW;
+0545                }
+0546                
+0547                void fillrect(const RECT* rc, unsigned char ch, unsigned char col)
+0548                {
+0549                    register unsigned char i = 0;
+0550                    const unsigned char len = rc->right - rc->left;
+0551                    for (i = rc->top; i <= rc->bottom; ++i) {
+0552                        const unsigned int offset = (i * (unsigned int)g_curScreenW) + rc->left;
+0553                        lfill(SCREEN_RAM_BASE + offset, ch, len);
+0554                        lfill(COLOR_RAM_BASE + offset, col, len);
+0555                    }
+0556                }
+0557                
+0558                void box(const RECT* rc, unsigned char color, unsigned char style,
+0559                    unsigned char clear, unsigned char shadow)
+0560                {
+0561                    register unsigned char i = 0;
+0562                    const unsigned char len = rc->right - rc->left;
+0563                    unsigned char prevCol = g_curTextColor;
+0564                #ifndef __CC65__
+0565                    const unsigned char chTopLeft[] = { 0x20, 0x20, 0x70, 0x4F, 0x55 };
+0566                    const unsigned char chTopRight[] = { 0x20, 0x20, 0x6E, 0x50, 0x49 };
+0567                    const unsigned char chBottomLeft[] = { 0x20, 0x20, 0x6D, 0x4C, 0x4A };
+0568                    const unsigned char chBottomRight[] = { 0x20, 0x20, 0x7D, 0x7A, 0x4B };
+0569                    const unsigned char chHorzTop[] = { 0x20, 0x64, 0x43, 0x77, 0x43 };
+0570                    const unsigned char chHorzBottom[] = { 0x20, 0x63, 0x43, 0x6F, 0x43 };
+0571                    const unsigned char chVertRight[] = { 0x20, 0x74, 0x5D, 0x6A, 0x5D };
+0572                    const unsigned char chVertLeft[] = { 0x20, 0x6A, 0x5D, 0x74, 0x5D };
+0573                #endif
+0574                    textcolor(color);
+0575                    if (clear) {
+0576                        fillrect(rc, ' ', g_curTextColor);
+0577                    }
+0578                
+0579                    cputcxy(rc->left, rc->top, chTopLeft[style]);
+0580                    cputcxy(rc->left, rc->bottom, chBottomLeft[style]);
+0581                    cputcxy(rc->right, rc->top, chTopRight[style]);
+0582                    cputcxy(rc->right, rc->bottom, chBottomRight[style]);
+0583                
+0584                    for (i = 1; i < len; ++i) {
+0585                        cputcxy(rc->left + i, rc->top, chHorzTop[style]);
+0586                        cputcxy(rc->left + i, rc->bottom, chHorzBottom[style]);
+0587                    }
+0588                
+0589                    for (i = rc->top + 1; i <= rc->bottom - 1; ++i) {
+0590                        cputcxy(rc->left, i, chVertLeft[style]);
+0591                        cputcxy(rc->right, i, chVertRight[style]);
+0592                    }
+0593                
+0594                    if (shadow && rc->bottom < g_curScreenH && rc->right < g_curScreenW) {
+0595                        lfill(COLOR_RAM_BASE + ((rc->bottom + 1) * (unsigned int)g_curScreenW)
+0596                                  + (1 + rc->left),
+0597                            COLOUR_DARKGREY, len);
+0598                        for (i = rc->top + 1; i <= rc->bottom + 1; ++i) {
+0599                            cellcolor(rc->right + 1, i, COLOUR_DARKGREY);
+0600                        }
+0601                    }
+0602                    textcolor(prevCol);
+0603                }
+0604                
+0605                void hline(
+0606                    unsigned char x, unsigned char y, unsigned char len, unsigned char style)
+0607                {
+0608                    cputncxy(x, y, len, style);
+0609                }
+    \ 0007 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public togglecase
+    \ 0000 a902     togglecase: lda     #2
+    \ 0002 4d18d0               eor     0xd018
+    \ 0005 8d18d0               sta     0xd018
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public clrscr
+    \ 0000 a200     clrscr:     ldx     #0
+    \ 0002 a001                 ldy     #1
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 ad54d0               lda     0xd054
+    \ 000a 8901                 bit     #1
+    \ 000c d004                 bne     `?L364`
+    \ 000e a901                 lda     #1
+    \ 0010 8002                 bra     `?L578`
+    \ 0012 a902     `?L364`:    lda     #2
+    \ 0014          `?L578`:
+    \ 0014 85..                 sta     zp:_Zp+2
+    \ 0016 8a                   txa
+    \ 0017 85..                 sta     zp:_Zp+3
+    \ 0019 ae....               ldx     g_curScreenW
+    \ 001c 86..                 stx     zp:_Zp
+    \ 001e ad....               lda     g_curScreenH
+    \ 0021 20....               jsr     _Mul8
+    \ 0024 20....               jsr     _Mul16
+    \ 0027 20....               jsr     `?L600`
+    \ 002a 20....               jsr     `?L626`
+    \ 002d 20....               jsr     `?L587`
+    \ 0030 48                   pha
+    \ 0031 da                   phx
+    \ 0032 5a                   phy
+    \ 0033 db                   phz
+    \ 0034 ad61d0               lda     0xd061
+    \ 0037 20....               jsr     `?L588`
+    \ 003a 85..                 sta     zp:_Zp
+    \ 003c fb                   plz
+    \ 003d 7a                   ply
+    \ 003e fa                   plx
+    \ 003f 68                   pla
+    \ 0040 424205..             orq     zp:_Zp
+    \ 0044 48                   pha
+    \ 0045 da                   phx
+    \ 0046 5a                   phy
+    \ 0047 db                   phz
+    \ 0048 20....               jsr     `?L589`
+    \ 004b fb                   plz
+    \ 004c 7a                   ply
+    \ 004d fa                   plx
+    \ 004e 68                   pla
+    \ 004f 20....               jsr     `?L617`
+    \ 0052 a920                 lda     #32
+    \ 0054 20....               jsr     lfill
+    \ 0057 20....               jsr     `?L626`
+    \ 005a a900                 lda     #0
+    \ 005c aa                   tax
+    \ 005d a0f8                 ldy     #248
+    \ 005f a30f                 ldz     #15
+    \ 0061 424285..             stq     zp:_Zp
+    \ 0065 ad....               lda     g_curTextColor
+    \ 0068 20....               jsr     lfill
+    \ 006b a001                 ldy     #1
+    \ 006d 4c....               jmp     _RestoreRegisters
+    \ 0000                      .section code,text
+    \ 0000                      .public bordercolor
+    \ 0000          bordercolor:
+    \ 0000 8d20d0               sta     0xd020
+    \ 0003 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public bgcolor
+    \ 0000 8d21d0   bgcolor:    sta     0xd021
+    \ 0003 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public textcolor
+    \ 0000          textcolor:
+    \ 0000 85..                 sta     zp:_Zp
+    \ 0002 a9f0                 lda     #-16
+    \ 0004 2d....               and     g_curTextColor
+    \ 0007 a8                   tay
+    \ 0008 a9f0                 lda     #-16
+    \ 000a 14..                 trb     zp:_Zp
+    \ 000c 98                   tya
+    \ 000d 04..                 tsb     zp:_Zp
+    \ 000f a5..                 lda     zp:_Zp
+    \ 0011 8d....               sta     g_curTextColor
+    \ 0014 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public cellcolor
+    \ 0000          cellcolor:
+    \ 0000 85..                 sta     zp:_Zp+5
+    \ 0002 a5..                 lda     zp:_Zp+1
+    \ 0004 85..                 sta     zp:_Zp+4
+    \ 0006 ad....               lda     g_curScreenW
+    \ 0009 20....               jsr     _Mul8
+    \ 000c a900                 lda     #0
+    \ 000e 20....               jsr     `?L591`
+    \ 0011 aa                   tax
+    \ 0012 a0f8                 ldy     #248
+    \ 0014 a30f                 ldz     #15
+    \ 0016 20....               jsr     `?L599`
+    \ 0019 a6..                 ldx     zp:_Zp+5
+    \ 001b 86..                 stx     zp:_Zp+8
+    \ 001d a900                 lda     #0
+    \ 001f 85..                 sta     zp:_Zp+9
+    \ 0021 85..                 sta     zp:_Zp+10
+    \ 0023 85..                 sta     zp:_Zp+11
+    \ 0025 4242a5..             ldq     zp:_Zp+8
+    \ 0029 20....               jsr     `?L599`
+    \ 002c a5..                 lda     zp:_Zp+4
+    \ 002e 20....               jsr     lpoke
+    \ 0031 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public revers
+    \ 0000 aa       revers:     tax
+    \ 0001 f006                 beq     `?L130`
+    \ 0003 a920                 lda     #32
+    \ 0005 0c....               tsb     g_curTextColor
+    \ 0008 60                   rts
+    \ 0009 a920     `?L130`:    lda     #32
+    \ 000b 1c....               trb     g_curTextColor
+    \ 000e 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public highlight
+    \ 0000 aa       highlight:  tax
+    \ 0001 f006                 beq     `?L136`
+    \ 0003 a940                 lda     #64
+    \ 0005 0c....               tsb     g_curTextColor
+    \ 0008 60                   rts
+    \ 0009 a940     `?L136`:    lda     #64
+    \ 000b 1c....               trb     g_curTextColor
+    \ 000e 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public blink
+    \ 0000 aa       blink:      tax
+    \ 0001 f006                 beq     `?L142`
+    \ 0003 a910                 lda     #16
+    \ 0005 0c....               tsb     g_curTextColor
+    \ 0008 60                   rts
+    \ 0009 a910     `?L142`:    lda     #16
+    \ 000b 1c....               trb     g_curTextColor
+    \ 000e 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public underline
+    \ 0000 aa       underline:  tax
+    \ 0001 f006                 beq     `?L148`
+    \ 0003 a980                 lda     #-128
+    \ 0005 0c....               tsb     g_curTextColor
+    \ 0008 60                   rts
+    \ 0009 a980     `?L148`:    lda     #-128
+    \ 000b 1c....               trb     g_curTextColor
+    \ 000e 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public altpal
+    \ 0000 aa       altpal:     tax
+    \ 0001 f006                 beq     `?L154`
+    \ 0003 a960                 lda     #96
+    \ 0005 0c....               tsb     g_curTextColor
+    \ 0008 60                   rts
+    \ 0009 a960     `?L154`:    lda     #96
+    \ 000b 1c....               trb     g_curTextColor
+    \ 000e 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public clearattr
+    \ 0000 a9f0     clearattr:  lda     #-16
+    \ 0002 1c....               trb     g_curTextColor
+    \ 0005 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public gohome
+    \ 0000 a900     gohome:     lda     #0
+    \ 0002 8d....               sta     g_curX
+    \ 0005 8d....               sta     g_curY
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public gotoxy
+    \ 0000          gotoxy:
+    \ 0000 20....               jsr     `?L630`
+    \ 0003 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public gotox
+    \ 0000          gotox:
+    \ 0000 8d....               sta     g_curX
+    \ 0003 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public gotoy
+    \ 0000          gotoy:
+    \ 0000 8d....               sta     g_curY
+    \ 0003 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public wherex
+    \ 0000          wherex:
+    \ 0000 ad....               lda     g_curX
+    \ 0003 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public wherey
+    \ 0000          wherey:
+    \ 0000 ad....               lda     g_curY
+    \ 0003 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public cputc
+    \ 0000          cputc:
+    \ 0000 85..                 sta     zp:_Zp+1
+    \ 0002 20....               jsr     `?L597`
+    \ 0005 20....               jsr     cputcxy
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public cputnc
+    \ 0000          cputnc:
+    \ 0000 a6..                 ldx     zp:_Zp
+    \ 0002 86..                 stx     zp:_Zp+2
+    \ 0004 85..                 sta     zp:_Zp+1
+    \ 0006 20....               jsr     `?L597`
+    \ 0009 20....               jsr     cputncxy
+    \ 000c 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public moveup
+    \ 0000          moveup:
+    \ 0000 85..                 sta     zp:_Zp
+    \ 0002 ad....               lda     g_curY
+    \ 0005 38                   sec
+    \ 0006 e5..                 sbc     zp:_Zp
+    \ 0008 4c....               jmp     `?L582`
+    \ 0000                      .section code,text
+    \ 0000                      .public movedown
+    \ 0000 18       movedown:   clc
+    \ 0001 6d....               adc     g_curY
+    \ 0004          `?L582`:
+    \ 0004 8d....               sta     g_curY
+    \ 0007 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public moveleft
+    \ 0000          moveleft:
+    \ 0000 85..                 sta     zp:_Zp
+    \ 0002 ad....               lda     g_curX
+    \ 0005 38                   sec
+    \ 0006 e5..                 sbc     zp:_Zp
+    \ 0008 4c....               jmp     `?L583`
+    \ 0000                      .section code,text
+    \ 0000                      .public moveright
+    \ 0000 18       moveright:  clc
+    \ 0001 6d....               adc     g_curX
+    \ 0004          `?L583`:
+    \ 0004 8d....               sta     g_curX
+    \ 0007 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public _cprintf
+    \ 0000          _cprintf:
+    \ 0000 85..                 sta     zp:_Zp+2
+    \ 0002 a900                 lda     #0
+    \ 0004 a8                   tay
+    \ 0005 b1..                 lda     (_Zp),y
+    \ 0007 f034                 beq     `?L202`
+    \ 0009 b1..                 lda     (_Zp),y
+    \ 000b c909                 cmp     #9
+    \ 000d f02e                 beq     `?L202`
+    \ 000f c90a                 cmp     #10
+    \ 0011 f020                 beq     `?L207`
+    \ 0013 c97b                 cmp     #123
+    \ 0015 f026                 beq     `?L202`
+    \ 0017 a5..                 lda     zp:_Zp+2
+    \ 0019 d004                 bne     `?L370`
+    \ 001b b1..                 lda     (_Zp),y
+    \ 001d 8005                 bra     `?L579`
+    \ 001f          `?L370`:
+    \ 001f b1..                 lda     (_Zp),y
+    \ 0021 20....               jsr     petsciitoscreencode
+    \ 0024          `?L579`:
+    \ 0024 20....               jsr     `?L611`
+    \ 0027 a5..                 lda     zp:_Zp
+    \ 0029 85..                 sta     zp:_Zp+1
+    \ 002b 20....               jsr     `?L597`
+    \ 002e 20....               jsr     cputcxy
+    \ 0031 800a                 bra     `?L202`
+    \ 0033          `?L207`:
+    \ 0033 ad....               lda     g_curY
+    \ 0036 1a                   inc     a
+    \ 0037 85..                 sta     zp:_Zp
+    \ 0039 98                   tya
+    \ 003a 20....               jsr     `?L630`
+    \ 003d a900     `?L202`:    lda     #0
+    \ 003f 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public cputhex
+    \ 0000 a2f6     cputhex:    ldx     #246
+    \ 0002 20....               jsr     _AllocStack
+    \ 0005 85..                 sta     zp:_Zp+4
+    \ 0007 a924                 lda     #36
+    \ 0009 a000                 ldy     #0
+    \ 000b 91..                 sta     (_Vsp),y
+    \ 000d a900                 lda     #0
+    \ 000f a200                 ldx     #0
+    \ 0011 a3f0                 ldz     #240
+    \ 0013 424225..             andq    zp:_Zp
+    \ 0017 424285..             stq     zp:_Zp+8
+    \ 001b a5..                 lda     zp:_Zp+11
+    \ 001d 4a                   lsr     a
+    \ 001e 4a                   lsr     a
+    \ 001f 4a                   lsr     a
+    \ 0020 4a                   lsr     a
+    \ 0021 85..                 sta     zp:_Zp+6
+    \ 0023 a900                 lda     #0
+    \ 0025 85..                 sta     zp:_Zp+7
+    \ 0027 20....               jsr     `?L592`
+    \ 002a c8                   iny
+    \ 002b 91..                 sta     (_Vsp),y
+    \ 002d a900                 lda     #0
+    \ 002f aa                   tax
+    \ 0030 88                   dey
+    \ 0031 a30f                 ldz     #15
+    \ 0033 424225..             andq    zp:_Zp
+    \ 0037 424285..             stq     zp:_Zp+8
+    \ 003b a5..                 lda     zp:_Zp+11
+    \ 003d 85..                 sta     zp:_Zp+6
+    \ 003f a900                 lda     #0
+    \ 0041 85..                 sta     zp:_Zp+7
+    \ 0043 20....               jsr     `?L592`
+    \ 0046 a002                 ldy     #2
+    \ 0048 91..                 sta     (_Vsp),y
+    \ 004a a900                 lda     #0
+    \ 004c aa                   tax
+    \ 004d a0f0                 ldy     #240
+    \ 004f 4b                   taz
+    \ 0050 424225..             andq    zp:_Zp
+    \ 0054 424285..             stq     zp:_Zp+8
+    \ 0058 a914                 lda     #20
+    \ 005a aa                   tax
+    \ 005b f007                 beq     `?L447`
+    \ 005d          `?L448`:
+    \ 005d 424246..             lsrq    zp:_Zp+8
+    \ 0061 ca                   dex
+    \ 0062 d0f9                 bne     `?L448`
+    \ 0064 18       `?L447`:    clc
+    \ 0065 a9..                 lda     #.byte0 hexDigits
+    \ 0067 65..                 adc     zp:_Zp+8
+    \ 0069 85..                 sta     zp:_Zp+6
+    \ 006b a9..                 lda     #.byte1 hexDigits
+    \ 006d 65..                 adc     zp:_Zp+9
+    \ 006f 85..                 sta     zp:_Zp+7
+    \ 0071 a000                 ldy     #0
+    \ 0073 b1..                 lda     (_Zp+6),y
+    \ 0075 a003                 ldy     #3
+    \ 0077 91..                 sta     (_Vsp),y
+    \ 0079 a900                 lda     #0
+    \ 007b aa                   tax
+    \ 007c a00f                 ldy     #15
+    \ 007e 4b                   taz
+    \ 007f 424225..             andq    zp:_Zp
+    \ 0083 424285..             stq     zp:_Zp+8
+    \ 0087 18                   clc
+    \ 0088 a9..                 lda     #.byte0 hexDigits
+    \ 008a 65..                 adc     zp:_Zp+10
+    \ 008c 85..                 sta     zp:_Zp+6
+    \ 008e a9..                 lda     #.byte1 hexDigits
+    \ 0090 65..                 adc     zp:_Zp+11
+    \ 0092 85..                 sta     zp:_Zp+7
+    \ 0094 a000                 ldy     #0
+    \ 0096 b1..                 lda     (_Zp+6),y
+    \ 0098 a004                 ldy     #4
+    \ 009a 91..                 sta     (_Vsp),y
+    \ 009c a9f0                 lda     #240
+    \ 009e 25..                 and     zp:_Zp+1
+    \ 00a0 43                   asr     a
+    \ 00a1 43                   asr     a
+    \ 00a2 43                   asr     a
+    \ 00a3 43                   asr     a
+    \ 00a4 85..                 sta     zp:_Zp+6
+    \ 00a6 097f                 ora     #127
+    \ 00a8 3002                 bmi     `?L450`
+    \ 00aa a900                 lda     #0
+    \ 00ac          `?L450`:
+    \ 00ac 85..                 sta     zp:_Zp+7
+    \ 00ae 20....               jsr     `?L592`
+    \ 00b1 a005                 ldy     #5
+    \ 00b3 91..                 sta     (_Vsp),y
+    \ 00b5 a90f                 lda     #15
+    \ 00b7 25..                 and     zp:_Zp+1
+    \ 00b9 48                   pha
+    \ 00ba 097f                 ora     #127
+    \ 00bc 3002                 bmi     `?L452`
+    \ 00be a900                 lda     #0
+    \ 00c0          `?L452`:
+    \ 00c0 85..                 sta     zp:_Zp+7
+    \ 00c2 68                   pla
+    \ 00c3 85..                 sta     zp:_Zp+6
+    \ 00c5 20....               jsr     `?L592`
+    \ 00c8 a006                 ldy     #6
+    \ 00ca 91..                 sta     (_Vsp),y
+    \ 00cc a5..                 lda     zp:_Zp
+    \ 00ce 29f0                 and     #-16
+    \ 00d0 4a                   lsr     a
+    \ 00d1 4a                   lsr     a
+    \ 00d2 4a                   lsr     a
+    \ 00d3 4a                   lsr     a
+    \ 00d4 aa                   tax
+    \ 00d5 bd....               lda     hexDigits,x
+    \ 00d8 c8                   iny
+    \ 00d9 91..                 sta     (_Vsp),y
+    \ 00db a5..                 lda     zp:_Zp
+    \ 00dd 290f                 and     #15
+    \ 00df aa                   tax
+    \ 00e0 bd....               lda     hexDigits,x
+    \ 00e3 c8                   iny
+    \ 00e4 91..                 sta     (_Vsp),y
+    \ 00e6 a900                 lda     #0
+    \ 00e8 c8                   iny
+    \ 00e9 91..                 sta     (_Vsp),y
+    \ 00eb 20....               jsr     `?L628`
+    \ 00ee a908                 lda     #8
+    \ 00f0 38                   sec
+    \ 00f1 e5..                 sbc     zp:_Zp+4
+    \ 00f3 4b                   taz
+    \ 00f4 a924                 lda     #36
+    \ 00f6 92..                 sta     (_Zp),z
+    \ 00f8 20....               jsr     `?L624`
+    \ 00fb a908                 lda     #8
+    \ 00fd 38                   sec
+    \ 00fe e5..                 sbc     zp:_Zp+4
+    \ 0100 85..                 sta     zp:_Zp
+    \ 0102 18                   clc
+    \ 0103 a5..                 lda     zp:_Zp+2
+    \ 0105 65..                 adc     zp:_Zp
+    \ 0107 85..                 sta     zp:_Zp+2
+    \ 0109 9002                 bcc     `?L420`
+    \ 010b e6..                 inc     zp:_Zp+3
+    \ 010d          `?L420`:
+    \ 010d 20....               jsr     `?L597`
+    \ 0110 20....               jsr     cputsxy
+    \ 0113 a20a                 ldx     #10
+    \ 0115 4c....               jmp     _DeallocStack
+    \ 0000                      .section code,text
+    \ 0000                      .public cputdec
+    \ 0000 a2f5     cputdec:    ldx     #245
+    \ 0002 20....               jsr     _AllocStack
+    \ 0005 a5..                 lda     zp:_Zp+4
+    \ 0007 85..                 sta     zp:_Zp+20
+    \ 0009 a909                 lda     #9
+    \ 000b 85..                 sta     zp:_Zp+21
+    \ 000d a900                 lda     #0
+    \ 000f a00a                 ldy     #10
+    \ 0011 91..                 sta     (_Vsp),y
+    \ 0013 20....               jsr     `?L622`
+    \ 0016          `?L221`:
+    \ 0016 20....               jsr     `?L603`
+    \ 0019 a5..                 lda     zp:_Zp+4
+    \ 001b 85..                 sta     zp:_Zp+22
+    \ 001d 20....               jsr     `?L603`
+    \ 0020 a5..                 lda     zp:_Zp+21
+    \ 0022 85..                 sta     zp:_Zp+4
+    \ 0024 a6..                 ldx     zp:_Zp+22
+    \ 0026 bd....               lda     hexDigits,x
+    \ 0029 48                   pha
+    \ 002a a6..                 ldx     zp:_Vsp
+    \ 002c 86..                 stx     zp:_Zp+6
+    \ 002e a6..                 ldx     zp:_Vsp+1
+    \ 0030 86..                 stx     zp:_Zp+7
+    \ 0032 a5..                 lda     zp:_Zp+4
+    \ 0034 c6..                 dec     zp:_Zp+4
+    \ 0036 4b                   taz
+    \ 0037 68                   pla
+    \ 0038 92..                 sta     (_Zp+6),z
+    \ 003a ab....               ldz     _Zp+4
+    \ 003d c200                 cpz     #0
+    \ 003f 9011                 bcc     `?L224`
+    \ 0041 20....               jsr     `?L622`
+    \ 0044 a5..                 lda     zp:_Zp+4
+    \ 0046 85..                 sta     zp:_Zp+21
+    \ 0048 4242e6..             inq     zp:_Zp
+    \ 004c 4242c6..             deq     zp:_Zp
+    \ 0050 d0c4                 bne     `?L221`
+    \ 0052          `?L224`:
+    \ 0052 ab....               ldz     _Zp+4
+    \ 0055 c200                 cpz     #0
+    \ 0057 9016                 bcc     `?L225`
+    \ 0059 a5..                 lda     zp:_Zp+20
+    \ 005b c6..                 dec     zp:_Zp+20
+    \ 005d aa                   tax
+    \ 005e f00f                 beq     `?L225`
+    \ 0060 20....               jsr     `?L628`
+    \ 0063 a5..                 lda     zp:_Zp+4
+    \ 0065 c6..                 dec     zp:_Zp+4
+    \ 0067 4b                   taz
+    \ 0068 ad....               lda     hexDigits
+    \ 006b 92..                 sta     (_Zp),z
+    \ 006d 80e3                 bra     `?L224`
+    \ 006f          `?L225`:
+    \ 006f 20....               jsr     `?L624`
+    \ 0072 e6..                 inc     zp:_Zp+4
+    \ 0074 18                   clc
+    \ 0075 a5..                 lda     zp:_Zp+2
+    \ 0077 65..                 adc     zp:_Zp+4
+    \ 0079 85..                 sta     zp:_Zp+2
+    \ 007b 9002                 bcc     `?L417`
+    \ 007d e6..                 inc     zp:_Zp+3
+    \ 007f          `?L417`:
+    \ 007f 20....               jsr     `?L597`
+    \ 0082 20....               jsr     cputsxy
+    \ 0085 a20b                 ldx     #11
+    \ 0087 4c....               jmp     _DeallocStack
+    \ 0000                      .section code,text
+    \ 0000                      .public cputs
+    \ 0000          cputs:
+    \ 0000 20....               jsr     `?L625`
+    \ 0003 20....               jsr     `?L597`
+    \ 0006 20....               jsr     cputsxy
+    \ 0009 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public cputsxy
+    \ 0000          cputsxy:
+    \ 0000 20....               jsr     `?L631`
+    \ 0003 85..                 sta     zp:_Zp+30
+    \ 0005 a5..                 lda     zp:_Zp
+    \ 0007 85..                 sta     zp:_Zp+29
+    \ 0009 a5..                 lda     zp:_Zp+2
+    \ 000b 85..                 sta     zp:_Zp+26
+    \ 000d a5..                 lda     zp:_Zp+3
+    \ 000f 85..                 sta     zp:_Zp+27
+    \ 0011 a5..                 lda     zp:_Zp+26
+    \ 0013 85..                 sta     zp:_Zp
+    \ 0015 a5..                 lda     zp:_Zp+27
+    \ 0017 85..                 sta     zp:_Zp+1
+    \ 0019 20....               jsr     strlen
+    \ 001c a5..                 lda     zp:_Zp
+    \ 001e 85..                 sta     zp:_Zp+28
+    \ 0020 a5..                 lda     zp:_Zp+29
+    \ 0022 20....               jsr     `?L606`
+    \ 0025 20....               jsr     `?L619`
+    \ 0028 9002                 bcc     `?L467`
+    \ 002a e6..                 inc     zp:_Zp+1
+    \ 002c          `?L467`:
+    \ 002c 20....               jsr     `?L600`
+    \ 002f a9fe                 lda     #-2
+    \ 0031 20....               jsr     _DecVsp
+    \ 0034 a6..                 ldx     zp:_Zp+28
+    \ 0036 20....               jsr     `?L605`
+    \ 0039 a001                 ldy     #1
+    \ 003b a5..                 lda     zp:_Zp+1
+    \ 003d 91..                 sta     (_Vsp),y
+    \ 003f 88                   dey
+    \ 0040 a5..                 lda     zp:_Zp
+    \ 0042 91..                 sta     (_Vsp),y
+    \ 0044 20....               jsr     `?L609`
+    \ 0047 85..                 sta     zp:_Zp+4
+    \ 0049 98                   tya
+    \ 004a 85..                 sta     zp:_Zp+5
+    \ 004c a5..                 lda     zp:_Zp+4
+    \ 004e 20....               jsr     `?L608`
+    \ 0051 48                   pha
+    \ 0052 da                   phx
+    \ 0053 5a                   phy
+    \ 0054 db                   phz
+    \ 0055 ad61d0               lda     0xd061
+    \ 0058 20....               jsr     `?L588`
+    \ 005b 85..                 sta     zp:_Zp
+    \ 005d fb                   plz
+    \ 005e 7a                   ply
+    \ 005f fa                   plx
+    \ 0060 68                   pla
+    \ 0061 424205..             orq     zp:_Zp
+    \ 0065 48                   pha
+    \ 0066 da                   phx
+    \ 0067 5a                   phy
+    \ 0068 db                   phz
+    \ 0069 20....               jsr     `?L589`
+    \ 006c fb                   plz
+    \ 006d 7a                   ply
+    \ 006e fa                   plx
+    \ 006f 68                   pla
+    \ 0070 424205..             orq     zp:_Zp
+    \ 0074 48                   pha
+    \ 0075 da                   phx
+    \ 0076 5a                   phy
+    \ 0077 db                   phz
+    \ 0078 20....               jsr     `?L616`
+    \ 007b a900                 lda     #0
+    \ 007d 20....               jsr     `?L591`
+    \ 0080 fb                   plz
+    \ 0081 7a                   ply
+    \ 0082 fa                   plx
+    \ 0083 68                   pla
+    \ 0084 18                   clc
+    \ 0085 424265..             adcq    zp:_Zp
+    \ 0089 424285..             stq     zp:_Zp+4
+    \ 008d a5..                 lda     zp:_Zp+27
+    \ 008f 85..                 sta     zp:_Zp+1
+    \ 0091 a5..                 lda     zp:_Zp+26
+    \ 0093 20....               jsr     `?L611`
+    \ 0096 20....               jsr     `?L591`
+    \ 0099 20....               jsr     lcopy
+    \ 009c a001                 ldy     #1
+    \ 009e 20....               jsr     _IncVsp
+    \ 00a1 a6..                 ldx     zp:_Zp+28
+    \ 00a3 20....               jsr     `?L598`
+    \ 00a6 ad....               lda     g_curTextColor
+    \ 00a9 20....               jsr     lfill
+    \ 00ac a6..                 ldx     zp:_Zp+28
+    \ 00ae 20....               jsr     `?L605`
+    \ 00b1 20....               jsr     `?L619`
+    \ 00b4 9002                 bcc     `?L473`
+    \ 00b6 e6..                 inc     zp:_Zp+1
+    \ 00b8          `?L473`:
+    \ 00b8 20....               jsr     `?L601`
+    \ 00bb a5..                 lda     zp:_Zp
+    \ 00bd 18                   clc
+    \ 00be 65..                 adc     zp:_Zp+29
+    \ 00c0 8d....               sta     g_curY
+    \ 00c3 a6..                 ldx     zp:_Zp+28
+    \ 00c5 20....               jsr     `?L605`
+    \ 00c8 20....               jsr     `?L619`
+    \ 00cb 9002                 bcc     `?L476`
+    \ 00cd e6..                 inc     zp:_Zp+1
+    \ 00cf          `?L476`:
+    \ 00cf 20....               jsr     `?L601`
+    \ 00d2 a5..                 lda     zp:_Zp+2
+    \ 00d4 8d....               sta     g_curX
+    \ 00d7 a00b                 ldy     #11
+    \ 00d9 4c....               jmp     _RestoreRegisters
+    \ 0000                      .section code,text
+    \ 0000                      .public cputcxy
+    \ 0000 a200     cputcxy:    ldx     #0
+    \ 0002 a007                 ldy     #7
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 85..                 sta     zp:_Zp+27
+    \ 0009 20....               jsr     `?L618`
+    \ 000c 85..                 sta     zp:_Zp+4
+    \ 000e a5..                 lda     zp:_Zp+26
+    \ 0010 20....               jsr     `?L606`
+    \ 0013 20....               jsr     `?L600`
+    \ 0016 18                   clc
+    \ 0017 a5..                 lda     zp:_Zp+24
+    \ 0019 65..                 adc     zp:_Zp+27
+    \ 001b 85..                 sta     zp:_Zp+24
+    \ 001d 9002                 bcc     `?L481`
+    \ 001f e6..                 inc     zp:_Zp+25
+    \ 0021          `?L481`:
+    \ 0021 20....               jsr     `?L587`
+    \ 0024 48                   pha
+    \ 0025 da                   phx
+    \ 0026 5a                   phy
+    \ 0027 db                   phz
+    \ 0028 ad61d0               lda     0xd061
+    \ 002b 20....               jsr     `?L588`
+    \ 002e 85..                 sta     zp:_Zp
+    \ 0030 fb                   plz
+    \ 0031 7a                   ply
+    \ 0032 fa                   plx
+    \ 0033 68                   pla
+    \ 0034 424205..             orq     zp:_Zp
+    \ 0038 48                   pha
+    \ 0039 da                   phx
+    \ 003a 5a                   phy
+    \ 003b db                   phz
+    \ 003c 20....               jsr     `?L589`
+    \ 003f fb                   plz
+    \ 0040 7a                   ply
+    \ 0041 fa                   plx
+    \ 0042 68                   pla
+    \ 0043 424205..             orq     zp:_Zp
+    \ 0047 48                   pha
+    \ 0048 da                   phx
+    \ 0049 5a                   phy
+    \ 004a db                   phz
+    \ 004b 20....               jsr     `?L610`
+    \ 004e 20....               jsr     `?L591`
+    \ 0051 fb                   plz
+    \ 0052 7a                   ply
+    \ 0053 fa                   plx
+    \ 0054 68                   pla
+    \ 0055 20....               jsr     `?L599`
+    \ 0058 a5..                 lda     zp:_Zp+4
+    \ 005a 20....               jsr     lpoke
+    \ 005d a5..                 lda     zp:_Zp+25
+    \ 005f 20....               jsr     `?L602`
+    \ 0062 20....               jsr     lpoke
+    \ 0065 20....               jsr     `?L607`
+    \ 0068 f009                 beq     `?L375`
+    \ 006a a6..                 ldx     zp:_Zp+27
+    \ 006c 20....               jsr     `?L605`
+    \ 006f e3..                 inw     zp:_Zp
+    \ 0071 8003                 bra     `?L376`
+    \ 0073 8a       `?L375`:    txa
+    \ 0074 85..                 sta     zp:_Zp
+    \ 0076          `?L376`:
+    \ 0076 a5..                 lda     zp:_Zp
+    \ 0078 8d....               sta     g_curX
+    \ 007b 20....               jsr     `?L607`
+    \ 007e f006                 beq     `?L378`
+    \ 0080 a6..                 ldx     zp:_Zp+26
+    \ 0082 86..                 stx     zp:_Zp
+    \ 0084 8007                 bra     `?L379`
+    \ 0086          `?L378`:
+    \ 0086 a6..                 ldx     zp:_Zp+26
+    \ 0088 20....               jsr     `?L605`
+    \ 008b e3..                 inw     zp:_Zp
+    \ 008d          `?L379`:
+    \ 008d a5..                 lda     zp:_Zp
+    \ 008f 8d....               sta     g_curY
+    \ 0092 a007                 ldy     #7
+    \ 0094 4c....               jmp     _RestoreRegisters
+    \ 0000                      .section code,text
+    \ 0000                      .public cputncxy
+    \ 0000 a200     cputncxy:   ldx     #0
+    \ 0002 a008                 ldy     #8
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 85..                 sta     zp:_Zp+32
+    \ 0009 20....               jsr     `?L618`
+    \ 000c 85..                 sta     zp:_Zp+27
+    \ 000e a5..                 lda     zp:_Zp+2
+    \ 0010 85..                 sta     zp:_Zp+6
+    \ 0012 a5..                 lda     zp:_Zp+26
+    \ 0014 20....               jsr     `?L606`
+    \ 0017 20....               jsr     `?L600`
+    \ 001a 18                   clc
+    \ 001b a5..                 lda     zp:_Zp+24
+    \ 001d 65..                 adc     zp:_Zp+32
+    \ 001f 85..                 sta     zp:_Zp+24
+    \ 0021 9002                 bcc     `?L487`
+    \ 0023 e6..                 inc     zp:_Zp+25
+    \ 0025          `?L487`:
+    \ 0025 20....               jsr     `?L629`
+    \ 0028 20....               jsr     `?L587`
+    \ 002b 48                   pha
+    \ 002c da                   phx
+    \ 002d 5a                   phy
+    \ 002e db                   phz
+    \ 002f ad61d0               lda     0xd061
+    \ 0032 20....               jsr     `?L588`
+    \ 0035 85..                 sta     zp:_Zp
+    \ 0037 fb                   plz
+    \ 0038 7a                   ply
+    \ 0039 fa                   plx
+    \ 003a 68                   pla
+    \ 003b 424205..             orq     zp:_Zp
+    \ 003f 48                   pha
+    \ 0040 da                   phx
+    \ 0041 5a                   phy
+    \ 0042 db                   phz
+    \ 0043 20....               jsr     `?L589`
+    \ 0046 fb                   plz
+    \ 0047 7a                   ply
+    \ 0048 fa                   plx
+    \ 0049 68                   pla
+    \ 004a 424205..             orq     zp:_Zp
+    \ 004e 48                   pha
+    \ 004f da                   phx
+    \ 0050 5a                   phy
+    \ 0051 db                   phz
+    \ 0052 20....               jsr     `?L610`
+    \ 0055 20....               jsr     `?L591`
+    \ 0058 fb                   plz
+    \ 0059 7a                   ply
+    \ 005a fa                   plx
+    \ 005b 68                   pla
+    \ 005c 20....               jsr     `?L599`
+    \ 005f a5..                 lda     zp:_Zp+6
+    \ 0061 20....               jsr     lfill
+    \ 0064 20....               jsr     `?L629`
+    \ 0067 a5..                 lda     zp:_Zp+25
+    \ 0069 20....               jsr     `?L602`
+    \ 006c 20....               jsr     lfill
+    \ 006f a6..                 ldx     zp:_Zp+27
+    \ 0071 20....               jsr     `?L605`
+    \ 0074 18                   clc
+    \ 0075 a5..                 lda     zp:_Zp
+    \ 0077 65..                 adc     zp:_Zp+32
+    \ 0079 85..                 sta     zp:_Zp
+    \ 007b 9002                 bcc     `?L491`
+    \ 007d e6..                 inc     zp:_Zp+1
+    \ 007f          `?L491`:
+    \ 007f 20....               jsr     `?L601`
+    \ 0082 a5..                 lda     zp:_Zp
+    \ 0084 18                   clc
+    \ 0085 65..                 adc     zp:_Zp+26
+    \ 0087 8d....               sta     g_curY
+    \ 008a a6..                 ldx     zp:_Zp+27
+    \ 008c 20....               jsr     `?L605`
+    \ 008f 18                   clc
+    \ 0090 a5..                 lda     zp:_Zp
+    \ 0092 65..                 adc     zp:_Zp+32
+    \ 0094 85..                 sta     zp:_Zp
+    \ 0096 9002                 bcc     `?L494`
+    \ 0098 e6..                 inc     zp:_Zp+1
+    \ 009a          `?L494`:
+    \ 009a 20....               jsr     `?L601`
+    \ 009d a5..                 lda     zp:_Zp+2
+    \ 009f 8d....               sta     g_curX
+    \ 00a2 a008                 ldy     #8
+    \ 00a4 4c....               jmp     _RestoreRegisters
+    \ 0000                      .section code,text
+    \ 0000                      .public fillrect
+    \ 0000          fillrect:
+    \ 0000 20....               jsr     `?L631`
+    \ 0003 85..                 sta     zp:_Zp+30
+    \ 0005 20....               jsr     `?L618`
+    \ 0008 85..                 sta     zp:_Zp+27
+    \ 000a a5..                 lda     zp:_Zp+2
+    \ 000c 85..                 sta     zp:_Zp+28
+    \ 000e a002                 ldy     #2
+    \ 0010 b1..                 lda     (_Zp+26),y
+    \ 0012 a300                 ldz     #0
+    \ 0014 38                   sec
+    \ 0015 f2..                 sbc     (_Zp+26),z
+    \ 0017 85..                 sta     zp:_Zp+31
+    \ 0019 88                   dey
+    \ 001a b1..                 lda     (_Zp+26),y
+    \ 001c 85..                 sta     zp:_Zp+29
+    \ 001e a003     `?L243`:    ldy     #3
+    \ 0020 b1..                 lda     (_Zp+26),y
+    \ 0022 c5..                 cmp     zp:_Zp+29
+    \ 0024 b005                 bcs     `?L242`
+    \ 0026 a00b                 ldy     #11
+    \ 0028 4c....               jmp     _RestoreRegisters
+    \ 002b          `?L242`:
+    \ 002b a5..                 lda     zp:_Zp+29
+    \ 002d 20....               jsr     `?L606`
+    \ 0030 20....               jsr     `?L600`
+    \ 0033 a000                 ldy     #0
+    \ 0035 b1..                 lda     (_Zp+26),y
+    \ 0037 85..                 sta     zp:_Zp
+    \ 0039 18                   clc
+    \ 003a a5..                 lda     zp:_Zp+24
+    \ 003c 65..                 adc     zp:_Zp
+    \ 003e 85..                 sta     zp:_Zp+24
+    \ 0040 9002                 bcc     `?L499`
+    \ 0042 e6..                 inc     zp:_Zp+25
+    \ 0044          `?L499`:
+    \ 0044 a6..                 ldx     zp:_Zp+31
+    \ 0046 86..                 stx     zp:_Zp+4
+    \ 0048 98                   tya
+    \ 0049 85..                 sta     zp:_Zp+5
+    \ 004b 20....               jsr     `?L609`
+    \ 004e 85..                 sta     zp:_Zp+8
+    \ 0050 98                   tya
+    \ 0051 85..                 sta     zp:_Zp+9
+    \ 0053 a5..                 lda     zp:_Zp+8
+    \ 0055 85..                 sta     zp:_Zp+10
+    \ 0057 a5..                 lda     zp:_Zp+9
+    \ 0059 85..                 sta     zp:_Zp+11
+    \ 005b 85..                 sta     zp:_Zp+8
+    \ 005d 85..                 sta     zp:_Zp+9
+    \ 005f 4242a5..             ldq     zp:_Zp+8
+    \ 0063 424205..             orq     zp:_Zp
+    \ 0067 48                   pha
+    \ 0068 da                   phx
+    \ 0069 5a                   phy
+    \ 006a db                   phz
+    \ 006b ad61d0               lda     0xd061
+    \ 006e 20....               jsr     `?L588`
+    \ 0071 85..                 sta     zp:_Zp
+    \ 0073 fb                   plz
+    \ 0074 7a                   ply
+    \ 0075 fa                   plx
+    \ 0076 68                   pla
+    \ 0077 424205..             orq     zp:_Zp
+    \ 007b 48                   pha
+    \ 007c da                   phx
+    \ 007d 5a                   phy
+    \ 007e db                   phz
+    \ 007f 20....               jsr     `?L589`
+    \ 0082 fb                   plz
+    \ 0083 7a                   ply
+    \ 0084 fa                   plx
+    \ 0085 68                   pla
+    \ 0086 424205..             orq     zp:_Zp
+    \ 008a 48                   pha
+    \ 008b da                   phx
+    \ 008c 5a                   phy
+    \ 008d db                   phz
+    \ 008e 20....               jsr     `?L610`
+    \ 0091 20....               jsr     `?L591`
+    \ 0094 fb                   plz
+    \ 0095 7a                   ply
+    \ 0096 fa                   plx
+    \ 0097 68                   pla
+    \ 0098 20....               jsr     `?L599`
+    \ 009b a5..                 lda     zp:_Zp+30
+    \ 009d 20....               jsr     lfill
+    \ 00a0 a6..                 ldx     zp:_Zp+31
+    \ 00a2 20....               jsr     `?L598`
+    \ 00a5 a5..                 lda     zp:_Zp+28
+    \ 00a7 20....               jsr     lfill
+    \ 00aa e6..                 inc     zp:_Zp+29
+    \ 00ac 4c....               jmp     `?L243`
+    \ 0000                      .section code,text
+    \ 0000                      .public box
+    \ 0000 a2d8     box:        ldx     #216
+    \ 0002 a006                 ldy     #6
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 85..                 sta     zp:_Zp+5
+    \ 0009 20....               jsr     `?L600`
+    \ 000c a5..                 lda     zp:_Zp+2
+    \ 000e 85..                 sta     zp:_Zp+28
+    \ 0010 a5..                 lda     zp:_Zp+3
+    \ 0012 85..                 sta     zp:_Zp+26
+    \ 0014 a5..                 lda     zp:_Zp+4
+    \ 0016 85..                 sta     zp:_Zp+27
+    \ 0018 a002                 ldy     #2
+    \ 001a b1..                 lda     (_Zp+24),y
+    \ 001c a300                 ldz     #0
+    \ 001e 38                   sec
+    \ 001f f2..                 sbc     (_Zp+24),z
+    \ 0021 85..                 sta     zp:_Zp+29
+    \ 0023 ad....               lda     g_curTextColor
+    \ 0026 85..                 sta     zp:_Zp+30
+    \ 0028 20....               jsr     `?L623`
+    \ 002b a9..                 lda     #.byte0 `??_Initializer0`
+    \ 002d 85..                 sta     zp:_Zp+2
+    \ 002f a9..                 lda     #.byte1 `??_Initializer0`
+    \ 0031 20....               jsr     `?L595`
+    \ 0034 a905                 lda     #5
+    \ 0036 20....               jsr     _LoadVspEA
+    \ 0039 a9..                 lda     #.byte0 `??_Initializer1`
+    \ 003b 85..                 sta     zp:_Zp+2
+    \ 003d a9..                 lda     #.byte1 `??_Initializer1`
+    \ 003f 20....               jsr     `?L595`
+    \ 0042 a90a                 lda     #10
+    \ 0044 20....               jsr     _LoadVspEA
+    \ 0047 a9..                 lda     #.byte0 `??_Initializer2`
+    \ 0049 85..                 sta     zp:_Zp+2
+    \ 004b a9..                 lda     #.byte1 `??_Initializer2`
+    \ 004d 20....               jsr     `?L595`
+    \ 0050 a90f                 lda     #15
+    \ 0052 20....               jsr     _LoadVspEA
+    \ 0055 a9..                 lda     #.byte0 `??_Initializer3`
+    \ 0057 85..                 sta     zp:_Zp+2
+    \ 0059 a9..                 lda     #.byte1 `??_Initializer3`
+    \ 005b 20....               jsr     `?L595`
+    \ 005e a914                 lda     #20
+    \ 0060 20....               jsr     _LoadVspEA
+    \ 0063 a9..                 lda     #.byte0 `??_Initializer4`
+    \ 0065 85..                 sta     zp:_Zp+2
+    \ 0067 a9..                 lda     #.byte1 `??_Initializer4`
+    \ 0069 20....               jsr     `?L595`
+    \ 006c a919                 lda     #25
+    \ 006e 20....               jsr     _LoadVspEA
+    \ 0071 a9..                 lda     #.byte0 `??_Initializer5`
+    \ 0073 85..                 sta     zp:_Zp+2
+    \ 0075 a9..                 lda     #.byte1 `??_Initializer5`
+    \ 0077 20....               jsr     `?L595`
+    \ 007a a91e                 lda     #30
+    \ 007c 20....               jsr     _LoadVspEA
+    \ 007f a9..                 lda     #.byte0 `??_Initializer6`
+    \ 0081 85..                 sta     zp:_Zp+2
+    \ 0083 a9..                 lda     #.byte1 `??_Initializer6`
+    \ 0085 20....               jsr     `?L595`
+    \ 0088 a923                 lda     #35
+    \ 008a 20....               jsr     _LoadVspEA
+    \ 008d a9..                 lda     #.byte0 `??_Initializer7`
+    \ 008f 85..                 sta     zp:_Zp+2
+    \ 0091 a9..                 lda     #.byte1 `??_Initializer7`
+    \ 0093 85..                 sta     zp:_Zp+3
+    \ 0095 a205                 ldx     #5
+    \ 0097 20....               jsr     _MoveLong16X
+    \ 009a a5..                 lda     zp:_Zp+5
+    \ 009c 20....               jsr     textcolor
+    \ 009f a5..                 lda     zp:_Zp+26
+    \ 00a1 f00d                 beq     `?L250`
+    \ 00a3 ae....               ldx     g_curTextColor
+    \ 00a6 86..                 stx     zp:_Zp+2
+    \ 00a8 20....               jsr     `?L616`
+    \ 00ab a920                 lda     #32
+    \ 00ad 20....               jsr     fillrect
+    \ 00b0          `?L250`:
+    \ 00b0 20....               jsr     `?L623`
+    \ 00b3 18                   clc
+    \ 00b4 a5..                 lda     zp:_Zp
+    \ 00b6 65..                 adc     zp:_Zp+28
+    \ 00b8 85..                 sta     zp:_Zp
+    \ 00ba 9002                 bcc     `?L521`
+    \ 00bc e6..                 inc     zp:_Zp+1
+    \ 00be          `?L521`:
+    \ 00be 20....               jsr     `?L604`
+    \ 00c1 c8                   iny
+    \ 00c2 b1..                 lda     (_Zp+24),y
+    \ 00c4 85..                 sta     zp:_Zp
+    \ 00c6 88                   dey
+    \ 00c7 20....               jsr     `?L612`
+    \ 00ca a90a                 lda     #10
+    \ 00cc 20....               jsr     `?L593`
+    \ 00cf 9002                 bcc     `?L525`
+    \ 00d1 e6..                 inc     zp:_Zp+1
+    \ 00d3          `?L525`:
+    \ 00d3 20....               jsr     `?L604`
+    \ 00d6 a003                 ldy     #3
+    \ 00d8 b1..                 lda     (_Zp+24),y
+    \ 00da 85..                 sta     zp:_Zp
+    \ 00dc a000                 ldy     #0
+    \ 00de 20....               jsr     `?L612`
+    \ 00e1 a905                 lda     #5
+    \ 00e3 20....               jsr     `?L593`
+    \ 00e6 9002                 bcc     `?L529`
+    \ 00e8 e6..                 inc     zp:_Zp+1
+    \ 00ea          `?L529`:
+    \ 00ea 20....               jsr     `?L604`
+    \ 00ed c8                   iny
+    \ 00ee b1..                 lda     (_Zp+24),y
+    \ 00f0 85..                 sta     zp:_Zp
+    \ 00f2 c8                   iny
+    \ 00f3 20....               jsr     `?L612`
+    \ 00f6 a90f                 lda     #15
+    \ 00f8 20....               jsr     `?L593`
+    \ 00fb 9002                 bcc     `?L533`
+    \ 00fd e6..                 inc     zp:_Zp+1
+    \ 00ff          `?L533`:
+    \ 00ff 20....               jsr     `?L604`
+    \ 0102 a003                 ldy     #3
+    \ 0104 b1..                 lda     (_Zp+24),y
+    \ 0106 85..                 sta     zp:_Zp
+    \ 0108 88                   dey
+    \ 0109 b1..                 lda     (_Zp+24),y
+    \ 010b 20....               jsr     cputcxy
+    \ 010e a901                 lda     #1
+    \ 0110 85..                 sta     zp:_Zp+26
+    \ 0112          `?L253`:
+    \ 0112 ab....               ldz     _Zp+26
+    \ 0115 d4..                 cpz     zp:_Zp+29
+    \ 0117 93e900               lbcc    `?L252`
+    \ 011a 20....               jsr     `?L627`
+    \ 011d a003     `?L257`:    ldy     #3
+    \ 011f b1..                 lda     (_Zp+24),y
+    \ 0121 20....               jsr     `?L611`
+    \ 0124 85..                 sta     zp:_Zp+1
+    \ 0126 c3..                 dew     zp:_Zp
+    \ 0128 20....               jsr     `?L615`
+    \ 012b 5002                 bvc     `?L536`
+    \ 012d 4980                 eor     #-128
+    \ 012f 13a000   `?L536`:    lbpl    `?L256`
+    \ 0132 a5..                 lda     zp:_Zp+27
+    \ 0134 f38f00               lbeq    `?L261`
+    \ 0137 b1..                 lda     (_Zp+24),y
+    \ 0139 cd....               cmp     g_curScreenH
+    \ 013c b38700               lbcs    `?L261`
+    \ 013f 88                   dey
+    \ 0140 b1..                 lda     (_Zp+24),y
+    \ 0142 cd....               cmp     g_curScreenW
+    \ 0145 b07e                 bcs     `?L261`
+    \ 0147 a6..                 ldx     zp:_Zp+29
+    \ 0149 86..                 stx     zp:_Zp+4
+    \ 014b a900                 lda     #0
+    \ 014d 85..                 sta     zp:_Zp+5
+    \ 014f c8                   iny
+    \ 0150 b1..                 lda     (_Zp+24),y
+    \ 0152 85..                 sta     zp:_Zp+2
+    \ 0154 a900                 lda     #0
+    \ 0156 85..                 sta     zp:_Zp+3
+    \ 0158 e3..                 inw     zp:_Zp+2
+    \ 015a ae....               ldx     g_curScreenW
+    \ 015d 86..                 stx     zp:_Zp
+    \ 015f 85..                 sta     zp:_Zp+1
+    \ 0161 20....               jsr     _Mul16
+    \ 0164 a900                 lda     #0
+    \ 0166 20....               jsr     `?L591`
+    \ 0169 aa                   tax
+    \ 016a a0f8                 ldy     #248
+    \ 016c a30f                 ldz     #15
+    \ 016e 18                   clc
+    \ 016f 424265..             adcq    zp:_Zp
+    \ 0173 48                   pha
+    \ 0174 da                   phx
+    \ 0175 5a                   phy
+    \ 0176 db                   phz
+    \ 0177 a000                 ldy     #0
+    \ 0179 b1..                 lda     (_Zp+24),y
+    \ 017b 85..                 sta     zp:_Zp
+    \ 017d 98                   tya
+    \ 017e 85..                 sta     zp:_Zp+1
+    \ 0180 e3..                 inw     zp:_Zp
+    \ 0182 a5..                 lda     zp:_Zp+1
+    \ 0184 097f                 ora     #127
+    \ 0186 3001                 bmi     `?L539`
+    \ 0188 98                   tya
+    \ 0189          `?L539`:
+    \ 0189 20....               jsr     `?L591`
+    \ 018c fb                   plz
+    \ 018d 7a                   ply
+    \ 018e fa                   plx
+    \ 018f 68                   pla
+    \ 0190 20....               jsr     `?L599`
+    \ 0193 a90b                 lda     #11
+    \ 0195 20....               jsr     lfill
+    \ 0198 20....               jsr     `?L627`
+    \ 019b a003     `?L264`:    ldy     #3
+    \ 019d b1..                 lda     (_Zp+24),y
+    \ 019f 20....               jsr     `?L611`
+    \ 01a2 85..                 sta     zp:_Zp+1
+    \ 01a4 e3..                 inw     zp:_Zp
+    \ 01a6 20....               jsr     `?L615`
+    \ 01a9 5002                 bvc     `?L542`
+    \ 01ab 4980                 eor     #-128
+    \ 01ad 3016     `?L542`:    bmi     `?L261`
+    \ 01af a90b                 lda     #11
+    \ 01b1 85..                 sta     zp:_Zp+1
+    \ 01b3 a5..                 lda     zp:_Zp+26
+    \ 01b5 85..                 sta     zp:_Zp
+    \ 01b7 a901                 lda     #1
+    \ 01b9 a302                 ldz     #2
+    \ 01bb 18                   clc
+    \ 01bc 72..                 adc     (_Zp+24),z
+    \ 01be 20....               jsr     cellcolor
+    \ 01c1 e6..                 inc     zp:_Zp+26
+    \ 01c3 80d6                 bra     `?L264`
+    \ 01c5          `?L261`:
+    \ 01c5 a5..                 lda     zp:_Zp+30
+    \ 01c7 20....               jsr     textcolor
+    \ 01ca a228                 ldx     #40
+    \ 01cc a006                 ldy     #6
+    \ 01ce 4c....               jmp     _DeallocStackRestore
+    \ 01d1          `?L256`:
+    \ 01d1 a2..                 ldx     #_Zp
+    \ 01d3 a923                 lda     #35
+    \ 01d5 20....               jsr     `?L593`
+    \ 01d8 9002                 bcc     `?L547`
+    \ 01da e6..                 inc     zp:_Zp+1
+    \ 01dc          `?L547`:
+    \ 01dc 20....               jsr     `?L604`
+    \ 01df a5..                 lda     zp:_Zp+26
+    \ 01e1 85..                 sta     zp:_Zp
+    \ 01e3 20....               jsr     `?L612`
+    \ 01e6 a91e                 lda     #30
+    \ 01e8 20....               jsr     `?L593`
+    \ 01eb 9002                 bcc     `?L551`
+    \ 01ed e6..                 inc     zp:_Zp+1
+    \ 01ef          `?L551`:
+    \ 01ef 20....               jsr     `?L604`
+    \ 01f2 a5..                 lda     zp:_Zp+26
+    \ 01f4 85..                 sta     zp:_Zp
+    \ 01f6 a002                 ldy     #2
+    \ 01f8 b1..                 lda     (_Zp+24),y
+    \ 01fa 20....               jsr     cputcxy
+    \ 01fd e6..                 inc     zp:_Zp+26
+    \ 01ff 4c....               jmp     `?L257`
+    \ 0202          `?L252`:
+    \ 0202 a2..                 ldx     #_Zp
+    \ 0204 a914                 lda     #20
+    \ 0206 20....               jsr     `?L593`
+    \ 0209 9002                 bcc     `?L555`
+    \ 020b e6..                 inc     zp:_Zp+1
+    \ 020d          `?L555`:
+    \ 020d 20....               jsr     `?L604`
+    \ 0210 c8                   iny
+    \ 0211 20....               jsr     `?L614`
+    \ 0214 a2..                 ldx     #_Zp
+    \ 0216 a919                 lda     #25
+    \ 0218 20....               jsr     `?L593`
+    \ 021b 9002                 bcc     `?L559`
+    \ 021d e6..                 inc     zp:_Zp+1
+    \ 021f          `?L559`:
+    \ 021f 20....               jsr     `?L604`
+    \ 0222 a003                 ldy     #3
+    \ 0224 20....               jsr     `?L614`
+    \ 0227 e6..                 inc     zp:_Zp+26
+    \ 0229 4c....               jmp     `?L253`
+    \ 0000                      .section cdata,rodata
+    \ 0000          `??_Initializer0`:
+    \ 0000 2020704f             .byte   32,32,112,79,85
+    \ 0004 55
+    \ 0000                      .section cdata,rodata
+    \ 0000          `??_Initializer1`:
+    \ 0000 20206e50             .byte   32,32,110,80,73
+    \ 0004 49
+    \ 0000                      .section cdata,rodata
+    \ 0000          `??_Initializer2`:
+    \ 0000 20206d4c             .byte   32,32,109,76,74
+    \ 0004 4a
+    \ 0000                      .section cdata,rodata
+    \ 0000          `??_Initializer3`:
+    \ 0000 20207d7a             .byte   32,32,125,122,75
+    \ 0004 4b
+    \ 0000                      .section cdata,rodata
+    \ 0000          `??_Initializer4`:
+    \ 0000 20644377             .byte   32,100,67,119,67
+    \ 0004 43
+    \ 0000                      .section cdata,rodata
+    \ 0000          `??_Initializer5`:
+    \ 0000 2063436f             .byte   32,99,67,111,67
+    \ 0004 43
+    \ 0000                      .section cdata,rodata
+    \ 0000          `??_Initializer6`:
+    \ 0000 20745d6a             .byte   32,116,93,106,93
+    \ 0004 5d
+    \ 0000                      .section cdata,rodata
+    \ 0000          `??_Initializer7`:
+    \ 0000 206a5d74             .byte   32,106,93,116,93
+    \ 0004 5d
+    \ 0000                      .section code,text
+    \ 0000                      .public hline
+    \ 0000          hline:
+    \ 0000 20....               jsr     cputncxy
+    \ 0003 60                   rts
+0610                
+0611                void vline(
+0612                    unsigned char x, unsigned char y, unsigned char len, unsigned char style)
+0613                {
+    \ 0000                      .section code,text
+    \ 0000                      .public vline
+    \ 0000 a200     vline:      ldx     #0
+    \ 0002 a004                 ldy     #4
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 85..                 sta     zp:_Zp+27
+    \ 0009 20....               jsr     `?L618`
+    \ 000c 85..                 sta     zp:_Zp+25
+    \ 000e a5..                 lda     zp:_Zp+2
+    \ 0010 85..                 sta     zp:_Zp+24
+0614                    register unsigned char i;
+0615                    for (i = 0; i < len; ++i) {
+    \ 0012 8a                   txa
+    \ 0013 85..                 sta     zp:_Zp+28
+    \ 0015          `?L274`:
+    \ 0015 ab....               ldz     _Zp+28
+    \ 0018 d4..                 cpz     zp:_Zp+25
+    \ 001a 9005                 bcc     `?L273`
+0616                        cputcxy(x, y + i, style);
+0617                    }
+0618                }
+    \ 001c a004                 ldy     #4
+    \ 001e 4c....               jmp     _RestoreRegisters
+    \ 0021          `?L273`:
+    \ 0021 a5..                 lda     zp:_Zp+24
+    \ 0023 85..                 sta     zp:_Zp+1
+    \ 0025 a5..                 lda     zp:_Zp+28
+    \ 0027 18                   clc
+    \ 0028 65..                 adc     zp:_Zp+26
+    \ 002a 85..                 sta     zp:_Zp
+    \ 002c a5..                 lda     zp:_Zp+27
+    \ 002e 20....               jsr     cputcxy
+    \ 0031 e6..                 inc     zp:_Zp+28
+    \ 0033 80e0                 bra     `?L274`
+0619                
+0620                unsigned char cgetc(void)
+0621                {
+    \ 0000                      .section code,text
+    \ 0000                      .public cgetc
+    \ 0000          cgetc:
+    \ 0000          `?L280`:
+0622                    unsigned char k;
+0623                    while ((k = PEEK(0xD610U)) == 0)
+    \ 0000 ad10d6               lda     0xd610
+    \ 0003 85..                 sta     zp:_Zp
+    \ 0005 f0f9                 beq     `?L280`
+0624                        ;
+0625                    POKE(0xD610U, 0);
+    \ 0007 a900                 lda     #0
+    \ 0009 8d10d6               sta     0xd610
+0626                    return k;
+    \ 000c a5..                 lda     zp:_Zp
+0627                }
+    \ 000e 60                   rts
+0628                
+0629                unsigned char getkeymodstate(void)
+0630                {
+    \ 0000                      .section code,text
+    \ 0000                      .public getkeymodstate
+    \ 0000          getkeymodstate:
+0631                    return PEEK(0xD611U);
+    \ 0000 ad11d6               lda     0xd611
+0632                }
+    \ 0003 60                   rts
+0633                
+0634                unsigned char kbhit(void)
+0635                {
+    \ 0000                      .section code,text
+    \ 0000                      .public kbhit
+    \ 0000          kbhit:
+0636                    return PEEK(0xD610U);
+    \ 0000 ad10d6               lda     0xd610
+0637                }
+    \ 0003 60                   rts
+0638                
+0639                void flushkeybuf(void)
+0640                {
+    \ 0000                      .section code,text
+    \ 0000                      .public flushkeybuf
+    \ 0000          flushkeybuf:
+    \ 0000          `?L295`:
+0641                    while (PEEK(0xD610U)) {
+    \ 0000 ad10d6               lda     0xd610
+    \ 0003 f007                 beq     `?L296`
+0642                        POKE(0xD610U, 0);
+    \ 0005 a900                 lda     #0
+    \ 0007 8d10d6               sta     0xd610
+    \ 000a 80f4                 bra     `?L295`
+    \ 000c          `?L296`:
+0643                    }
+0644                }
+    \ 000c 60                   rts
+0645                
+0646                unsigned char cinput(
+0647                    unsigned char* buffer, unsigned char buflen, unsigned char flags)
+0648                {
+    \ 0000                      .section code,text
+    \ 0000                      .public cinput
+    \ 0000 a200     cinput:     ldx     #0
+    \ 0002 a006                 ldy     #6
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 85..                 sta     zp:_Zp+29
+    \ 0009 20....               jsr     `?L600`
+    \ 000c a5..                 lda     zp:_Zp+2
+    \ 000e 85..                 sta     zp:_Zp+27
+0649                    register unsigned char numch = 0, i, ch;
+    \ 0010 8a                   txa
+    \ 0011 85..                 sta     zp:_Zp+28
+0650                    const unsigned char sx = wherex();
+    \ 0013 ad....               lda     g_curX
+    \ 0016 85..                 sta     zp:_Zp+30
+0651                    const unsigned char sy = wherey();
+    \ 0018 ad....               lda     g_curY
+    \ 001b 85..                 sta     zp:_Zp+26
+0652                
+0653                    if (buffer == NULL || buflen == 0) {
+    \ 001d a5..                 lda     zp:_Zp+24
+    \ 001f 05..                 ora     zp:_Zp+25
+    \ 0021 f3f800               lbeq    `?L303`
+    \ 0024 a5..                 lda     zp:_Zp+29
+    \ 0026 f3f300               lbeq    `?L303`
+0654                        return 0;
+0655                    }
+0656                
+0657                    flushkeybuf();
+    \ 0029 20....               jsr     flushkeybuf
+0658                
+0659                    for (i = 0; i < buflen; ++i) {
+    \ 002c a900                 lda     #0
+    \ 002e 85..                 sta     zp:_Zp
+    \ 0030          `?L306`:
+    \ 0030 ab....               ldz     _Zp
+    \ 0033 d4..                 cpz     zp:_Zp+29
+    \ 0035 93da00               lbcc    `?L305`
+    \ 0038          `?L311`:
+0660                        buffer[i] = '\0';
+0661                    }
+0662                
+0663                    while (1) {
+0664                        cputsxy(sx, sy, buffer);
+    \ 0038 a5..                 lda     zp:_Zp+24
+    \ 003a 85..                 sta     zp:_Zp+2
+    \ 003c a5..                 lda     zp:_Zp+25
+    \ 003e 85..                 sta     zp:_Zp+3
+    \ 0040 a5..                 lda     zp:_Zp+26
+    \ 0042 85..                 sta     zp:_Zp
+    \ 0044 a5..                 lda     zp:_Zp+30
+    \ 0046 20....               jsr     cputsxy
+0665                        blink(1);
+    \ 0049 a901                 lda     #1
+    \ 004b 20....               jsr     blink
+    \ 004e a9e0                 lda     #-32
+    \ 0050 85..                 sta     zp:_Zp+1
+    \ 0052 20....               jsr     `?L597`
+    \ 0055 20....               jsr     cputcxy
+0666                        cputc(224);
+0667                        blink(0);
+    \ 0058 a900                 lda     #0
+    \ 005a 20....               jsr     blink
+0668                        ch = cgetc();
+    \ 005d 20....               jsr     cgetc
+    \ 0060 85..                 sta     zp:_Zp
+0669                
+0670                        if (ch == 13) {
+    \ 0062 a30d                 ldz     #13
+    \ 0064 d4..                 cpz     zp:_Zp
+    \ 0066 d005                 bne     `?L313`
+0671                            break;
+0672                        }
+0673                
+0674                        if (ch == 20 && numch > 0) {
+0675                            moveleft(1);
+0676                            cputc(' ');
+0677                            buffer[--numch] = '\0';
+0678                        }
+0679                        else if (numch < buflen - 1) {
+0680                            if ((((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'))
+0681                                    && (flags & CINPUT_ACCEPT_LETTER))
+0682                                || ((ch >= '0' && ch <= '9') && (flags & CINPUT_ACCEPT_NUMERIC))
+0683                                || (flags & CINPUT_ACCEPT_ALL)) {
+0684                                if ((ch >= 0x61 && ch <= 0x7a) && (PEEK(0x0D18) & ~2)
+0685                                    && (flags & ~CINPUT_NO_AUTOTRANSLATE)) {
+0686                                    ch -= 0x20;
+0687                                }
+0688                
+0689                                buffer[numch++] = ch;
+0690                            }
+0691                        }
+0692                    }
+0693                
+0694                    return numch;
+    \ 0068 a5..                 lda     zp:_Zp+28
+    \ 006a 4c....               jmp     `?L300`
+    \ 006d a314     `?L313`:    ldz     #20
+    \ 006f d4..                 cpz     zp:_Zp
+    \ 0071 d01a                 bne     `?L316`
+    \ 0073 a5..                 lda     zp:_Zp+28
+    \ 0075 f016                 beq     `?L316`
+    \ 0077 ce....               dec     g_curX
+    \ 007a a920                 lda     #32
+    \ 007c 85..                 sta     zp:_Zp+1
+    \ 007e 20....               jsr     `?L597`
+    \ 0081 20....               jsr     cputcxy
+    \ 0084 c6..                 dec     zp:_Zp+28
+    \ 0086 a900                 lda     #0
+    \ 0088 ab....               ldz     _Zp+28
+    \ 008b 807c                 bra     `?L581`
+    \ 008d          `?L316`:
+    \ 008d a6..                 ldx     zp:_Zp+28
+    \ 008f 86..                 stx     zp:_Zp+2
+    \ 0091 a900                 lda     #0
+    \ 0093 85..                 sta     zp:_Zp+3
+    \ 0095 a6..                 ldx     zp:_Zp+29
+    \ 0097 86..                 stx     zp:_Zp+4
+    \ 0099 85..                 sta     zp:_Zp+5
+    \ 009b c3..                 dew     zp:_Zp+4
+    \ 009d a5..                 lda     zp:_Zp+2
+    \ 009f c5..                 cmp     zp:_Zp+4
+    \ 00a1 a5..                 lda     zp:_Zp+3
+    \ 00a3 e5..                 sbc     zp:_Zp+5
+    \ 00a5 5002                 bvc     `?L573`
+    \ 00a7 4980                 eor     #-128
+    \ 00a9 108d     `?L573`:    bpl     `?L311`
+    \ 00ab ab....               ldz     _Zp
+    \ 00ae c261                 cpz     #97
+    \ 00b0 9006                 bcc     `?L387`
+    \ 00b2 a37a                 ldz     #122
+    \ 00b4 d4..                 cpz     zp:_Zp
+    \ 00b6 b00d                 bcs     `?L386`
+    \ 00b8          `?L387`:
+    \ 00b8 ab....               ldz     _Zp
+    \ 00bb c241                 cpz     #65
+    \ 00bd 9009                 bcc     `?L385`
+    \ 00bf a35a                 ldz     #90
+    \ 00c1 d4..                 cpz     zp:_Zp
+    \ 00c3 9003                 bcc     `?L385`
+    \ 00c5          `?L386`:
+    \ 00c5 9f..13               bbs1    zp:_Zp+27,`?L324`
+    \ 00c8          `?L385`:
+    \ 00c8 ab....               ldz     _Zp
+    \ 00cb c230                 cpz     #48
+    \ 00cd 9009                 bcc     `?L384`
+    \ 00cf a339                 ldz     #57
+    \ 00d1 d4..                 cpz     zp:_Zp
+    \ 00d3 9003                 bcc     `?L384`
+    \ 00d5 8f..03               bbs0    zp:_Zp+27,`?L324`
+    \ 00d8          `?L384`:
+    \ 00d8 2f..33               bbr2    zp:_Zp+27,`?L322`
+    \ 00db          `?L324`:
+    \ 00db ab....               ldz     _Zp
+    \ 00de c261                 cpz     #97
+    \ 00e0 901e                 bcc     `?L326`
+    \ 00e2 a37a                 ldz     #122
+    \ 00e4 d4..                 cpz     zp:_Zp
+    \ 00e6 9018                 bcc     `?L326`
+    \ 00e8 ad180d               lda     0xd18
+    \ 00eb 89fd                 bit     #-3
+    \ 00ed f011                 beq     `?L326`
+    \ 00ef a5..                 lda     zp:_Zp+27
+    \ 00f1 85..                 sta     zp:_Zp+1
+    \ 00f3 37..                 rmb3    zp:_Zp+1
+    \ 00f5 a5..                 lda     zp:_Zp+1
+    \ 00f7 f007                 beq     `?L326`
+    \ 00f9 a5..                 lda     zp:_Zp
+    \ 00fb 38                   sec
+    \ 00fc e920                 sbc     #32
+    \ 00fe 85..                 sta     zp:_Zp
+    \ 0100          `?L326`:
+    \ 0100 a5..                 lda     zp:_Zp
+    \ 0102 48                   pha
+    \ 0103 a5..                 lda     zp:_Zp+28
+    \ 0105 e6..                 inc     zp:_Zp+28
+    \ 0107 4b                   taz
+    \ 0108 68                   pla
+    \ 0109          `?L581`:
+    \ 0109 92..                 sta     (_Zp+24),z
+    \ 010b 4c....               jmp     `?L311`
+    \ 010e          `?L322`:
+    \ 010e 4c....               jmp     `?L311`
+    \ 0111          `?L305`:
+    \ 0111 ab....               ldz     _Zp
+    \ 0114 92..                 sta     (_Zp+24),z
+    \ 0116 e6..                 inc     zp:_Zp
+    \ 0118 4c....               jmp     `?L306`
+    \ 011b 8a       `?L303`:    txa
+    \ 011c          `?L300`:
+0695                }
+    \ 011c a006                 ldy     #6
+    \ 011e 4c....               jmp     _RestoreRegisters
+0696                
+0697                void setpalbank(unsigned char bank)
+0698                {
+    \ 0000                      .section code,text
+    \ 0000                      .public setpalbank
+    \ 0000          setpalbank:
+    \ 0000 85..                 sta     zp:_Zp
+0699                    POKE(0xD070U, (PEEK(0xD070U) & ~0x30) | (unsigned char)((bank & 0x3) << 4));
+    \ 0002 ad70d0               lda     0xd070
+    \ 0005 29cf                 and     #-49
+    \ 0007 85..                 sta     zp:_Zp+1
+    \ 0009 a903                 lda     #3
+    \ 000b 25..                 and     zp:_Zp
+    \ 000d 0a                   asl     a
+    \ 000e 0a                   asl     a
+    \ 000f 0a                   asl     a
+    \ 0010 0a                   asl     a
+    \ 0011 04..                 tsb     zp:_Zp+1
+    \ 0013 a5..                 lda     zp:_Zp+1
+0700                }
+    \ 0015 4c....               jmp     `?L584`
+0701                
+0702                void setpalbanka(unsigned char bank)
+0703                {
+    \ 0000                      .section code,text
+    \ 0000                      .public setpalbanka
+    \ 0000          setpalbanka:
+    \ 0000 85..                 sta     zp:_Zp
+0704                    POKE(0xD070U, (PEEK(0xD070U) & ~0x3) | (bank & 0x3));
+    \ 0002 ad70d0               lda     0xd070
+    \ 0005 29fc                 and     #-4
+    \ 0007 a8                   tay
+    \ 0008 a9fc                 lda     #-4
+    \ 000a 14..                 trb     zp:_Zp
+    \ 000c 98                   tya
+    \ 000d 04..                 tsb     zp:_Zp
+    \ 000f a5..                 lda     zp:_Zp
+    \ 0011 8d70d0   `?L584`:    sta     0xd070
+    \ 0014 60                   rts
+0705                }
+0706                
+0707                unsigned char getpalbank(void)
+0708                {
+    \ 0000                      .section code,text
+    \ 0000                      .public getpalbank
+    \ 0000          getpalbank:
+0709                    return (PEEK(0xD070U) & 0x30) >> 4;
+    \ 0000 ad70d0               lda     0xd070
+    \ 0003 2930                 and     #48
+    \ 0005 4a                   lsr     a
+    \ 0006 4a                   lsr     a
+    \ 0007 4a                   lsr     a
+    \ 0008 4a                   lsr     a
+0710                }
+    \ 0009 60                   rts
+0711                
+0712                unsigned char getpalbanka(void)
+0713                {
+    \ 0000                      .section code,text
+    \ 0000                      .public getpalbanka
+    \ 0000          getpalbanka:
+0714                    return PEEK(0xD070U) & 0x3;
+    \ 0000 ad70d0               lda     0xd070
+    \ 0003 2903                 and     #3
+0715                }
+    \ 0005 60                   rts
+0716                
+0717                void setmapedpal(unsigned char bank)
+0718                {
+    \ 0000                      .section code,text
+    \ 0000                      .public setmapedpal
+    \ 0000          setmapedpal:
+    \ 0000 85..                 sta     zp:_Zp
+0719                    POKE(0xD070U, (PEEK(0xD070U) & ~0xC0) | (unsigned char)((bank & 0x3) << 6));
+    \ 0002 ad70d0               lda     0xd070
+    \ 0005 293f                 and     #63
+    \ 0007 85..                 sta     zp:_Zp+1
+    \ 0009 a903                 lda     #3
+    \ 000b 25..                 and     zp:_Zp
+    \ 000d 6a                   ror     a
+    \ 000e 6a                   ror     a
+    \ 000f 6a                   ror     a
+    \ 0010 29c0                 and     #-64
+    \ 0012 04..                 tsb     zp:_Zp+1
+    \ 0014 a5..                 lda     zp:_Zp+1
+    \ 0016 8d70d0               sta     0xd070
+0720                }
+    \ 0019 60                   rts
+0721                
+0722                unsigned char getmapedpal(void)
+0723                {
+    \ 0000                      .section code,text
+    \ 0000                      .public getmapedpal
+    \ 0000          getmapedpal:
+0724                    return PEEK(0xD070U) >> 6;
+    \ 0000 ad70d0               lda     0xd070
+    \ 0003 2a                   rol     a
+    \ 0004 2a                   rol     a
+    \ 0005 2a                   rol     a
+    \ 0006 2903                 and     #3
+0725                }
+    \ 0008 60                   rts
+0726                
+0727                void setpalentry(
+0728                    unsigned char c, unsigned char r, unsigned char g, unsigned char b)
+0729                {
+    \ 0000                      .section code,text
+    \ 0000                      .public setpalentry
+    \ 0000          setpalentry:
+    \ 0000 85..                 sta     zp:_Zp+3
+0730                    POKE(0xD100U + c, r);
+    \ 0002 a5..                 lda     zp:_Zp+3
+    \ 0004 18                   clc
+    \ 0005 6900                 adc     #0
+    \ 0007 85..                 sta     zp:_Zp+4
+    \ 0009 a900                 lda     #0
+    \ 000b 69d1                 adc     #209
+    \ 000d 85..                 sta     zp:_Zp+5
+    \ 000f a5..                 lda     zp:_Zp
+    \ 0011 a000                 ldy     #0
+    \ 0013 91..                 sta     (_Zp+4),y
+0731                    POKE(0xD200U + c, g);
+    \ 0015 a5..                 lda     zp:_Zp+3
+    \ 0017 18                   clc
+    \ 0018 6900                 adc     #0
+    \ 001a 85..                 sta     zp:_Zp+4
+    \ 001c 98                   tya
+    \ 001d 69d2                 adc     #210
+    \ 001f 85..                 sta     zp:_Zp+5
+    \ 0021 a5..                 lda     zp:_Zp+1
+    \ 0023 91..                 sta     (_Zp+4),y
+0732                    POKE(0xD300U + c, b);
+    \ 0025 a5..                 lda     zp:_Zp+3
+    \ 0027 18                   clc
+    \ 0028 6900                 adc     #0
+    \ 002a 85..                 sta     zp:_Zp
+    \ 002c 98                   tya
+    \ 002d 69d3                 adc     #211
+    \ 002f 85..                 sta     zp:_Zp+1
+    \ 0031 a5..                 lda     zp:_Zp+2
+    \ 0033 91..                 sta     (_Zp),y
+0733                }
+    \ 0035 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 ad63d0   `?L587`:    lda     0xd063
+    \ 0003 2907                 and     #7
+    \ 0005 85..                 sta     zp:_Zp+3
+    \ 0007 a900                 lda     #0
+    \ 0009 85..                 sta     zp:_Zp
+    \ 000b 85..                 sta     zp:_Zp+1
+    \ 000d 85..                 sta     zp:_Zp+2
+    \ 000f ad62d0               lda     0xd062
+    \ 0012 85..                 sta     zp:_Zp+8
+    \ 0014 a900                 lda     #0
+    \ 0016 85..                 sta     zp:_Zp+9
+    \ 0018 a5..                 lda     zp:_Zp+8
+    \ 001a 85..                 sta     zp:_Zp+10
+    \ 001c a5..                 lda     zp:_Zp+9
+    \ 001e 85..                 sta     zp:_Zp+11
+    \ 0020 85..                 sta     zp:_Zp+8
+    \ 0022 85..                 sta     zp:_Zp+9
+    \ 0024 4242a5..             ldq     zp:_Zp+8
+    \ 0028 424205..             orq     zp:_Zp
+    \ 002c 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L588`:
+    \ 0000 85..                 sta     zp:_Zp
+    \ 0002 a900                 lda     #0
+    \ 0004 85..                 sta     zp:_Zp+1
+    \ 0006 85..                 sta     zp:_Zp+3
+    \ 0008 a5..                 lda     zp:_Zp+1
+    \ 000a 85..                 sta     zp:_Zp+2
+    \ 000c a5..                 lda     zp:_Zp
+    \ 000e 85..                 sta     zp:_Zp+1
+    \ 0010 a900                 lda     #0
+    \ 0012 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 ad60d0   `?L589`:    lda     0xd060
+    \ 0003          `?L590`:
+    \ 0003 85..                 sta     zp:_Zp
+    \ 0005 a900                 lda     #0
+    \ 0007 85..                 sta     zp:_Zp+1
+    \ 0009          `?L591`:
+    \ 0009 85..                 sta     zp:_Zp+2
+    \ 000b 85..                 sta     zp:_Zp+3
+    \ 000d 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 18       `?L592`:    clc
+    \ 0001 a5..                 lda     zp:_Zp+6
+    \ 0003 69..                 adc     #.byte0 hexDigits
+    \ 0005 85..                 sta     zp:_Zp+6
+    \ 0007 a5..                 lda     zp:_Zp+7
+    \ 0009 69..                 adc     #.byte1 hexDigits
+    \ 000b 85..                 sta     zp:_Zp+7
+    \ 000d a000                 ldy     #0
+    \ 000f b1..                 lda     (_Zp+6),y
+    \ 0011 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L593`:
+    \ 0000 20....               jsr     _LoadVspEA
+    \ 0003 18                   clc
+    \ 0004 a5..                 lda     zp:_Zp
+    \ 0006 65..                 adc     zp:_Zp+28
+    \ 0008 85..                 sta     zp:_Zp
+    \ 000a 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L595`:
+    \ 0000 85..                 sta     zp:_Zp+3
+    \ 0002 a205                 ldx     #5
+    \ 0004 20....               jsr     _MoveLong16X
+    \ 0007 a2..                 ldx     #_Zp
+    \ 0009 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L597`:
+    \ 0000 ae....               ldx     g_curY
+    \ 0003 86..                 stx     zp:_Zp
+    \ 0005 ad....               lda     g_curX
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L598`:
+    \ 0000 86..                 stx     zp:_Zp+4
+    \ 0002 a900                 lda     #0
+    \ 0004 85..                 sta     zp:_Zp+5
+    \ 0006 a5..                 lda     zp:_Zp+25
+    \ 0008 85..                 sta     zp:_Zp+33
+    \ 000a a5..                 lda     zp:_Zp+24
+    \ 000c 85..                 sta     zp:_Zp+32
+    \ 000e a900                 lda     #0
+    \ 0010 85..                 sta     zp:_Zp+34
+    \ 0012 85..                 sta     zp:_Zp+35
+    \ 0014 aa                   tax
+    \ 0015 a0f8                 ldy     #248
+    \ 0017 a30f                 ldz     #15
+    \ 0019 18                   clc
+    \ 001a 424265..             adcq    zp:_Zp+32
+    \ 001e 424285..             stq     zp:_Zp
+    \ 0022 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 18       `?L599`:    clc
+    \ 0001 424265..             adcq    zp:_Zp
+    \ 0005 424285..             stq     zp:_Zp
+    \ 0009 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L600`:
+    \ 0000 a5..                 lda     zp:_Zp
+    \ 0002 85..                 sta     zp:_Zp+24
+    \ 0004 a5..                 lda     zp:_Zp+1
+    \ 0006 85..                 sta     zp:_Zp+25
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L601`:
+    \ 0000 ae....               ldx     g_curScreenW
+    \ 0003 86..                 stx     zp:_Zp+10
+    \ 0005 a900                 lda     #0
+    \ 0007 85..                 sta     zp:_Zp+11
+    \ 0009 4c....               jmp     _DivMod16
+    \ 0000                      .section code,text
+    \ 0000          `?L602`:
+    \ 0000 85..                 sta     zp:_Zp+29
+    \ 0002 a5..                 lda     zp:_Zp+24
+    \ 0004 85..                 sta     zp:_Zp+28
+    \ 0006 a900                 lda     #0
+    \ 0008 85..                 sta     zp:_Zp+30
+    \ 000a 85..                 sta     zp:_Zp+31
+    \ 000c aa                   tax
+    \ 000d a0f8                 ldy     #248
+    \ 000f a30f                 ldz     #15
+    \ 0011 18                   clc
+    \ 0012 424265..             adcq    zp:_Zp+28
+    \ 0016 424285..             stq     zp:_Zp
+    \ 001a ad....               lda     g_curTextColor
+    \ 001d 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L603`:
+    \ 0000 4242a5..             ldq     zp:_Zp+16
+    \ 0004 424285..             stq     zp:_Zp
+    \ 0008 a90a                 lda     #10
+    \ 000a a200                 ldx     #0
+    \ 000c a000                 ldy     #0
+    \ 000e a300                 ldz     #0
+    \ 0010 424285..             stq     zp:_Zp+12
+    \ 0014 4c....               jmp     _UDivMod32
+    \ 0000                      .section code,text
+    \ 0000 a000     `?L604`:    ldy     #0
+    \ 0002 b1..                 lda     (_Zp),y
+    \ 0004 85..                 sta     zp:_Zp+1
+    \ 0006 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L605`:
+    \ 0000 86..                 stx     zp:_Zp
+    \ 0002 a900                 lda     #0
+    \ 0004 85..                 sta     zp:_Zp+1
+    \ 0006 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L606`:
+    \ 0000 85..                 sta     zp:_Zp
+    \ 0002 ad....               lda     g_curScreenW
+    \ 0005 4c....               jmp     _Mul8
+    \ 0000                      .section code,text
+    \ 0000          `?L607`:
+    \ 0000 a5..                 lda     zp:_Zp+27
+    \ 0002 ae....               ldx     g_curScreenW
+    \ 0005 86..                 stx     zp:_Zp
+    \ 0007 a200                 ldx     #0
+    \ 0009 86..                 stx     zp:_Zp+1
+    \ 000b c3..                 dew     zp:_Zp
+    \ 000d 38                   sec
+    \ 000e e5..                 sbc     zp:_Zp
+    \ 0010 05..                 ora     zp:_Zp+1
+    \ 0012 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L608`:
+    \ 0000 85..                 sta     zp:_Zp+6
+    \ 0002 a5..                 lda     zp:_Zp+5
+    \ 0004 85..                 sta     zp:_Zp+7
+    \ 0006 85..                 sta     zp:_Zp+4
+    \ 0008 85..                 sta     zp:_Zp+5
+    \ 000a 4242a5..             ldq     zp:_Zp+4
+    \ 000e 424205..             orq     zp:_Zp
+    \ 0012 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 ad63d0   `?L609`:    lda     0xd063
+    \ 0003 2907                 and     #7
+    \ 0005 85..                 sta     zp:_Zp+3
+    \ 0007 98                   tya
+    \ 0008 85..                 sta     zp:_Zp
+    \ 000a 85..                 sta     zp:_Zp+1
+    \ 000c 85..                 sta     zp:_Zp+2
+    \ 000e ad62d0               lda     0xd062
+    \ 0011 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L610`:
+    \ 0000 a5..                 lda     zp:_Zp+25
+    \ 0002 85..                 sta     zp:_Zp+1
+    \ 0004 a5..                 lda     zp:_Zp+24
+    \ 0006          `?L611`:
+    \ 0006 85..                 sta     zp:_Zp
+    \ 0008 a900                 lda     #0
+    \ 000a 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L612`:
+    \ 0000 b1..                 lda     (_Zp+24),y
+    \ 0002 20....               jsr     cputcxy
+    \ 0005 a2..                 ldx     #_Zp
+    \ 0007 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L614`:
+    \ 0000 b1..                 lda     (_Zp+24),y
+    \ 0002 85..                 sta     zp:_Zp
+    \ 0004 a5..                 lda     zp:_Zp+26
+    \ 0006 a300                 ldz     #0
+    \ 0008 18                   clc
+    \ 0009 72..                 adc     (_Zp+24),z
+    \ 000b 4c....               jmp     cputcxy
+    \ 0000                      .section code,text
+    \ 0000          `?L615`:
+    \ 0000 a6..                 ldx     zp:_Zp+26
+    \ 0002 86..                 stx     zp:_Zp+2
+    \ 0004 85..                 sta     zp:_Zp+3
+    \ 0006 a5..                 lda     zp:_Zp
+    \ 0008 c5..                 cmp     zp:_Zp+2
+    \ 000a a5..                 lda     zp:_Zp+1
+    \ 000c e5..                 sbc     zp:_Zp+3
+    \ 000e 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L616`:
+    \ 0000 a5..                 lda     zp:_Zp+24
+    \ 0002 85..                 sta     zp:_Zp
+    \ 0004 a5..                 lda     zp:_Zp+25
+    \ 0006 85..                 sta     zp:_Zp+1
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L617`:
+    \ 0000 424205..             orq     zp:_Zp
+    \ 0004 424285..             stq     zp:_Zp
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L618`:
+    \ 0000 a5..                 lda     zp:_Zp
+    \ 0002 85..                 sta     zp:_Zp+26
+    \ 0004 a5..                 lda     zp:_Zp+1
+    \ 0006 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 18       `?L619`:    clc
+    \ 0001 a5..                 lda     zp:_Zp
+    \ 0003 65..                 adc     zp:_Zp+30
+    \ 0005 85..                 sta     zp:_Zp
+    \ 0007 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a002     `?L620`:    ldy     #2
+    \ 0002 4b                   taz
+    \ 0003 424285..             stq     zp:_Zp
+    \ 0007 4c....               jmp     setcharsetaddr
+    \ 0000                      .section code,text
+    \ 0000          `?L621`:
+    \ 0000 85..                 sta     zp:_Zp+4
+    \ 0002 a900                 lda     #0
+    \ 0004 85..                 sta     zp:_Zp+5
+    \ 0006 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L622`:
+    \ 0000 4242a5..             ldq     zp:_Zp
+    \ 0004 424285..             stq     zp:_Zp+16
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L623`:
+    \ 0000 a5..                 lda     zp:_Vsp
+    \ 0002 85..                 sta     zp:_Zp
+    \ 0004 a5..                 lda     zp:_Vsp+1
+    \ 0006 85..                 sta     zp:_Zp+1
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L624`:
+    \ 0000 a5..                 lda     zp:_Vsp
+    \ 0002 85..                 sta     zp:_Zp+2
+    \ 0004 a5..                 lda     zp:_Vsp+1
+    \ 0006 85..                 sta     zp:_Zp+3
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L625`:
+    \ 0000 a5..                 lda     zp:_Zp
+    \ 0002 85..                 sta     zp:_Zp+2
+    \ 0004 a5..                 lda     zp:_Zp+1
+    \ 0006 85..                 sta     zp:_Zp+3
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L626`:
+    \ 0000 a5..                 lda     zp:_Zp+24
+    \ 0002 85..                 sta     zp:_Zp+4
+    \ 0004 a5..                 lda     zp:_Zp+25
+    \ 0006 85..                 sta     zp:_Zp+5
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a901     `?L627`:    lda     #1
+    \ 0002 4b                   taz
+    \ 0003 18                   clc
+    \ 0004 72..                 adc     (_Zp+24),z
+    \ 0006 85..                 sta     zp:_Zp+26
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L628`:
+    \ 0000 a6..                 ldx     zp:_Vsp
+    \ 0002 86..                 stx     zp:_Zp
+    \ 0004 a6..                 ldx     zp:_Vsp+1
+    \ 0006 86..                 stx     zp:_Zp+1
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L629`:
+    \ 0000 a6..                 ldx     zp:_Zp+27
+    \ 0002 86..                 stx     zp:_Zp+4
+    \ 0004 a900                 lda     #0
+    \ 0006 85..                 sta     zp:_Zp+5
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L630`:
+    \ 0000 8d....               sta     g_curX
+    \ 0003 a5..                 lda     zp:_Zp
+    \ 0005 8d....               sta     g_curY
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a200     `?L631`:    ldx     #0
+    \ 0002 a00b                 ldy     #11
+    \ 0004 4c....               jmp     _AllocStackSave
+
+##########################
+#                        #
+# Memory sizes (decimal) #
+#                        #
+##########################
+
+Executable        (Text): 3741 bytes
+Zero initialized   (BSS):    4 bytes
+Data                    :   19 bytes
+Constant                :   40 bytes

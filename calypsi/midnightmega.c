@@ -26,14 +26,14 @@
 // char* inputstr = (char*) INPUTSTRPAGE;
 
 #include "calypsi.h"
-#include "testjmp.h"
 extern unsigned char lfnname[LFNFILENAMELEN];
+#include "testjmp.h"
 #include "fileio.h"
 extern BAM * BAMsector[2];
 
 // KickC calls conio_mega65_init() before doing main():
 int main() {
-  bank_start();
+//  bank_start();
   // setscreensize(80, 50);  or 40 25
   setscreensize(80, 25);
   // Init takes actual screensize from the before call to work with:
@@ -68,12 +68,12 @@ int main() {
 //  }
   clrhome();
   msprintf("Have fun with your MEGA65!");
-  usleep(2000000); // microseconds
+//  usleep(2000000); // microseconds
 //  cputln();
 //  cgetc();
 //  flushkeybuf();
-  hyppo_reset();
+//  hyppo_reset();
 
-  bank_end();
+//  bank_end();
   return 0;
 }

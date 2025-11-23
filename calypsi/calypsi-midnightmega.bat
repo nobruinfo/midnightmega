@@ -34,17 +34,17 @@ SET ROMLIST=romlister
 SET DATADISK=datadisk
 SET versions=..\versions_calypsi.txt
 
-set CALYPSI_HOME=%~dp0..\..\..\Mega65\calypsi-6502-5.12
+set CALYPSI_HOME=%~dp0..\..\..\Mega65\calypsi-6502-5.13
 set CC6502="%CALYPSI_HOME%\bin\cc6502.exe"
 set CA6502="%CALYPSI_HOME%\bin\as6502.exe"
 set LN6502="%CALYPSI_HOME%\bin\ln6502.exe"
 SET libcfilesdir=..\mega65-libc\src
-SET libcfiles=%libcfilesdir%\conio.c %libcfilesdir%\memory.c %libcfilesdir%\hal.c
+SET libcfiles=%libcfilesdir%\memory.c %libcfilesdir%\hal.c
 REM before Calypsi: SET libcfiles=%libcfiles% include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
-SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c texts.c sid.c romlist.c
+SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c texts.c sid.c romlist.c conio.c
 REM SET cfiles=%PRJ%.c conioextensions.c
-SET cfilesrom=%ROMLIST%.c hyppo.c fileio.c conioextensions.c romlist.c
+SET cfilesrom=%ROMLIST%.c hyppo.c fileio.c conioextensions.c romlist.c conio.c
 
 SET opts=--include-directory=.\include
 SET opts=%opts% --include-directory=..\mega65-libc\include
@@ -68,7 +68,7 @@ IF "%v%" == "" (
 DEL arghh.tmp > NUL 2> NUL
 
 REM Forget the git tag as it always is one commit behind:
-SET v=v0.6.6-beta
+SET v=v0.6.7-beta
 SET opts=%opts% -DVERSION=\"%v%\"
 SET calopts=-D asm=__asm -I calypsi.h -D VERSION=\"%v%\" -I .\include -I ..\mega65-libc\include
 SET calopts=-D asm=__asm -I calypsi.h -D VERSION=\"%v%\" -I ..\mega65-libc\include
@@ -388,6 +388,7 @@ REM  "%MFTP%" -d %IMG% -c "del %DATADISK%.d81"
   XMEGA65 -besure ^
     -importbas mega65.bas ^
     !HICKUPOPT! ^
+    -uartmon :4510 ^
     -allowfreezer -driveled
 REM    -hdosvirt -defd81fromsd
 REM    -8 !PRJSHORT!.d81 -9 %DATADISK%.d81 -autoload

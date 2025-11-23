@@ -1,10 +1,10 @@
 ###############################################################################
 #                                                                             #
-# Calypsi ISO C compiler for 6502                                version 5.12 #
-#                                                       07/Nov/2025  20:26:14 #
+# Calypsi ISO C compiler for 6502                                version 5.13 #
+#                                                       23/Nov/2025  19:15:02 #
 # Command line:                                                               #
 #               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\nav.lst #
-#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.6-beta" -I         #
+#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.7-beta" -I         #
 #               ..\mega65-libc\include -O 2 --core 45gs02 --target MEGA65     #
 #               -D FULLFEATURES -o                                            #
 #               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\nav.o #
@@ -7374,9 +7374,9 @@
     \ 0008 60                   rts
     \ 0000                      .section code,text
     \ 0000          `?L2073`:
-    \ 0000 a9..                 lda     #.byte0 `_StringLiteral_v0.6.6-beta`
+    \ 0000 a9..                 lda     #.byte0 `_StringLiteral_v0.6.7-beta`
     \ 0002 85..                 sta     zp:_Zp
-    \ 0004 a9..                 lda     #.byte1 `_StringLiteral_v0.6.6-beta`
+    \ 0004 a9..                 lda     #.byte1 `_StringLiteral_v0.6.7-beta`
     \ 0006 85..                 sta     zp:_Zp+1
     \ 0008 60                   rts
     \ 0000                      .section code,text
@@ -8680,10 +8680,10 @@
     \ 0008 2042414d
     \ 000c 00
     \ 0000                      .section cdata,rodata
-    \ 0000                      .pubweak `_StringLiteral_v0.6.6-beta`
-    \ 0000          `_StringLiteral_v0.6.6-beta`:
-    \ 0000 76302e36             .byte   118,48,46,54,46,54,45,98,101,116,97,0
-    \ 0004 2e362d62
+    \ 0000                      .pubweak `_StringLiteral_v0.6.7-beta`
+    \ 0000          `_StringLiteral_v0.6.7-beta`:
+    \ 0000 76302e36             .byte   118,48,46,54,46,55,45,98,101,116,97,0
+    \ 0004 2e372d62
     \ 0008 65746100
 
 ##########################

@@ -3,6 +3,7 @@
 
 # Intermediate
 *.s
+!calypsi/include/memory_asm.s
 *_dump.txt
 reproduce.tar
 

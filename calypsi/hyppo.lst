@@ -1,10 +1,10 @@
 ###############################################################################
 #                                                                             #
-# Calypsi ISO C compiler for 6502                                version 5.12 #
-#                                                       07/Nov/2025  20:26:17 #
+# Calypsi ISO C compiler for 6502                                version 5.13 #
+#                                                       23/Nov/2025  19:15:05 #
 # Command line:                                                               #
 #               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.lst #
-#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.6-beta" -I         #
+#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.7-beta" -I         #
 #               ..\mega65-libc\include -O 2 --core 45gs02 --target MEGA65     #
 #               -D FULLFEATURES -o                                            #
 #               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\hyppo.o #

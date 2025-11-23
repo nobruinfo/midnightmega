@@ -11,14 +11,19 @@
 // #define __MEGA65__
 
 #pragma require __preserve_zp
-
+/*
 // kernel jsr table:
+unsigned int SETBNK = 0xff6b;  // @@@@ allocates memory :(
 unsigned int SETNAM = 0xffbd;
 unsigned int SETLFS = 0xffba;
 unsigned int LOAD   = 0xffd5;
-unsigned int SETBNK = 0xff6b;
 unsigned int SAVE   = 0xffd8;
-
+unsigned int OPEN   = 0xffc0;
+unsigned int CLOSE  = 0xffc3;
+unsigned int CHKIN  = 0xffc6;
+unsigned int READST = 0xffb7;
+unsigned int CHRIN  = 0xffcf;
+*/
 void bank_start(void)  {
   __asm(
     " sei\n"

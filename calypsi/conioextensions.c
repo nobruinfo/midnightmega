@@ -13,7 +13,10 @@
 // ***  conioextensions.c strings and scrolling          ***
 // *********************************************************
 
-static char* p2sbuf = (char*)0x334;
+// @@@@@ Using Kernel routines makes this work for no longer:
+// static char* p2sbuf = (char*)0x334;
+char sbuf[80];
+static char* p2sbuf = (char*) sbuf;
 
 char tolowerchar(char ch) {
     if(ch>='A' && ch<='Z') {
