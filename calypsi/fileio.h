@@ -110,15 +110,24 @@ typedef struct structdatablock {
 // Midnight Mega general setup options:
 #define OPTIONshowDEL 1  // show deleted files as type DEL
 #define OPTIONshowALO 2  // copy allocated BAM blocks only
-#define OPTIONshowDRV 4
-#define OPTIONshow4   8
-#define OPTIONshow5   0x10
+#define OPTIONshowOVL 4
+#define OPTIONshowPOK 8
+#define OPTIONshowIEC 0x10
 #define OPTIONMAX     4
 typedef struct structOPTION {
   unsigned char option;    // bitwise flags
 } OPTION;
 extern OPTION option;
 
+// for ShowAccess(...):
+#define READ 0
+#define WRITE 1
+#define OFF 2
+#define SHOWACCESSX 26
+#define SHOWACCESSY 22
+
+void ShowAccess(unsigned char drive,
+                char track, char sector, unsigned char rw);
 void _miniInit();
 void GetBAM(unsigned char legacyHDOSstate, unsigned char side);
 void PutBAM(unsigned char legacyHDOSstate,

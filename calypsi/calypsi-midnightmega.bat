@@ -42,9 +42,9 @@ SET libcfilesdir=..\mega65-libc\src
 SET libcfiles=%libcfilesdir%\memory.c %libcfilesdir%\hal.c
 REM before Calypsi: SET libcfiles=%libcfiles% include\memory_asm.s
 REM  %libcfilesdir%\llvm\memory_asm.s
-SET cfiles=%PRJ%.c hyppo.c fileio.c conioextensions.c nav.c texts.c sid.c romlist.c conio.c
+SET cfiles=%PRJ%.c hyppo.c fileio.c filekernel.c conioextensions.c nav.c texts.c sid.c romlist.c conio.c
 REM SET cfiles=%PRJ%.c conioextensions.c
-SET cfilesrom=%ROMLIST%.c hyppo.c fileio.c conioextensions.c romlist.c conio.c
+SET cfilesrom=%ROMLIST%.c hyppo.c fileio.c filekernel.c conioextensions.c romlist.c conio.c
 
 SET opts=--include-directory=.\include
 SET opts=%opts% --include-directory=..\mega65-libc\include

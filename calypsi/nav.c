@@ -275,9 +275,9 @@ unsigned char setupbox()  {
     }         // byte           bit          2 * DOSFILENAMEANDTYPELEN  pos
     optionstring(option.option, OPTIONshowDEL, "show DEL files", tabpos, 0);
     optionstring(option.option, OPTIONshowALO, "copy allocated BAM blocks only", tabpos, 1);
-    optionstring(option.option, OPTIONshowDRV, "show drive access overlay", tabpos, 2);
-    optionstring(option.option, OPTIONshow4, "goes nowhere and does nothing", tabpos, 3);
-    optionstring(option.option, OPTIONshow5, "goes nowhere and does nothing", tabpos, 4);
+    optionstring(option.option, OPTIONshowOVL, "show drive access overlay", tabpos, 2);
+    optionstring(option.option, OPTIONshowPOK, "BETA! use MOUNT hack POKE", tabpos, 3);
+    optionstring(option.option, OPTIONshowIEC, "BETA! use drives 8 and 9", tabpos, 4);
     c = cgetc();
     switch (c) {
       case 0x91: // Crsrup
@@ -649,6 +649,18 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
   unsigned char c;  // build up a string
   unsigned char sethyppo;  // failures set "storage selection dirent mode"
 
+  // @@@@@ workaround for curtrack reset in ROM 920418:
+  // https://github.com/MEGA65/mega65-rom-public/issues/248
+  if (option.option & OPTIONshowPOK) {
+    POKE(0x100e3, 0x80);
+  }
+  // @@ to be made variable maybe?
+  if (option.option & OPTIONshowIEC) {
+    midnight[side]->drive = side + 8;  // @@@@@
+  } else {
+    midnight[side]->drive = side;
+  }
+
   midnight[side]->flags &= (~MIDNIGHTFLAGdirsortactive);
   
   if (midnight[side]->flags & MIDNIGHTFLAGismounted)  {
@@ -784,7 +796,7 @@ void navi(unsigned char side)  {
   DIRENT* ds;
   unsigned char alive = TRUE;
 
-  option.option = OPTIONshowALO | OPTIONshowDRV;
+  option.option = OPTIONshowALO | OPTIONshowOVL;
   legacyHDOSstate = legacyHDOS(); // clobbers $1703
 /*
 messagebox(MBOXNUMBER, "after legacy()",
@@ -793,7 +805,7 @@ messagebox(MBOXNUMBER, "after legacy()",
 */
   // initialising:
   for (i = 0; i < 2; i++)  {
-    // @@ to be made variable maybe?
+    // @@@@@ This is also an option but needs not be rubbish at startup:
     midnight[i]->drive = i;
 
     // title of mcbox is .d81 file name, cannot be read at startup:

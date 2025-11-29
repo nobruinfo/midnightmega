@@ -1,0 +1,893 @@
+###############################################################################
+#                                                                             #
+# Calypsi ISO C compiler for 6502                                version 5.13 #
+#                                                       29/Nov/2025  19:46:30 #
+# Command line:                                                               #
+#               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\filekernel.lst #
+#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.7-beta" -I         #
+#               ..\mega65-libc\include -O 2 --core 45gs02 --target MEGA65     #
+#               -D FULLFEATURES -o                                            #
+#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\filekernel.o #
+#               filekernel.c                                                  #
+#                                                                             #
+###############################################################################
+
+    \ 0000                      .rtmodel version,"1"
+    \ 0000                      .rtmodel codeModel,"plain"
+    \ 0000                      .rtmodel core,"45gs02"
+    \ 0000                      .rtmodel target,"mega65"
+    \ 0000                      .extern ShowAccess
+    \ 0000                      .extern _AllocStackSave
+    \ 0000                      .extern _DivMod16
+    \ 0000                      .extern _RestoreRegisters
+    \ 0000                      .extern _Vfp
+    \ 0000                      .extern _Vsp
+    \ 0000                      .extern _Zp
+    \ 0000                      .extern cgetc
+    \ 0000                      .extern cputln
+    \ 0000                      .extern flushkeybuf
+    \ 0000                      .extern lfnname
+    \ 0000                      .extern mh4printf
+    \ 0000                      .extern strcopy
+    \ 0000                      .extern strlen
+0001                #include <string.h>
+0002                #include <stdint.h>
+0003                #include <mega65/conio.h>  // llvm instead of <printf.h>
+0004                #include <mega65/memory.h>  // mega65-libc
+0005                #include <mega65/hal.h>  // mega65-libc
+0006                #include "regions.h"
+0007                #include "hyppo.h"
+0008                #include "fileio.h"
+0009                #include "filekernel.h"
+0010                #include "conioextensions.h"
+0011
+0012                // *********************************************************
+0013                // ***  filekernel.c Midnight Mega's kernel file I/O     ***
+0014                // *********************************************************
+0015
+0016                #define DATACHANNEL      2
+0017                #define CMDCHANNEL      15
+0018                #define CMDERRORCHANNEL 14
+0019
+0020                // different way to access low/high bytes would be, but only works on globals:
+0021                //  " ldy #.byte1 (lfnname)\n"
+0022                //  " ldx #.byte0 (lfnname)\n"
+0023
+0024                // Example for SETNAM etc.:
+0025                // https://www.devili.iki.fi/pub/Commodore/docs/books/C128_Programmers_Reference_OCR.pdf
+0026
+0027                void setbnk()  {
+    \ 0000                      .section code,text
+    \ 0000                      .public setbnk
+    \ 0000          setbnk:
+0028                  __asm volatile(
+0029                	" lda #0x00  ; lfBank	; bank for save\n"
+    \ 0000 206bff               jsr     0xff6b
+0030                	" ldx #0x00	; bank for filename\n"
+0031                  " jsr 0xff6b\n" // SETBNK
+0032                  :  :  : );
+0033                }
+    \ 0003 60                   rts
+0034
+0035                // Kernal SETNAM function
+0036                // SETNAM. Set file name parameters.
+0037                void setnam(char* filename) {
+    \ 0000                      .section code,text
+    \ 0000                      .public setnam
+    \ 0000 a200     setnam:     ldx     #0
+    \ 0002 a001                 ldy     #1
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 a5..                 lda     zp:_Zp
+    \ 0009 85..                 sta     zp:_Zp+24
+    \ 000b a5..                 lda     zp:_Zp+1
+    \ 000d 85..                 sta     zp:_Zp+25
+0038                  char filename_len = (char)strlen(filename);
+    \ 000f 20....               jsr     `?L175`
+    \ 0012 20....               jsr     strlen
+0039
+0040                  __asm volatile(
+0041                    " ; Kernal SETNAM function\n"
+0042                    " ; SETNAM. Set file name parameters.\n"
+0043                    " ; Input: A = File name length; X/Y = Pointer to file name.\n"
+0044                    " lda %[filename_len]\n"
+0045                    " ldx %[filename]\n"
+0046                    " ldy %[filename] + 1\n"
+0047                    " sta 0x1610\n"  // @@@@@
+0048                    " stx 0x1611\n"
+0049                    " sty 0x1612\n"
+0050                    " jsr 0xffbd\n" // SETNAM
+0051                  :  : [filename_len] "Kzp8"(filename_len), [filename] "Kzp16"(filename)
+0052                     : "a", "x", "y", "z" );
+    \ 0015 a5..                 lda     zp:_Zp
+    \ 0017 a6..                 ldx     zp:_Zp+24
+    \ 0019 a4..                 ldy     zp:_Zp+25
+    \ 001b 8d1016               sta     0x1610
+    \ 001e 8e1116               stx     0x1611
+    \ 0021 8c1216               sty     0x1612
+    \ 0024 20bdff               jsr     0xffbd
+0053                }
+    \ 0027 a001                 ldy     #1
+    \ 0029 4c....               jmp     _RestoreRegisters
+0054
+0055                // SETLFS. Set file parameters.
+0056                void setlfs(char device, char log, char sec) {
+    \ 0000                      .section code,text
+    \ 0000                      .public setlfs
+    \ 0000          setlfs:
+0057                                                   // $00 means: load to new address
+0058                  __asm volatile(
+0059                    " ; SETLFS. Set file parameters.\n"
+0060                    " ; Input: A = Logical number; X = Device number; Y = Secondary address.\n"
+0061                    " ; ldx device\n"
+0062                    " ; lda log ; #0x0f\n"
+0063                    " ; ldy sec ; #0xff\n"
+0064                    " sta 0x1620\n"  // @@@@@
+0065                    " stx 0x1621\n"
+0066                    " sty 0x1622\n"
+0067                    " jsr 0xffba\n" // SETLFS
+0068                  :  : "Kx"(device), "Ka"(log), "Ky"(sec)
+0069                     : "a", "x", "y", "z" );
+    \ 0000 aa                   tax
+    \ 0001 a5..                 lda     zp:_Zp
+    \ 0003 a4..                 ldy     zp:_Zp+1
+    \ 0005 8d2016               sta     0x1620
+    \ 0008 8e2116               stx     0x1621
+    \ 000b 8c2216               sty     0x1622
+    \ 000e 20baff               jsr     0xffba
+0070                }
+    \ 0011 60                   rts
+0071
+0072                char readstr(char log, char* address) {
+    \ 0000                      .section code,text
+    \ 0000                      .public readstr
+    \ 0000          readstr:
+0073                  char status;
+0074
+0075                  __asm volatile(
+0076                /*
+0077                    " jsr 0xffb7\n"       // READST
+0078                    " bne end_copy\n"           // eof oder fehler
+0079                */
+0080                    " lda %[log]\n"           // channel von SETLFS
+0081                    " tax\n"              // channel von SETLFS
+0082                    " jsr 0xffc6\n"       // CHKIN (input file)
+0083                /*
+0084                    " jsr 0xffb7\n"       // READST error status
+0085                    " bne end_copy\n"           // eof oder fehler
+0086                */
+0087                    " ldy #0\n"           // index im block,  für Schleife mit y von GPT
+0088                "read:\n"
+0089                    " jsr 0xffcf\n"       // CHRIN
+0090                    " sta (%[address]),y\n"
+0091                    " iny\n"
+0092                //    " bcc read\n"
+0093                    " cmp	#0x0D\n"        // carriage return?
+0094                    " bne read\n"
+0095
+0096                    " jsr 0xffcc\n"       // CLRCHN
+0097                    "end_copy:\n"
+0098                  : "=Ka"(status) : [log] "Kzp8"(log), [address] "Kzp16"(address)
+0099                     : "a", "x", "y", "z" );
+    \ 0000 85..                 sta     zp:_Zp+2
+    \ 0002 a5..                 lda     zp:_Zp+2
+    \ 0004 aa                   tax
+    \ 0005 20c6ff               jsr     0xffc6
+    \ 0008 a000                 ldy     #0
+    \ 000a 20cfff   `?L64`:     jsr     0xffcf
+    \ 000d 91..                 sta     (_Zp),y
+    \ 000f c8                   iny
+    \ 0010 c90d                 cmp     #13
+    \ 0012 d0f6                 bne     `?L64`
+    \ 0014 20ccff               jsr     0xffcc
+0100                  return status;
+0101                }
+    \ 0017 60                   rts
+0102
+0103                char readbytes(char log, BAM* address, unsigned int nbrbytes) {
+    \ 0000                      .section code,text
+    \ 0000                      .public readbytes
+    \ 0000          readbytes:
+0104                  char status;
+0105
+0106                  __asm volatile(
+0107                    " lda %[address]\n"
+0108                    " sta 0x160c\n"
+0109                    " lda %[address]+1\n"
+0110                    " sta 0x160d\n"
+0111                /*
+0112                    " jsr 0xffb7\n"       // READST
+0113                    " bne end_copy\n"           // eof or error
+0114                */
+0115                    " ldx %[log]\n"       // as set with SETLFS
+0116                    " jsr 0xffc6\n"       // CHKIN (input file)
+0117                /*
+0118                    " jsr 0xffb7\n"       // READST error status
+0119                    " bne end_copy\n"           // eof or error
+0120                */
+0121                    " ldy #0\n"           // index within block
+0122                "read:\n"
+0123                    " jsr 0xffcf\n"       // CHRIN
+0124                //    " sta 0x1660,y\n"
+0125                //    " tya\n"              // @@@@@
+0126                    " sta 0x160a\n"
+0127                    " sta (%[address]),y\n"
+0128                    " iny\n"
+0129                //    " bcc read\n"
+0130                    " cpy #0x00\n"  // " cpy %[nbrbytes]\n"
+0131                    " bne read\n"
+0132
+0133                    " sty 0x160b\n"
+0134
+0135                    " jsr 0xffcc\n"       // CLRCHN
+0136                    "end_copy:\n"
+0137                  : "=Ka"(status) : [log] "Kzp8"(log), [nbrbytes] "Kzp16"(nbrbytes),
+0138                                    [address] "Kzp16"(address)
+0139                     : "a", "x", "y", "z" );
+    \ 0000 85..                 sta     zp:_Zp+4
+    \ 0002 a5..                 lda     zp:_Zp
+    \ 0004 8d0c16               sta     0x160c
+    \ 0007 a5..                 lda     zp:_Zp+1
+    \ 0009 8d0d16               sta     0x160d
+    \ 000c a6..                 ldx     zp:_Zp+4
+    \ 000e 20c6ff               jsr     0xffc6
+    \ 0011 a000                 ldy     #0
+    \ 0013 20cfff   `?L69`:     jsr     0xffcf
+    \ 0016 8d0a16               sta     0x160a
+    \ 0019 91..                 sta     (_Zp),y
+    \ 001b c8                   iny
+    \ 001c c000                 cpy     #0
+    \ 001e d0f3                 bne     `?L69`
+    \ 0020 8c0b16               sty     0x160b
+    \ 0023 20ccff               jsr     0xffcc
+0140                  return status;
+0141                }
+    \ 0026 60                   rts
+0142
+0143                char writebytes(char log, BAM* address, unsigned int nbrbytes) {
+    \ 0000                      .section code,text
+    \ 0000                      .public writebytes
+    \ 0000          writebytes:
+0144                  char status;
+0145                  BAM *offsetaddress = 0;  // to be set in assembler
+0146
+0147                  __asm volatile(
+0148                    " lda %[address]\n"
+0149                    " sta %[offsetaddress]\n"
+0150                    " lda %[address]+1\n"
+0151                    " sta %[offsetaddress]+1\n"
+0152                    " inw %[offsetaddress]\n"
+0153
+0154                    " lda %[address]\n"
+0155                    " sta 0x1606\n"
+0156                    " lda %[address]+1\n"
+0157                    " sta 0x1607\n"
+0158                    " lda %[offsetaddress]\n"
+0159                    " sta 0x1608\n"
+0160                    " lda %[offsetaddress]+1\n"
+0161                    " sta 0x1609\n"
+0162                /*
+0163                    " jsr 0xffb7\n"       // READST
+0164                    " bne end_copy\n"           // eof oder error
+0165                */
+0166                    " ldx %[log]\n"       // as set with SETLFS
+0167                    " jsr 0xffc9\n"       // CHKOUT
+0168                /*
+0169                    " jsr 0xffb7\n"       // READST error status
+0170                    " bne end_copy\n"           // eof oder error
+0171                */
+0172                    " ldz #0\n"           // index within block
+0173                    " ldx #0\n"           // maybe X should be initialised?
+0174                "nextwrite:\n"
+0175                    " lda (%[offsetaddress]),z\n"
+0176                //    " tza\n"              // @@@@@
+0177                    " jsr 0xffd2\n"       // CHROUT
+0178                    " inz\n"
+0179                    " cpz #0xff\n"  //  " cpy %[nbrbytes]\n"
+0180                    " bne nextwrite\n"
+0181
+0182                    " ldz #0\n"
+0183                    " lda (%[address]),z\n" // @@@@@ first byte last sent
+0184                    " jsr 0xffd2\n"       // CHROUT
+0185
+0186                    " jsr 0xffcc\n"       // CLRCHN
+0187                //    "end_copy:\n"
+0188                  : "=Ka"(status) : [log] "Kzp8"(log), [nbrbytes] "Kzp16"(nbrbytes),
+0189                                    [offsetaddress] "Kzp16"(offsetaddress),
+0190                                    [address] "Kzp16"(address)
+0191                     : "a", "x", "y", "z" );
+    \ 0000 85..                 sta     zp:_Zp+6
+    \ 0002 a5..                 lda     zp:_Zp
+    \ 0004 85..                 sta     zp:_Zp+4
+    \ 0006 a5..                 lda     zp:_Zp+1
+    \ 0008 85..                 sta     zp:_Zp+5
+    \ 000a e3..                 inw     zp:_Zp+4
+    \ 000c a5..                 lda     zp:_Zp
+    \ 000e 8d0616               sta     0x1606
+    \ 0011 a5..                 lda     zp:_Zp+1
+    \ 0013 8d0716               sta     0x1607
+    \ 0016 a5..                 lda     zp:_Zp+4
+    \ 0018 8d0816               sta     0x1608
+    \ 001b a5..                 lda     zp:_Zp+5
+    \ 001d 8d0916               sta     0x1609
+    \ 0020 a6..                 ldx     zp:_Zp+6
+    \ 0022 20c9ff               jsr     0xffc9
+    \ 0025 a300                 ldz     #0
+    \ 0027 a200                 ldx     #0
+    \ 0029          `?L74`:
+    \ 0029 b2..                 lda     (_Zp+4),z
+    \ 002b 20d2ff               jsr     0xffd2
+    \ 002e 1b                   inz
+    \ 002f c2ff                 cpz     #255
+    \ 0031 d0f6                 bne     `?L74`
+    \ 0033 a300                 ldz     #0
+    \ 0035 b2..                 lda     (_Zp),z
+    \ 0037 20d2ff               jsr     0xffd2
+    \ 003a 20ccff               jsr     0xffcc
+0192                  return status;
+0193                }
+    \ 003d 60                   rts
+0194
+0195                char writestr(char log, char* address) {
+    \ 0000                      .section code,text
+    \ 0000                      .public writestr
+    \ 0000          writestr:
+0196                  char status;
+0197
+0198                  __asm volatile(
+0199                    " lda %[address]\n"
+0200                    " sta 0x160e\n"
+0201                    " lda %[address]+1\n"
+0202                    " sta 0x160f\n"
+0203                /*
+0204                    " jsr 0xffb7\n"       // READST
+0205                    " bne end_copy\n"     // eof oder fehler
+0206                */
+0207                    " lda %[log]\n"       // channel von SETLFS
+0208                    " tax\n"              // channel von SETLFS
+0209                    " jsr 0xffc9\n"       // CHKOUT
+0210                /*
+0211                    " jsr 0xffb7\n"       // READST error status
+0212                    " bne end_copy\n"           // eof oder fehler
+0213                */
+0214                    " ldy #0\n"           // index im block,  für Schleife mit y von GPT
+0215                "nextwrite:\n"
+0216                    " lda (%[address]),y\n"
+0217
+0218                    " sta 0x16a0,y\n"
+0219
+0220                    " beq end_copy\n"
+0221                    " jsr 0xffd2\n"       // CHROUT
+0222                    " iny\n"
+0223                    " bne nextwrite\n"
+0224                    " beq nextwrite\n"    // @@@@@
+0225
+0226                    "end_copy:\n"
+0227                    " jsr 0xffcc\n"       // CLRCHN
+0228                  : "=Ka"(status) : [log] "Kzp8"(log), [address] "Kzp16"(address)
+0229                     : "a", "x", "y", "z" );
+    \ 0000 85..                 sta     zp:_Zp+2
+    \ 0002 a5..                 lda     zp:_Zp
+    \ 0004 8d0e16               sta     0x160e
+    \ 0007 a5..                 lda     zp:_Zp+1
+    \ 0009 8d0f16               sta     0x160f
+    \ 000c a5..                 lda     zp:_Zp+2
+    \ 000e aa                   tax
+    \ 000f 20c9ff               jsr     0xffc9
+    \ 0012 a000                 ldy     #0
+    \ 0014          `?L80`:
+    \ 0014 b1..                 lda     (_Zp),y
+    \ 0016 99a016               sta     0x16a0,y
+    \ 0019 f008                 beq     `?L81`
+    \ 001b 20d2ff               jsr     0xffd2
+    \ 001e c8                   iny
+    \ 001f d0f3                 bne     `?L80`
+    \ 0021 f0f1                 beq     `?L80`
+    \ 0023 20ccff   `?L81`:     jsr     0xffcc
+0230                  return status;
+0231                }
+    \ 0026 60                   rts
+0232
+0233                void iecopen(void)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public iecopen
+    \ 0000          iecopen:
+0234
+0235                  asm volatile(
+0236                    " jsr 0xffc0\n"        // OPEN
+0237                /*
+0238                    " bcs end_copy\n"           // fehler
+0239
+0240                    " jsr 0xffb7\n"       // READST
+0241                    " bne end_copy\n"           // eof oder fehler
+0242                */
+0243                    "end_copy:\n"
+0244                  : : : "a", "x", "y", "z" );
+    \ 0000 20c0ff               jsr     0xffc0
+0245                }
+    \ 0003 60                   rts
+0246
+0247                void iecclose(char log)  {
+    \ 0000                      .section code,text
+    \ 0000                      .public iecclose
+    \ 0000          iecclose:
+0248
+0249                  asm volatile(
+0250                //    " lda #9\n"           // channel von SETLFS
+0251                    " jsr 0xffc3\n"       // CLOSE
+0252                    " bcs end_copy\n"           // fehler
+0253
+0254                    " jsr 0xffb7\n"       // READST error status
+0255                    " bne end_copy\n"           // eof oder fehler
+0256
+0257                    "end_copy:\n"
+0258                  :  : "Ka"(log)
+0259                     : "a", "x", "y", "z" );
+    \ 0000 20c3ff               jsr     0xffc3
+    \ 0003 b003                 bcs     `?L88`
+    \ 0005 20b7ff               jsr     0xffb7
+    \ 0008          `?L88`:
+0260                }
+    \ 0008 60                   rts
+0261
+0262                void checkerrorchannel(unsigned char drive, char* msg) {
+    \ 0000                      .section code,text
+    \ 0000                      .public checkerrorchannel
+    \ 0000          checkerrorchannel:
+    \ 0000 a200                 ldx     #0
+    \ 0002 a002                 ldy     #2
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 85..                 sta     zp:_Zp+26
+    \ 0009 a5..                 lda     zp:_Zp
+    \ 000b 85..                 sta     zp:_Zp+24
+    \ 000d a5..                 lda     zp:_Zp+1
+    \ 000f 85..                 sta     zp:_Zp+25
+0263                  unsigned char status;
+0264
+0265                  setbnk();
+    \ 0011 20....               jsr     setbnk
+0266                  setnam("");  // no setnam needed
+    \ 0014 a9..                 lda     #.byte0 _StringLiteral_
+    \ 0016 85..                 sta     zp:_Zp
+    \ 0018 a9..                 lda     #.byte1 _StringLiteral_
+    \ 001a 85..                 sta     zp:_Zp+1
+    \ 001c 20....               jsr     setnam
+0267                  setlfs(drive, CMDERRORCHANNEL, 15);
+    \ 001f a90f                 lda     #15
+    \ 0021 85..                 sta     zp:_Zp+1
+    \ 0023 a90e                 lda     #14
+    \ 0025 85..                 sta     zp:_Zp
+    \ 0027 a5..                 lda     zp:_Zp+26
+    \ 0029 20....               jsr     setlfs
+0268                  iecopen();
+    \ 002c 20....               jsr     iecopen
+0269                  status = readstr(CMDERRORCHANNEL, (char *) 0x1680);
+    \ 002f a980                 lda     #128
+    \ 0031 85..                 sta     zp:_Zp
+    \ 0033 a916                 lda     #22
+    \ 0035 85..                 sta     zp:_Zp+1
+    \ 0037 a90e                 lda     #14
+    \ 0039 20....               jsr     readstr
+    \ 003c 85..                 sta     zp:_Zp+26
+0270                  iecclose(CMDERRORCHANNEL);
+    \ 003e a90e                 lda     #14
+    \ 0040 20....               jsr     iecclose
+0271
+0272                	mh4printf(msg, status); // @@@@@
+    \ 0043 a6..                 ldx     zp:_Zp+26
+    \ 0045 86..                 stx     zp:_Zp+4
+    \ 0047 a900                 lda     #0
+    \ 0049 85..                 sta     zp:_Zp+5
+    \ 004b 85..                 sta     zp:_Zp+6
+    \ 004d 85..                 sta     zp:_Zp+7
+    \ 004f 20....               jsr     `?L175`
+    \ 0052 20....               jsr     mh4printf
+0273                  cputln();
+    \ 0055 20....               jsr     cputln
+0274                  cgetc();
+    \ 0058 20....               jsr     cgetc
+0275                  flushkeybuf();
+    \ 005b 20....               jsr     flushkeybuf
+0276                  
+0277                  for (int i=0; PEEK(0x1680 + i) != 0xd; i++)  {
+    \ 005e a900                 lda     #0
+    \ 0060 85..                 sta     zp:_Zp
+    \ 0062 85..                 sta     zp:_Zp+1
+    \ 0064          `?L36`:
+    \ 0064 20....               jsr     `?L176`
+    \ 0067 a300                 ldz     #0
+    \ 0069 b2..                 lda     (_Zp+2),z
+    \ 006b c90d                 cmp     #13
+    \ 006d d005                 bne     `?L35`
+0278                    POKE(0x1680 + i, 0);
+0279                  }
+0280                }
+    \ 006f a002                 ldy     #2
+    \ 0071 4c....               jmp     _RestoreRegisters
+    \ 0074          `?L35`:
+    \ 0074 20....               jsr     `?L176`
+    \ 0077 6b                   tza
+    \ 0078 a8                   tay
+    \ 0079 91..                 sta     (_Zp+2),y
+    \ 007b e3..                 inw     zp:_Zp
+    \ 007d 80e5                 bra     `?L36`
+0281
+0282                unsigned char readtracksector(BAM* entry, unsigned char drive,
+0283                                              unsigned char track, unsigned char sector) {
+    \ 0000                      .section code,text
+    \ 0000                      .public readtracksector
+    \ 0000          readtracksector:
+    \ 0000 20....               jsr     `?L170`
+0284                  char status;  // @@@@@ Could this be handled better?
+0285
+0286                  ShowAccess(drive, track, sector, READ);
+    \ 0003 8a                   txa
+    \ 0004 20....               jsr     `?L157`
+0287
+0288                  // *** open command channel ***
+0289                  setbnk();
+0290                  setnam("");  // ("U1 2 0 40 3");
+0291                  //   dev log sec
+0292                  setlfs(drive, CMDCHANNEL,15);
+0293                  iecopen();
+0294
+0295                  // *** open data channel ***
+0296                  // data read channel needs to be open before the command is given:
+0297                  setbnk();
+0298                  setnam("#");
+0299                  //   dev log sec
+0300                  setlfs(drive, DATACHANNEL, DATACHANNEL); // needs to be the same sec as in the U1 command
+0301                  iecopen();
+0302                  // This doesn't seem to be data but the file name a few lines above:
+0303                  //  status = writestr(DATACHANNEL, (unsigned int)(uintptr_t) "#");
+0304                  
+0305                  // Do not check the error channel in between asking for data an getting:
+0306                  //  checkerrorchannel(drive, "dos after open datachannel ");
+0307
+0308                  // *** write command channel ***
+0309                  strcopy((char *) "U1 dc 0 tt ss", (char *) lfnname, 13);
+    \ 0007 a9..                 lda     #.byte0 lfnname
+    \ 0009 85..                 sta     zp:_Zp+2
+    \ 000b a9..                 lda     #.byte1 lfnname
+    \ 000d 85..                 sta     zp:_Zp+3
+    \ 000f a9..                 lda     #.byte0 `_StringLiteral_U1 dc 0 tt ss`
+    \ 0011 85..                 sta     zp:_Zp
+    \ 0013 a9..                 lda     #.byte1 `_StringLiteral_U1 dc 0 tt ss`
+    \ 0015 20....               jsr     `?L173`
+0310                  lfnname[3] = (DATACHANNEL / 10) ? (DATACHANNEL / 10 + 0x30) : ' ';
+0311                  lfnname[4] = DATACHANNEL % 10 + 0x30;
+0312                  lfnname[8] = (track / 10) ? (track / 10 + 0x30) : ' ';
+    \ 0018 20....               jsr     `?L156`
+    \ 001b a5..                 lda     zp:_Zp
+    \ 001d 05..                 ora     zp:_Zp+1
+    \ 001f d005                 bne     `?L48`
+    \ 0021 20....               jsr     `?L178`
+    \ 0024 8009                 bra     `?L49`
+    \ 0026          `?L48`:
+    \ 0026 a6..                 ldx     zp:_Zp+27
+    \ 0028 20....               jsr     `?L156`
+    \ 002b 18                   clc
+    \ 002c 20....               jsr     `?L177`
+    \ 002f          `?L49`:
+    \ 002f a5..                 lda     zp:_Zp
+    \ 0031 8d....               sta     lfnname+8
+0313                  lfnname[9] = track % 10 + 0x30;
+    \ 0034 a6..                 ldx     zp:_Zp+27
+    \ 0036 20....               jsr     `?L156`
+    \ 0039 a930                 lda     #48
+    \ 003b 18                   clc
+    \ 003c 65..                 adc     zp:_Zp+2
+    \ 003e 8d....               sta     lfnname+9
+0314                  lfnname[11] = (sector / 10) ? (sector / 10 + 0x30) : ' ';
+    \ 0041 20....               jsr     `?L155`
+    \ 0044 a5..                 lda     zp:_Zp
+    \ 0046 05..                 ora     zp:_Zp+1
+    \ 0048 d005                 bne     `?L51`
+    \ 004a 20....               jsr     `?L178`
+    \ 004d 8007                 bra     `?L52`
+    \ 004f          `?L51`:
+    \ 004f 20....               jsr     `?L155`
+    \ 0052 18                   clc
+    \ 0053 20....               jsr     `?L177`
+    \ 0056          `?L52`:
+    \ 0056 a5..                 lda     zp:_Zp
+    \ 0058 8d....               sta     lfnname+11
+0315                  lfnname[12] = sector % 10 + 0x30;
+    \ 005b 20....               jsr     `?L155`
+    \ 005e a930                 lda     #48
+    \ 0060 18                   clc
+0316                  status = writestr(CMDCHANNEL, (char *) lfnname);
+    \ 0061 20....               jsr     `?L172`
+0317
+0318                  // Do not check the error channel in between asking for data an getting:
+0319                  //  checkerrorchannel(drive, "dos after track/sector command ");
+0320
+0321                  // *** read data channel ***
+0322                  status = readbytes(DATACHANNEL, entry, BLOCKSIZE);
+    \ 0064 a900                 lda     #0
+    \ 0066 85..                 sta     zp:_Zp+2
+    \ 0068 a901                 lda     #1
+    \ 006a 85..                 sta     zp:_Zp+3
+    \ 006c 20....               jsr     `?L175`
+    \ 006f a902                 lda     #2
+    \ 0071 20....               jsr     readbytes
+0323                  iecclose(DATACHANNEL);
+    \ 0074 20....               jsr     `?L166`
+0324
+0325                  // *** close command channel ***
+0326                  iecclose(CMDCHANNEL);
+0327
+0328                  ShowAccess(drive, track, sector, OFF);
+0329
+0330                  return status;
+0331                }
+    \ 0077 4c....               jmp     `?L45`
+0332
+0333                unsigned char writetracksector(BAM* entry, unsigned char drive,
+0334                                               unsigned char track, unsigned char sector) {
+    \ 0000                      .section code,text
+    \ 0000                      .public writetracksector
+    \ 0000          writetracksector:
+    \ 0000 20....               jsr     `?L170`
+0335                  char status;  // @@@@@ Could this be handled better?
+0336
+0337                  ShowAccess(drive, track, sector, WRITE);
+    \ 0003 a901                 lda     #1
+    \ 0005 20....               jsr     `?L157`
+0338
+0339                  // *** open command channel ***
+0340                  setbnk();
+0341                  setnam("");  // ("U1 4 0 40 3");
+0342                  //   dev log sec
+0343                  setlfs(drive, CMDCHANNEL,15);
+0344                  iecopen();
+0345
+0346                  // *** open data channel ***
+0347                  // data read channel needs to be open before the command is given:
+0348                  setbnk();
+0349                  setnam("#");
+0350                  //   dev log sec
+0351                  setlfs(drive, DATACHANNEL, DATACHANNEL); // needs to be the same sec as in the U2 command
+0352                  iecopen();
+0353                  // This doesn't seem to be data but the file name a few lines above:
+0354                  //  status = writestr(DATACHANNEL, (unsigned int)(uintptr_t) "#");
+0355                  
+0356                  // Do not check the error channel in between asking for data an getting:
+0357                  //  checkerrorchannel("dos after open datachannel ");
+0358
+0359                  // *** write data channel ***
+0360                  status = writebytes(DATACHANNEL, entry, BLOCKSIZE);
+    \ 0008 a900                 lda     #0
+    \ 000a 85..                 sta     zp:_Zp+2
+    \ 000c a901                 lda     #1
+    \ 000e 85..                 sta     zp:_Zp+3
+    \ 0010 20....               jsr     `?L175`
+    \ 0013 a902                 lda     #2
+    \ 0015 20....               jsr     writebytes
+0361
+0362                  // *** write command channel ***
+0363                  strcopy((char *) "U2 dc 0 tt ss", (char *) lfnname, 13);
+    \ 0018 a9..                 lda     #.byte0 lfnname
+    \ 001a 85..                 sta     zp:_Zp+2
+    \ 001c a9..                 lda     #.byte1 lfnname
+    \ 001e 85..                 sta     zp:_Zp+3
+    \ 0020 a9..                 lda     #.byte0 `_StringLiteral_U2 dc 0 tt ss`
+    \ 0022 85..                 sta     zp:_Zp
+    \ 0024 a9..                 lda     #.byte1 `_StringLiteral_U2 dc 0 tt ss`
+    \ 0026 20....               jsr     `?L173`
+0364                  lfnname[3] = (DATACHANNEL / 10) ? (DATACHANNEL / 10 + 0x30) : ' ';
+0365                  lfnname[4] = DATACHANNEL % 10 + 0x30;
+0366                  lfnname[8] = (track / 10) ? (track / 10 + 0x30) : ' ';
+    \ 0029 20....               jsr     `?L156`
+    \ 002c a5..                 lda     zp:_Zp
+    \ 002e 05..                 ora     zp:_Zp+1
+    \ 0030 d005                 bne     `?L54`
+    \ 0032 20....               jsr     `?L178`
+    \ 0035 8009                 bra     `?L55`
+    \ 0037          `?L54`:
+    \ 0037 a6..                 ldx     zp:_Zp+27
+    \ 0039 20....               jsr     `?L156`
+    \ 003c 18                   clc
+    \ 003d 20....               jsr     `?L177`
+    \ 0040          `?L55`:
+    \ 0040 a5..                 lda     zp:_Zp
+    \ 0042 8d....               sta     lfnname+8
+0367                  lfnname[9] = track % 10 + 0x30;
+    \ 0045 a6..                 ldx     zp:_Zp+27
+    \ 0047 20....               jsr     `?L156`
+    \ 004a a930                 lda     #48
+    \ 004c 18                   clc
+    \ 004d 65..                 adc     zp:_Zp+2
+    \ 004f 8d....               sta     lfnname+9
+0368                  lfnname[11] = (sector / 10) ? (sector / 10 + 0x30) : ' ';
+    \ 0052 20....               jsr     `?L155`
+    \ 0055 a5..                 lda     zp:_Zp
+    \ 0057 05..                 ora     zp:_Zp+1
+    \ 0059 d005                 bne     `?L57`
+    \ 005b 20....               jsr     `?L178`
+    \ 005e 8007                 bra     `?L58`
+    \ 0060          `?L57`:
+    \ 0060 20....               jsr     `?L155`
+    \ 0063 18                   clc
+    \ 0064 20....               jsr     `?L177`
+    \ 0067          `?L58`:
+    \ 0067 a5..                 lda     zp:_Zp
+    \ 0069 8d....               sta     lfnname+11
+0369                  lfnname[12] = sector % 10 + 0x30;
+    \ 006c 20....               jsr     `?L155`
+    \ 006f a930                 lda     #48
+    \ 0071 18                   clc
+0370                  status = writestr(CMDCHANNEL, (char *) lfnname);
+    \ 0072 20....               jsr     `?L172`
+0371
+0372                  // Do not check the error channel in between asking for data an getting:
+0373                  //  checkerrorchannel("dos after track/sector command ");
+0374
+0375                  iecclose(DATACHANNEL);
+    \ 0075 20....               jsr     `?L166`
+    \ 0078          `?L45`:
+0376
+0377                  // *** close command channel ***
+0378                  iecclose(CMDCHANNEL);
+0379
+0380                  ShowAccess(drive, track, sector, OFF);
+0381
+0382                  return status;
+0383                }
+    \ 0078 a004                 ldy     #4
+    \ 007a 4c....               jmp     _RestoreRegisters
+    \ 0000                      .section code,text
+    \ 0000          `?L155`:
+    \ 0000 a6..                 ldx     zp:_Zp+26
+    \ 0002          `?L156`:
+    \ 0002 86..                 stx     zp:_Zp
+    \ 0004 a900                 lda     #0
+    \ 0006 85..                 sta     zp:_Zp+1
+    \ 0008 a90a                 lda     #10
+    \ 000a 85..                 sta     zp:_Zp+10
+    \ 000c a900                 lda     #0
+    \ 000e 85..                 sta     zp:_Zp+11
+    \ 0010 4c....               jmp     _DivMod16
+    \ 0000                      .section code,text
+    \ 0000          `?L157`:
+    \ 0000 85..                 sta     zp:_Zp+2
+    \ 0002 a5..                 lda     zp:_Zp+26
+    \ 0004 85..                 sta     zp:_Zp+1
+    \ 0006 a5..                 lda     zp:_Zp+27
+    \ 0008 85..                 sta     zp:_Zp
+    \ 000a a5..                 lda     zp:_Zp+28
+    \ 000c 20....               jsr     ShowAccess
+    \ 000f 20....               jsr     setbnk
+    \ 0012 a9..                 lda     #.byte0 _StringLiteral_
+    \ 0014 85..                 sta     zp:_Zp
+    \ 0016 a9..                 lda     #.byte1 _StringLiteral_
+    \ 0018 85..                 sta     zp:_Zp+1
+    \ 001a 20....               jsr     setnam
+    \ 001d a90f                 lda     #15
+    \ 001f 85..                 sta     zp:_Zp+1
+    \ 0021 85..                 sta     zp:_Zp
+    \ 0023 a5..                 lda     zp:_Zp+28
+    \ 0025 20....               jsr     setlfs
+    \ 0028 20....               jsr     iecopen
+    \ 002b 20....               jsr     setbnk
+    \ 002e a9..                 lda     #.byte0 `_StringLiteral_#`
+    \ 0030 85..                 sta     zp:_Zp
+    \ 0032 a9..                 lda     #.byte1 `_StringLiteral_#`
+    \ 0034 85..                 sta     zp:_Zp+1
+    \ 0036 20....               jsr     setnam
+    \ 0039 a902                 lda     #2
+    \ 003b 85..                 sta     zp:_Zp+1
+    \ 003d 85..                 sta     zp:_Zp
+    \ 003f a5..                 lda     zp:_Zp+28
+    \ 0041 20....               jsr     setlfs
+    \ 0044 4c....               jmp     iecopen
+    \ 0000                      .section code,text
+    \ 0000          `?L166`:
+    \ 0000 85..                 sta     zp:_Zp+24
+    \ 0002 a902                 lda     #2
+    \ 0004 20....               jsr     iecclose
+    \ 0007 a90f                 lda     #15
+    \ 0009 20....               jsr     iecclose
+    \ 000c a902                 lda     #2
+    \ 000e 85..                 sta     zp:_Zp+2
+    \ 0010 a5..                 lda     zp:_Zp+26
+    \ 0012 85..                 sta     zp:_Zp+1
+    \ 0014 a5..                 lda     zp:_Zp+27
+    \ 0016 85..                 sta     zp:_Zp
+    \ 0018 a5..                 lda     zp:_Zp+28
+    \ 001a 20....               jsr     ShowAccess
+    \ 001d a5..                 lda     zp:_Zp+24
+    \ 001f 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a200     `?L170`:    ldx     #0
+    \ 0002 a004                 ldy     #4
+    \ 0004 20....               jsr     _AllocStackSave
+    \ 0007 85..                 sta     zp:_Zp+28
+    \ 0009 a5..                 lda     zp:_Zp
+    \ 000b 85..                 sta     zp:_Zp+24
+    \ 000d a5..                 lda     zp:_Zp+1
+    \ 000f 85..                 sta     zp:_Zp+25
+    \ 0011 a5..                 lda     zp:_Zp+2
+    \ 0013 85..                 sta     zp:_Zp+27
+    \ 0015 a5..                 lda     zp:_Zp+3
+    \ 0017 85..                 sta     zp:_Zp+26
+    \ 0019 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L172`:
+    \ 0000 65..                 adc     zp:_Zp+2
+    \ 0002 8d....               sta     lfnname+12
+    \ 0005 a9..                 lda     #.byte0 lfnname
+    \ 0007 85..                 sta     zp:_Zp
+    \ 0009 a9..                 lda     #.byte1 lfnname
+    \ 000b 85..                 sta     zp:_Zp+1
+    \ 000d a90f                 lda     #15
+    \ 000f 4c....               jmp     writestr
+    \ 0000                      .section code,text
+    \ 0000          `?L173`:
+    \ 0000 85..                 sta     zp:_Zp+1
+    \ 0002 a90d                 lda     #13
+    \ 0004 20....               jsr     strcopy
+    \ 0007 a920                 lda     #32
+    \ 0009 8d....               sta     lfnname+3
+    \ 000c a932                 lda     #50
+    \ 000e 8d....               sta     lfnname+4
+    \ 0011 a6..                 ldx     zp:_Zp+27
+    \ 0013 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L175`:
+    \ 0000 a5..                 lda     zp:_Zp+24
+    \ 0002 85..                 sta     zp:_Zp
+    \ 0004 a5..                 lda     zp:_Zp+25
+    \ 0006 85..                 sta     zp:_Zp+1
+    \ 0008 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L176`:
+    \ 0000 a5..                 lda     zp:_Zp
+    \ 0002 18                   clc
+    \ 0003 6980                 adc     #128
+    \ 0005 85..                 sta     zp:_Zp+2
+    \ 0007 a5..                 lda     zp:_Zp+1
+    \ 0009 6916                 adc     #22
+    \ 000b 85..                 sta     zp:_Zp+3
+    \ 000d 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          `?L177`:
+    \ 0000 a5..                 lda     zp:_Zp
+    \ 0002 6930                 adc     #48
+    \ 0004 85..                 sta     zp:_Zp
+    \ 0006 60                   rts
+    \ 0000                      .section code,text
+    \ 0000 a920     `?L178`:    lda     #32
+    \ 0002 85..                 sta     zp:_Zp
+    \ 0004 a900                 lda     #0
+    \ 0006 60                   rts
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak _StringLiteral_
+    \ 0000          _StringLiteral_:
+    \ 0000 00                   .byte   0
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_#`
+    \ 0000          `_StringLiteral_#`:
+    \ 0000 2300                 .byte   35,0
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_U1 dc 0 tt ss`
+    \ 0000          `_StringLiteral_U1 dc 0 tt ss`:
+    \ 0000 55312064             .byte   85,49,32,100,99,32,48,32,116,116,32,115,115,0
+    \ 0004 63203020
+    \ 0008 74742073
+    \ 000c 7300
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_U2 dc 0 tt ss`
+    \ 0000          `_StringLiteral_U2 dc 0 tt ss`:
+    \ 0000 55322064             .byte   85,50,32,100,99,32,48,32,116,116,32,115,115,0
+    \ 0004 63203020
+    \ 0008 74742073
+    \ 000c 7300
+
+##########################
+#                        #
+# Memory sizes (decimal) #
+#                        #
+##########################
+
+Executable  (Text): 840 bytes
+Constant          :  31 bytes

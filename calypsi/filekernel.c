@@ -1,13 +1,25 @@
-/* static */ unsigned char /* __attribute__((used)) */ fnamehi;
-/* static */ unsigned char /* __attribute__((used)) */ fnamelo;
+#include <string.h>
+#include <stdint.h>
+#include <mega65/conio.h>  // llvm instead of <printf.h>
+#include <mega65/memory.h>  // mega65-libc
+#include <mega65/hal.h>  // mega65-libc
+#include "regions.h"
+#include "hyppo.h"
+#include "fileio.h"
+#include "filekernel.h"
+#include "conioextensions.h"
+
+// *********************************************************
+// ***  filekernel.c Midnight Mega's kernel file I/O     ***
+// *********************************************************
+
+#define DATACHANNEL      2
+#define CMDCHANNEL      15
+#define CMDERRORCHANNEL 14
 
 // different way to access low/high bytes would be, but only works on globals:
 //  " ldy #.byte1 (lfnname)\n"
 //  " ldx #.byte0 (lfnname)\n"
-
-// ******************************************
-// ***  Begin of C64 kernelload KickC     ***
-// ******************************************
 
 // Example for SETNAM etc.:
 // https://www.devili.iki.fi/pub/Commodore/docs/books/C128_Programmers_Reference_OCR.pdf
@@ -57,47 +69,7 @@ void setlfs(char device, char log, char sec) {
      : "a", "x", "y", "z" );
 }
 
-// LOAD. Load or verify file. (Must call SETLFS and SETNAM beforehands.)
-// - verify: 0 = Load, 1-255 = Verify
-//
-// Returns a status, 0xff: Success other: Kernal Error Code
-char load(char* address, char verify) {
-  char status;
-
-  fnamehi = (unsigned int) address >> 8;
-  fnamelo = (unsigned int) address & 0xff;
-  
-/*    clrhome();
-  printf("fnamehi is: %04x ", (unsigned int) fnamehi);
-    cputln();
-  printf("fnamelo is: %04x ", (unsigned int) fnamelo);
-    cputln();
-    cgetc();
-*/
-
-  __asm volatile(
-    " ; LOAD. Load or verify file. (Must call SETLFS and SETNAM beforehands.)\n"
-    " ; Input: A: 0 = Load, 1-255 = Verify; X/Y = Load address (if secondary address = 0).\n"
-    " ; Output: Carry: 0 = No errors, 1 = Error; A = KERNAL error code (if Carry = 1);\n"
-    " ;         X/Y = Address of last byte loaded/verified (if Carry = 0).\n"
-    " ; ldx address\n"
-    " ; ldy address+1\n"
-    " ; lda verify\n"
-    " ;        \n"
-    " ; Testing\n"
-    " ; ldy #0x16\n"
-    " ; ldx #0x00\n"
-    " ;        \n"
-    " jsr 0xffd5\n" // LOAD
-    " bcs loaderror\n"
-    " lda #0xff\n"
-    "loaderror: nop\n"
-    " ; sta %0  Calypsi\n"
-  : "=Ka"(status) : "Ky"(fnamehi), "Ka"(verify), "Kx"(fnamelo) : );
-  return status;
-}
-
-char readstr(char log, unsigned int address) {
+char readstr(char log, char* address) {
   char status;
 
   __asm volatile(
@@ -128,7 +100,7 @@ char readstr(char log, unsigned int address) {
   return status;
 }
 
-char readbytes(char log, unsigned int address, unsigned int nbrbytes) {
+char readbytes(char log, BAM* address, unsigned int nbrbytes) {
   char status;
 
   __asm volatile(
@@ -168,13 +140,25 @@ char readbytes(char log, unsigned int address, unsigned int nbrbytes) {
   return status;
 }
 
-char writebytes(char log, unsigned int address, unsigned int nbrbytes) {
+char writebytes(char log, BAM* address, unsigned int nbrbytes) {
   char status;
-  unsigned int firstaddress = address;
-
-  address++;
+  BAM *offsetaddress = 0;  // to be set in assembler
 
   __asm volatile(
+    " lda %[address]\n"
+    " sta %[offsetaddress]\n"
+    " lda %[address]+1\n"
+    " sta %[offsetaddress]+1\n"
+    " inw %[offsetaddress]\n"
+
+    " lda %[address]\n"
+    " sta 0x1606\n"
+    " lda %[address]+1\n"
+    " sta 0x1607\n"
+    " lda %[offsetaddress]\n"
+    " sta 0x1608\n"
+    " lda %[offsetaddress]+1\n"
+    " sta 0x1609\n"
 /*
     " jsr 0xffb7\n"       // READST
     " bne end_copy\n"           // eof oder error
@@ -188,7 +172,7 @@ char writebytes(char log, unsigned int address, unsigned int nbrbytes) {
     " ldz #0\n"           // index within block
     " ldx #0\n"           // maybe X should be initialised?
 "nextwrite:\n"
-    " lda (%[address]),z\n"
+    " lda (%[offsetaddress]),z\n"
 //    " tza\n"              // @@@@@
     " jsr 0xffd2\n"       // CHROUT
     " inz\n"
@@ -196,19 +180,19 @@ char writebytes(char log, unsigned int address, unsigned int nbrbytes) {
     " bne nextwrite\n"
 
     " ldz #0\n"
-    " lda (%[firstaddress]),z\n" // @@@@@ first byte last sent
+    " lda (%[address]),z\n" // @@@@@ first byte last sent
     " jsr 0xffd2\n"       // CHROUT
 
     " jsr 0xffcc\n"       // CLRCHN
 //    "end_copy:\n"
   : "=Ka"(status) : [log] "Kzp8"(log), [nbrbytes] "Kzp16"(nbrbytes),
-                    [address] "Kzp16"(address),
-                    [firstaddress] "Kzp16"(firstaddress)
+                    [offsetaddress] "Kzp16"(offsetaddress),
+                    [address] "Kzp16"(address)
      : "a", "x", "y", "z" );
   return status;
 }
 
-char writestr(char log, unsigned int address) {
+char writestr(char log, char* address) {
   char status;
 
   __asm volatile(
@@ -275,89 +259,15 @@ void iecclose(char log)  {
      : "a", "x", "y", "z" );
 }
 
-/* *** Not implemented, not needed ***
-
-// Load a file to memory
-// Returns a status:
-// - 0xff: Success
-// - other: Kernal Error Code (https://commodore.ca/manuals/pdfs/commodore_error_messages.pdf)
-char loadFileToMemory( char device, char* filename, char* address) {
-  setnam(filename);
-  setlfs(device, 1, 0);
-  return load(address, 0);
-}
-
-volatile __zp char* addresszp;
-volatile char* endaddress;
-
-char saveFileToMemory( char device, char* filename, char* address) {
-//	printf("SETNAM is: %04x ", (unsigned int) SETNAM);
-//	printf("SETLFS is: %04x ", (unsigned int) SETLFS);
-//	printf("SAVE is: %04x ", (unsigned int) SAVE);
-	endaddress = (address + sizeof(address));
-	addresszp = address;
-	printf("addresszp is: %04x ", (unsigned int) addresszp);
-	printf("endaddress is: %04x ", (unsigned int) endaddress);
-	printf("\n\n\n\n");
-	setbnk();
-    setnam(filename);
-    setlfs(device);
-    return save(addresszp, endaddress);
-}
-
-char save(char* address, char* end) {
-    char status;
-    asm {
-		
-*/
-
-/*
-		// https://github.com/MEGA65/mega65-examples/blob/main/asm/load_save_d81/main.asm
-		lda #<$0000
-		sta $04
-		lda #>$0000
-		sta $05
-
-		// for start address
-		lda #0x00  // lfBank+1
-		sta $b0
-		lda #0x00  // lfBank
-		sta $af
-		// for end address
-		lda #0x00  // lfBank+1
-		sta $ac
-		lda #0x00  // lfBank
-		sta $ab
-*/
-
-/*
-
-        // regular routine:
-		ldx end
-        ldy end+1
-        lda #<address
-		clc
-        jsr SAVE
-        bcs error
-        lda #0xff
-        error:
-        sta status
-    }
-    return status;
-}
-
-*/
-
 void checkerrorchannel(unsigned char drive, char* msg) {
-  unsigned char cmdchannel = 14;
   unsigned char status;
 
   setbnk();
   setnam("");  // no setnam needed
-  setlfs(drive, cmdchannel, 15);
+  setlfs(drive, CMDERRORCHANNEL, 15);
   iecopen();
-  status = readstr(cmdchannel, 0x1680);
-  iecclose(cmdchannel);
+  status = readstr(CMDERRORCHANNEL, (char *) 0x1680);
+  iecclose(CMDERRORCHANNEL);
 
 	mh4printf(msg, status); // @@@@@
   cputln();
@@ -369,16 +279,17 @@ void checkerrorchannel(unsigned char drive, char* msg) {
   }
 }
 
-unsigned char readtracksector(unsigned char drive,
-                              unsigned char datachannel, unsigned char cmdchannel,
+unsigned char readtracksector(BAM* entry, unsigned char drive,
                               unsigned char track, unsigned char sector) {
   char status;  // @@@@@ Could this be handled better?
+
+  ShowAccess(drive, track, sector, READ);
 
   // *** open command channel ***
   setbnk();
   setnam("");  // ("U1 2 0 40 3");
   //   dev log sec
-  setlfs(drive, cmdchannel,15);
+  setlfs(drive, CMDCHANNEL,15);
   iecopen();
 
   // *** open data channel ***
@@ -386,47 +297,50 @@ unsigned char readtracksector(unsigned char drive,
   setbnk();
   setnam("#");
   //   dev log sec
-  setlfs(drive, datachannel, datachannel); // needs to be the same sec=2 as in the U1 command
+  setlfs(drive, DATACHANNEL, DATACHANNEL); // needs to be the same sec as in the U1 command
   iecopen();
   // This doesn't seem to be data but the file name a few lines above:
-  //  status = writestr(datachannel, (unsigned int)(uintptr_t) "#");
+  //  status = writestr(DATACHANNEL, (unsigned int)(uintptr_t) "#");
   
   // Do not check the error channel in between asking for data an getting:
   //  checkerrorchannel(drive, "dos after open datachannel ");
 
   // *** write command channel ***
   strcopy((char *) "U1 dc 0 tt ss", (char *) lfnname, 13);
-  lfnname[3] = (datachannel / 10) ? (datachannel / 10 + 0x30) : ' ';
-  lfnname[4] = datachannel % 10 + 0x30;
+  lfnname[3] = (DATACHANNEL / 10) ? (DATACHANNEL / 10 + 0x30) : ' ';
+  lfnname[4] = DATACHANNEL % 10 + 0x30;
   lfnname[8] = (track / 10) ? (track / 10 + 0x30) : ' ';
   lfnname[9] = track % 10 + 0x30;
   lfnname[11] = (sector / 10) ? (sector / 10 + 0x30) : ' ';
   lfnname[12] = sector % 10 + 0x30;
-  status = writestr(cmdchannel, (unsigned int)(uintptr_t) lfnname);
+  status = writestr(CMDCHANNEL, (char *) lfnname);
 
   // Do not check the error channel in between asking for data an getting:
   //  checkerrorchannel(drive, "dos after track/sector command ");
 
   // *** read data channel ***
-  status = readbytes(datachannel, 0x6000, 0x100);
-  iecclose(datachannel);
+  status = readbytes(DATACHANNEL, entry, BLOCKSIZE);
+  iecclose(DATACHANNEL);
 
   // *** close command channel ***
-  iecclose(cmdchannel);
+  iecclose(CMDCHANNEL);
+
+  ShowAccess(drive, track, sector, OFF);
 
   return status;
 }
 
-unsigned char writetracksector(unsigned char drive,
-                              unsigned char datachannel, unsigned char cmdchannel,
-                              unsigned char track, unsigned char sector) {
+unsigned char writetracksector(BAM* entry, unsigned char drive,
+                               unsigned char track, unsigned char sector) {
   char status;  // @@@@@ Could this be handled better?
+
+  ShowAccess(drive, track, sector, WRITE);
 
   // *** open command channel ***
   setbnk();
   setnam("");  // ("U1 4 0 40 3");
   //   dev log sec
-  setlfs(drive, cmdchannel,15);
+  setlfs(drive, CMDCHANNEL,15);
   iecopen();
 
   // *** open data channel ***
@@ -434,38 +348,36 @@ unsigned char writetracksector(unsigned char drive,
   setbnk();
   setnam("#");
   //   dev log sec
-  setlfs(drive, datachannel, datachannel); // needs to be the same sec=4 as in the U1 command
+  setlfs(drive, DATACHANNEL, DATACHANNEL); // needs to be the same sec as in the U2 command
   iecopen();
   // This doesn't seem to be data but the file name a few lines above:
-  //  status = writestr(datachannel, (unsigned int)(uintptr_t) "#");
+  //  status = writestr(DATACHANNEL, (unsigned int)(uintptr_t) "#");
   
   // Do not check the error channel in between asking for data an getting:
   //  checkerrorchannel("dos after open datachannel ");
 
   // *** write data channel ***
-  status = writebytes(datachannel, 0x6000, 0x100);
+  status = writebytes(DATACHANNEL, entry, BLOCKSIZE);
 
   // *** write command channel ***
   strcopy((char *) "U2 dc 0 tt ss", (char *) lfnname, 13);
-  lfnname[3] = (datachannel / 10) ? (datachannel / 10 + 0x30) : ' ';
-  lfnname[4] = datachannel % 10 + 0x30;
+  lfnname[3] = (DATACHANNEL / 10) ? (DATACHANNEL / 10 + 0x30) : ' ';
+  lfnname[4] = DATACHANNEL % 10 + 0x30;
   lfnname[8] = (track / 10) ? (track / 10 + 0x30) : ' ';
   lfnname[9] = track % 10 + 0x30;
   lfnname[11] = (sector / 10) ? (sector / 10 + 0x30) : ' ';
   lfnname[12] = sector % 10 + 0x30;
-  status = writestr(cmdchannel, (unsigned int)(uintptr_t) lfnname);
+  status = writestr(CMDCHANNEL, (char *) lfnname);
 
   // Do not check the error channel in between asking for data an getting:
   //  checkerrorchannel("dos after track/sector command ");
 
-  iecclose(datachannel);
+  iecclose(DATACHANNEL);
 
   // *** close command channel ***
-  iecclose(cmdchannel);
+  iecclose(CMDCHANNEL);
+
+  ShowAccess(drive, track, sector, OFF);
 
   return status;
 }
-
-// ******************************************
-// ***  End of C64 kernelload KickC       ***
-// ******************************************

@@ -6,6 +6,7 @@
 #include "regions.h"
 #include "hyppo.h"
 #include "fileio.h"
+#include "filekernel.h"
 #include "conioextensions.h"
 
 // static unsigned char __attribute__((used)) retval;
@@ -48,17 +49,12 @@ unsigned char dosfilename[DOSFILENAMELEN + 1]; // extra byte for nullterm
 // __attribute__((section(".data")))
 OPTION option;
 
-#define READ 0
-#define WRITE 1
-#define OFF 2
-#define SHOWACCESSX 26
-#define SHOWACCESSY 22
 void ShowAccess(unsigned char drive,
                 char track, char sector, unsigned char rw)  {
   if (rw == OFF)  {
     textcolor(COLOUR_CYAN);
     hline(SHOWACCESSX, SHOWACCESSY, 12, 32); // 64);  // 64 is the horizontal line
-  } else if (option.option & OPTIONshowDRV) {
+  } else if (option.option & OPTIONshowOVL) {
 // #ifdef DISKDEBUG
     revers(1);
     if (drive)  textcolor(COLOUR_LIGHTGREEN);
@@ -275,11 +271,18 @@ unsigned char GetWholeSector(unsigned char legacyHDOSstate,
   cputln();
   cgetc();
 #endif
-  side = ReadSector(legacyHDOSstate, drive, track, sector);
+  if (drive > 1)  {
+    lastdrive = drive;
+    side = sector % 2;
+    readtracksector(ws, drive, track, sector);
+    readtracksector(ws + 1, drive, track, sector + 1);
+  } else {
+    side = ReadSector(legacyHDOSstate, drive, track, sector);
 
-  if (side > 1)  return side;
-  lcopy(SECTBUF,      (uint32_t) ws,             BLOCKSIZE);
-  lcopy(SECTBUFUPPER, (uint32_t) ws + BLOCKSIZE, BLOCKSIZE);
+    if (side > 1)  return side;
+    lcopy(SECTBUF,      (uint32_t) ws,             BLOCKSIZE);
+    lcopy(SECTBUFUPPER, (uint32_t) ws + BLOCKSIZE, BLOCKSIZE);
+  }
 #ifdef DEBUG
   mprintf("GetWholeSector done. side=", side);
   cputln();
@@ -299,11 +302,17 @@ unsigned char GetOneSector(unsigned char legacyHDOSstate,
   cputln();
   cgetc();
 #endif
-  side = ReadSector(legacyHDOSstate, drive, track, sector);
+  if (drive > 1)  {
+    lastdrive = drive;
+    side = sector % 2;
+    readtracksector(ws, drive, track, sector);
+  } else {
+    side = ReadSector(legacyHDOSstate, drive, track, sector);
 
-  if (side > 1)  return side;
-  if (side == 0)  lcopy(SECTBUF,      (uint32_t) ws, BLOCKSIZE);
-  else            lcopy(SECTBUFUPPER, (uint32_t) ws, BLOCKSIZE);
+    if (side > 1)  return side;
+    if (side == 0)  lcopy(SECTBUF,      (uint32_t) ws, BLOCKSIZE);
+    else            lcopy(SECTBUFUPPER, (uint32_t) ws, BLOCKSIZE);
+  }
 #ifdef DEBUG
   mprintf("GetOneSector done. side=", side);
   cputln();
@@ -319,28 +328,36 @@ unsigned char PutWholeSector(unsigned char legacyHDOSstate,
 
 //  if (side > 1)  return side;
   unsigned char side = sector % 2;
+  unsigned char ret = 0;
 
-  if (side == 0)  {
-    clrhomed();
-    mprintfd("PutWholeSector before lower buffer. Track=", track);
-    mprintfd(" Sector=", sector);
-    cputlnd();
+  if (drive > 1)  {
+    lastdrive = drive;
+    ret = writetracksector(ws, drive, track, sector);
+    ret &= writetracksector(ws + 1, drive, track, sector + 1);
+  } else {
+    if (side == 0)  {
+      clrhomed();
+      mprintfd("PutWholeSector before lower buffer. Track=", track);
+      mprintfd(" Sector=", sector);
+      cputlnd();
+      cgetcd();
+      lcopy((uint32_t) ws, SECTBUF, BLOCKSIZE * 2); // <-- take both sectors
+    } else {  // @@@@ probably no longer needed:
+      // Now first read the state from the disk, because only one of
+      // the two logical sectors will be overwritten:
+      ReadSector(legacyHDOSstate, drive, track, sector);
+    
+      clrhomed();
+      mprintfd("PutWholeSector before upper buffer. Track=", track);
+      mprintfd(" Sector=", sector);
+      cputlnd();
+      lcopy((uint32_t) ws, SECTBUFUPPER, BLOCKSIZE);
+    }
+    msprintfd("PutWholeSector done. Returning while WriteSector.");
     cgetcd();
-    lcopy((uint32_t) ws, SECTBUF, BLOCKSIZE * 2); // <-- take both sectors
-  } else {  // @@@@ probably no longer needed:
-    // Now first read the state from the disk, because only one of
-    // the two logical sectors will be overwritten:
-    ReadSector(legacyHDOSstate, drive, track, sector);
-  
-    clrhomed();
-    mprintfd("PutWholeSector before upper buffer. Track=", track);
-    mprintfd(" Sector=", sector);
-    cputlnd();
-    lcopy((uint32_t) ws, SECTBUFUPPER, BLOCKSIZE);
+    return WriteSector(legacyHDOSstate, drive, track, sector - side);
   }
-  msprintfd("PutWholeSector done. Returning while WriteSector.");
-  cgetcd();
-  return WriteSector(legacyHDOSstate, drive, track, sector - side);
+  return ret;
 }
 unsigned char PutOneSector(unsigned char legacyHDOSstate,
                            BAM* entry, unsigned char drive,
@@ -348,29 +365,36 @@ unsigned char PutOneSector(unsigned char legacyHDOSstate,
   BAM* ws = entry;   // later to be DATABLOCK*
 
   unsigned char side = sector % 2;
+  unsigned char ret = 0;
   
-  // Now first read the state from the disk, because only one of
-  // the two logical sectors will be overwritten:
-  ReadSector(legacyHDOSstate, drive, track, sector);
-  
-  if (side == 0)  {
-    clrhomed();
-    mprintfd("PutOneSector before lower buffer. Track=", track);
-    mprintfd(" Sector=", sector);
-    cputlnd();
-    cgetcd();
-    lcopy((uint32_t) ws, SECTBUF, BLOCKSIZE);
+  if (drive > 1)  {
+    lastdrive = drive;
+    ret = writetracksector(ws, drive, track, sector);
   } else {
-    clrhomed();
-    mprintfd("PutOneSector before upper buffer. Track=", track);
-    mprintfd(" Sector=", sector);
-    cputlnd();
-    lcopy((uint32_t) ws, SECTBUFUPPER, BLOCKSIZE);
-  }
-  msprintfd("PutOneSector done. Returning while WriteSector.");
-  cgetcd();
+    // Now first read the state from the disk, because only one of
+    // the two logical sectors will be overwritten:
+    ReadSector(legacyHDOSstate, drive, track, sector);
+    
+    if (side == 0)  {
+      clrhomed();
+      mprintfd("PutOneSector before lower buffer. Track=", track);
+      mprintfd(" Sector=", sector);
+      cputlnd();
+      cgetcd();
+      lcopy((uint32_t) ws, SECTBUF, BLOCKSIZE);
+    } else {
+      clrhomed();
+      mprintfd("PutOneSector before upper buffer. Track=", track);
+      mprintfd(" Sector=", sector);
+      cputlnd();
+      lcopy((uint32_t) ws, SECTBUFUPPER, BLOCKSIZE);
+    }
+    msprintfd("PutOneSector done. Returning while WriteSector.");
+    cgetcd();
 
-  return WriteSector(legacyHDOSstate, drive, track, sector - side);
+    return WriteSector(legacyHDOSstate, drive, track, sector - side);
+  }
+  return ret;
 }
 
 void GetBAM(unsigned char legacyHDOSstate, unsigned char side)  {
