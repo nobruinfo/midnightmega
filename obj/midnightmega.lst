@@ -1,0 +1,247 @@
+###############################################################################
+#                                                                             #
+# Calypsi ISO C compiler for 6502                                version 5.13 #
+#                                                       18/Jan/2026  09:50:05 #
+# Command line: -D asm=__asm -I calypsi.h -D VERSION="v0.6.8-beta" -I         #
+#               mega65-libc/include -O 2 --core 45gs02 --target MEGA65 -D     #
+#               FULLFEATURES --list-file=obj/midnightmega.lst -MMD -MP -c     #
+#               src/midnightmega.c -o obj/midnightmega.o                      #
+#               -MFobj/midnightmega.d                                         #
+#                                                                             #
+###############################################################################
+
+    \ 0000                      .rtmodel version,"1"
+    \ 0000                      .rtmodel codeModel,"plain"
+    \ 0000                      .rtmodel core,"45gs02"
+    \ 0000                      .rtmodel doubleSize,"32"
+    \ 0000                      .rtmodel target,"mega65"
+    \ 0000                      .extern _DecVsp
+    \ 0000                      .extern _IncVsp
+    \ 0000                      .extern _Vfp
+    \ 0000                      .extern _Vsp
+    \ 0000                      .extern _Zp
+    \ 0000                      .extern bgcolor
+    \ 0000                      .extern bordercolor
+    \ 0000                      .extern clrhome
+    \ 0000                      .extern conioinit
+    \ 0000                      .extern messagebox
+    \ 0000                      .extern msprintf
+    \ 0000                      .extern navi
+    \ 0000                      .extern setscreensize
+    \ 0000                      .extern textcolor
+0001                // Midnightmega
+0002
+0003                // #pragma target(mega65)
+0004                // #include <mega65.h>
+0005                // #include <mega65-dma.h>
+0006                // #include <6502.h>    llvm
+0007                #include <stdlib.h>
+0008                #include <string.h>
+0009                #include <stdio.h>  // llvm
+0010                #include <mega65/conio.h>  // llvm instead of <printf.h>
+0011                #include <mega65/memory.h>  // mega65-libc
+0012                #include <mega65/hal.h>  // mega65-libc
+0013                // #include <peekpoke.h>  llvm
+0014                // #include <conio_.h>
+0015                // #include <conio-lines.h>
+0016
+0017                // #include <cbmiec.h>
+0018
+0019                // #define DEBUG
+0020
+0021                #include "regions.h"
+0022                #include "conioextensions.h"
+0023                #include "hyppo.h"
+0024                #include "nav.h"
+0025
+0026                // char* inputstr = (char*) INPUTSTRPAGE;
+0027
+0028                #include "calypsi.h"
+0029
+0030                // KickC calls conio_mega65_init() before doing main():
+0031                int main() {
+    \ 0000                      .public main
+    \ 0000                      .section code,text
+    \ 0000                      .public bank_start
+    \ 0000 78       bank_start: sei
+    \ 0001 a22f                 ldx     #47
+    \ 0003 8600                 stx     zp:0
+    \ 0005 a23e                 ldx     #62
+    \ 0007 8601                 stx     zp:1
+    \ 0009 a244                 ldx     #68
+    \ 000b 8e30d0               stx     0xd030
+    \ 000e 60                   rts
+    \ 0000                      .section code,text
+    \ 0000                      .public bank_end
+    \ 0000 a23f     bank_end:   ldx     #63
+    \ 0002 8601                 stx     zp:1
+    \ 0004 a264                 ldx     #100
+    \ 0006 8e30d0               stx     0xd030
+    \ 0009 58                   cli
+    \ 000a 60                   rts
+    \ 0000                      .section code,text
+    \ 0000          main:
+0032                //  bank_start();
+0033                  // setscreensize(80, 50);  or 40 25
+0034                  setscreensize(80, 25);
+    \ 0000 a919                 lda     #25
+    \ 0002 85..                 sta     zp:_Zp
+    \ 0004 a950                 lda     #80
+    \ 0006 20....               jsr     setscreensize
+0035                  // Init takes actual screensize from the before call to work with:
+0036                  conioinit();
+    \ 0009 20....               jsr     conioinit
+0037                  // ASCII lowercase is in conioinit()
+0038
+0039                  textcolor (COLOUR_CYAN);
+    \ 000c a903                 lda     #3
+    \ 000e 20....               jsr     textcolor
+0040                  bordercolor (COLOUR_BLACK);
+    \ 0011 a900                 lda     #0
+    \ 0013 20....               jsr     bordercolor
+0041                  bgcolor (COLOUR_BLUE);
+    \ 0016 a906                 lda     #6
+    \ 0018 20....               jsr     bgcolor
+0042                  
+0043                /*
+0044                  setuppercase();
+0045                  for (int i = 0; i <= 255; i++)  {
+0046                	cputcxy(i % 40, i / 40, i);
+0047                  }
+0048                  cgetc();
+0049                */
+0050
+0051                  clrhome();
+    \ 001b 20....               jsr     clrhome
+0052
+0053                  // mprintf("hyppo_getcurrentdrive=", hyppo_getcurrentdrive());
+0054
+0055                //  mcputsxy(0, 22, "The function keys shown in the bottom line are ");
+0056                //  msprintf("meant to be used with ");
+0057                //  mcputsxy(0, 23, "and without [Shift] and [Mega] after the messagebox is dismissed:");
+0058                //  shortcuts(20, 0);
+0059
+0060                  if (messagebox(1, "is currently beta and may destroy data structures on",
+0061                                    ".d81 and real disks! Please work on backed up media.",
+0062                                    "Press RETURN to continue, STOP to halt.", 0))  {
+    \ 001e a9fc                 lda     #-4
+    \ 0020 20....               jsr     _DecVsp
+    \ 0023 a003                 ldy     #3
+    \ 0025 a900                 lda     #0
+    \ 0027 91..                 sta     (_Vsp),y
+    \ 0029 88                   dey
+    \ 002a 91..                 sta     (_Vsp),y
+    \ 002c 88                   dey
+    \ 002d 91..                 sta     (_Vsp),y
+    \ 002f 88                   dey
+    \ 0030 91..                 sta     (_Vsp),y
+    \ 0032 a9..                 lda     #.byte0 `_StringLiteral_Press RETURN to continue, STOP to halt.`
+    \ 0034 85..                 sta     zp:_Zp+4
+    \ 0036 a9..                 lda     #.byte1 `_StringLiteral_Press RETURN to continue, STOP to halt.`
+    \ 0038 85..                 sta     zp:_Zp+5
+    \ 003a a9..                 lda     #.byte0 `_StringLiteral_.d81 and real disks! Please work on backed up media.`
+    \ 003c 85..                 sta     zp:_Zp+2
+    \ 003e a9..                 lda     #.byte1 `_StringLiteral_.d81 and real disks! Please work on backed up media.`
+    \ 0040 85..                 sta     zp:_Zp+3
+    \ 0042 a9..                 lda     #.byte0 `_StringLiteral_is currently beta and may destroy data structures on`
+    \ 0044 85..                 sta     zp:_Zp
+    \ 0046 a9..                 lda     #.byte1 `_StringLiteral_is currently beta and may destroy data structures on`
+    \ 0048 85..                 sta     zp:_Zp+1
+    \ 004a a901                 lda     #1
+    \ 004c 20....               jsr     messagebox
+    \ 004f a003                 ldy     #3
+    \ 0051 20....               jsr     _IncVsp
+    \ 0054 aa                   tax
+    \ 0055 f005                 beq     `?L11`
+0063                    navi(0);
+    \ 0057 a900                 lda     #0
+    \ 0059 20....               jsr     navi
+    \ 005c          `?L11`:
+0064                  }
+0065                  clrhome();
+    \ 005c 20....               jsr     clrhome
+0066                  msprintf("Have fun with your MEGA65!");
+    \ 005f a9..                 lda     #.byte0 `_StringLiteral_Have fun with your MEGA65!`
+    \ 0061 85..                 sta     zp:_Zp
+    \ 0063 a9..                 lda     #.byte1 `_StringLiteral_Have fun with your MEGA65!`
+    \ 0065 85..                 sta     zp:_Zp+1
+    \ 0067 20....               jsr     msprintf
+0067                //  usleep(2000000); // microseconds
+0068                //  cputln();
+0069                //  cgetc();
+0070                //  flushkeybuf();
+0071                //  hyppo_reset();
+0072
+0073                //  bank_end();
+0074                  return 0;
+    \ 006a a900                 lda     #0
+    \ 006c 85..                 sta     zp:_Zp
+    \ 006e 85..                 sta     zp:_Zp+1
+0075                }
+    \ 0070 60                   rts
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_.d81 and real disks! Please work on backed up media.`
+    \ 0000          `_StringLiteral_.d81 and real disks! Please work on backed up media.`:
+    \ 0000 2e643831             .byte   46,100,56,49,32,97,110,100,32,114,101,97,108,32,100,105,115,107,115,33,32,80,108,101,97,115,101,32,119,111,114,107,32,111,110,32,98,97,99,107,101,100,32,117,112,32,109,101,100,105,97,46,0
+    \ 0004 20616e64
+    \ 0008 20726561
+    \ 000c 6c206469
+    \ 0010 736b7321
+    \ 0014 20506c65
+    \ 0018 61736520
+    \ 001c 776f726b
+    \ 0020 206f6e20
+    \ 0024 6261636b
+    \ 0028 65642075
+    \ 002c 70206d65
+    \ 0030 6469612e
+    \ 0034 00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_Have fun with your MEGA65!`
+    \ 0000          `_StringLiteral_Have fun with your MEGA65!`:
+    \ 0000 48617665             .byte   72,97,118,101,32,102,117,110,32,119,105,116,104,32,121,111,117,114,32,77,69,71,65,54,53,33,0
+    \ 0004 2066756e
+    \ 0008 20776974
+    \ 000c 6820796f
+    \ 0010 7572204d
+    \ 0014 45474136
+    \ 0018 352100
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_Press RETURN to continue, STOP to halt.`
+    \ 0000          `_StringLiteral_Press RETURN to continue, STOP to halt.`:
+    \ 0000 50726573             .byte   80,114,101,115,115,32,82,69,84,85,82,78,32,116,111,32,99,111,110,116,105,110,117,101,44,32,83,84,79,80,32,116,111,32,104,97,108,116,46,0
+    \ 0004 73205245
+    \ 0008 5455524e
+    \ 000c 20746f20
+    \ 0010 636f6e74
+    \ 0014 696e7565
+    \ 0018 2c205354
+    \ 001c 4f502074
+    \ 0020 6f206861
+    \ 0024 6c742e00
+    \ 0000                      .section cdata,rodata
+    \ 0000                      .pubweak `_StringLiteral_is currently beta and may destroy data structures on`
+    \ 0000          `_StringLiteral_is currently beta and may destroy data structures on`:
+    \ 0000 69732063             .byte   105,115,32,99,117,114,114,101,110,116,108,121,32,98,101,116,97,32,97,110,100,32,109,97,121,32,100,101,115,116,114,111,121,32,100,97,116,97,32,115,116,114,117,99,116,117,114,101,115,32,111,110,0
+    \ 0004 75727265
+    \ 0008 6e746c79
+    \ 000c 20626574
+    \ 0010 6120616e
+    \ 0014 64206d61
+    \ 0018 79206465
+    \ 001c 7374726f
+    \ 0020 79206461
+    \ 0024 74612073
+    \ 0028 74727563
+    \ 002c 74757265
+    \ 0030 73206f6e
+    \ 0034 00
+
+##########################
+#                        #
+# Memory sizes (decimal) #
+#                        #
+##########################
+
+Executable  (Text): 139 bytes
+Constant          : 173 bytes

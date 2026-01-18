@@ -1,14 +1,11 @@
 ###############################################################################
 #                                                                             #
 # Calypsi ISO C compiler for 6502                                version 5.13 #
-#                                                       29/Nov/2025  19:46:32 #
-# Command line:                                                               #
-#               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conio.lst #
-#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.7-beta" -I         #
-#               ..\mega65-libc\include -O 2 --core 45gs02 --target MEGA65     #
-#               -D FULLFEATURES -o                                            #
-#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conio.o #
-#               conio.c                                                       #
+#                                                       18/Jan/2026  09:50:16 #
+# Command line: -D asm=__asm -I calypsi.h -D VERSION="v0.6.8-beta" -I         #
+#               mega65-libc/include -O 2 --core 45gs02 --target MEGA65 -D     #
+#               FULLFEATURES --list-file=obj/conio.lst -MMD -MP -c            #
+#               src/conio.c -o obj/conio.o -MFobj/conio.d                     #
 #                                                                             #
 ###############################################################################
 

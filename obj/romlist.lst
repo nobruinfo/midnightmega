@@ -1,14 +1,11 @@
 ###############################################################################
 #                                                                             #
 # Calypsi ISO C compiler for 6502                                version 5.13 #
-#                                                       29/Nov/2025  19:46:31 #
-# Command line:                                                               #
-#               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.lst #
-#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.7-beta" -I         #
-#               ..\mega65-libc\include -O 2 --core 45gs02 --target MEGA65     #
-#               -D FULLFEATURES -o                                            #
-#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\romlist.o #
-#               romlist.c                                                     #
+#                                                       18/Jan/2026  09:50:15 #
+# Command line: -D asm=__asm -I calypsi.h -D VERSION="v0.6.8-beta" -I         #
+#               mega65-libc/include -O 2 --core 45gs02 --target MEGA65 -D     #
+#               FULLFEATURES --list-file=obj/romlist.lst -MMD -MP -c          #
+#               src/romlist.c -o obj/romlist.o -MFobj/romlist.d               #
 #                                                                             #
 ###############################################################################
 

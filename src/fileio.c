@@ -122,6 +122,10 @@ unsigned char driveled(unsigned char errorcode)  {
     return errorcode;
 }
 
+void forgetdrive(void)  {
+  lastdrive = 99;
+}
+
 // returns 1 for odd numbered sectors, 0 for even:
 unsigned char ReadSector(unsigned char legacyHDOSstate,
                          unsigned char drive, char track,
@@ -272,7 +276,12 @@ unsigned char GetWholeSector(unsigned char legacyHDOSstate,
   cgetc();
 #endif
   if (drive > 1)  {
-    lastdrive = drive;
+    if (lastdrive != drive) {
+      readtracksectorclose();
+      usleep(200000); // microseconds
+      readtracksectoropen(drive);
+      lastdrive = drive;
+    }
     side = sector % 2;
     readtracksector(ws, drive, track, sector);
     readtracksector(ws + 1, drive, track, sector + 1);
@@ -303,7 +312,12 @@ unsigned char GetOneSector(unsigned char legacyHDOSstate,
   cgetc();
 #endif
   if (drive > 1)  {
-    lastdrive = drive;
+    if (lastdrive != drive) {
+      readtracksectorclose();
+      usleep(200000); // microseconds
+      readtracksectoropen(drive);
+      lastdrive = drive;
+    }
     side = sector % 2;
     readtracksector(ws, drive, track, sector);
   } else {
@@ -331,7 +345,12 @@ unsigned char PutWholeSector(unsigned char legacyHDOSstate,
   unsigned char ret = 0;
 
   if (drive > 1)  {
-    lastdrive = drive;
+    if (lastdrive != drive) {
+      readtracksectorclose();
+      usleep(200000); // microseconds
+      readtracksectoropen(drive);
+      lastdrive = drive;
+    }
     ret = writetracksector(ws, drive, track, sector);
     ret &= writetracksector(ws + 1, drive, track, sector + 1);
   } else {
@@ -368,7 +387,12 @@ unsigned char PutOneSector(unsigned char legacyHDOSstate,
   unsigned char ret = 0;
   
   if (drive > 1)  {
-    lastdrive = drive;
+    if (lastdrive != drive) {
+      readtracksectorclose();
+      usleep(200000); // microseconds
+      readtracksectoropen(drive);
+      lastdrive = drive;
+    }
     ret = writetracksector(ws, drive, track, sector);
   } else {
     // Now first read the state from the disk, because only one of

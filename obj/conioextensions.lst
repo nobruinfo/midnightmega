@@ -1,14 +1,12 @@
 ###############################################################################
 #                                                                             #
 # Calypsi ISO C compiler for 6502                                version 5.13 #
-#                                                       29/Nov/2025  19:46:31 #
-# Command line:                                                               #
-#               --list-file=F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.lst #
-#               -D asm=__asm -I calypsi.h -D VERSION="v0.6.7-beta" -I         #
-#               ..\mega65-libc\include -O 2 --core 45gs02 --target MEGA65     #
-#               -D FULLFEATURES -o                                            #
-#               F:\Entwicklungsprojekte\github-nobru\midnightmega\calypsi\conioextensions.o #
-#               conioextensions.c                                             #
+#                                                       18/Jan/2026  09:50:07 #
+# Command line: -D asm=__asm -I calypsi.h -D VERSION="v0.6.8-beta" -I         #
+#               mega65-libc/include -O 2 --core 45gs02 --target MEGA65 -D     #
+#               FULLFEATURES --list-file=obj/conioextensions.lst -MMD -MP     #
+#               -c src/conioextensions.c -o obj/conioextensions.o             #
+#               -MFobj/conioextensions.d                                      #
 #                                                                             #
 ###############################################################################
 
@@ -1596,9 +1594,9 @@
     \ 00d0 ab....               ldz     _Zp+30
     \ 00d3 3b                   dez
     \ 00d4 d024                 bne     `?L280`
-    \ 00d6 a9..                 lda     #.byte0 `_StringLiteral_v0.6.7-beta`
+    \ 00d6 a9..                 lda     #.byte0 `_StringLiteral_v0.6.8-beta`
     \ 00d8 85..                 sta     zp:_Zp
-    \ 00da a9..                 lda     #.byte1 `_StringLiteral_v0.6.7-beta`
+    \ 00da a9..                 lda     #.byte1 `_StringLiteral_v0.6.8-beta`
     \ 00dc 20....               jsr     `?L604`
     \ 00df a901                 lda     #1
     \ 00e1 85..                 sta     zp:_Zp
@@ -2207,10 +2205,10 @@
     \ 0010 696e666f
     \ 0014 00
     \ 0000                      .section cdata,rodata
-    \ 0000                      .pubweak `_StringLiteral_v0.6.7-beta`
-    \ 0000          `_StringLiteral_v0.6.7-beta`:
-    \ 0000 76302e36             .byte   118,48,46,54,46,55,45,98,101,116,97,0
-    \ 0004 2e372d62
+    \ 0000                      .pubweak `_StringLiteral_v0.6.8-beta`
+    \ 0000          `_StringLiteral_v0.6.8-beta`:
+    \ 0000 76302e36             .byte   118,48,46,54,46,56,45,98,101,116,97,0
+    \ 0004 2e382d62
     \ 0008 65746100
 
 ##########################

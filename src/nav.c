@@ -654,6 +654,9 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
   if (option.option & OPTIONshowPOK) {
     POKE(0x100e3, 0x80);
   }
+  
+  forgetdrive();
+  
   // @@ to be made variable maybe?
   if (option.option & OPTIONshowIEC) {
     midnight[side]->drive = side + 8;  // @@@@@
@@ -796,7 +799,7 @@ void navi(unsigned char side)  {
   DIRENT* ds;
   unsigned char alive = TRUE;
 
-  option.option = OPTIONshowALO | OPTIONshowOVL;
+  option.option = OPTIONshowALO | OPTIONshowOVL | OPTIONshowIEC;
   legacyHDOSstate = legacyHDOS(); // clobbers $1703
 /*
 messagebox(MBOXNUMBER, "after legacy()",

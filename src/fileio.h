@@ -126,6 +126,7 @@ extern OPTION option;
 #define SHOWACCESSX 26
 #define SHOWACCESSY 22
 
+void forgetdrive(void);
 void ShowAccess(unsigned char drive,
                 char track, char sector, unsigned char rw);
 void _miniInit();

@@ -114,10 +114,21 @@ char readbytes(char log, BAM* address, unsigned int nbrbytes) {
 */
     " ldx %[log]\n"       // as set with SETLFS
     " jsr 0xffc6\n"       // CHKIN (input file)
+    " bcs end_copy\n"     // CHKIN error on carry
 /*
     " jsr 0xffb7\n"       // READST error status
     " bne end_copy\n"           // eof or error
 */
+
+/*
+    // alternative taken from cbm_read.s:
+    " taz\n"       // sta     tmp1            ; Save it for later
+    " jsr 0xffb7\n"       // READST error status
+    " and #0xff\n"       //      and     #$BF
+    " bne end_copy\n"           // eof or error
+    " tza\n"       //    lda     tmp1
+*/
+
     " ldy #0\n"           // index within block
 "read:\n"
     " jsr 0xffcf\n"       // CHRIN
@@ -165,6 +176,7 @@ char writebytes(char log, BAM* address, unsigned int nbrbytes) {
 */
     " ldx %[log]\n"       // as set with SETLFS
     " jsr 0xffc9\n"       // CHKOUT
+    " bcs end_copy\n"     // CHKOUT error on carry
 /*
     " jsr 0xffb7\n"       // READST error status
     " bne end_copy\n"           // eof oder error
@@ -184,7 +196,7 @@ char writebytes(char log, BAM* address, unsigned int nbrbytes) {
     " jsr 0xffd2\n"       // CHROUT
 
     " jsr 0xffcc\n"       // CLRCHN
-//    "end_copy:\n"
+    "end_copy:\n"
   : "=Ka"(status) : [log] "Kzp8"(log), [nbrbytes] "Kzp16"(nbrbytes),
                     [offsetaddress] "Kzp16"(offsetaddress),
                     [address] "Kzp16"(address)
@@ -279,11 +291,8 @@ void checkerrorchannel(unsigned char drive, char* msg) {
   }
 }
 
-unsigned char readtracksector(BAM* entry, unsigned char drive,
-                              unsigned char track, unsigned char sector) {
-  char status;  // @@@@@ Could this be handled better?
-
-  ShowAccess(drive, track, sector, READ);
+void readtracksectoropen(unsigned char drive) {
+//  char status;  // @@@@@ Could this be handled better?
 
   // *** open command channel ***
   setbnk();
@@ -299,9 +308,16 @@ unsigned char readtracksector(BAM* entry, unsigned char drive,
   //   dev log sec
   setlfs(drive, DATACHANNEL, DATACHANNEL); // needs to be the same sec as in the U1 command
   iecopen();
+}
+                              
+unsigned char readtracksector(BAM* entry, unsigned char drive,
+                              unsigned char track, unsigned char sector) {
+  char status;  // @@@@@ Could this be handled better?
+
+  ShowAccess(drive, track, sector, READ);
   // This doesn't seem to be data but the file name a few lines above:
   //  status = writestr(DATACHANNEL, (unsigned int)(uintptr_t) "#");
-  
+
   // Do not check the error channel in between asking for data an getting:
   //  checkerrorchannel(drive, "dos after open datachannel ");
 
@@ -320,14 +336,19 @@ unsigned char readtracksector(BAM* entry, unsigned char drive,
 
   // *** read data channel ***
   status = readbytes(DATACHANNEL, entry, BLOCKSIZE);
+
+  ShowAccess(drive, track, sector, OFF);
+
+  return status;
+}
+
+void readtracksectorclose(void) {
   iecclose(DATACHANNEL);
 
   // *** close command channel ***
   iecclose(CMDCHANNEL);
 
-  ShowAccess(drive, track, sector, OFF);
-
-  return status;
+//  return status;
 }
 
 unsigned char writetracksector(BAM* entry, unsigned char drive,
@@ -335,7 +356,7 @@ unsigned char writetracksector(BAM* entry, unsigned char drive,
   char status;  // @@@@@ Could this be handled better?
 
   ShowAccess(drive, track, sector, WRITE);
-
+/*
   // *** open command channel ***
   setbnk();
   setnam("");  // ("U1 4 0 40 3");
@@ -350,6 +371,7 @@ unsigned char writetracksector(BAM* entry, unsigned char drive,
   //   dev log sec
   setlfs(drive, DATACHANNEL, DATACHANNEL); // needs to be the same sec as in the U2 command
   iecopen();
+*/
   // This doesn't seem to be data but the file name a few lines above:
   //  status = writestr(DATACHANNEL, (unsigned int)(uintptr_t) "#");
   
@@ -371,12 +393,12 @@ unsigned char writetracksector(BAM* entry, unsigned char drive,
 
   // Do not check the error channel in between asking for data an getting:
   //  checkerrorchannel("dos after track/sector command ");
-
+/*
   iecclose(DATACHANNEL);
 
   // *** close command channel ***
   iecclose(CMDCHANNEL);
-
+*/
   ShowAccess(drive, track, sector, OFF);
 
   return status;
