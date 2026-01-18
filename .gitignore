@@ -49,3 +49,5 @@ reproduce.tar
 
 # Folders
 CMakeFiles/
+bin/
+obj/
