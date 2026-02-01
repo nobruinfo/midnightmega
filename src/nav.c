@@ -219,6 +219,93 @@ void shortcuts(unsigned char mod, unsigned char side)  {
   textcolor(COLOUR_CYAN);
 }
 
+#define REGIONCOLUMN     17
+#define REGIONADDRCOLUMN 40
+
+unsigned char membox()  {
+  unsigned char clear = 1;
+  unsigned char shadow = 1;
+  char c;
+
+  mcbox(4, 4, 75, 20, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+
+  revers(1);
+  mcputsxy(6, 4, " Midnight Mega ");
+  mcputsxy(25, 4, " Regions ");
+  mcputsxy(47, 4, " The MEGA65 file commander ");
+  revers(0);
+
+  mcputsxy(7, 20, " ");
+  msprintf(VERSION);
+  msprintf(" ");
+  mcputsxy(52, 20, " github.com/nobruinfo ");
+
+  mcputsxy(REGIONCOLUMN,   6, "ATTIC");
+  gotoxy(REGIONADDRCOLUMN, 6);
+  mcputhex(ATTIC, 7);
+
+  mcputsxy(REGIONCOLUMN,   7, "ATTICDIRENTBUFFER");
+  gotoxy(REGIONADDRCOLUMN, 7);
+  mcputhex(ATTICDIRENTBUFFER, 7);
+
+  mcputsxy(REGIONCOLUMN,   8, "ATTICDIRENT2NDBUFFER");
+  gotoxy(REGIONADDRCOLUMN, 8);
+  mcputhex(ATTICDIRENT2NDBUFFER, 7);
+
+  mcputsxy(REGIONCOLUMN,   9, "ATTICLFNBUFFER");
+  gotoxy(REGIONADDRCOLUMN, 9);
+  mcputhex(ATTICLFNBUFFER, 7);
+
+  mcputsxy(REGIONCOLUMN,   10, "ATTICLFNBUFFER2");
+  gotoxy(REGIONADDRCOLUMN, 10);
+  mcputhex(ATTICLFNBUFFER2, 7);
+
+  mcputsxy(REGIONCOLUMN,   11, "ATTICBAMBUFFER");
+  gotoxy(REGIONADDRCOLUMN, 11);
+  mcputhex(ATTICBAMBUFFER, 7);
+
+  mcputsxy(REGIONCOLUMN,   12, "ATTICBAM2BUFFER");
+  gotoxy(REGIONADDRCOLUMN, 12);
+  mcputhex(ATTICBAM2BUFFER, 7);
+
+  mcputsxy(REGIONCOLUMN,   13, "ATTICFILEBUFFER");
+  gotoxy(REGIONADDRCOLUMN, 13);
+  mcputhex(ATTICFILEBUFFER, 7);
+
+  mcputsxy(REGIONCOLUMN,   14, "ATTICTEXTBUFFER");
+  gotoxy(REGIONADDRCOLUMN, 14);
+  mcputhex(ATTICTEXTBUFFER, 7);
+
+  mcputsxy(REGIONCOLUMN,   15, "ATTICZPBACKUP");
+  gotoxy(REGIONADDRCOLUMN, 15);
+  mcputhex(ATTICZPBACKUP, 7);
+
+  mcputsxy(REGIONCOLUMN,   16, "ATTICEND");
+  gotoxy(REGIONADDRCOLUMN, 16);
+  mcputhex(ATTICEND, 7);
+
+  while(1)  {
+    c = cgetc();
+    switch (c) {
+      case ' ':
+      case 13: // RETURN
+        return TRUE;
+      break;
+
+      case 3:  // STOP
+       case 27: // Esc
+        return FALSE;
+      break;
+
+      default:
+        sidbong();
+//        mprintf("val=", c);
+//        cputc(' ');
+      break;
+    }
+  }
+}
+
 void optionstring(unsigned char optionbyte, unsigned char optionbitmask,
                    char* str, unsigned char tabpos, unsigned char pos)  {
   unsigned char i;
@@ -340,7 +427,7 @@ unsigned char menubox(unsigned char side)  {
   //  mcputsxy(12, 18, "  Save  ");
   //  mcputsxy(60, 18, " Cancel ");
       revers(0);
-      text(MENUTITLE, TRUE);
+      text(MENUTITLE, TRUE);  // TRUE prints all texts until chr(10)
 //      text(MENUDIRSORT, FALSE);
 //      text(MENUSETUP, FALSE);
       drawn = TRUE;
@@ -378,6 +465,10 @@ unsigned char menubox(unsigned char side)  {
                          " ", 0);
               drawn = FALSE;
             }
+          break;
+          case 1:
+            ret = membox();
+            drawn = FALSE;
           break;
           default:
             ret = setupbox();

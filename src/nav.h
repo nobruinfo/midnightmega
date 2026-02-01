@@ -27,7 +27,7 @@ typedef struct structMIDNIGHT {
 } MIDNIGHT; // for each of the two sides of the file navi
 
 // Midnight Mega general menu:
-#define MENUMAX     2
+#define MENUMAX     3
 
 void listboxd81(unsigned char x, unsigned char y,
                 unsigned char currentitem, unsigned char nbritems);

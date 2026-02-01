@@ -362,7 +362,7 @@ unsigned char hyppo_readdir(unsigned char filedescriptor)  {
 	// File descriptor gets passed in in X.
 	// Result gets written to transfer area we setup at $0400
 	" ldy #.byte1 (" XSTR(readdir_direntasm) ")\n"  // before Calypsi #>readdir_dirent
-	" sty 0x1630\n"  // @@@@ testing
+//	" sty 0x1630\n"  // @@@@ testing
 	" lda #0x14\n"
 	" sta HTRAP00\n"
 	" clv\n"

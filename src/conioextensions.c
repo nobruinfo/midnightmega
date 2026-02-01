@@ -17,6 +17,8 @@
 // static char* p2sbuf = (char*)0x334;
 char sbuf[80];
 static char* p2sbuf = (char*) sbuf;
+static unsigned char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6',
+    '7', '8', '9', 0x41, 0x42, 0x43, 0x44, 0x45, 0x46 };
 
 char tolowerchar(char ch) {
     if(ch>='A' && ch<='Z') {
@@ -137,6 +139,23 @@ void csputdec(long n, unsigned char padding, unsigned char leadingZeros)
   }
 
   cputs(&buffer[digit + 1]);
+}
+
+void mcputhex(unsigned long n, unsigned char prec)
+{
+    unsigned char buffer[10];
+    buffer[0] = '$';
+    buffer[1] = hexDigits[0xf & ((n & 0xF0000000UL) >> 28)];
+    buffer[2] = hexDigits[0xf & ((n & 0x0F000000UL) >> 24)];
+    buffer[3] = hexDigits[0xf & ((n & 0x00F00000UL) >> 20)];
+    buffer[4] = hexDigits[0xf & ((n & 0x000F0000UL) >> 16)];
+    buffer[5] = hexDigits[0xf & ((n & 0x0000F000UL) >> 12)];
+    buffer[6] = hexDigits[0xf & ((n & 0x00000F00UL) >> 8)];
+    buffer[7] = hexDigits[0xf & ((n & 0x000000F0UL) >> 4)];
+    buffer[8] = hexDigits[0xf & (n & 0x0000000FUL)];
+    buffer[9] = '\0';
+    buffer[8 - prec] = '$';
+    cputs(&buffer[8 - prec]);
 }
 
 char asciitoscreencode(char c)

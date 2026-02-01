@@ -277,9 +277,9 @@ unsigned char GetWholeSector(unsigned char legacyHDOSstate,
 #endif
   if (drive > 1)  {
     if (lastdrive != drive) {
-      readtracksectorclose();
+      rwtracksectorclose();
       usleep(200000); // microseconds
-      readtracksectoropen(drive);
+      rwtracksectoropen(drive);
       lastdrive = drive;
     }
     side = sector % 2;
@@ -313,9 +313,9 @@ unsigned char GetOneSector(unsigned char legacyHDOSstate,
 #endif
   if (drive > 1)  {
     if (lastdrive != drive) {
-      readtracksectorclose();
+      rwtracksectorclose();
       usleep(200000); // microseconds
-      readtracksectoropen(drive);
+      rwtracksectoropen(drive);
       lastdrive = drive;
     }
     side = sector % 2;
@@ -346,9 +346,9 @@ unsigned char PutWholeSector(unsigned char legacyHDOSstate,
 
   if (drive > 1)  {
     if (lastdrive != drive) {
-      readtracksectorclose();
+      rwtracksectorclose();
       usleep(200000); // microseconds
-      readtracksectoropen(drive);
+      rwtracksectoropen(drive);
       lastdrive = drive;
     }
     ret = writetracksector(ws, drive, track, sector);
@@ -388,9 +388,9 @@ unsigned char PutOneSector(unsigned char legacyHDOSstate,
   
   if (drive > 1)  {
     if (lastdrive != drive) {
-      readtracksectorclose();
+      rwtracksectorclose();
       usleep(200000); // microseconds
-      readtracksectoropen(drive);
+      rwtracksectoropen(drive);
       lastdrive = drive;
     }
     ret = writetracksector(ws, drive, track, sector);

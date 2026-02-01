@@ -28,6 +28,7 @@ uint8_t lpeek__________(uint32_t address);
 void lpoke___________(uint32_t address, uint8_t value);
 
 void csputdec(long n, unsigned char padding, unsigned char leadingZeros);
+void mcputhex(unsigned long n, unsigned char prec);
 char asciitoscreencode(char c);
 char* asciitoscreencode_s(char* s);
 void cputcctrl(unsigned char c);

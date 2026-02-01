@@ -25,7 +25,7 @@ cfilesromlist = $(romlist).c hyppo.c fileio.c filekernel.c conioextensions.c
 cfilesromlist += romlist.c conio.c
 
 # Forget the git tag as it always is one commit behind:
-v = v0.6.8-beta
+v = v0.6.9-beta
 
 calopts = -D asm=__asm -I calypsi.h -D VERSION=\"$(v)\"
 calopts += -I mega65-libc/include

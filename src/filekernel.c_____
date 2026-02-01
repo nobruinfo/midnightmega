@@ -44,9 +44,9 @@ void setnam(char* filename) {
     " lda %[filename_len]\n"
     " ldx %[filename]\n"
     " ldy %[filename] + 1\n"
-//    " sta 0x1610\n"  // @@@@@
-//    " stx 0x1611\n"
-//    " sty 0x1612\n"
+    " sta 0x1610\n"  // @@@@@
+    " stx 0x1611\n"
+    " sty 0x1612\n"
     " jsr 0xffbd\n" // SETNAM
   :  : [filename_len] "Kzp8"(filename_len), [filename] "Kzp16"(filename)
      : "a", "x", "y", "z" );
@@ -61,9 +61,9 @@ void setlfs(char device, char log, char sec) {
     " ; ldx device\n"
     " ; lda log ; #0x0f\n"
     " ; ldy sec ; #0xff\n"
-//    " sta 0x1620\n"  // @@@@@
-//    " stx 0x1621\n"
-//    " sty 0x1622\n"
+    " sta 0x1620\n"  // @@@@@
+    " stx 0x1621\n"
+    " sty 0x1622\n"
     " jsr 0xffba\n" // SETLFS
   :  : "Kx"(device), "Ka"(log), "Ky"(sec)
      : "a", "x", "y", "z" );
@@ -105,9 +105,9 @@ char readbytes(char log, BAM* address, unsigned int nbrbytes) {
 
   __asm volatile(
     " lda %[address]\n"
-//    " sta 0x160c\n"
+    " sta 0x160c\n"
     " lda %[address]+1\n"
-//    " sta 0x160d\n"
+    " sta 0x160d\n"
 /*
     " jsr 0xffb7\n"       // READST
     " bne end_copy\n"           // eof or error
@@ -134,14 +134,14 @@ char readbytes(char log, BAM* address, unsigned int nbrbytes) {
     " jsr 0xffcf\n"       // CHRIN
 //    " sta 0x1660,y\n"
 //    " tya\n"              // @@@@@
-//    " sta 0x160a\n"
+    " sta 0x160a\n"
     " sta (%[address]),y\n"
     " iny\n"
 //    " bcc read\n"
     " cpy #0x00\n"  // " cpy %[nbrbytes]\n"
     " bne read\n"
 
-//    " sty 0x160b\n"
+    " sty 0x160b\n"
 
     " jsr 0xffcc\n"       // CLRCHN
     "end_copy:\n"
@@ -162,7 +162,6 @@ char writebytes(char log, BAM* address, unsigned int nbrbytes) {
     " sta %[offsetaddress]+1\n"
     " inw %[offsetaddress]\n"
 
-/*
     " lda %[address]\n"
     " sta 0x1606\n"
     " lda %[address]+1\n"
@@ -171,7 +170,6 @@ char writebytes(char log, BAM* address, unsigned int nbrbytes) {
     " sta 0x1608\n"
     " lda %[offsetaddress]+1\n"
     " sta 0x1609\n"
-*/
 /*
     " jsr 0xffb7\n"       // READST
     " bne end_copy\n"           // eof oder error
@@ -210,12 +208,10 @@ char writestr(char log, char* address) {
   char status;
 
   __asm volatile(
-/*
     " lda %[address]\n"
     " sta 0x160e\n"
     " lda %[address]+1\n"
     " sta 0x160f\n"
-*/
 /*
     " jsr 0xffb7\n"       // READST
     " bne end_copy\n"     // eof oder fehler
@@ -231,7 +227,7 @@ char writestr(char log, char* address) {
 "nextwrite:\n"
     " lda (%[address]),y\n"
 
-//    " sta 0x16a0,y\n"
+    " sta 0x16a0,y\n"
 
     " beq end_copy\n"
     " jsr 0xffd2\n"       // CHROUT
@@ -297,7 +293,7 @@ void checkerrorchannel(unsigned char drive, char* msg) {
   }
 }
 
-void rwtracksectoropen(unsigned char drive) {
+void readtracksectoropen(unsigned char drive) {
 //  char status;  // @@@@@ Could this be handled better?
 
   // *** open command channel ***
@@ -314,15 +310,6 @@ void rwtracksectoropen(unsigned char drive) {
   //   dev log sec
   setlfs(drive, DATACHANNEL, DATACHANNEL); // needs to be the same sec as in the U1 command
   iecopen();
-}
-
-void rwtracksectorclose(void) {
-  iecclose(DATACHANNEL);
-
-  // *** close command channel ***
-  iecclose(CMDCHANNEL);
-
-//  return status;
 }
                               
 unsigned char readtracksector(BAM* entry, unsigned char drive,
@@ -355,6 +342,15 @@ unsigned char readtracksector(BAM* entry, unsigned char drive,
   ShowAccess(drive, track, sector, OFF);
 
   return status;
+}
+
+void readtracksectorclose(void) {
+  iecclose(DATACHANNEL);
+
+  // *** close command channel ***
+  iecclose(CMDCHANNEL);
+
+//  return status;
 }
 
 unsigned char writetracksector(BAM* entry, unsigned char drive,

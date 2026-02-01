@@ -5,9 +5,9 @@
 extern unsigned char lfnname[LFNFILENAMELEN]; // @@@@@
 
 void checkerrorchannel(unsigned char drive, char* msg);
-void readtracksectoropen(unsigned char drive);
+void rwtracksectoropen(unsigned char drive);
+void rwtracksectorclose(void);
 unsigned char readtracksector(BAM* entry, unsigned char drive,
                               unsigned char track, unsigned char sector);
-void readtracksectorclose(void);
 unsigned char writetracksector(BAM* entry, unsigned char drive,
                                unsigned char track, unsigned char sector);
