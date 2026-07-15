@@ -178,7 +178,8 @@ unsigned char copywholedisk(unsigned char legacyHDOSstate,
                             unsigned char srcdrive, unsigned char destdrive,
                             unsigned char side);
 unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i);
-DIRENT* getdirententry(unsigned char side, unsigned int entry);
+DIRENT* getdirententry(unsigned char side, unsigned int entry,
+                       unsigned int * direntpos);
 unsigned char getdirent(unsigned char legacyHDOSstate, unsigned char drive,
                         unsigned char side, unsigned char dirtrack);
 void writenewdirententry(unsigned char legacyHDOSstate,

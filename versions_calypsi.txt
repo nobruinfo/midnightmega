@@ -1,4 +1,4 @@
-versions for Midnight Mega v0.6.9-beta 
+versions for Midnight Mega v0.6.10-beta 
 
 c1541 (VICE 3.8)
 

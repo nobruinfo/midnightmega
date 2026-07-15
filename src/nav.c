@@ -37,12 +37,13 @@ void listbox(unsigned char iscurrent, unsigned char side,
   unsigned char i;
   unsigned char j;
   unsigned int ofs = 0;
+  unsigned int direntpos; // unused dirent's position
   DIRENT* ds;
 
   if (currentitem + 1 >= DIRENTPERSCREEN)  ofs = currentitem + 1 - DIRENTPERSCREEN;
 
   for (n = 0 ; n < DIRENTPERSCREEN; n++)  {
-    ds = getdirententry(side, n + ofs);
+    ds = getdirententry(side, n + ofs, &direntpos);
     if (ds == NULL || (n + ofs) > nbritems)  break;
 
     i = 0;
@@ -766,7 +767,7 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
             (drive ? (char *) taskblock->d81filename1 : (char *) taskblock->d81filename0),
             (drive ? taskblock->d81filenamelength1 : taskblock->d81filenamelength0));
 */
-    if (drive == 0)  {
+    if ((drive % 8) == 0)  {  // @@@@ for drv 8/9 mode
 /*
       strncpy(midnight[side]->curfile,
               taskblock->d81filename0,
@@ -849,12 +850,13 @@ unsigned int sizeselectcurrentifnone(unsigned char side)  {
   DIRENT* ds;
   unsigned int size = 0;
   unsigned char found = FALSE;
+  unsigned int direntpos; // currently unused dirent's position
 
   for (i = 0; i < NBRENTRIES; i++)  {
     if (direntflags[side][i].flags & DIRFLAGSisselected)  {
       found = TRUE;
       // add to size:
-      ds = getdirententry(side, i);
+      ds = getdirententry(side, i, &direntpos);
       size += ds->size;
       
       // @@ momentary workaround:
@@ -869,7 +871,7 @@ unsigned int sizeselectcurrentifnone(unsigned char side)  {
   // no selection uses currently highlighted entry:
   if (!found)  {
     direntflags[side][midnight[side]->pos].flags |= DIRFLAGSisselected;
-    ds = getdirententry(side, midnight[side]->pos);
+    ds = getdirententry(side, midnight[side]->pos, &direntpos);
     size += ds->size;
   }
   return size;
@@ -889,6 +891,7 @@ void navi(unsigned char side)  {
   unsigned char number;
   DIRENT* ds;
   unsigned char alive = TRUE;
+  unsigned int direntpos; // dirent's position only used for rename
 
   option.option = OPTIONshowALO | OPTIONshowOVL | OPTIONshowIEC;
   legacyHDOSstate = legacyHDOS(); // clobbers $1703
@@ -926,7 +929,7 @@ messagebox(MBOXNUMBER, "after legacy()",
   // find dirent with text file:
   alive = FALSE;
   for (i = 0; i < NBRENTRIES; i++)  {
-    ds = getdirententry(side, i);
+    ds = getdirententry(side, i, &direntpos);
 
     if (mstrcmp(ds->name, "MIDNIGHTMEGATEXT", 17) == 0)  {
       // valuesbox(0, "mstrcmp", "i=", i, "last=", ds->name[15]);
@@ -1181,7 +1184,7 @@ messagebox(MBOXNUMBER, "after legacy()",
         // check for multiselect and disallow on Hyppo and multiple
         // directory selections:
         number = 0;
-        ds = getdirententry(side, midnight[side]->pos);
+        ds = getdirententry(side, midnight[side]->pos, &direntpos);
         for (i = 0; i < NBRENTRIES; i++)  {
           if (direntflags[side][i].flags & DIRFLAGSisselected)  {
             // overwrite highlighted when a selection is active:
@@ -1189,7 +1192,7 @@ messagebox(MBOXNUMBER, "after legacy()",
                   DIRFLAGSisselected))  {
               midnight[side]->pos = i;
             }
-            ds = getdirententry(side, i);
+            ds = getdirententry(side, i, &direntpos);
             number++;
           }
         }
@@ -1259,7 +1262,7 @@ messagebox(MBOXNUMBER, "after legacy()",
                        0)) {
               for (i = 0; i < NBRENTRIES; i++)  {
                 if (direntflags[side][i].flags & DIRFLAGSisselected)  {
-                  ds = getdirententry(side, i);
+                  ds = getdirententry(side, i, &direntpos);
 
                   progress("Reading...", "source file", 20);
                   readblockchain(legacyHDOSstate, ATTICFILEBUFFER, DATABLOCKS,
@@ -1305,7 +1308,7 @@ messagebox(MBOXNUMBER, "after legacy()",
           } else if ((c == 0xf6) || (c == 0x1f6) || (c == 0x2f6))  {  // copy
             for (i = 0; i < NBRENTRIES; i++)  {
               if (direntflags[side][i].flags & DIRFLAGSisselected)  {
-                ds = getdirententry(side, i);
+                ds = getdirententry(side, i, &direntpos);
                 strcpy((char*) midnight[side]->inputstr,
                        "Enter the new name, empty to skip:");
                 inputbox((char*) midnight[side]->inputstr,
@@ -1314,7 +1317,8 @@ messagebox(MBOXNUMBER, "after legacy()",
                   strmakefilename((char*) midnight[side]->inputstr,
                                   (char*) ds->name, DOSFILENAMELEN);
                   lcopy((uint32_t) ds,
-                        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+                        ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
+                          direntpos * DIRENTSIZE,
                         DIRENTSIZE);
                   if ((ds->type&0xf) == VAL_DOSFTYPE_CBM)  {
                     renamedisk(legacyHDOSstate,
@@ -1403,7 +1407,7 @@ messagebox(MBOXNUMBER, "after legacy()",
                 if (sizeselectcurrentifnone(side) != UINT_MAX)  {
                   for (i = NBRENTRIES; i > 0; i--)  {
                     if (direntflags[side][i - 1].flags & DIRFLAGSisselected)  {
-                      ds = getdirententry(side, i - 1);
+                      ds = getdirententry(side, i - 1, &direntpos);
 
                       progress("Reading...", "BAM", 20);
   //                    ds->type = VAL_DOSFTYPE_DEL;
@@ -1654,7 +1658,7 @@ messagebox(MBOXNUMBER, "after legacy()",
       case 27:   // Esc
         if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
           for (i = 0; i <= midnight[side]->entries; i++)  {
-            ds = getdirententry(side, i);
+            ds = getdirententry(side, i, &direntpos);
             
             if ((ds->type & HYPPODIRENTATTRDIR) &&
                 (ds->name[0] == '.' && ds->name[1] == '.'))  {
@@ -1693,7 +1697,7 @@ messagebox(MBOXNUMBER, "after legacy()",
       break;
 
       case 13: // return
-        ds = getdirententry(side, midnight[side]->pos);
+        ds = getdirententry(side, midnight[side]->pos, &direntpos);
         lcopy(ATTICLFNBUFFER + side * ATTICLFNBUFFERSIZE + midnight[side]->pos * LFNFILENAMELEN,
              (uint32_t) lfnname,
              LFNFILENAMELEN);
@@ -1712,7 +1716,7 @@ messagebox(MBOXNUMBER, "after legacy()",
             }        
           } else {
             // @@@@ currently trying to mount everything that is not a dir:
-            if (midnight[side]->drive)  {
+            if (midnight[side]->drive % 8)  {  // @@@@ for drv 8/9 mode
               hyppo_setname((char *) lfnname); // (char *) ds->name);
               attachresult = (legacyHDOSstate ? hyppo_d81attach1() : hyppo_dos_attach(1));
             } else {

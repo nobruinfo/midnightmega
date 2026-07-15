@@ -324,7 +324,25 @@ void rwtracksectorclose(void) {
 
 //  return status;
 }
-                              
+
+void setcommandstring(unsigned char cmdnr,
+                      unsigned char track, unsigned char sector) {
+  lfnname[0] = 'U';
+  lfnname[1] = cmdnr + 0x30;
+  lfnname[2] = ' ';
+  lfnname[3] = (DATACHANNEL / 10) ? (DATACHANNEL / 10 + 0x30) : ' ';
+  lfnname[4] = DATACHANNEL % 10 + 0x30;
+  lfnname[5] = ' ';
+  lfnname[6] = '0';  // unit is always 0
+  lfnname[7] = ' ';
+  lfnname[8] = (track / 10) ? (track / 10 + 0x30) : ' ';
+  lfnname[9] = track % 10 + 0x30;
+  lfnname[10] = ' ';
+  lfnname[11] = (sector / 10) ? (sector / 10 + 0x30) : ' ';
+  lfnname[12] = sector % 10 + 0x30;
+  lfnname[13] = 0;
+}
+
 unsigned char readtracksector(BAM* entry, unsigned char drive,
                               unsigned char track, unsigned char sector) {
   char status;  // @@@@@ Could this be handled better?
@@ -337,6 +355,7 @@ unsigned char readtracksector(BAM* entry, unsigned char drive,
   //  checkerrorchannel(drive, "dos after open datachannel ");
 
   // *** write command channel ***
+/*
   strcopy((char *) "U1 dc 0 tt ss", (char *) lfnname, 13);
   lfnname[3] = (DATACHANNEL / 10) ? (DATACHANNEL / 10 + 0x30) : ' ';
   lfnname[4] = DATACHANNEL % 10 + 0x30;
@@ -344,6 +363,8 @@ unsigned char readtracksector(BAM* entry, unsigned char drive,
   lfnname[9] = track % 10 + 0x30;
   lfnname[11] = (sector / 10) ? (sector / 10 + 0x30) : ' ';
   lfnname[12] = sector % 10 + 0x30;
+*/
+  setcommandstring(1, track, sector);
   status = writestr(CMDCHANNEL, (char *) lfnname);
 
   // Do not check the error channel in between asking for data an getting:
@@ -388,6 +409,7 @@ unsigned char writetracksector(BAM* entry, unsigned char drive,
   status = writebytes(DATACHANNEL, entry, BLOCKSIZE);
 
   // *** write command channel ***
+/*
   strcopy((char *) "U2 dc 0 tt ss", (char *) lfnname, 13);
   lfnname[3] = (DATACHANNEL / 10) ? (DATACHANNEL / 10 + 0x30) : ' ';
   lfnname[4] = DATACHANNEL % 10 + 0x30;
@@ -395,6 +417,8 @@ unsigned char writetracksector(BAM* entry, unsigned char drive,
   lfnname[9] = track % 10 + 0x30;
   lfnname[11] = (sector / 10) ? (sector / 10 + 0x30) : ' ';
   lfnname[12] = sector % 10 + 0x30;
+*/
+  setcommandstring(2, track, sector);
   status = writestr(CMDCHANNEL, (char *) lfnname);
 
   // Do not check the error channel in between asking for data an getting:

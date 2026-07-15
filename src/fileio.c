@@ -1289,46 +1289,47 @@ unsigned char gettype(unsigned char type, unsigned char * s, unsigned char i)  {
   return i;
 }
 
-DIRENT* getdirententry(unsigned char side, unsigned int entry)  {
-  unsigned int i;
-  unsigned int pos;
+DIRENT* getdirententry(unsigned char side, unsigned int entry,
+                       unsigned int * direntpos)  {
+  unsigned int skippos;
   DIRENT* ds;
   unsigned int max = ENTRIESPERBLOCK;
 
   ds = &readdir_dirent->direntryblock[0];
 
-  for (i = 0, pos = 0; i < max; i++)  {
+  for ((*direntpos) = 0, skippos = 0; (*direntpos) < max; (*direntpos)++)  {
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
-    lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + i * DIRENTSIZE,
+    lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE + (*direntpos) * DIRENTSIZE,
           (uint32_t) ds, DIRENTSIZE);
 
 //    if (ds->track == 0)  return NULL; // no more entries
     if ((ds->chntrack > 0) &&
-        ((i % ENTRIESPERBLOCK) == 0))  {
+        (((*direntpos) % ENTRIESPERBLOCK) == 0))  {
       max += ENTRIESPERBLOCK; // more attic pages
     }
     // if a non-deleted or a SD card file (hence no mask) ?
     if (ds->type != VAL_DOSFTYPE_DEL || (option.option & OPTIONshowDEL))  {
-      if (pos == entry)  return ds; // found
-      pos++;
+      if (skippos == entry)  return ds; // found
+      skippos++;
     }
 
 #ifdef DEBUG
     if (ds->track > 0)  {
-      mprintf("direntry ", i);
+      mprintf("direntry ", *direntpos);
       mh4printf(" is: ", (long) &ds);
       memcpy(dosfilename, ds->name, DOSFILENAMELEN);
       dosfilename[DOSFILENAMELEN] = 0; // proper null termination
       msprintf(" name ");
-//        msprintf((char *) dosfilename);
+      msprintf((char *) dosfilename);
       mprintf(" chntrk ", ds->chntrack);
       mprintf(" chnsect ", ds->chnsector);
       mhprintf(" type ", ds->type&0xf);
       mprintf(" trk ", ds->track);
       mprintf(" sect ", ds->sector);
       mprintf(" size ", ds->size);
-      mhprintf(" access ", ds->access);
+      // mhprintf(" access ", ds->access);
       cputln();
+      cgetc();
     }
 #endif
   }
@@ -1338,6 +1339,7 @@ DIRENT* getdirententry(unsigned char side, unsigned int entry)  {
 unsigned char getdirent(unsigned char legacyHDOSstate, unsigned char drive,
                         unsigned char side, unsigned char dirtrack)  {
   signed int entry; // counts below zero
+  unsigned int direntpos; // could be later used to return the dirent's position
 
   // _miniInit();
 /*
@@ -1357,7 +1359,9 @@ unsigned char getdirent(unsigned char legacyHDOSstate, unsigned char drive,
 */
   for (entry = NBRENTRIES; entry >= 0; entry--)  {
 //    if (entry < 10)  valuesbox(0, "loop entries", "entry=", entry, " ", 0);
-    if (getdirententry(side, entry) != NULL)  return entry;  // nbr of entries
+    if (getdirententry(side, entry, &direntpos) != NULL)  {
+      return entry;  // nbr of entries including deleted dirents
+    }
   }
   return 0xff;
 }
