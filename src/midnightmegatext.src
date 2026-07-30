@@ -1,12 +1,12 @@
 {1}{0}{22}The function keys shown in the bottom line are meant to be used with
 {1}{0}{23}and without [Shift] and [Mega] after the messagebox is dismissed:
-{1}{30}{1}{RVSON}Zweiter{RVSOFF} Text.
-{1}{1}{11}Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
-{1}{1}{12}Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
-{1}{11}{13}Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
-{1}{13}{14}Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
-{1}{15}{15}Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
-{1}{17}{16}Langer Text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+{1}{30}{1}{RVSON}Second{RVSOFF} text.
+{1}{1}{11}some longer text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+{1}{1}{12}some longer text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+{1}{11}{13}some longer text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+{1}{13}{14}some longer text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+{1}{15}{15}some longer text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+{1}{17}{16}some longer text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
 {1}{0}{0}.
 {1}{0}{0}.
 {1}{0}{0}.
@@ -113,7 +113,7 @@
 {1}{6}{11}{RVSON}{space}{31}{space}{RVSOFF}{space}in the upper left of your keyboard can be used instead of the
 {1}{6}{12}{RVSON}{space}..{space}{RVSOFF}{space}directory entry to climb to the parent directory.
 {1}{6}{13}{RVSON}{space}{31}{space}{RVSOFF}{space}can also be used to climb from a subdirectory within a .D81
-{1}{6}{14}image file or a real 1581 format disk where no {RVSON}{space}..{space}{RVSOFF}{space} is shown.
+{1}{6}{14}image file or a real 1581 formatted disk where no {RVSON}{space}..{space}{RVSOFF}{space}is shown.
 {1}{6}{16}Currently the left pane is always drive 0 and the right one drive 1,
 {1}{6}{17}a later handling within the same drive is planned allowing you
 {1}{6}{18}to copy files within one disk.
@@ -133,7 +133,7 @@
 {1}{6}{13}After leaving the Freezer's own menu both disk drives (images) will
 {1}{6}{14}be re-read completely to ensure proper operation.
 {1}{6}{16}{RVSON}{space}F7{space}{RVSOFF}{space}is to create a subdirectory.
-{1}{6}{17}{RVSON}{space}Mega{space}{RVSOFF}{space}{RVSON}{space}Shift{space}{RVSOFF}{space}{RVSON}{space}F7{space}{RVSOFF}{space}to format the disk/image file completely.
+{1}{6}{17}{RVSON}{space}Mega{space}{RVSOFF}{space}{RVSON}{space}F7{space}{RVSOFF}{space}to format the disk/image file completely.
 {1}{6}{18}This only writes a few blocks, there is no low level format.
 {1}{36}{22}{RVSON}{space}{space}OK{space}{space}{RVSOFF}
 {1}{60}{22}{RVSON}{space}{space}{30}{space}{space}{RVSOFF}

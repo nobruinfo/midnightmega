@@ -21,4 +21,5 @@
 #define HELP2     (142 - 1)
 #define HELPMAX   2
 
+uint32_t lzsa1_decompress_far(uint32_t srcAddr, uint32_t destAddr);
 void text(unsigned char instance, unsigned char continuous);

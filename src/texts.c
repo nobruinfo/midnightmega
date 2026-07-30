@@ -15,11 +15,26 @@
 // ***  texts.c Midnight Mega's text mgmt                ***
 // *********************************************************
 
+extern void lzsa1_decompress_far_asm(void);
+
+extern uint32_t lzsa_srcptr;
+extern uint32_t lzsa_dstptr;
+
+uint32_t lzsa1_decompress_far(uint32_t srcAddr, uint32_t destAddr)
+{
+    lzsa_srcptr = srcAddr;
+    lzsa_dstptr = destAddr;
+
+    lzsa1_decompress_far_asm();
+
+    return lzsa_dstptr;
+}
+
 unsigned char blockreadbyte(unsigned int byte, unsigned char raw)  {
   unsigned char data;
   unsigned int b = 0; // higher byte number that skips t/s bytes
   unsigned int i;
-
+/*
   for (i = 0; i <= byte; i++)  {
     // skip track/sector bytes:
     if ((b & 0xff) == 0)  {
@@ -30,6 +45,7 @@ unsigned char blockreadbyte(unsigned int byte, unsigned char raw)  {
   }
   // b is pointing to the next data byte, so use previous one:
   b--;
+*/ b=byte;;;;;;;;
   lcopy(ATTICTEXTBUFFER + b, (uint32_t) &data, 1);
   // treat carriage return as terminator to use Petcat:
   if (data == 13 && raw == TRUE)  data = 0;

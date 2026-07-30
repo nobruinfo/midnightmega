@@ -25,18 +25,20 @@ cfilesromlist = $(romlist).c hyppo.c fileio.c filekernel.c conioextensions.c
 cfilesromlist += romlist.c conio.c
 
 # Forget the git tag as it always is one commit behind:
-v = v0.6.10-beta
+v = v0.6.11-beta
 
 calopts = -D asm=__asm -I calypsi.h -D VERSION=\"$(v)\"
 calopts += -I mega65-libc/include
 calopts += -O 2 --core 45gs02 --target MEGA65
 calopts += -D FULLFEATURES
+calasmopts = $(calopts) --assembly-source=$(@:%.o=%.s)
 calopts += --list-file=$(@:%.o=%.lst)
 depopts = -MMD -MP
 asmopts = --target=mega65 --list-file=$(@:%.o=%.lst)
 linkopts = --list-file=bin/$(prj).lst --output-format prg --core 45gs02
 linkopts += --target=mega65 src/mega65-$(prj).scm
 linkopts += --rtattr printf=nofloat
+linkopts += --cross-reference
 
 # cfilesmidnight    = $(wildcard src/*.c)
 cfilesmid = $(cfilesmidnight:%.c=src/%.c)
@@ -63,7 +65,9 @@ $(prj).d81: bin/$(prj).prg bin/$(romlist).prg src/$(prj)text.src
 #	c1541 -attach $(prj).d81 -delete $(prj)
 	c1541 -attach $(prj).d81 -write bin/$(prj).prg $(prj)
 	petcat -text -c -w2 -o bin/$(prj)text.seq -- src/$(prj)text.src
-	c1541 -attach $(prj).d81 -write bin/$(prj)text.seq $(prj)text,s
+	$(lzsa) -f1 -r bin/$(prj)text.seq bin/$(prj)text.seq.lzsa
+#	c1541 -attach $(prj).d81 -write bin/$(prj)text.seq $(prj)-raw,s
+	c1541 -attach $(prj).d81 -write bin/$(prj)text.seq.lzsa $(prj)text,s
 #	-rm bin/$(prj)text.seq bin/$(prj)text_binmake.seq
 #	c1541 -attach $(prj).d81 -delete $(romlist)
 	c1541 -attach $(prj).d81 -write bin/$(romlist).prg $(romlist)
@@ -81,9 +85,11 @@ obj/%.o: src/%.s | obj
 
 obj/%.o: src/%.c | obj
 	$(CC) $(calopts) $(depopts) -c $< -o $@ -MFobj/$*.d
+	$(CC) $(calasmopts) $(depopts) -c $< -o $(@:.o=.s) -MFobj/$*.d
 
 obj/%.o: $(libcfilesdir)/%.c | obj
 	$(CC) $(calopts) $(depopts) -c $< -o $@ -MFobj/$*.d
+	$(CC) $(calasmopts) $(depopts) -c $< -o $(@:.o=.s) -MFobj/$*.d
 
 # on Windows no "-p" switch to create parent folders can be used:
 bin:

@@ -161,7 +161,8 @@ void getDiskname(unsigned char legacyHDOSstate, unsigned char drive,
 unsigned char readblockchain(unsigned char legacyHDOSstate,
                              uint32_t destination_address, // attic RAM
                              unsigned int maxblocks, unsigned char drive,
-                             unsigned char track, unsigned char sector);
+                             unsigned char track, unsigned char sector,
+                             unsigned char skipchainbytes);
 void findnextBAMtracksector(unsigned char * nexttrack, unsigned char * nextsector,
                      unsigned char track40, unsigned char dirtrack,
                      unsigned char firsttrack, unsigned char lasttrack);

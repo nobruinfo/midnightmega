@@ -445,7 +445,7 @@ unsigned char BAM2Attic(unsigned char legacyHDOSstate, unsigned char drive,
   // _miniInit();
 
   return readblockchain(legacyHDOSstate, side?ATTICBAM2BUFFER:ATTICBAMBUFFER,
-                        BAMBLOCKS, drive, dirtrack, BAMSECT);
+                        BAMBLOCKS, drive, dirtrack, BAMSECT, FALSE);
 }
 
 // this expects data in sector buffer:
@@ -547,7 +547,7 @@ unsigned int BAMCheckSizeinFilebuffer(unsigned char legacyHDOSstate,
   BAM* bs;
 
   readblockchain(legacyHDOSstate, ATTICFILEBUFFER, BAMBLOCKS,
-                 drive, dirtrack, BAMSECT);
+                 drive, dirtrack, BAMSECT, FALSE);
   bs = BAMsector[0];
   lcopy(ATTICFILEBUFFER, (uint32_t) bs, ATTICBAMBUFFERSIZE);
   return BAMSectorsFreeBlocks(BAMsector[0], BAMsector[1], dirtrack,
@@ -747,7 +747,8 @@ void getDiskname(unsigned char legacyHDOSstate,
 unsigned char readblockchain(unsigned char legacyHDOSstate,
                              uint32_t destination_address,
                              unsigned int maxblocks, unsigned char drive,
-                             unsigned char track, unsigned char sector)  {
+                             unsigned char track, unsigned char sector,
+                             unsigned char skipchainbytes)  {
   unsigned int i;
   unsigned char nexttrack;
   unsigned char nextsector;
@@ -783,7 +784,12 @@ unsigned char readblockchain(unsigned char legacyHDOSstate,
         cgetc();
 #endif
     // lcopy(uint32_t source_address, uint32_t destination_address, uint16_t count);
-    lcopy((uint32_t) ws, destination_address + i * BLOCKSIZE, BLOCKSIZE);
+    if (skipchainbytes)  {
+      lcopy((uint32_t) ws + 2, destination_address + i * (BLOCKSIZE - 2), 
+            (BLOCKSIZE - 2));
+    } else {
+      lcopy((uint32_t) ws, destination_address + i * BLOCKSIZE, BLOCKSIZE);
+    }
     
     if (nexttrack == 0)  break;
   }
@@ -1349,7 +1355,7 @@ unsigned char getdirent(unsigned char legacyHDOSstate, unsigned char drive,
 */
   if (readblockchain(legacyHDOSstate,
                      ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE,
-                     DIRENTBLOCKS, drive, dirtrack, DIRENTSECT) > 1)  {
+                     DIRENTBLOCKS, drive, dirtrack, DIRENTSECT, FALSE) > 1)  {
     return 0xff;
   }
 /*

@@ -893,7 +893,7 @@ void navi(unsigned char side)  {
   unsigned char alive = TRUE;
   unsigned int direntpos; // dirent's position only used for rename
 
-  option.option = OPTIONshowALO | OPTIONshowOVL | OPTIONshowIEC;
+  option.option = OPTIONshowALO | OPTIONshowOVL; // | OPTIONshowIEC;
   legacyHDOSstate = legacyHDOS(); // clobbers $1703
 /*
 messagebox(MBOXNUMBER, "after legacy()",
@@ -931,6 +931,7 @@ messagebox(MBOXNUMBER, "after legacy()",
   for (i = 0; i < NBRENTRIES; i++)  {
     ds = getdirententry(side, i, &direntpos);
 
+//    if (mstrcmp(ds->name, "MIDNIGHTMEGA-RAW", 17) == 0)  {
     if (mstrcmp(ds->name, "MIDNIGHTMEGATEXT", 17) == 0)  {
       // valuesbox(0, "mstrcmp", "i=", i, "last=", ds->name[15]);
       alive = TRUE;
@@ -940,13 +941,22 @@ messagebox(MBOXNUMBER, "after legacy()",
 
   // read complete text file into Attic:
   if (alive)  {
-    if (readblockchain(legacyHDOSstate, ATTICTEXTBUFFER, TEXTBLOCKS,
-                       midnight[side]->drive, ds->track, ds->sector) > 0)  {
+    if (readblockchain(legacyHDOSstate, ATTICFILEBUFFER, TEXTBLOCKS,
+//    if (readblockchain(legacyHDOSstate, ATTICTEXTBUFFER, TEXTBLOCKS,
+                     midnight[side]->drive, ds->track, ds->sector, TRUE) > 0)  {
       // valuesbox(0, "readblockchain", "t=", ds->track, "s=", ds->sector);
       pcputs("ERROR too much text data for available blocks!");
       cgetc();
       alive = FALSE;
     } else {
+//    lfill(0x1a00, 0xaa, 0xff);
+//    messagebox(MBOXNUMBER, "before lzsa1_decompress_far()",
+//                       " ",
+//                       "nbrbytes=", *(long*) c);
+      c = lzsa1_decompress_far(ATTICFILEBUFFER, ATTICTEXTBUFFER);
+//    messagebox(MBOXNUMBER, "after lzsa1_decompress_far()",
+//                       " ",
+//                       "nbrbytes=", *(long*) c);
       // Info above keybar:
       text(INFOFOOTER1, FALSE);
       text(INFOFOOTER2, FALSE);
@@ -1119,13 +1129,18 @@ messagebox(MBOXNUMBER, "after legacy()",
       case 0xf2: // Modifiers and ASC_F1:
       case 0x1f2:
       case 0x2f2:
-        // Mount toggle and reset to root dirent:
-        midnight[side]->flags ^= MIDNIGHTFLAGismounted;
-        midnight[side]->dirtrack = HEADERTRACK;
-        midnight[side]->firsttrack = FIRSTTRACK;
-        midnight[side]->lasttrack = LASTTRACK;
-        UpdateSectors(midnight[side]->drive, side);
-        Deselect(side);
+        if ((midnight[side]->drive <= 1) ||
+            messagebox(MBOXREGULAR, "Warning, in real drive number mode",
+                                    "mounting refers to drive number",
+                                    "in the freezer menu!", 0))  {
+          // Mount toggle and reset to root dirent:
+          midnight[side]->flags ^= MIDNIGHTFLAGismounted;
+          midnight[side]->dirtrack = HEADERTRACK;
+          midnight[side]->firsttrack = FIRSTTRACK;
+          midnight[side]->lasttrack = LASTTRACK;
+          UpdateSectors(midnight[side]->drive, side);
+          Deselect(side);
+        }
       break;
 /*
       case 0x8f2: // Mega-F1
@@ -1266,7 +1281,8 @@ messagebox(MBOXNUMBER, "after legacy()",
 
                   progress("Reading...", "source file", 20);
                   readblockchain(legacyHDOSstate, ATTICFILEBUFFER, DATABLOCKS,
-                                 midnight[side]->drive, ds->track, ds->sector);
+                                 midnight[side]->drive, ds->track, ds->sector,
+                                 FALSE);
                   progress("Reading...", "BAM", 30);
                   // write on opposing side disk:
                   GetBAM(legacyHDOSstate, side?0:1);
