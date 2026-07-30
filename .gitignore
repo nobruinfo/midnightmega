@@ -3,6 +3,7 @@
 
 # Intermediate
 *.s
+!calypsi/include/memory_asm.s
 *_dump.txt
 reproduce.tar
 
@@ -48,3 +49,5 @@ reproduce.tar
 
 # Folders
 CMakeFiles/
+bin/
+obj/

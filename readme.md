@@ -6,11 +6,10 @@
 - [Operation](#operation)
 - [Project subfolders here on
   Github](#project-subfolders-here-on-github)
-  - [llvm](#llvm)
+  - [docsrc](#docsrc)
   - [Others](#others)
 - [Tools and experiments](#tools-and-experiments)
   - [Romlister](#romlister)
-  - [PC transfer](#pc-transfer)
   - [Handling PETSCII texts](#handling-petscii-texts)
 - [Requirements, project](#requirements-project)
   - [Not yet in progress](#not-yet-in-progress)
@@ -23,7 +22,7 @@
     - [faults](#faults)
 - [C environment](#c-environment)
   - [Additions to `mega65-libc`](#additions-to-mega65-libc)
-  - [Additions to llvm-mos](#additions-to-llvm-mos)
+  - [Additions to assembler](#additions-to-assembler)
 - [Changelog](#changelog)
 
 # Midnight Mega
@@ -36,12 +35,12 @@ Work in progress.
 
 The current versions of `Midnight Mega` unfortunately are **slowed
 down** on purpose if you use a release version of the core software for
-your MEGA65. Specifically this is The file `HICKUP.M65` which resides on
-your storage card.
+your MEGA65.
 
-You might temporarily install a newer `HICKUP.M65` with a factory
-delivered R6 machine to get the full `Midnight Mega` experience. Should
-you stay as you are MM will prompt you what you miss, mainly speed.
+You might want to install a newer core which comes with an updated
+`HICKUP.M65`. This will also allow unmounting in the left pane to gain
+access the built-in drive 0. Should you stay as you are `Midnight Mega`
+will prompt you what you miss, also speed.
 
 # Installation
 
@@ -55,19 +54,16 @@ development will **eat** your files.
 
 # Start
 
-Currently `MIDNIGHTMEGA` PRG is the only programme. You find it within
-`MIDNIGHT.D81`.
+Currently `MIDNIGHTMEGA` PRG is the main programme. You find it as the
+top file entry within `MIDNIGHT.D81`. A second file named
+`MIDNIGHTMEGATEXT` of type SEQ is a comressed text file containing
+display texts. It is planned to transfer more of those from the main
+code to be loaded as such.
 
-The earlier file `DBGMIDNIGHTMEGA` PRG to see an additional
-disk/track/sector/read/write in the lower left of the screen is no
-longer needed. The overlay is configurable in the setup which you can
-reach with the \[F9\] key.
-
-The second file `EMUMIDNIGHTMEGA` PRG no longer provided was the same as
-`DBGMIDNIGHTMEGA` but with additional delays for each sector read and
-written. It was used to examine `.d81` on storage card behaviours or in
-XMega65 from the Xemu emulators suite. Both otherwise being quite fast
-to look at. The delay feature currently is not available.
+You might be confused to see an additional disk/track/sector/read/write
+in the lower left of the screen each time disks are accessed. The
+overlay is configurable in the setup which you can reach with the \[F9\]
+key. You can switch it off there.
 
 The additional output shows like `D1T40S1 R` where `D1` is the chosen
 disk drive number (currently 0 for the left screen pane and 1 for the
@@ -80,21 +76,25 @@ XMega65 (Xemu) emulator. If it is unable to do so it will prompt you and
 cease to work. Hence both files are essential for the operation of
 *Midnight Mega*.
 
+A third programme file named `ROMLISTER` is a described in the section
+*Tools and experiments* further below. The file is not needed for the
+pure operation of *Midnight Mega*.
+
 # Limitations
 
 - *Midnight Mega* is still in a beta testing release, and it is
   recommended to back up your data regularly.
 - Please report any issues you find, and join the discussion on the
   `#midnight-mega` channel of the MEGA65 Discord.
-- Also note that it only supports disk images and the internal floppy
-  drive; it does not yet support external IEC drives.
+- At startup it supports disk images and the internal floppy drive as
+  devices 0 and 1. In the setup menu experimental external IEC drive
+  usage can be activated. The current drive numbers 0 and 1, 8 and 9
+  respectively are shown in the lower left of the disk entry listings.
 - Since the left listing pane is always drive `0` and the right one `1`
   you have to set up both sides reasonably. In most cases drive `1` will
   not have a disk image mounted when you start *Midnight Mega*. This
-  will give you a ping sound, a red screen border and the flashing
-  message `disk access error`, displaying the list of available
-  subfolders and disk image files on the storage card (image file) to be
-  mounted instead.
+  will leave you with the list of available subfolders and disk image
+  files on the storage card (image file) to be mounted instead.
 - Should you try to mount a disk with illegal track/sector file chains
   or other erroneous data it will not be opened and you will be sent
   back to the storage card file selection instead. This is because
@@ -140,19 +140,14 @@ The following keymapping is also shown when opened by pressing the
 
 # Project subfolders here on Github
 
-## llvm
+## docsrc
 
-The downloaded .7z file `release` from the llvm-mos Github repo is used
-in my own make batch file. In this folder I’m currently adding
-functionality to my little file manager project.
-
-Please be aware currently *Midnight Mega* is in an unstable state, it
-might handle your .d81 and real disk drive inserted diskettes
-maliciously. Expect data loss. Feedback welcome as issue tickets.
+This Readme Markdown file is edited as `readmesrc.md` and compiled with
+Pandoc to present a table of contents at the beginning.
 
 ## Others
 
-Previously present folders for `KickC` and `Calypsi` were removed.
+Previously present folders for `KickC` and `llvm` were removed.
 
 # Tools and experiments
 
@@ -164,53 +159,43 @@ showing the versions of each `MEGA65.ROM` file on the storage card
 (image file). So it actually uses the MEGA65’s so called Hyppo functions
 to see the underlying FAT based file system.
 
-## PC transfer
-
-Also in subfolder `llvm` you find a script `xemu-image.bat`. This is
-currently used to populate an empty storage card image file to be used
-in Xemu. It also allows to choose in between image files and real
-seriel/network connections towards the hardware. You may want to look
-into the lines to get some ideas for your own setup.
-
 ## Handling PETSCII texts
 
 `midnightmegatext.src` is a text file which gets converted into a `SEQ`
-file. Like this I can use screen output strings in a preformatted way.
-Within the source file you can see curly braces used for control
-characters and codes being intercepted by the programme’s code. The file
-is loaded at startup and the code reads each byte. After every line end
-(ASCII code 13) it expects a new string. The function being called thus
-sees over a hundred single fromatted text lines originating from within
-the file. This is supposed to make the actual programme file smaller to
-allow for more features. Currently still lots of strings are within the
-`PRG` file waiting for a transfer.
+file. LZSA1 compression is used to further shrink disk space usage,
+decompression is done on the target device. Like this I can use screen
+output strings in a preformatted way. Within the source file you can see
+curly braces used for control characters and codes being intercepted by
+the programme’s code. The file is loaded at startup and the code reads
+each byte. After every line end (ASCII code 13) it expects a new string.
+The function being called thus sees over a hundred single formatted text
+lines originating from within the file. This is supposed to make the
+actual programme file smaller to allow for more features. Currently
+still lots of strings are within the `PRG` file waiting for a transfer.
+
+To learn more on LZSA1 file compression please visit the following
+Github project: https://github.com/emmanuel-marty/lzsa/
 
 # Requirements, project
 
 ## Not yet in progress
 
-- greyed out function keys will get implemented.
-- function keys in the foot of the screen will be showing more modifier
+- Greyed out function keys will get implemented.
+- Function keys in the foot of the screen will be showing more modifier
   key combinations.
-- storage card and file entry flags need to be handled outside of the
+- Storage card and file entry flags need to be handled outside of the
   dirent to further support illegal dirent attributes.
 - Hyppo SD card handling as far as possible (writing not yet implemented
   on Hyppo side).
 - Creation of .d81 image files currently unsopported by Hyppo.
-- For `llvm` replace most fixed strings for screen output with [their
-  syntax](https://llvm-mos.org/wiki/Character_set). Maybe check how
-  PETSCII differs from screen codes/attributes. Otherwise use the cc65
-  approach.
 - Maybe reading of a setting file to get configurable personal
   preferences a go, a seperate setup programme could be added to the
   disk.
-- \[F1\]\[Help\] need to load a text file from the diskette and show the
-  user, same routines to be used as for \[F3\].
+- \[F1\]\[Help\] is used to load a text file from the diskette and show
+  the user, same routines to be used as for \[F3\] to view a file.
 - GEOS VLIR filenames and file types are not displayed correctly,
   neither are they supported nor rejected.
 - Add the core’s .d64 support.
-- In addition to `.prg` and `.d81` create a ROM file with the programme
-  to be used like so.
 
 ## Tasks
 
@@ -343,8 +328,8 @@ allow for more features. Currently still lots of strings are within the
 - [x] ~~reading the last sector 39 results in side 1 and an invalid~~
   ~~next track.~~
 - [x] ~~If a file is only read the drive’s LED doesn’t switch back
-  off.~~ \~~It seems this is done by \_miniinit() which needs to be
-  checked\~~ ~~anyway.~~
+  off.~~ It seems this is done by \_miniinit() which needs to be checked
+  ~~anyway.~~
 - [x] ~~Multiple selected listed items are not properly named in~~
   ~~confirmation dialog boxes.~~
 - [x] ~~At some places the highlighted list item is used for the
@@ -369,11 +354,11 @@ allow for more features. Currently still lots of strings are within the
 - the full removal of `KickC` based include files from folder
   `llvm/include`
 
-## Additions to llvm-mos
+## Additions to assembler
 
 - The following lines autodeclare `DIRENTPAGELOW` because such symbols
-  seem not to be usable with inline assembly otherwise. Its values would
-  be indetermined.
+  seem not to be usable with inline assembly language otherwise. Its
+  values would be indetermined.
 
 ``` c
 #define readdir_direntasm BLOCKDIRENT
@@ -382,8 +367,27 @@ __asm__(".set readdir_dirent, " XSTR(readdir_direntasm) );
 
 # Changelog
 
+- v0.6.11-beta (shown as v2.3 on the filehost) introduces LZSA1
+  compression on the texts loaded from SEQ file at startup. To help this
+  reading complete blockchained files is now also possible without the
+  per block first two bytes.
+- v0.6.10-beta (unpublished to the filehost) fixes a major bug renaming
+  on disks and mounting in left pane, accidentally dirent above intented
+  ones were overwritten.
+- v0.6.9-beta (unpublished to the filehost) changed setup menu and added
+  an address range debug display for Attic RAM usage. Disk kernel IO
+  changed to reopen IEC channel for each sector RW access to further
+  examine software blockages.
+- v0.6.8-beta (unpublished to the filehost) intentional slowdowns and
+  reissueing drive number setting to disk IO kernel routine to analyse
+  blockages.
+- v0.6.7-beta (unpublished to the filehost) introduces disk IO kernel
+  routines. In setup choosing usage of drives 8 and 9 switches from F011
+  to kernal routines.
 - v0.6.6-beta (shown as v2.2 on the filehost) fixes a major bug in the
   sorting routine for the shown entries reachable with \[F9\] *Menu*,
+  this version also switches the project’s focus from `llvm-mos` towards
+  `Calypsi` with mainly internal adaptions
 - v0.6.5-beta (shown as v2.1 on the filehost) reinitiating motor spin up
   on physical drive number change
 - v0.6.4-beta (shown as v2 on the filehost) fix of GUI glitches and an
