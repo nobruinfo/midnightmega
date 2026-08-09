@@ -6,6 +6,7 @@
 #include <mega65/memory.h>  // mega65-libc
 #include "regions.h"
 #include "conioextensions.h"
+#include "texts.h"
 #include "hyppo.h"
 #include "fileio.h"
 
@@ -226,6 +227,10 @@ void cputcctrl(unsigned char c)  {
       underline(0);
     break;
 
+    case 5: // {white}
+      textcolor(COLOUR_WHITE);
+    break;
+
     case 151: // {dark gray}
       textcolor(COLOUR_GREY1);
     break;
@@ -233,6 +238,15 @@ void cputcctrl(unsigned char c)  {
     case 154: // {light blue}
       textcolor(COLOUR_LIGHTBLUE);
     break;
+
+    case 155: // {light gray}
+      textcolor(COLOUR_GREY2);
+    break;
+
+    // instead of yellow use ensh/dish
+//    case 158: // {yellow}
+//      textcolor(COLOUR_YELLOW);
+//    break;
 
     case 159: // {cyan}
       textcolor(COLOUR_CYAN);
@@ -391,7 +405,7 @@ unsigned char cinput2(
 void mcbox(unsigned char left, unsigned char top, unsigned char right, unsigned char bottom,
   unsigned char color, unsigned char style, unsigned char clear, unsigned char shadow)
 {
-  RECT rc = { left, top, right, bottom };
+  RECT rc = { left + 1, top + 1, right, bottom - 1 };
   register unsigned char i = 0;
   const unsigned char len = right - left;
 //  unsigned char prevCol = g_curTextColor;
@@ -434,17 +448,21 @@ void mcbox(unsigned char left, unsigned char top, unsigned char right, unsigned 
 
 unsigned char messagebox(unsigned char mode, char* message, char* message2,
                          char* message3, long n)  {
-  unsigned char clear = 1;
-  unsigned char shadow = 1;
+//  unsigned char clear = 1;
+//  unsigned char shadow = 1;
   char c;
-  unsigned char x;
+//  unsigned char x;
 
-  mcbox(10, 4, 70, 12, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
-  
-  revers(1);
-  mcputsxy(14, 4, " Midnight Mega ");
-  mcputsxy(40, 4, " The MEGA65 file commander ");
-  revers(0);
+  //  mcbox(10, 4, 70, 12, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+//  text(DIALOGBOX, FALSE);
+
+  //  revers(1);
+  //  mcputsxy(14, 4, " Midnight Mega ");
+//  text(DIALOGTITLE, FALSE);
+  //  mcputsxy(40, 4, " The MEGA65 file commander ");
+  //  revers(0);
+//  text(DIALOGSLOGAN, FALSE);
+  text(DIALOGBOX, TRUE);
 
   mcputsxy(12, 6, message);
   mcputsxy(12, 7, message2);
@@ -453,19 +471,63 @@ unsigned char messagebox(unsigned char mode, char* message, char* message2,
     mh4printf("=", n);
   }
 
-  revers(1);
+//  revers(1);
   if (mode == MBOXNOCANCEL)  {
-    x = 37;
+//    x = 37;
+    text(DIALOGOKCENT, FALSE);
   } else {
-    x = 12;
-    mcputsxy(60, 10, " Cancel ");
+//    x = 12;
+    text(DIALOGOKLEFT, FALSE);
+//    mcputsxy(60, 10, " Cancel ");
+    text(DIALOGCANCEL, FALSE);
   }
-  mcputsxy( x, 10, "   OK   ");
-  revers(0);
-//  gotoxy(1, 10);
-  if (mode == MBOXVERSION)  {
-    mcputsxy(2, 1, VERSION);
-    mcputsxy(58, 1, "github.com/nobruinfo");
+//  mcputsxy( x, 10, "   OK   ");
+//  revers(0);
+  
+  if (mode != MBOXFALLTHROUGH)  {
+    while(1)  {
+      c = cgetc();
+      switch (c) {
+        case 13: // RETURN
+          return TRUE;
+        break;
+
+        case 3:  // STOP
+        case 27: // Esc
+          return FALSE;
+        break;
+
+        default:
+//          mprintf("val=", c);
+//          cputc(' ');
+        break;
+      }
+    }
+  }
+  return TRUE;
+}
+
+
+unsigned char _messagebox(unsigned char mode, unsigned char texts, long n)  {
+  char c;
+
+  if (mode != MBOXNOBOX)  {
+    text(DIALOGBOX, TRUE);
+//  text(DIALOGTITLE, FALSE);
+//  text(DIALOGSLOGAN, FALSE);
+
+    text(texts, TRUE);
+  }
+
+  if (mode == MBOXNUMBER)  {
+    mh4printf("=", n);
+  }
+
+  if (mode == MBOXNOCANCEL)  {
+    text(DIALOGOKCENT, FALSE);
+  } else {
+    text(DIALOGOKLEFT, FALSE);
+    text(DIALOGCANCEL, FALSE);
   }
   
   if (mode != MBOXFALLTHROUGH)  {
@@ -529,7 +591,19 @@ void progress(char* message, char* message2, unsigned char progresspercent)  {
 }
 
 char* inputbox(char* inputstr, char* message)  {
-  messagebox(2, message, "", "", 0);
+  messagebox(MBOXFALLTHROUGH, message, "", "", 0);
+  gotoxy(12, 8);
+  cinput2((unsigned char*) inputstr, 56, CINPUT_ACCEPT_ALL); // | CINPUT_NO_AUTOTRANSLATE);
+
+  gotoxy(1, 10);
+  return inputstr;
+}
+
+char* _inputbox(char* inputstr, unsigned char texts)  {
+  // text 0 allows pre-printing the messagebox:
+  if (texts > 0)  {
+    _messagebox(MBOXFALLTHROUGH, texts, 0);
+  }
   gotoxy(12, 8);
   cinput2((unsigned char*) inputstr, 56, CINPUT_ACCEPT_ALL); // | CINPUT_NO_AUTOTRANSLATE);
 

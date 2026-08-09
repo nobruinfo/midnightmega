@@ -29,7 +29,7 @@ int main() {
   textcolor (COLOUR_CYAN);
 
 //  minorHDOS = hyppo_getversion(&majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
-  // pcputs("file: ");
+  // mcputsxy(12, 6, "file: ");
   mprintf("Versions: Hyppo ", hyppo_getversion_majorhyppo());
   mprintf(".", hyppo_getversion_minorhyppo());
   mprintf(",  HDOS ", hyppo_getversion_majorHDOS());

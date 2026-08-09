@@ -57,13 +57,11 @@ int main() {
 //  mcputsxy(0, 23, "and without [Shift] and [Mega] after the messagebox is dismissed:");
 //  shortcuts(20, 0);
 
-  if (messagebox(1, "is currently beta and may destroy data structures on",
-                    ".d81 and real disks! Please work on backed up media.",
-                    "Press RETURN to continue, STOP to halt.", 0))  {
-    navi(0);
-  }
-  clrhome();
-  msprintf("Have fun with your MEGA65!");
+  navi(0);
+
+  // to not have error messages cleared away:
+//  clrhome();
+//  msprintf("Have fun with your MEGA65!");
 //  usleep(2000000); // microseconds
 //  cputln();
 //  cgetc();

@@ -284,7 +284,7 @@ void checkerrorchannel(unsigned char drive, char* msg) {
   setnam("");  // no setnam needed
   setlfs(drive, CMDERRORCHANNEL, 15);
   iecopen();
-  status = readstr(CMDERRORCHANNEL, (char *) 0x1680);
+  status = readstr(CMDERRORCHANNEL, (char *) lfnname);
   iecclose(CMDERRORCHANNEL);
 
 	mh4printf(msg, status); // @@@@@
@@ -292,8 +292,8 @@ void checkerrorchannel(unsigned char drive, char* msg) {
   cgetc();
   flushkeybuf();
   
-  for (int i=0; PEEK(0x1680 + i) != 0xd; i++)  {
-    POKE(0x1680 + i, 0);
+  for (int i=0; lfnname[i] != 0xd; i++)  {
+    lfnname[i] = 0;
   }
 }
 

@@ -25,7 +25,7 @@ cfilesromlist = $(romlist).c hyppo.c fileio.c filekernel.c conioextensions.c
 cfilesromlist += romlist.c conio.c
 
 # Forget the git tag as it always is one commit behind:
-v = v0.6.11-beta
+v = v0.6.12-beta
 
 calopts = -D asm=__asm -I calypsi.h -D VERSION=\"$(v)\"
 calopts += -I mega65-libc/include
@@ -65,12 +65,20 @@ $(prj).d81: bin/$(prj).prg bin/$(romlist).prg src/$(prj)text.src
 #	c1541 -attach $(prj).d81 -delete $(prj)
 	c1541 -attach $(prj).d81 -write bin/$(prj).prg $(prj)
 	petcat -text -c -w2 -o bin/$(prj)text.seq -- src/$(prj)text.src
-	$(lzsa) -f1 -r bin/$(prj)text.seq bin/$(prj)text.seq.lzsa
-#	c1541 -attach $(prj).d81 -write bin/$(prj)text.seq $(prj)-raw,s
-	c1541 -attach $(prj).d81 -write bin/$(prj)text.seq.lzsa $(prj)text,s
+#	$(lzsa) -f1 -r bin/$(prj)text.seq bin/$(prj)text.seq.lzsa
+	c1541 -attach $(prj).d81 -write bin/$(prj)text.seq $(prj)text,s
+#	c1541 -attach $(prj).d81 -write bin/$(prj)text.seq.lzsa $(prj)text,s
 #	-rm bin/$(prj)text.seq bin/$(prj)text_binmake.seq
+#	c1541 -attach $(prj).d81 -write lib/eth.bin.prg eth.bin
 #	c1541 -attach $(prj).d81 -delete $(romlist)
+	c1541 -attach $(prj).d81 -write NUL 1---------------,u
 	c1541 -attach $(prj).d81 -write bin/$(romlist).prg $(romlist)
+	c1541 -attach $(prj).d81 -write NUL 2---------------,u
+	c1541 -attach $(prj).d81 -write NUL "    this is,u"
+	c1541 -attach $(prj).d81 -write NUL "  $(v),u"
+	c1541 -attach $(prj).d81 -write NUL "       of,u"
+	c1541 -attach $(prj).d81 -write NUL "  midnight mega,u"
+	c1541 -attach $(prj).d81 -write NUL 3---------------,u
 
 bin/$(prj).prg: $(objmidnight) $(LIBOBJS) src/mega65-$(prj).scm | bin
 	$(LN) $(linkopts) -o $@ $(filter-out %.scm,$^)

@@ -137,6 +137,7 @@ void shortcuts(unsigned char mod, unsigned char side)  {
 
   gotoxy(0, 24);
   if (midnight[side]->flags & MIDNIGHTFLAGdirsortactive)  {
+/*
     textcolor(COLOUR_YELLOW);
     msprintf("Arrange entries:");
     shortcutprint(TRUE, " \x1e",  "Crsr up");
@@ -151,69 +152,80 @@ void shortcuts(unsigned char mod, unsigned char side)  {
           ' ', width - wherex());
     lfill(COLOR_RAM_BASE + + (width * height) - width + wherex(),
           COLOUR_CYAN, width - wherex());
+*/
+    text(BARDIRSORT, FALSE);
   } else {
     // MODKEY, with 1 meaning the key was held during the event:
     // Bit 6 Bit 5 Bit 4 Bit 3 Bit 2 Bit 1 Bit 0
     // CAPS  NO    ALT   C=    CTRL  SHIFT SHIFT
     // LOCK  SCROLL                  right left
     if (mod & 20)  {  // Alt or ctrl are masked
-      shortcutprint(FALSE, " 1",  "Help  ");
-      shortcutprint(FALSE, " 2",  "Mount ");
-      shortcutprint(FALSE, " 3",  "View  ");
-      shortcutprint(FALSE, " 4",  "Edit  ");
-      shortcutprint(FALSE, " 5",  "Copy  ");
-      shortcutprint(FALSE, " 6",  "Rename"); // "RenMov");
-      shortcutprint(FALSE, " 7",  "Mkdir ");
-      shortcutprint(FALSE, " 8",  "Delete");
-      shortcutprint(FALSE, " 9",  "Menu  ");
-      shortcutprint(FALSE, " 10", "Quit ");
+//      shortcutprint(FALSE, " 1",  "Help  ");
+//      shortcutprint(FALSE, " 2",  "Mount ");
+//      shortcutprint(FALSE, " 3",  "View  ");
+//      shortcutprint(FALSE, " 4",  "Edit  ");
+//      shortcutprint(FALSE, " 5",  "Copy  ");
+//      shortcutprint(FALSE, " 6",  "Rename"); // "RenMov");
+//      shortcutprint(FALSE, " 7",  "Mkdir ");
+//      shortcutprint(FALSE, " 8",  "Delete");
+//      shortcutprint(FALSE, " 9",  "Menu  ");
+//      shortcutprint(FALSE, " 10", "Quit ");
+      text(BARINACTIVE, FALSE);
     } else if (((mod & 9) == 9) ||
                ((mod & 10) == 10)) {  // MEGA key, C= and any of the shift keys
-      shortcutprint(FALSE, " 1",  "      ");
-      shortcutprint(FALSE, " 2",  "      ");
-      shortcutprint(FALSE, " 3",  "      ");
-      shortcutprint(FALSE, " 4",  "      ");
-      shortcutprint(FALSE, " 5",  "      ");
-      shortcutprint(FALSE, " 6",  "      ");
-      shortcutprint(FALSE, " 7",  "      ");
-      shortcutprint(FALSE, " 8",  "      ");
-      shortcutprint(FALSE, " 9",  "      ");
-      shortcutprint(FALSE, " 10", "     ");
+//      shortcutprint(FALSE, " 1",  "      ");
+//      shortcutprint(FALSE, " 2",  "      ");
+//      shortcutprint(FALSE, " 3",  "      ");
+//      shortcutprint(FALSE, " 4",  "      ");
+//      shortcutprint(FALSE, " 5",  "      ");
+//      shortcutprint(FALSE, " 6",  "      ");
+//      shortcutprint(FALSE, " 7",  "      ");
+//      shortcutprint(FALSE, " 8",  "      ");
+//      shortcutprint(FALSE, " 9",  "      ");
+//      shortcutprint(FALSE, " 10", "     ");
+      text(BAROFF, FALSE);
     } else if (mod & 8)  {  // MEGA key, C=
-      shortcutprint(FALSE, " 1",  "      ");
-      shortcutprint(FALSE, " 2",  "      ");
-      shortcutprint( TRUE, " 3",  "Freezr");
-      shortcutprint(FALSE, " 4",  "      ");
-      shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
-                           " 5",  "DskCpy");
-      shortcutprint(FALSE, " 6",  "      ");
-      shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
-                           " 7",  "Format");
-      shortcutprint(FALSE, " 8",  "      ");
-      shortcutprint( TRUE, " 9",  "ROMlst");
-      shortcutprint(FALSE, " 10", "     ");
+//      shortcutprint(FALSE, " 1",  "      ");
+//      shortcutprint(FALSE, " 2",  "      ");
+//      shortcutprint( TRUE, " 3",  "Freezr");
+//      shortcutprint(FALSE, " 4",  "      ");
+//      shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
+//                           " 5",  "DskCpy");
+//      shortcutprint(FALSE, " 6",  "      ");
+//      shortcutprint((midnight[side]->dirtrack == HEADERTRACK),
+//                           " 7",  "Format");
+//      shortcutprint(FALSE, " 8",  "      ");
+//      shortcutprint( TRUE, " 9",  "ROMlst");
+//      shortcutprint(FALSE, " 10", "     ");
+      if (midnight[side]->dirtrack == HEADERTRACK)  {
+        text(BARMEGA, FALSE);
+      } else {
+        text(BARMEGASUBDIR, FALSE);
+      }
     } else if (mod & 3)  {                   // either of the shift keys makes
-      shortcutprint( TRUE, " 1",  "Mount "); // next even numbered F key
-      shortcutprint(FALSE, " 2",  "      ");
-      shortcutprint(FALSE, " 3",  "Edit  ");
-      shortcutprint(FALSE, " 4",  "      ");
-      shortcutprint( TRUE, " 5",  "Rename"); // "RenMov");
-      shortcutprint(FALSE, " 6",  "      ");
-      shortcutprint( TRUE, " 7",  "Delete");
-      shortcutprint(FALSE, " 8",  "      ");
-      shortcutprint( TRUE, " 9",  "Quit  ");
-      shortcutprint(FALSE, " 10", "     ");
+//      shortcutprint( TRUE, " 1",  "Mount "); // next even numbered F key
+//      shortcutprint(FALSE, " 2",  "      ");
+//      shortcutprint(FALSE, " 3",  "Edit  ");
+//      shortcutprint(FALSE, " 4",  "      ");
+//      shortcutprint( TRUE, " 5",  "Rename"); // "RenMov");
+//      shortcutprint(FALSE, " 6",  "      ");
+//      shortcutprint( TRUE, " 7",  "Delete");
+//      shortcutprint(FALSE, " 8",  "      ");
+//      shortcutprint( TRUE, " 9",  "Quit  ");
+//      shortcutprint(FALSE, " 10", "     ");
+      text(BARSHIFT, FALSE);
     } else {
-      shortcutprint( TRUE, " 1",  "Help  ");
-      shortcutprint( TRUE, " 2",  "Mount ");
-      shortcutprint(FALSE, " 3",  "View  ");
-      shortcutprint(FALSE, " 4",  "Edit  ");
-      shortcutprint( TRUE, " 5",  "Copy  ");
-      shortcutprint( TRUE, " 6",  "Rename"); // "RenMov");
-      shortcutprint( TRUE, " 7",  "Mkdir ");
-      shortcutprint( TRUE, " 8",  "Delete");
-      shortcutprint( TRUE, " 9",  "Menu  ");
-      shortcutprint( TRUE, " 10", "Quit ");
+//      shortcutprint( TRUE, " 1",  "Help  ");
+//      shortcutprint( TRUE, " 2",  "Mount ");
+//      shortcutprint(FALSE, " 3",  "View  ");
+//      shortcutprint(FALSE, " 4",  "Edit  ");
+//      shortcutprint( TRUE, " 5",  "Copy  ");
+//      shortcutprint( TRUE, " 6",  "Rename"); // "RenMov");
+//      shortcutprint( TRUE, " 7",  "Mkdir ");
+//      shortcutprint( TRUE, " 8",  "Delete");
+//      shortcutprint( TRUE, " 9",  "Menu  ");
+//      shortcutprint( TRUE, " 10", "Quit ");
+      text(BARACTIVE, FALSE);
     }
   }
 
@@ -223,65 +235,67 @@ void shortcuts(unsigned char mod, unsigned char side)  {
 #define REGIONCOLUMN     17
 #define REGIONADDRCOLUMN 40
 
-unsigned char membox()  {
+unsigned char regionsbox()  {
   unsigned char clear = 1;
   unsigned char shadow = 1;
   char c;
 
-  mcbox(4, 4, 75, 20, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+//  mcbox(4, 4, 75, 20, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
 
-  revers(1);
-  mcputsxy(6, 4, " Midnight Mega ");
-  mcputsxy(25, 4, " Regions ");
-  mcputsxy(47, 4, " The MEGA65 file commander ");
-  revers(0);
+//  revers(1);
+//  mcputsxy(6, 4, " Midnight Mega ");
+//  mcputsxy(25, 4, " Regions ");
+//  mcputsxy(47, 4, " The MEGA65 file commander ");
+//  revers(0);
+
+  text(REGIONS, TRUE);
 
   mcputsxy(7, 20, " ");
   msprintf(VERSION);
   msprintf(" ");
   mcputsxy(52, 20, " github.com/nobruinfo ");
 
-  mcputsxy(REGIONCOLUMN,   6, "ATTIC");
+//  mcputsxy(REGIONCOLUMN,   6, "ATTIC");
   gotoxy(REGIONADDRCOLUMN, 6);
   mcputhex(ATTIC, 7);
 
-  mcputsxy(REGIONCOLUMN,   7, "ATTICDIRENTBUFFER");
+//  mcputsxy(REGIONCOLUMN,   7, "ATTICDIRENTBUFFER");
   gotoxy(REGIONADDRCOLUMN, 7);
   mcputhex(ATTICDIRENTBUFFER, 7);
 
-  mcputsxy(REGIONCOLUMN,   8, "ATTICDIRENT2NDBUFFER");
+//  mcputsxy(REGIONCOLUMN,   8, "ATTICDIRENT2NDBUFFER");
   gotoxy(REGIONADDRCOLUMN, 8);
   mcputhex(ATTICDIRENT2NDBUFFER, 7);
 
-  mcputsxy(REGIONCOLUMN,   9, "ATTICLFNBUFFER");
+//  mcputsxy(REGIONCOLUMN,   9, "ATTICLFNBUFFER");
   gotoxy(REGIONADDRCOLUMN, 9);
   mcputhex(ATTICLFNBUFFER, 7);
 
-  mcputsxy(REGIONCOLUMN,   10, "ATTICLFNBUFFER2");
+//  mcputsxy(REGIONCOLUMN,   10, "ATTICLFNBUFFER2");
   gotoxy(REGIONADDRCOLUMN, 10);
   mcputhex(ATTICLFNBUFFER2, 7);
 
-  mcputsxy(REGIONCOLUMN,   11, "ATTICBAMBUFFER");
+//  mcputsxy(REGIONCOLUMN,   11, "ATTICBAMBUFFER");
   gotoxy(REGIONADDRCOLUMN, 11);
   mcputhex(ATTICBAMBUFFER, 7);
 
-  mcputsxy(REGIONCOLUMN,   12, "ATTICBAM2BUFFER");
+//  mcputsxy(REGIONCOLUMN,   12, "ATTICBAM2BUFFER");
   gotoxy(REGIONADDRCOLUMN, 12);
   mcputhex(ATTICBAM2BUFFER, 7);
 
-  mcputsxy(REGIONCOLUMN,   13, "ATTICFILEBUFFER");
+//  mcputsxy(REGIONCOLUMN,   13, "ATTICFILEBUFFER");
   gotoxy(REGIONADDRCOLUMN, 13);
   mcputhex(ATTICFILEBUFFER, 7);
 
-  mcputsxy(REGIONCOLUMN,   14, "ATTICTEXTBUFFER");
+//  mcputsxy(REGIONCOLUMN,   14, "ATTICTEXTBUFFER");
   gotoxy(REGIONADDRCOLUMN, 14);
   mcputhex(ATTICTEXTBUFFER, 7);
 
-  mcputsxy(REGIONCOLUMN,   15, "ATTICZPBACKUP");
+//  mcputsxy(REGIONCOLUMN,   15, "ATTICZPBACKUP");
   gotoxy(REGIONADDRCOLUMN, 15);
   mcputhex(ATTICZPBACKUP, 7);
 
-  mcputsxy(REGIONCOLUMN,   16, "ATTICEND");
+//  mcputsxy(REGIONCOLUMN,   16, "ATTICEND");
   gotoxy(REGIONADDRCOLUMN, 16);
   mcputhex(ATTICEND, 7);
 
@@ -308,7 +322,7 @@ unsigned char membox()  {
 }
 
 void optionstring(unsigned char optionbyte, unsigned char optionbitmask,
-                   char* str, unsigned char tabpos, unsigned char pos)  {
+                  /* char* str, */ unsigned char tabpos, unsigned char pos)  {
   unsigned char i;
   unsigned char j;
 
@@ -318,17 +332,19 @@ void optionstring(unsigned char optionbyte, unsigned char optionbitmask,
   s[i++] = ' ';
   if (tabpos == pos)  s[i++] = '>';
   else                s[i++] = ' ';
-  s[i++] = ' ';
-  j = 0;
-  while (str[j] != 0 && j < DOSFILENAMEANDTYPELEN)  {
-    s[i++] = str[j];
-    j++;
-  }
-  for ( ; j < DOSFILENAMELEN; j++)  s[i++] = ' ';
-  s[i++] = ' ';
-  if (tabpos == pos)  s[i++] = '<';
-  else                s[i++] = ' ';
-  
+//  s[i++] = ' ';
+//  j = 0;
+//  while (str[j] != 0 && j < DOSFILENAMEANDTYPELEN)  {
+//    s[i++] = str[j];
+//    j++;
+//  }
+//  for ( ; j < DOSFILENAMELEN; j++)  s[i++] = ' ';
+//  s[i++] = ' ';
+//  if (tabpos == pos)  s[i++] = '<';
+//  else                s[i++] = ' ';
+  if (tabpos == pos)  cputcxy(50, 6 + pos, '<');
+  else                cputcxy(50, 6 + pos, ' ');
+
   s[i++] = 0;
   mcputsxy(12, 6 + pos, (char*) s);
 }
@@ -339,33 +355,41 @@ unsigned char setupbox()  {
   char c;
   unsigned char tabpos = 0;
   unsigned char bitshifter = 1;
+  unsigned char drawn = FALSE;
 
-  // Because of the additional messagebox we need to redraw all:
   while(1)  {
-    mcbox(10, 4, 70, 20, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+    if (!drawn)  {
+//    mcbox(10, 4, 70, 20, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
   
-    revers(1);
-    mcputsxy(14, 4, " Midnight Mega ");
-    mcputsxy(31, 4, " Setup ");
-    mcputsxy(40, 4, " The MEGA65 file commander ");
-    revers(0);
+//    revers(1);
+//    mcputsxy(14, 4, " Midnight Mega ");
+//    mcputsxy(31, 4, " Setup ");
+//    mcputsxy(40, 4, " The MEGA65 file commander ");
+//    revers(0);
 
-    mcputsxy(23, 16, "Use the spacebar to select/unselect.");
-    revers(1);
-    mcputsxy(36, 18, "   OK   ");
-//  mcputsxy(12, 18, "  Save  ");
-//  mcputsxy(60, 18, " Cancel ");
-    revers(0);
+//    mcputsxy(23, 16, "Use the spacebar to select/unselect.");
+//    revers(1);
+//    mcputsxy(36, 18, "   OK   ");
+  //  mcputsxy(12, 18, "  Save  ");
+  //  mcputsxy(60, 18, " Cancel ");
+//    revers(0);
+      text(SETUPBOX, TRUE);
+      drawn = TRUE;
+    }
 
-//  while(1)  {
     if (tabpos > OPTIONMAX)  {
       tabpos = OPTIONMAX;
     }         // byte           bit          2 * DOSFILENAMEANDTYPELEN  pos
-    optionstring(option.option, OPTIONshowDEL, "show DEL files", tabpos, 0);
-    optionstring(option.option, OPTIONshowALO, "copy allocated BAM blocks only", tabpos, 1);
-    optionstring(option.option, OPTIONshowOVL, "show drive access overlay", tabpos, 2);
-    optionstring(option.option, OPTIONshowPOK, "BETA! use MOUNT hack POKE", tabpos, 3);
-    optionstring(option.option, OPTIONshowIEC, "BETA! use drives 8 and 9", tabpos, 4);
+//    optionstring(option.option, OPTIONshowDEL, "show DEL files", tabpos, 0);
+//    optionstring(option.option, OPTIONshowALO, "copy allocated BAM blocks only", tabpos, 1);
+//    optionstring(option.option, OPTIONshowOVL, "show drive access overlay", tabpos, 2);
+//    optionstring(option.option, OPTIONshowPOK, "BETA! use MOUNT hack POKE", tabpos, 3);
+//    optionstring(option.option, OPTIONshowIEC, "BETA! use drives 8 and 9", tabpos, 4);
+    optionstring(option.option, OPTIONshowDEL, tabpos, 0);
+    optionstring(option.option, OPTIONshowALO, tabpos, 1);
+    optionstring(option.option, OPTIONshowOVL, tabpos, 2);
+    optionstring(option.option, OPTIONshowPOK, tabpos, 3);
+    optionstring(option.option, OPTIONshowIEC, tabpos, 4);
     c = cgetc();
     switch (c) {
       case 0x91: // Crsrup
@@ -390,10 +414,11 @@ unsigned char setupbox()  {
       case 3:  // STOP
       case 27: // Esc
         sidbong();
-        messagebox(MBOXNOCANCEL, "Currently this option dialog cannot",
-                                 "be quit unsaved. So use RETURN to",
-                                 "accept.", 0);
-//        return FALSE;
+//        messagebox(MBOXNOCANCEL, "Currently this option dialog cannot",
+//                                 "be quit unsaved. So use RETURN to",
+//                                 "accept.", 0);
+        _messagebox(MBOXNOCANCEL, DLGTXTSETUPSAVE, 0);
+        drawn = FALSE;
       break;
 
       default:
@@ -415,20 +440,21 @@ unsigned char menubox(unsigned char side)  {
   unsigned char i;
   unsigned char drawn = FALSE;
 
-  // Because of the additional messagebox we need to redraw all:
   while(1)  {
     if (!drawn)  {
-      mcbox(10, 4, 70, 20, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+      text(MENUBOX, TRUE);
+
+//      mcbox(10, 4, 70, 20, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
     
-      revers(1);
-      mcputsxy(14, 4, " Midnight Mega ");
-      mcputsxy(31, 4, " Menu ");
-      mcputsxy(40, 4, " The MEGA65 file commander ");
-      mcputsxy(36, 18, "   OK   ");
+//      revers(1);
+//      mcputsxy(14, 4, " Midnight Mega ");
+//      mcputsxy(31, 4, " Menu ");
+//      mcputsxy(40, 4, " The MEGA65 file commander ");
+//      mcputsxy(36, 18, "   OK   ");
   //  mcputsxy(12, 18, "  Save  ");
   //  mcputsxy(60, 18, " Cancel ");
-      revers(0);
-      text(MENUTITLE, TRUE);  // TRUE prints all texts until chr(10)
+//      revers(0);
+//      text(MENUTITLE, TRUE);  // TRUE prints all texts until chr(10)
 //      text(MENUDIRSORT, FALSE);
 //      text(MENUSETUP, FALSE);
       drawn = TRUE;
@@ -461,14 +487,15 @@ unsigned char menubox(unsigned char side)  {
               Deselect(side);
               return FALSE;
             } else {
-              messagebox(MBOXNOCANCEL, "Directory entry sorting,",
-                         "on storage card not possible",
-                         " ", 0);
+//              messagebox(MBOXNOCANCEL, "Directory entry sorting,",
+//                         "on storage card not possible",
+//                         " ", 0);
+              _messagebox(MBOXNOCANCEL, DLGTXTDIRSORTSD, 0);
               drawn = FALSE;
             }
           break;
           case 1:
-            ret = membox();
+            ret = regionsbox();
             drawn = FALSE;
           break;
           default:
@@ -495,7 +522,7 @@ unsigned char menubox(unsigned char side)  {
 }
 
 void helpbegin()  {
-  text(HELPBEGIN, TRUE);
+  text(HELPBOX, TRUE);
   cputcxy(7, 24, ' ');
   // cputs(petsciitoscreencode_s(VERSION));   @@@@
   msprintf(VERSION);
@@ -507,8 +534,8 @@ unsigned char helpbox()  {
   unsigned char shadow = 1;
   char c;
   unsigned char page = 0;
+  unsigned char prevpage = 0xff;
 
-  // Because of the additional messagebox we need to redraw all:
   while(1)  {
 /*
     mcbox(4, 0, 76, 24, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
@@ -599,30 +626,36 @@ unsigned char helpbox()  {
     revers(0);
 */
 
-    switch (page) {
-      case 1:
-        helpbegin();
-        text(HELP1, TRUE);
-      break;
+    if (prevpage != page)  {
+      prevpage = page;
 
-      case 2:
-        helpbegin();
-        text(HELP2, TRUE);
-      break;
+      switch (page) {
+        case 1:
+          helpbegin();
+          text(HELP1, TRUE);
+        break;
 
-      default:
-        helpbegin();
-        text(HELP0, TRUE);
-      break;
+        case 2:
+          helpbegin();
+          text(HELP2, TRUE);
+        break;
+
+        default:
+          helpbegin();
+          text(HELP0, TRUE);
+        break;
+      }
     }
 
     c = cgetc();
     switch (c) {
       case 0x91: // Crsrup
         if (page > 0)  page--;
+        else sidbong();
       break;
       case 0x11: // Crsrdown
         if (page < HELPMAX)  page++;
+        else sidbong();
       break;
 
       case ' ':
@@ -634,23 +667,6 @@ unsigned char helpbox()  {
       case 27: // Esc
         return FALSE;
       break;
-
-/*        // Testing:
-      case 0x1f: // HELP
-      case 0xf1: // unused F keys
-        clrhome();
-        text(0);
-        text(1);
-        text(2);
-        text(3);
-        text(4);
-        text(5);
-        text(6);
-        text(7);
-        text(8);
-        cgetc();
-      break;
-*/
 
       default:
         sidbong();
@@ -679,18 +695,19 @@ unsigned char rombox()  {
   unsigned char shadow = 1;
   char c;
 
-  mcbox(4, 4, 75, 20, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
+  text(ROMBOX, TRUE);
+//  mcbox(4, 4, 75, 20, COLOUR_CYAN, BOX_STYLE_INNER, clear, shadow);
 
-  revers(1);
-  mcputsxy(6, 4, " Midnight Mega ");
-  mcputsxy(25, 4, " List of ROM files ");
-  mcputsxy(47, 4, " The MEGA65 file commander ");
-  revers(0);
+//  revers(1);
+//  mcputsxy(6, 4, " Midnight Mega ");
+//  mcputsxy(25, 4, " List of ROM files ");
+//  mcputsxy(47, 4, " The MEGA65 file commander ");
+//  revers(0);
 
-  mcputsxy(7, 20, " ");
-  msprintf(VERSION);
-  msprintf(" ");
-  mcputsxy(52, 20, " github.com/nobruinfo ");
+//  mcputsxy(7, 20, " ");
+//  msprintf(VERSION);
+//  msprintf(" ");
+//  mcputsxy(52, 20, " github.com/nobruinfo ");
 
   romlist(6);
 
@@ -861,9 +878,10 @@ unsigned int sizeselectcurrentifnone(unsigned char side)  {
       
       // @@ momentary workaround:
       if ((ds->type&0xf) == VAL_DOSFTYPE_CBM)  {
-        messagebox(MBOXNOCANCEL, "Copying subdirectories",
-                   "is not yet implemented.",
-                   " ", 0);
+//        messagebox(MBOXNOCANCEL, "Copying subdirectories",
+//                   "is not yet implemented.",
+//                   " ", 0);
+        _messagebox(MBOXNOCANCEL, DLGTXTSUBDIRCOPY, 0);
         return UINT_MAX;
       }
     }
@@ -920,7 +938,7 @@ messagebox(MBOXNUMBER, "after legacy()",
       midnight[i]->flags &= (~MIDNIGHTFLAGismounted);
     }
 
-    messagebox(MBOXFALLTHROUGH, " ", " ", " ", 0);
+//    messagebox(MBOXFALLTHROUGH, " ", " ", " ", 0);
     progress("Initialising...", "reading disk drives", i * 40 + 40);
     UpdateSectors(midnight[i]->drive, i);
     Deselect(i);
@@ -941,53 +959,52 @@ messagebox(MBOXNUMBER, "after legacy()",
 
   // read complete text file into Attic:
   if (alive)  {
-    if (readblockchain(legacyHDOSstate, ATTICFILEBUFFER, TEXTBLOCKS,
-//    if (readblockchain(legacyHDOSstate, ATTICTEXTBUFFER, TEXTBLOCKS,
+//    if (readblockchain(legacyHDOSstate, ATTICFILEBUFFER, TEXTBLOCKS,
+    if (readblockchain(legacyHDOSstate, ATTICTEXTBUFFER, TEXTBLOCKS,
                      midnight[side]->drive, ds->track, ds->sector, TRUE) > 0)  {
       // valuesbox(0, "readblockchain", "t=", ds->track, "s=", ds->sector);
-      pcputs("ERROR too much text data for available blocks!");
-      cgetc();
+      mcputsxy(12, 6, "ERROR too much text data for available blocks!");
+      mcputsxy(12, 7, "                      ");  // @@@@@
       alive = FALSE;
     } else {
-//    lfill(0x1a00, 0xaa, 0xff);
-//    messagebox(MBOXNUMBER, "before lzsa1_decompress_far()",
-//                       " ",
-//                       "nbrbytes=", *(long*) c);
-      c = lzsa1_decompress_far(ATTICFILEBUFFER, ATTICTEXTBUFFER);
-//    messagebox(MBOXNUMBER, "after lzsa1_decompress_far()",
-//                       " ",
-//                       "nbrbytes=", *(long*) c);
+//      lzsa1_decompress_far(ATTICFILEBUFFER, ATTICTEXTBUFFER);
+
       // Info above keybar:
       text(INFOFOOTER1, FALSE);
       text(INFOFOOTER2, FALSE);
       shortcuts(20, 0);
     }
   } else {
-    // pcputs("ERROR text data file not found!");
-    // cgetc();
-    messagebox(MBOXNOCANCEL, "ERROR text data file not found!",
-                             "Programme terminating.",
-                             " ", 0);
+    mcputsxy(12, 6, "ERROR text data file not found!");
+    mcputsxy(12, 7, "Programme terminating.");
+//    cgetc();
+//    messagebox(MBOXNOCANCEL, "ERROR text data file not found!",
+//                             "Programme terminating.",
+//                             " ", 0);
+    alive = FALSE;
   }
 
   _miniInit();  // Pause the floppy drive while waiting for the user
-  // @@@@ legacy timing:
-  if (legacyHDOSstate &&
-      !messagebox(MBOXVERSION,
-                     "A HICKUP.M65 v1.2 or older is active on your storage card",
-                     "or an old core containing it. Falling back to slow mode.",
-                     "Press RETURN to continue, STOP to halt.", 0))  {
-    alive = FALSE;
-  }
 
-/* @@@@
-  if (!messagebox(MBOXVERSION,
-                     "is currently beta and may destroy data structures on",
-                     ".d81 and real disks! Please work on backed up media.",
-                     "Press RETURN to continue, STOP to halt.", 0))  {
-    alive = FALSE;
+  if (alive)  {
+    // @@@@ legacy timing:
+    if (legacyHDOSstate &&
+//      !messagebox(MBOXREGULAR,
+//                     "A HICKUP.M65 v1.2 or older is active on your storage card",
+//                     "or an old core containing it. Falling back to slow mode.",
+//                     "Press RETURN to continue, STOP to halt.", 0))  {
+        !_messagebox(MBOXREGULAR, DLGTXTHICKUP12, 0))  {
+      alive = FALSE;
+    }
+
+//  if (!messagebox(MBOXREGULAR,
+//                    "is currently beta and may destroy data structures on",
+//                    ".d81 and real disks! Please work on backed up media.",
+//                    "Press RETURN to continue, STOP to halt.", 0))  {
+    if (!_messagebox(MBOXREGULAR, DLGTXTBETA, 0))  {
+      alive = FALSE;
+    }
   }
-@@@@ */
 
   // main navigation loop:
   while (alive)  {
@@ -1010,6 +1027,8 @@ messagebox(MBOXNUMBER, "after legacy()",
         mcputsxy(wherex() + 1, 0, " ");
         msprintf((char *) midnight[i]->curfile);
         cputc(' ');
+      } else {
+        Deselect(side);  // on storage card view no multiselect allowed
       }
       mcputsxy(leftx + 2, 23, " drv:");
       csputdec(midnight[i]->drive, 0, 0);
@@ -1130,9 +1149,10 @@ messagebox(MBOXNUMBER, "after legacy()",
       case 0x1f2:
       case 0x2f2:
         if ((midnight[side]->drive <= 1) ||
-            messagebox(MBOXREGULAR, "Warning, in real drive number mode",
-                                    "mounting refers to drive number",
-                                    "in the freezer menu!", 0))  {
+//            messagebox(MBOXREGULAR, "Warning, in real drive number mode",
+//                                    "mounting refers to drive number",
+//                                    "in the freezer menu!", 0))  {
+            _messagebox(MBOXREGULAR, DLGTXTIECMOUNT, 0))  {
           // Mount toggle and reset to root dirent:
           midnight[side]->flags ^= MIDNIGHTFLAGismounted;
           midnight[side]->dirtrack = HEADERTRACK;
@@ -1157,8 +1177,9 @@ messagebox(MBOXNUMBER, "after legacy()",
       break;
 */
       case 0x8f4: // Mega-F3
-        if (messagebox(MBOXREGULAR, "Freezer", "did you save your work?",
-                       " ", 0))  {
+//        if (messagebox(MBOXREGULAR, "Freezer", "did you save your work?",
+//                       " ", 0))  {
+        if (_messagebox(MBOXREGULAR, DLGTXTFREEZER, 0))  {
           hyppo_freeze_self();
           progress("Reading...", "BAM", 30);
           usleep(2000000); // microseconds
@@ -1218,14 +1239,16 @@ messagebox(MBOXNUMBER, "after legacy()",
         // multiple selection abort criteria:
         if (number > 1 &&
             ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
-          messagebox(MBOXNOCANCEL, "Operation on mulitiple",
-                     "storage card files/folders",
-                     "is not supported.", 0);
+//          messagebox(MBOXNOCANCEL, "Operation on mulitiple",
+//                     "storage card files/folders",
+//                     "is not supported.", 0);
+          _messagebox(MBOXNOCANCEL, DLGTXTSDMULTI, 0);
         } else if (number > 1 &&
                  ((ds->type&0xf) == VAL_DOSFTYPE_CBM))  {
-          messagebox(MBOXNOCANCEL, "Directory operation on",
-                     "multiple selected entries",
-                     "is not supported", 0);
+//          messagebox(MBOXNOCANCEL, "Directory operation on",
+//                     "multiple selected entries",
+//                     "is not supported", 0);
+          _messagebox(MBOXNOCANCEL, DLGTXTDIRMULTI, 0);
         } else { // okay to start:
           if (number > 1)  {
             strcpy((char*) midnight[side]->inputstr,
@@ -1251,84 +1274,100 @@ messagebox(MBOXNUMBER, "after legacy()",
 
           if ((ds->type&0xf) == VAL_DOSFTYPE_DEL &&
               ((midnight[side]->flags & MIDNIGHTFLAGismounted)))  {
-            messagebox(MBOXNOCANCEL, "File type for",
-                       (char *) midnight[side]->inputstr,
-                       "unsupported", 0);
+//            messagebox(MBOXNOCANCEL, "File type for",
+//                       (char *) midnight[side]->inputstr,
+//                       "unsupported", 0);
+            _messagebox(MBOXFALLTHROUGH, DLGTXTTYPEUNSUPP, 0);
+            mcputsxy(12, 7, (char*) midnight[side]->inputstr);
+            _messagebox(MBOXNOBOX, 0, 0);
           } else if (c == 0xf5)  {  // copy
             if ((ds->type&0xf) == VAL_DOSFTYPE_CBM)  {
-              messagebox(MBOXNOCANCEL, "Copying full directory structures",
-                         "is not supported.", " ", 0);
+//              messagebox(MBOXNOCANCEL, "Copying full directory structures",
+//                         "is not supported.", " ", 0);
+              _messagebox(MBOXNOCANCEL, DLGTXTCPYDIRUNSUP, 0);
             } else if (((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE) ||
                        ((midnight[side?0:1]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
-              messagebox(MBOXNOCANCEL, "Copying storage card files/folders",
-                         "is not supported.",
-                            " ", 0);
+//              messagebox(MBOXNOCANCEL, "Copying storage card files/folders",
+//                         "is not supported.",
+//                            " ", 0);
+              _messagebox(MBOXNOCANCEL, DLGTXTCPYSDUNSUP, 0);
 //            } else if (midnight[side?0:1]->dirtrack != HEADERTRACK)  {
 //              messagebox(MBOXNOCANCEL, "File copy,",
 //                         "into subfolders currently unsupported.",
 //                         " ", 0);
             // @@ these "if"s need to be swapped:
             } else if (sizeselectcurrentifnone(side) > midnight[side?0:1]->blocksfree)  {
-              messagebox(MBOXNOCANCEL, "File copy,",
-                         "destination disk space insufficient", " ", 0);
-            } else if (messagebox(MBOXREGULAR, "File copy,",
-                       (char *) midnight[side]->inputstr,
-                       (side ? "from right to left" : "from left to right"),
-                       0)) {
-              for (i = 0; i < NBRENTRIES; i++)  {
-                if (direntflags[side][i].flags & DIRFLAGSisselected)  {
-                  ds = getdirententry(side, i, &direntpos);
+              // @@@@@ Error handling pending a per file loop:
+              if (sizeselectcurrentifnone(side) != UINT_MAX)  {
+//              messagebox(MBOXNOCANCEL, "File copy,",
+//                         "destination disk space insufficient", " ", 0);
+                _messagebox(MBOXNOCANCEL, DLGTXTNOSPACE, 0);
+              }
+            } else  {
+//              if (messagebox(MBOXREGULAR, "File copy,",
+//                       (char *) midnight[side]->inputstr,
+//                       (side ? "from right to left" : "from left to right"),
+//                       0)) {
+              _messagebox(MBOXFALLTHROUGH, DLGTXTFILECOPY, 0);
+              mcputsxy(12, 7, (char*) midnight[side]->inputstr);
+              mcputsxy(12, 8, (side ? "from right to left" : "from left to right"));
+              if (_messagebox(MBOXNOBOX, 0, 0)) {
+                for (i = 0; i < NBRENTRIES; i++)  {
+                  if (direntflags[side][i].flags & DIRFLAGSisselected)  {
+                    ds = getdirententry(side, i, &direntpos);
 
-                  progress("Reading...", "source file", 20);
-                  readblockchain(legacyHDOSstate, ATTICFILEBUFFER, DATABLOCKS,
-                                 midnight[side]->drive, ds->track, ds->sector,
-                                 FALSE);
-                  progress("Reading...", "BAM", 30);
-                  // write on opposing side disk:
-                  GetBAM(legacyHDOSstate, side?0:1);
-                  progress("Writing...", "destination file", 40);
-                  writeblockchain(legacyHDOSstate,
-                                  ATTICFILEBUFFER, DATABLOCKS,
-                                  midnight[side?0:1]->drive,
-                                  &starttrack, &startsector,
-                                  midnight[side?0:1]->dirtrack, FALSE,
-                                  midnight[side?0:1]->firsttrack,
-                                  midnight[side?0:1]->lasttrack);
-                  ds->track = starttrack;  // recycle src dirent for destination
-                  ds->sector = startsector;
+                    progress("Reading...", "source file", 20);
+                    readblockchain(legacyHDOSstate, ATTICFILEBUFFER, DATABLOCKS,
+                                   midnight[side]->drive, ds->track, ds->sector,
+                                   FALSE);
+                    progress("Reading...", "BAM", 30);
+                    // write on opposing side disk:
+                    GetBAM(legacyHDOSstate, side?0:1);
+                    progress("Writing...", "destination file", 40);
+                    writeblockchain(legacyHDOSstate,
+                                    ATTICFILEBUFFER, DATABLOCKS,
+                                    midnight[side?0:1]->drive,
+                                    &starttrack, &startsector,
+                                    midnight[side?0:1]->dirtrack, FALSE,
+                                    midnight[side?0:1]->firsttrack,
+                                    midnight[side?0:1]->lasttrack);
+                    ds->track = starttrack;  // recycle src dirent for destination
+                    ds->sector = startsector;
 
 #ifdef DEBUG
-                  mprintf("   before newds type=", ds->type);
-                  cputln();
-                  cgetc();
+                    mprintf("   before newds type=", ds->type);
+                    cputln();
+                    cgetc();
 #endif
-                  progress("Writing...", "directory", 60);
-                  // load opposing side dirent block into Attic:
-//                  midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
-                  writenewdirententry(legacyHDOSstate,
-                                      midnight[side?0:1]->drive, side?0:1,
-                                      midnight[side?0:1]->dirtrack,
-                                      midnight[side?0:1]->firsttrack,
-                                      midnight[side?0:1]->lasttrack,
-                                      ds);
-                  // re-read altered dirent on opposing side after entry added:
-//                  midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
-                  progress("Writing...", "BAM", 80);
-                  PutBAM(legacyHDOSstate, midnight[side?0:1]->drive, side?0:1,
-                         midnight[side?0:1]->dirtrack);
+                    progress("Writing...", "directory", 60);
+                    // load opposing side dirent block into Attic:
+  //                  midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
+                    writenewdirententry(legacyHDOSstate,
+                                        midnight[side?0:1]->drive, side?0:1,
+                                        midnight[side?0:1]->dirtrack,
+                                        midnight[side?0:1]->firsttrack,
+                                        midnight[side?0:1]->lasttrack,
+                                        ds);
+                    // re-read altered dirent on opposing side after entry added:
+  //                  midnight[side?0:1]->entries = getdirent(midnight[side?0:1]->drive, side?0:1);
+                    progress("Writing...", "BAM", 80);
+                    PutBAM(legacyHDOSstate, midnight[side?0:1]->drive, side?0:1,
+                           midnight[side?0:1]->dirtrack);
+                  }
                 }
               }
               UpdateSectors(midnight[side?0:1]->drive, side?0:1);
               Deselect(side);
             }
-          } else if ((c == 0xf6) || (c == 0x1f6) || (c == 0x2f6))  {  // copy
+          } else if ((c == 0xf6) || (c == 0x1f6) || (c == 0x2f6))  {  // rename
             for (i = 0; i < NBRENTRIES; i++)  {
               if (direntflags[side][i].flags & DIRFLAGSisselected)  {
                 ds = getdirententry(side, i, &direntpos);
-                strcpy((char*) midnight[side]->inputstr,
-                       "Enter the new name, empty to skip:");
-                inputbox((char*) midnight[side]->inputstr,
-                         (char*) midnight[side]->inputstr);
+//                strcpy((char*) midnight[side]->inputstr,
+//                       "Enter the new name, empty to skip:");
+//                inputbox((char*) midnight[side]->inputstr,
+//                         (char*) midnight[side]->inputstr);
+                _inputbox((char*) midnight[side]->inputstr, INPTXTRENAME);
                 if (midnight[side]->inputstr[0] != 0)  {
                   strmakefilename((char*) midnight[side]->inputstr,
                                   (char*) ds->name, DOSFILENAMELEN);
@@ -1360,9 +1399,10 @@ messagebox(MBOXNUMBER, "after legacy()",
               }
             }
             if (number > 1)  {
-              messagebox(MBOXNOCANCEL, "Directory delete,",
-                         "on multiple selected",
-                         "entries is not supported", 0);
+//              messagebox(MBOXNOCANCEL, "Directory delete,",
+//                         "on multiple selected",
+//                         "entries is not supported", 0);
+              _messagebox(MBOXNOCANCEL, DLGTXTDELDIRUNSUP, 0);
             // use file data buffer to peek the dir BAM:
             } else if (ds->size !=
                             BAMCheckSizeinFilebuffer(legacyHDOSstate,
@@ -1370,50 +1410,51 @@ messagebox(MBOXNUMBER, "after legacy()",
                               ds->track, // dirtrack
                               ds->track, // firsttrack
                               (ds->size / 40) + ds->track))  { // lasttrack
-              messagebox(MBOXNOCANCEL, "Directory delete,", ds->name,
-                         "directory is not empty", 0);
-#ifdef DEBUG
-              messagebox(MBOXNUMBER, "Directory delete,",
-                         " ",
-                         "ds-size=",
-                         ds->size);
-              messagebox(MBOXNUMBER, "Directory delete,",
-                         " ",
-                         "size in BAM=",
-                         BAMCheckSizeinFilebuffer(legacyHDOSstate,
-                                           midnight[side]->drive,
-                                           side,
-                                           ds->track, // dirtrack
-                                           ds->track, // firsttrack
-                                           (ds->size / 40) + ds->track));
-#endif
-            } else if (messagebox(MBOXREGULAR, "Directory delete,", ds->name,
-                                  (side ? "from right side" :
-                                          "from left side"), 0))  {
-              // restore BAM to finally delete:
-              GetBAM(legacyHDOSstate, side);
+//              messagebox(MBOXNOCANCEL, "Directory delete,", ds->name,
+//                         "directory is not empty", 0);
+              _messagebox(MBOXFALLTHROUGH, DLGTXTDELDIREMPTY, 0);
+              mcputsxy(12, 7, ds->name);
+              _messagebox(MBOXNOBOX, 0, 0);
+            } else  {
+//              if (messagebox(MBOXREGULAR, "Directory delete,", ds->name,
+//                                  (side ? "from right side" :
+//                                          "from left side"), 0))  {
+              _messagebox(MBOXFALLTHROUGH, DLGTXTCPYDIR, 0);
+              mcputsxy(12, 7, ds->name);
+              mcputsxy(12, 8, (side ? "from right side" : "from left side"));
+              if (_messagebox(MBOXNOBOX, 0, 0)) {
+                // restore BAM to finally delete:
+                GetBAM(legacyHDOSstate, side);
 //              ds->type = VAL_DOSFTYPE_DEL;
-              deletedirententry(legacyHDOSstate,
-                                midnight[side]->drive, side,
-                                midnight[side]->dirtrack,
-                                midnight[side]->pos);
-              PutBAM(legacyHDOSstate,
-                     midnight[side]->drive, side, midnight[side]->dirtrack);
-              UpdateSectors(midnight[side]->drive, side);
-              Deselect(side);
+                deletedirententry(legacyHDOSstate,
+                                  midnight[side]->drive, side,
+                                  midnight[side]->dirtrack,
+                                  midnight[side]->pos);
+                PutBAM(legacyHDOSstate,
+                       midnight[side]->drive, side, midnight[side]->dirtrack);
+                UpdateSectors(midnight[side]->drive, side);
+                Deselect(side);
+              }
             }
           } else if (ds->type != VAL_DOSFTYPE_DEL &&  // file delete
-                     ds->size > 0)  {     // storage card dirs are size zero
-            if (messagebox(MBOXREGULAR, "File delete,",
-                           (char *) midnight[side]->inputstr,
-                           (side ? "from right side" : "from left side"),
-                           0))  {
+                     !(ds->type & HYPPODIRENTATTRDIR))  {
+//            if (messagebox(MBOXREGULAR, "File delete,",
+//                           (char *) midnight[side]->inputstr,
+//                           (side ? "from right side" : "from left side"),
+//                           0))  {
+            _messagebox(MBOXFALLTHROUGH, DLGTXTFILEDEL, 0);
+            mcputsxy(12, 7, (char*) midnight[side]->inputstr);
+            mcputsxy(12, 8, (side ? "from right side" : "from left side"));
+            if (_messagebox(MBOXNOBOX, 0, 0)) {
               if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
                 hyppo_setname(ds->name); // hyppofn->name);  // @@@@ same
                 fd = hyppo_findfirst();                 // @@@@ block as below
                 if (fd >= 0x84)  {
-                  messagebox(MBOXNOCANCEL, "File ", ds->name,
-                             "not found", 0);
+//                  messagebox(MBOXNOCANCEL, "File", ds->name,
+//                             "not found", 0);
+                  _messagebox(MBOXFALLTHROUGH, DLGTXTFILEDELSD, 0);
+                  mcputsxy(12, 7, (char*) midnight[side]->inputstr);
+                  _messagebox(MBOXNOBOX, 0, 0);
                 } else {
                   hyppo_rmfile(fd);
                 }
@@ -1457,17 +1498,24 @@ messagebox(MBOXNUMBER, "after legacy()",
                          "entries is not supported", 0);
             } else 
 */
-            if (messagebox(MBOXREGULAR, "Directory structure delete,",
-                                  ds->name, (side ? "from right side" :
-                                                    "from left side"),
-                                  0))  {
+//            if (messagebox(MBOXREGULAR, "Directory structure delete,",
+//                                  ds->name, (side ? "from right side" :
+//                                                    "from left side"),
+//                                  0))  {
+            _messagebox(MBOXFALLTHROUGH, DLGTXTDIRDELSD, 0);
+            mcputsxy(12, 7, ds->name);
+            mcputsxy(12, 8, (side ? "from right side" : "from left side"));
+            if (_messagebox(MBOXNOBOX, 0, 0)) {
               hyppo_setname(ds->name); // hyppofn->name);  // @@@@ same
               fd = hyppo_findfirst();                 // @@@@ block as below
               if (fd >= 0x84)  {
-                messagebox(MBOXNOCANCEL, "Directory ", ds->name,
-                           "not found", 0);
+//                messagebox(MBOXNOCANCEL, "Directory", ds->name,
+//                           "not found", 0);
+                _messagebox(MBOXFALLTHROUGH, DLGTXTDIRDELERR, 0);
+                mcputsxy(12, 7, ds->name);
+                _messagebox(MBOXNOBOX, 0, 0);
               } else {
-                hyppo_rmdir(fd);
+                hyppo_rmdir(fd);  // non functional according to manuals
               }
               hyppo_closedir(fd);
             }
@@ -1480,13 +1528,15 @@ messagebox(MBOXNUMBER, "after legacy()",
       case 0x8f6: // Mega-F5
         if (((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE) ||
             ((midnight[side?0:1]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
-          messagebox(MBOXNOCANCEL, "Copying from/to storage cards",
-                     "is not supported.", " ", 0);
+//          messagebox(MBOXNOCANCEL, "Copying from/to storage cards",
+//                     "is not supported.", " ", 0);
+          _messagebox(MBOXNOCANCEL, DLGTXTDIRDELERR, 0);
         } else {
           if ((midnight[side]->dirtrack == HEADERTRACK) &&
-               messagebox(MBOXREGULAR, "Disk copy,",
-                          "destination disk will be OVERWRITTEN",
-                          " ", 0))  {
+//               messagebox(MBOXREGULAR, "Disk copy,",
+//                          "destination disk will be OVERWRITTEN",
+//                          " ", 0))  {
+               _messagebox(MBOXREGULAR, DLGTXTDISKCOPY, 0))  {
             GetBAM(legacyHDOSstate, side);
             copywholedisk(legacyHDOSstate,
                           midnight[side]->drive, midnight[side?0:1]->drive,
@@ -1501,9 +1551,10 @@ messagebox(MBOXNUMBER, "after legacy()",
       case 0x2f7:
         if ((midnight[side]->dirtrack != HEADERTRACK) ||
             ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
-          messagebox(MBOXNOCANCEL, "To create a directory a disk has to",
-                     "be mounted and its root directory selected.",
-                     " ", 0);
+//          messagebox(MBOXNOCANCEL, "To create a directory a disk has to",
+//                     "be mounted and its root directory selected.",
+//                     " ", 0);
+          _messagebox(MBOXNOCANCEL, DLGTXTMKDIRMNT, 0);
         } else {
           // @@@@ to be replaced by asking name and ID:
           FreeTracks(legacyHDOSstate, side,
@@ -1511,17 +1562,24 @@ messagebox(MBOXNUMBER, "after legacy()",
                      midnight[side]->lasttrack,
                      &starttrack, &endtrack, 2); // two tracks
           if ((endtrack - starttrack) < 2)  {
-            messagebox(MBOXNOCANCEL, "Not enough tracks available",
-                       "to create a directory.",
-                       " ", 0);
+//            messagebox(MBOXNOCANCEL, "Not enough tracks available",
+//                       "to create a directory.",
+//                       " ", 0);
+            _messagebox(MBOXNOCANCEL, DLGTXTMKDIRSPC, 0);
           } else {
             number = endtrack - starttrack + 1;
-            strcpy((char*) midnight[side]->inputstr,
-                   "Enter amount of tracks 2..80, 0 to quit:");
-            midnight[side]->inputstr[26] = number / 10 + 0x30;
-            midnight[side]->inputstr[27] = number % 10 + 0x30;
-            inputbox((char*) midnight[side]->inputstr,
-                     (char*) midnight[side]->inputstr);
+            _messagebox(MBOXFALLTHROUGH, INPTXTSUBDIRTRACK, 0);
+//            strcpy((char*) midnight[side]->inputstr,
+//                   "Enter amount of tracks 2..80, 0 to quit:");
+//            midnight[side]->inputstr[26] = number / 10 + 0x30;
+//            midnight[side]->inputstr[27] = number % 10 + 0x30;
+//            inputbox((char*) midnight[side]->inputstr,
+//                     (char*) midnight[side]->inputstr);
+            midnight[side]->inputstr[0] = number / 10 + 0x30;
+            midnight[side]->inputstr[1] = number % 10 + 0x30;
+            midnight[side]->inputstr[2] = 0;
+            mcputsxy(38, 6, (char*) midnight[side]->inputstr);
+            _inputbox((char*) midnight[side]->inputstr, 0); // 0=no new box
             number = atoi((char*) midnight[side]->inputstr);
             FreeTracks(legacyHDOSstate, side,
                        midnight[side]->firsttrack,
@@ -1529,17 +1587,18 @@ messagebox(MBOXNUMBER, "after legacy()",
                        &starttrack, &endtrack, number);
             if (number >= 2 && (endtrack - starttrack) >= 2 &&
                 number <= (endtrack - starttrack + 1))  {
-              inputbox((char*) midnight[side]->inputstr,
-                       "Please enter name of the subdirectory");
+//              inputbox((char*) midnight[side]->inputstr,
+//                       "Please enter name of the subdirectory");
+              _inputbox((char*) midnight[side]->inputstr, INPTXTSUBDIRNAME);
               endtrack = starttrack + number - 1;
-#ifdef DEBUG
-              messagebox(MBOXNUMBER, "Creating subdirectory",
+
+//              messagebox(MBOXNUMBER, "Creating subdirectory",
                          // (char *) disknames[side],
-                         (side ? "mounted on right side" : "mounted on left side"),
+//                         (side ? "mounted on right side" : "mounted on left side"),
                          // "number=", number))  {
-                         "start-/endtrack=",
-                         starttrack * 256 + endtrack);
-#endif
+//                         "start-/endtrack=",
+//                         starttrack * 256 + endtrack);
+
               // First allocate BAM because the following format will use
               // the BAM of the partition:
               BAMAllocateTracks(legacyHDOSstate, side, starttrack, endtrack);
@@ -1570,9 +1629,10 @@ messagebox(MBOXNUMBER, "after legacy()",
               Deselect(side);
             } else {
               if (number > 0)  {
-                messagebox(MBOXNOCANCEL, "No space to create a",
-                           "subdirectory.",
-                           " ", 0);
+//                messagebox(MBOXNOCANCEL, "No space to create a",
+//                           "subdirectory.",
+//                           " ", 0);
+                _messagebox(MBOXNOCANCEL, DLGTXTMKDIRSPC2, 0);
               }
             }
           }
@@ -1582,9 +1642,10 @@ messagebox(MBOXNUMBER, "after legacy()",
       case 0x8f8: // Mega-F7
         if ((midnight[side]->dirtrack != HEADERTRACK) ||
             ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE))  {
-          messagebox(MBOXNOCANCEL, "The to be formatted disk/image file has to",
-                     "be mounted and its root directory selected.",
-                     " ", 0);
+//          messagebox(MBOXNOCANCEL, "The to be formatted disk/image file has to",
+//                     "be mounted and its root directory selected.",
+//                     " ", 0);
+          _messagebox(MBOXNOCANCEL, DLGTXTFORMATMNT, 0);
         } else {
           // @@@@ to be replaced by asking name and ID:
           if (messagebox(MBOXREGULAR, "Disk will be quickformatted",
@@ -1592,8 +1653,9 @@ messagebox(MBOXNUMBER, "after legacy()",
                          (side ? "mounted on right side" :
                                  "mounted on left side"),
                          0))  {
-            inputbox((char*) midnight[side]->inputstr,
-                     "Please enter the disk's name");
+//            inputbox((char*) midnight[side]->inputstr,
+//                     "Please enter the disk's name");
+            _inputbox((char*) midnight[side]->inputstr, INPTXTFORMATNAME);
             strmakefilename((char*) midnight[side]->inputstr,
                             (char*) midnight[side]->inputstr, DOSFILENAMELEN);
             FormatPartition(legacyHDOSstate, midnight[side]->drive, side,
@@ -1793,6 +1855,8 @@ messagebox(MBOXNUMBER, "after legacy()",
       case 0x1FA:
       case 0x2FA:
         if (getkeymodstate() == KEYMOD_RSHIFT || getkeymodstate() == KEYMOD_LSHIFT)  {
+          clrhome();
+          msprintf("Have fun with your MEGA65!");
           return;
         }
       break;

@@ -1,96 +1,46 @@
 {1}{0}{22}The function keys shown in the bottom line are meant to be used with
 {1}{0}{23}and without [Shift] and [Mega] after the messagebox is dismissed:
 {1}{30}{1}{RVSON}Second{RVSOFF} text.
-{1}{1}{11}some longer text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
-{1}{1}{12}some longer text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
-{1}{11}{13}some longer text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
-{1}{13}{14}some longer text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
-{1}{15}{15}some longer text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
-{1}{17}{16}some longer text. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
-{1}{0}{0}.
+{2}{4}{4}{75}{20}
+{1}{7}{4}{RVSON}{space}Midnight Mega{space}
+{1}{25}{4}{space}List of ROM files{space}
+{1}{47}{4}{space}The MEGA65 file commander{space}{RVSOFF}
+{1}{36}{18}{RVSON}{space}{space}OK{space}{space}{RVSOFF}
+{10}
+{2}{10}{4}{70}{12}
+{1}{14}{4}{RVSON}{space}Midnight Mega{space}
+{1}{40}{4}{space}The MEGA65 file commander{space}{RVSOFF}
+{10}
+{1}{0}{0}.
+{1}{0}{0}.
+{2}{10}{4}{70}{20}
+{1}{14}{4}{RVSON}{space}Midnight Mega{space}
+{1}{31}{4}{space}Setup{space}
+{1}{40}{4}{space}The MEGA65 file commander{space}{RVSOFF}
+{1}{36}{18}{RVSON}{space}{space}OK{space}{space}{RVSOFF}
+{1}{23}{16}Use the spacebar to select/unselect.
+{1}{16}{6}show DEL files
+{1}{16}{7}copy allocated BAM blocks only
+{1}{16}{8}show drive access overlay
+{1}{16}{9}{ensh}BETA!{dish} use MOUNT hack POKE
+{1}{16}{10}{ensh}BETA!{dish} use drives 8 and 9
+{10}
+{1}{0}{24}{space}{white}1{cyan}{RVSON}Help{space}{space}{RVSOFF}{space}{white}2{cyan}{RVSON}Mount{space}{RVSOFF}{space}{white}3{light gray}{RVSON}View{space}{space}{RVSOFF}{space}{white}4{light gray}{RVSON}Edit{space}{space}{RVSOFF}{space}{white}5{cyan}{RVSON}Copy{space}{space}{RVSOFF}{space}{white}6{cyan}{RVSON}Rename{RVSOFF}{space}{white}7{cyan}{RVSON}Mkdir{space}{RVSOFF}{space}{white}8{cyan}{RVSON}Delete{RVSOFF}{space}{white}9{cyan}{RVSON}Menu{space}{space}{RVSOFF}{space}{white}10{cyan}{RVSON}Quit{space}{RVSOFF}
+{1}{0}{24}{space}{white}1{light gray}{RVSON}Help{space}{space}{RVSOFF}{space}{white}2{light gray}{RVSON}Mount{space}{RVSOFF}{space}{white}3{light gray}{RVSON}View{space}{space}{RVSOFF}{space}{white}4{light gray}{RVSON}Edit{space}{space}{RVSOFF}{space}{white}5{light gray}{RVSON}Copy{space}{space}{RVSOFF}{space}{white}6{light gray}{RVSON}Rename{RVSOFF}{space}{white}7{light gray}{RVSON}Mkdir{space}{RVSOFF}{space}{white}8{light gray}{RVSON}Delete{RVSOFF}{space}{white}9{light gray}{RVSON}Menu{space}{space}{RVSOFF}{space}{white}10{light gray}{RVSON}Quit{space}{RVSOFF}
+{1}{0}{24}{space}{white}1{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}2{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}3{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}4{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}5{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}6{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}7{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}8{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}9{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}10{light gray}{RVSON}{space}{space}{space}{space}{space}{RVSOFF}
+{1}{0}{24}{space}{white}1{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}2{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}3{cyan}{RVSON}Freezr{RVSOFF}{space}{white}4{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}5{cyan}{RVSON}DskCpy{RVSOFF}{space}{white}6{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}7{cyan}{RVSON}Format{RVSOFF}{space}{white}8{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}9{cyan}{RVSON}ROMlst{RVSOFF}{space}{white}10{light gray}{RVSON}{space}{space}{space}{space}{space}{RVSOFF}
+{1}{0}{24}{space}{white}1{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}2{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}3{cyan}{RVSON}Freezr{RVSOFF}{space}{white}4{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}5{light gray}{RVSON}DskCpy{RVSOFF}{space}{white}6{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}7{light gray}{RVSON}Format{RVSOFF}{space}{white}8{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}9{cyan}{RVSON}ROMlst{RVSOFF}{space}{white}10{light gray}{RVSON}{space}{space}{space}{space}{space}{RVSOFF}
+{1}{0}{24}{space}{white}1{cyan}{RVSON}Mount{space}{RVSOFF}{space}{white}2{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}3{light gray}{RVSON}Edit{space}{space}{RVSOFF}{space}{white}4{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}5{cyan}{RVSON}Rename{RVSOFF}{space}{white}6{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}7{cyan}{RVSON}Delete{RVSOFF}{space}{white}8{light gray}{RVSON}{space}{space}{space}{space}{space}{space}{RVSOFF}{space}{white}9{cyan}{RVSON}Quit{space}{space}{RVSOFF}{space}{white}10{light gray}{RVSON}{space}{space}{space}{space}{space}{RVSOFF}
+{1}{0}{24}{ensh}Arrange entries:{dish}{space}{white}^{cyan}{RVSON}Crsr up{RVSOFF}{space}{white}v{cyan}{RVSON}Crsr down{RVSOFF}{space}{white}Space{cyan}{RVSON}select{RVSOFF}{space}{white}STOP{cyan}{RVSON}abort{RVSOFF}{space}{white}RETURN{cyan}{RVSON}save{RVSOFF}{space}{space}{space}{space}{space}{space}{space}{space}{space}{space}{space}
+{1}{12}{10}{RVSON}{space}{space}{space}OK{space}{space}{space}{RVSOFF}
+{1}{37}{10}{RVSON}{space}{space}{space}OK{space}{space}{space}{RVSOFF}
+{1}{60}{10}{RVSON}{space}Cancel{space}{RVSOFF}
+{2}{10}{4}{70}{12}
+{2}{10}{4}{70}{20}
+{1}{14}{4}{RVSON}{space}Midnight Mega{space}
+{1}{31}{4}{space}Menu{space}
+{1}{40}{4}{space}The MEGA65 file commander{space}{RVSOFF}
+{1}{36}{18}{RVSON}{space}{space}OK{space}{space}{RVSOFF}
 {1}{12}{6}Make a selection and press RETURN:
 {1}{14}{8}Sorting directory
 {1}{14}{9}Show regions
@@ -156,5 +106,115 @@
 {1}{36}{22}{RVSON}{space}{space}OK{space}{space}{RVSOFF}
 {1}{60}{22}{RVSON}{space}{space}{30}{space}{space}{RVSOFF}
 {1}{69}{22}{RVSON}{dark gray}{space}{space}v{space}{space}{RVSOFF}{cyan}
+{10}
+{2}{4}{4}{75}{20}
+{1}{6}{4}{RVSON}{space}Midnight Mega{space}
+{1}{25}{4}{space}Regions{space}
+{1}{47}{4}{space}The MEGA65 file commander{space}{RVSOFF}
+{1}{36}{18}{RVSON}{space}{space}OK{space}{space}{RVSOFF}
+{1}{17}{6}ATTIC
+{1}{17}{7}ATTICDIRENTBUFFER
+{1}{17}{8}ATTICDIRENT2NDBUFFER
+{1}{17}{9}ATTICLFNBUFFER
+{1}{17}{10}ATTICLFNBUFFER2
+{1}{17}{11}ATTICBAMBUFFER
+{1}{17}{12}ATTICBAM2BUFFER
+{1}{17}{13}ATTICFILEBUFFER
+{1}{17}{14}ATTICTEXTBUFFER
+{1}{17}{15}ATTICZPBACKUP
+{1}{17}{16}ATTICEND
+{10}
+{1}{12}{6}Enter amount of tracks 2..80, 0 to quit:
+{10}
+{1}{12}{6}Please enter name of the subdirectory
+{10}
+{1}{12}{6}Enter the new name, empty to skip:
+{10}
+{1}{12}{6}Please enter the disk's name:
+{10}
+{1}{12}{6}Currently this option dialog cannot
+{1}{12}{7}be quit unsaved. So use {RVSON}{space}RETURN{space}{RVSOFF} to
+{1}{12}{8}accept.
+{10}
+{1}{12}{6}Directory entry sorting
+{1}{12}{7}on storage card not possible.
+{10}
+{1}{12}{6}Copying/deleting subdirectories
+{1}{12}{7}is not yet implemented.
+{10}
+{1}{12}{6}A HICKUP.M65 v1.2 or older is active on your storage card
+{1}{12}{7}or an old core containing it. Falling back to slow mode.
+{1}{12}{8}Press {RVSON}{space}RETURN{space}{RVSOFF} to continue, {RVSON}{space}STOP{space}{RVSOFF} to halt.
+{10}
+{1}{12}{6}is currently beta and may destroy data structures on
+{1}{12}{7}.d81 and real disks! Please work on backed up media.
+{1}{12}{8}Press {RVSON}{space}RETURN{space}{RVSOFF} to continue, {RVSON}{space}STOP{space}{RVSOFF} to halt.
+{10}
+{1}{12}{6}Warning, in real drive number mode
+{1}{12}{7}mounting refers to drive number
+{1}{12}{8}in the freezer menu!
+{10}
+{1}{12}{6}Freezer,
+{1}{12}{7}did you save your work?
+{10}
+{1}{12}{6}Operation on mulitiple
+{1}{12}{7}storage card files/folders
+{1}{12}{8}is not supported.
+{10}
+{1}{12}{6}Directory operation on
+{1}{12}{7}multiple selected entries
+{1}{12}{8}is not supported.
+{10}
+{1}{12}{6}File type for
+{1}{12}{8}unsupported.
+{10}
+{1}{12}{6}Copying full directory structures
+{1}{12}{7}is not supported.
+{10}
+{1}{12}{6}Copying to or from
+{1}{12}{7}storage card files/folders
+{1}{12}{8}is not supported.
+{10}
+{1}{12}{6}File copy,
+{1}{12}{7}destination disk space insufficient.
+{10}
+{1}{12}{6}File copy,
+{10}
+{1}{12}{6}Copying to or from
+{1}{12}{7}storage card files/folders
+{1}{12}{8}is not supported.
+{10}
+{1}{12}{6}Directory delete,
+{1}{12}{8}is not empty.
+{10}
+{1}{12}{6}Directory delete,
+{10}
+{1}{12}{6}File delete,
+{10}
+{1}{12}{6}File
+{1}{12}{8}not found.
+{10}
+{1}{12}{6}Directory structure delete
+{10}
+{1}{12}{6}Directory
+{1}{12}{8}not found.
+{10}
+{1}{12}{6}Copying from/to storage cards
+{1}{12}{7}is not supported.
+{10}
+{1}{12}{6}Disk copy,
+{1}{12}{7}destination disk will be {ensh}overwritten{dish}
+{10}
+{1}{12}{6}To create a directory a disk has to
+{1}{12}{7}be mounted and its root directory selected.
+{10}
+{1}{12}{6}Not enough tracks available
+{1}{12}{7}to create a directory.
+{10}
+{1}{12}{6}No space to create a
+{1}{12}{7}subdirectory.
+{10}
+{1}{12}{6}The to be formatted disk/image file has to
+{1}{12}{7}be mounted and its root directory selected.
 {10}
 {0}
