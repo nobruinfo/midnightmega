@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdio.h>  // llvm
 #include <mega65/conio.h>  // llvm instead of <printf.h>
-#include <mega65/memory.h>  // mega65-libc
+#include "memorynoinit.h"  // mega65-libc
 #include <mega65/hal.h>  // mega65-libc
 // #include <peekpoke.h>  llvm
 // #include <conio_.h>
@@ -26,6 +26,8 @@
 // char* inputstr = (char*) INPUTSTRPAGE;
 
 #include "calypsi.h"
+
+// #include "fileio.h"
 
 // KickC calls conio_mega65_init() before doing main():
 int main() {
@@ -58,6 +60,8 @@ int main() {
 //  shortcuts(20, 0);
 
   navi(0);
+  // if no longer used remove #include "fileio.h"
+  // testreading(0, 8);
 
   // to not have error messages cleared away:
 //  clrhome();

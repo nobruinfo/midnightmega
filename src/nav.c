@@ -4,7 +4,7 @@
 #include <string.h>
 #include <limits.h>
 #include <mega65/conio.h>  // llvm instead of <printf.h>
-#include <mega65/memory.h>  // mega65-libc
+#include "memorynoinit.h"  // mega65-libc
 #include <mega65/hal.h>  // mega65-libc
 #include "regions.h"
 #include "conioextensions.h"
@@ -772,6 +772,7 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
   } else {
     midnight[side]->drive = side;
   }
+  drive = midnight[side]->drive;  // @@@@@
 
   midnight[side]->flags &= (~MIDNIGHTFLAGdirsortactive);
   
@@ -911,7 +912,7 @@ void navi(unsigned char side)  {
   unsigned char alive = TRUE;
   unsigned int direntpos; // dirent's position only used for rename
 
-  option.option = OPTIONshowALO | OPTIONshowOVL; // | OPTIONshowIEC;
+  option.option = OPTIONshowALO | OPTIONshowOVL | OPTIONshowIEC;
   legacyHDOSstate = legacyHDOS(); // clobbers $1703
 /*
 messagebox(MBOXNUMBER, "after legacy()",
@@ -948,6 +949,11 @@ messagebox(MBOXNUMBER, "after legacy()",
   alive = FALSE;
   for (i = 0; i < NBRENTRIES; i++)  {
     ds = getdirententry(side, i, &direntpos);
+
+//    msprintf(" curr ");
+//    msprintf((char *) ds->name);
+//    cputln();
+//    cgetc();
 
 //    if (mstrcmp(ds->name, "MIDNIGHTMEGA-RAW", 17) == 0)  {
     if (mstrcmp(ds->name, "MIDNIGHTMEGATEXT", 17) == 0)  {

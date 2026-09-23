@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <mega65/conio.h>  // llvm instead of <printf.h>
-#include <mega65/memory.h>  // mega65-libc
+#include "memorynoinit.h"  // mega65-libc
 #include <mega65/hal.h>  // mega65-libc
 #include "regions.h"
 #include "hyppo.h"
@@ -278,7 +278,7 @@ unsigned char GetWholeSector(unsigned char legacyHDOSstate,
   if (drive > 1)  {
     if (lastdrive != drive) {
       rwtracksectorclose();
-      usleep(200000); // microseconds
+//      usleep(200000); // microseconds
       rwtracksectoropen(drive);
       lastdrive = drive;
     }
@@ -314,7 +314,7 @@ unsigned char GetOneSector(unsigned char legacyHDOSstate,
   if (drive > 1)  {
     if (lastdrive != drive) {
       rwtracksectorclose();
-      usleep(200000); // microseconds
+//      usleep(200000); // microseconds
       rwtracksectoropen(drive);
       lastdrive = drive;
     }
@@ -347,7 +347,7 @@ unsigned char PutWholeSector(unsigned char legacyHDOSstate,
   if (drive > 1)  {
     if (lastdrive != drive) {
       rwtracksectorclose();
-      usleep(200000); // microseconds
+//      usleep(200000); // microseconds
       rwtracksectoropen(drive);
       lastdrive = drive;
     }
@@ -389,7 +389,7 @@ unsigned char PutOneSector(unsigned char legacyHDOSstate,
   if (drive > 1)  {
     if (lastdrive != drive) {
       rwtracksectorclose();
-      usleep(200000); // microseconds
+//      usleep(200000); // microseconds
       rwtracksectoropen(drive);
       lastdrive = drive;
     }

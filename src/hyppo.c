@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <mega65/memory.h>  // mega65-libc
+#include "memorynoinit.h"  // mega65-libc
 #include "regions.h"
 #include "conioextensions.h"
 #include "hyppo.h"

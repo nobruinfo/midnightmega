@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <mega65/conio.h>  // llvm instead of <printf.h>
-#include <mega65/memory.h>  // mega65-libc
+#include "memorynoinit.h"  // mega65-libc
 #include "regions.h"
 #include "conioextensions.h"
 #include "texts.h"

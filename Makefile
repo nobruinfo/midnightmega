@@ -15,17 +15,17 @@ prj = midnightmega
 romlist = romlister
 
 libcfilesdir = mega65-libc/src
-libcfiles = $(libcfilesdir)/memory.c $(libcfilesdir)/hal.c
+libcfiles = $(libcfilesdir)/hal.c
 # before Calypsi: SET libcfiles=%libcfiles% include/memory_asm.s
 #  %libcfilesdir%/llvm/memory_asm.s
 cfilesmidnight = $(prj).c hyppo.c fileio.c filekernel.c conioextensions.c nav.c
-cfilesmidnight += texts.c sid.c romlist.c conio.c
+cfilesmidnight += texts.c sid.c romlist.c conio.c memorynoinit.c
 # SET cfiles=$(prj).c conioextensions.c
 cfilesromlist = $(romlist).c hyppo.c fileio.c filekernel.c conioextensions.c
-cfilesromlist += romlist.c conio.c
+cfilesromlist += romlist.c conio.c memorynoinit.c
 
 # Forget the git tag as it always is one commit behind:
-v = v0.6.12-beta
+v = v0.6.13-beta
 
 calopts = -D asm=__asm -I calypsi.h -D VERSION=\"$(v)\"
 calopts += -I mega65-libc/include
@@ -35,10 +35,14 @@ calasmopts = $(calopts) --assembly-source=$(@:%.o=%.s)
 calopts += --list-file=$(@:%.o=%.lst)
 depopts = -MMD -MP
 asmopts = --target=mega65 --list-file=$(@:%.o=%.lst)
-linkopts = --list-file=bin/$(prj).lst --output-format prg --core 45gs02
+midnightlst = --list-file=bin/$(prj).lst
+romlistlst = --list-file=bin/$(romlist).lst
+linkopts = --core 45gs02
 linkopts += --target=mega65 src/mega65-$(prj).scm
 linkopts += --rtattr printf=nofloat
 linkopts += --cross-reference
+linkoptsprg = $(linkopts) --output-format prg
+linkoptself = $(linkopts) --debug
 
 # cfilesmidnight    = $(wildcard src/*.c)
 cfilesmid = $(cfilesmidnight:%.c=src/%.c)
@@ -60,7 +64,7 @@ DEPS      = $(DEPOBJS:%.o=%.d)
 # all targets have to be here:
 all: $(prj).d81 readme.md $(tmp)/$(prj)ver.txt
 
-$(prj).d81: bin/$(prj).prg bin/$(romlist).prg src/$(prj)text.src
+$(prj).d81: bin/$(prj).prg bin/$(romlist).prg src/$(prj)text.src Makefile
 	c1541 -format disk$(prj),id d81 $(prj).d81
 #	c1541 -attach $(prj).d81 -delete $(prj)
 	c1541 -attach $(prj).d81 -write bin/$(prj).prg $(prj)
@@ -78,13 +82,19 @@ $(prj).d81: bin/$(prj).prg bin/$(romlist).prg src/$(prj)text.src
 	c1541 -attach $(prj).d81 -write NUL "  $(v),u"
 	c1541 -attach $(prj).d81 -write NUL "       of,u"
 	c1541 -attach $(prj).d81 -write NUL "  midnight mega,u"
+	c1541 -attach $(prj).d81 -write NUL "      built,u"
+	c1541 -attach $(prj).d81 -write NUL " $(CDATE)  $(CTIME),u"
 	c1541 -attach $(prj).d81 -write NUL 3---------------,u
 
 bin/$(prj).prg: $(objmidnight) $(LIBOBJS) src/mega65-$(prj).scm | bin
-	$(LN) $(linkopts) -o $@ $(filter-out %.scm,$^)
+	$(LN) $(midnightlst) $(linkoptsprg) -o $@ $(filter-out %.scm,$^)
+	$(LN) $(midnightlst) $(linkoptself) -o bin/$(prj).elf $(filter-out %.scm,$^)
+#	$(OD) --disassemble --source --line-numbers bin/$(prj).elf > bin/$(prj).s
 
 bin/$(romlist).prg: $(objromlist) $(LIBOBJS) src/mega65-$(prj).scm | bin
-	$(LN) $(linkopts) -o $@ $(filter-out %.scm,$^)
+#	$(LN) $(romlistlst) $(linkoptsprg) -o $@ $(filter-out %.scm,$^)
+	$(LN) $(romlistlst) $(linkoptself) -o bin/$(romlist).elf $(filter-out %.scm,$^)
+#	$(OD) --disassemble --source --line-numbers bin/$(romlist).elf > bin/$(romlist).s
 
 -include $(DEPS)
 

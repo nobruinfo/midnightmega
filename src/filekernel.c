@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <mega65/conio.h>  // llvm instead of <printf.h>
-#include <mega65/memory.h>  // mega65-libc
+#include "memorynoinit.h"  // mega65-libc
 #include <mega65/hal.h>  // mega65-libc
 #include "regions.h"
 #include "hyppo.h"
@@ -327,6 +327,8 @@ void rwtracksectorclose(void) {
 
 void setcommandstring(unsigned char cmdnr,
                       unsigned char track, unsigned char sector) {
+  unsigned char i;
+
   lfnname[0] = 'U';
   lfnname[1] = cmdnr + 0x30;
   lfnname[2] = ' ';
@@ -335,12 +337,17 @@ void setcommandstring(unsigned char cmdnr,
   lfnname[5] = ' ';
   lfnname[6] = '0';  // unit is always 0
   lfnname[7] = ' ';
-  lfnname[8] = (track / 10) ? (track / 10 + 0x30) : ' ';
-  lfnname[9] = track % 10 + 0x30;
-  lfnname[10] = ' ';
-  lfnname[11] = (sector / 10) ? (sector / 10 + 0x30) : ' ';
-  lfnname[12] = sector % 10 + 0x30;
-  lfnname[13] = 0;
+  i = 8;
+  if (track >= 10)  {
+    lfnname[i++] = track / 10 + 0x30;
+  }
+  lfnname[i++] = track % 10 + 0x30;
+  lfnname[i++] = ' ';
+  if (sector >= 10)  {
+    lfnname[i++] = sector / 10 + 0x30;
+  }
+  lfnname[i++] = sector % 10 + 0x30;
+  lfnname[i++] = 0;
 }
 
 unsigned char readtracksector(BAM* entry, unsigned char drive,
