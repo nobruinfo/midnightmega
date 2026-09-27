@@ -7,7 +7,9 @@
 #include "hyppo.h"
 #include "fileio.h"
 #include "filekernel.h"
+#include "texts.h"
 #include "conioextensions.h"
+#include "sid.h"
 
 // static unsigned char __attribute__((used)) retval;
 
@@ -99,21 +101,23 @@ void ShowAccess(unsigned char drive,
   }
 }
 
+void ShowDOSError(unsigned char drive)  {
+  // @@@@@ currently string is not set on non IEC drives:
+  if (drive > 1)  {
+    sidbong();
+    _messagebox(MBOXFALLTHROUGH, DLGTXTDOSERROR, 0);
+    // mcputsxy(12, 7, "from right to left");
+    mcputsxy(12, 8, (char*) lfnname);
+    _messagebox(MBOXNOBOX, 0, 0);
+  }
+}
+
 // __attribute__((section(".data")))
 char lastdrive = 0;
 // __attribute__((section(".data")))
 char prevtrack = 0;
 // __attribute__((section(".data")))
 char lastdoublesector = 0;
-void _miniInit()  {
-  // clear F011 Floppy Controller Registers
-  if (PEEK(0xd080U) != 0x40)  POKE(0xd080U, 0);
-  prevtrack = 0;
-
-  mh4printfd("_miniinit SECTBUF 32addr is: ", SECTBUF >> 16);
-  mh4printfd(" ", SECTBUF & 0xffff);
-  cputlnd();
-}
 
 unsigned char driveled(unsigned char errorcode)  {
     // Turn on just the LED, this causes it to blink:
@@ -124,6 +128,23 @@ unsigned char driveled(unsigned char errorcode)  {
 
 void forgetdrive(void)  {
   lastdrive = 99;
+}
+
+void CloseDrive(unsigned char drive)  {
+  if (drive > 1)  {
+    rwtracksectorclose();
+#ifdef F011MODE
+  } else {
+    // clear F011 Floppy Controller Registers
+    if (PEEK(0xd080U) != 0x40)  POKE(0xd080U, 0);
+    prevtrack = 0;
+
+    mh4printfd("_miniinit SECTBUF 32addr is: ", SECTBUF >> 16);
+    mh4printfd(" ", SECTBUF & 0xffff);
+    cputlnd();
+#endif
+  }
+  forgetdrive();
 }
 
 // returns 1 for odd numbered sectors, 0 for even:
@@ -283,14 +304,18 @@ unsigned char GetWholeSector(unsigned char legacyHDOSstate,
       lastdrive = drive;
     }
     side = sector % 2;
-    readtracksector(ws, drive, track, sector);
-    readtracksector(ws + 1, drive, track, sector + 1);
+    side = readtracksector(ws, drive, track, sector);
+    if (side < 2) {
+      side = readtracksector(ws + 1, drive, track, sector + 1);
+    }
+#ifdef F011MODE
   } else {
     side = ReadSector(legacyHDOSstate, drive, track, sector);
 
     if (side > 1)  return side;
     lcopy(SECTBUF,      (uint32_t) ws,             BLOCKSIZE);
     lcopy(SECTBUFUPPER, (uint32_t) ws + BLOCKSIZE, BLOCKSIZE);
+#endif
   }
 #ifdef DEBUG
   mprintf("GetWholeSector done. side=", side);
@@ -319,13 +344,15 @@ unsigned char GetOneSector(unsigned char legacyHDOSstate,
       lastdrive = drive;
     }
     side = sector % 2;
-    readtracksector(ws, drive, track, sector);
+    side = readtracksector(ws, drive, track, sector);
+#ifdef F011MODE
   } else {
     side = ReadSector(legacyHDOSstate, drive, track, sector);
 
     if (side > 1)  return side;
     if (side == 0)  lcopy(SECTBUF,      (uint32_t) ws, BLOCKSIZE);
     else            lcopy(SECTBUFUPPER, (uint32_t) ws, BLOCKSIZE);
+#endif
   }
 #ifdef DEBUG
   mprintf("GetOneSector done. side=", side);
@@ -353,6 +380,7 @@ unsigned char PutWholeSector(unsigned char legacyHDOSstate,
     }
     ret = writetracksector(ws, drive, track, sector);
     ret &= writetracksector(ws + 1, drive, track, sector + 1);
+#ifdef F011MODE
   } else {
     if (side == 0)  {
       clrhomed();
@@ -375,6 +403,7 @@ unsigned char PutWholeSector(unsigned char legacyHDOSstate,
     msprintfd("PutWholeSector done. Returning while WriteSector.");
     cgetcd();
     return WriteSector(legacyHDOSstate, drive, track, sector - side);
+#endif
   }
   return ret;
 }
@@ -394,6 +423,7 @@ unsigned char PutOneSector(unsigned char legacyHDOSstate,
       lastdrive = drive;
     }
     ret = writetracksector(ws, drive, track, sector);
+#ifdef F011MODE
   } else {
     // Now first read the state from the disk, because only one of
     // the two logical sectors will be overwritten:
@@ -417,6 +447,7 @@ unsigned char PutOneSector(unsigned char legacyHDOSstate,
     cgetcd();
 
     return WriteSector(legacyHDOSstate, drive, track, sector - side);
+#endif
   }
   return ret;
 }
@@ -432,10 +463,17 @@ void PutBAM(unsigned char legacyHDOSstate,
             unsigned char drive, unsigned char side, unsigned char dirtrack)  {
   BAM* bs;
 
-  PutOneSector(legacyHDOSstate, BAMsector[0], drive, dirtrack, BAMSECT);
+  if (PutOneSector(legacyHDOSstate, BAMsector[0], drive,
+                   dirtrack, BAMSECT) > 1)  {
+    ShowDOSError(drive);
+    return;
+  }
   bs = BAMsector[0];
-  PutOneSector(legacyHDOSstate,
-               BAMsector[1], drive, bs->chntrack, bs->chnsector);
+  if (PutOneSector(legacyHDOSstate,
+                   BAMsector[1], drive, bs->chntrack, bs->chnsector) > 1)  {
+    ShowDOSError(drive);
+    return;
+  }
   lcopy((uint32_t) bs,
         ATTICBAMBUFFER + side * ATTICBAMBUFFERSIZE, ATTICBAMBUFFERSIZE);
 }
@@ -671,7 +709,11 @@ void FormatPartition(unsigned char legacyHDOSstate,
     bs->entry[track].alloc5 = 0xff;
   }
   progress("Writing...", "directory/BAM", 30);
-  PutWholeSector(legacyHDOSstate, (BAM *) bs, drive, dirtrack, BAMSECT + 1);
+  if (PutWholeSector(legacyHDOSstate, (BAM *) bs, drive,
+                     dirtrack, BAMSECT + 1) > 1)  {
+    ShowDOSError(drive);
+    return;
+  }
 
   // both BAM sectors look almost the same:
   lcopy((uint32_t) bs, (uint32_t) bs1, BLOCKSIZE);
@@ -704,7 +746,11 @@ void FormatPartition(unsigned char legacyHDOSstate,
   hs->unused5 = 0xa0;
 
   progress("Writing...", "BAM/header", 60);
-  PutWholeSector(legacyHDOSstate, (BAM *) bs, drive, dirtrack, HEADERSECT);
+  if (PutWholeSector(legacyHDOSstate, (BAM *) bs, drive,
+                     dirtrack, HEADERSECT) > 1)  {
+    ShowDOSError(drive);
+    return;
+  }
 }
 
 void BAMAllocateTracks(unsigned char legacyHDOSstate, unsigned char side,
@@ -741,6 +787,7 @@ void getDiskname(unsigned char legacyHDOSstate,
     diskname[i] = 0;
   } else {
     strcopy("read error", (char *) diskname, 16);
+    ShowDOSError(drive);
   }
 }
 
@@ -765,6 +812,7 @@ unsigned char readblockchain(unsigned char legacyHDOSstate,
   for (i = 0; i < maxblocks; i++)  {
     if (GetOneSector(legacyHDOSstate,
                      worksectorasBAM[0], drive, nexttrack, nextsector) > 1)  {
+      ShowDOSError(drive);
       return(0xff);
     }
     DATABLOCK* ws = worksector[0];
@@ -1071,7 +1119,11 @@ void writeblockchain(unsigned char legacyHDOSstate,
         cputln();
         cgetc();
 #endif
-      PutWholeSector(legacyHDOSstate, (BAM *) ws, drive, track, sector);
+      if (PutWholeSector(legacyHDOSstate, (BAM *) ws, drive,
+                         track, sector) > 1)  {
+        ShowDOSError(drive);
+        return;
+      }
       ws->chntrack = ws1->chntrack; // fake to abort below if zero
     } else {
 #ifdef DEBUG
@@ -1080,7 +1132,11 @@ void writeblockchain(unsigned char legacyHDOSstate,
         cputln();
         cgetc();
 #endif
-      PutOneSector(legacyHDOSstate, (BAM *) ws, drive, track, sector);
+      if (PutOneSector(legacyHDOSstate, (BAM *) ws, drive,
+                       track, sector) > 1)  {
+        ShowDOSError(drive);
+        return;
+      }
     }
 
     if (ws->chntrack == 0)  break;
@@ -1121,15 +1177,17 @@ unsigned char deleteblockchain(unsigned char legacyHDOSstate,
         cputln();
 #endif
   while (nexttrack > 0)  {
-    /* workside = */ GetOneSector(legacyHDOSstate,
-                          worksectorasBAM[0], drive, nexttrack, nextsector);
+    if (GetOneSector(legacyHDOSstate,
+                     worksectorasBAM[0], drive, nexttrack, nextsector) > 1)  {
+      ShowDOSError(drive);
+      return 0xfd;
+    }
     DATABLOCK* ws = worksector[0];
     BAMSectorUpdate(BAMsector[0], BAMsector[1], nexttrack, nextsector, 0); // 0=free up
 #ifdef DEBUG
         gotoxy(42, 0);
         mprintf("nexttrack ", nexttrack);
         mprintf(" nextsector ", nextsector);
-//        mprintf(" workside ", workside);
         cputln();
         gotoxy(42, 1);
         mh4printf(" block is: ", (long) &ws);
@@ -1142,9 +1200,16 @@ unsigned char deleteblockchain(unsigned char legacyHDOSstate,
     nexttrack = ws->chntrack;
     nextsector = ws->chnsector;
   }
-  PutOneSector(legacyHDOSstate, BAMsector[0], drive, dirtrack, BAMSECT);
-  PutOneSector(legacyHDOSstate,
-               BAMsector[1], drive, bs->chntrack, bs->chnsector);
+  if (PutOneSector(legacyHDOSstate, BAMsector[0], drive,
+                   dirtrack, BAMSECT) > 1)  {
+    ShowDOSError(drive);
+    return 0xfc;
+  }
+  if (PutOneSector(legacyHDOSstate,
+                   BAMsector[1], drive, bs->chntrack, bs->chnsector) > 1)  {
+    ShowDOSError(drive);
+    return 0xfb;
+  }
   return 0;
 }
 
@@ -1217,6 +1282,7 @@ unsigned char copywholedisk(unsigned char legacyHDOSstate,
           progress("Reading...", tracksectorstring(track, sector), i / 64);
           if (GetWholeSector(legacyHDOSstate,
                           worksectorasBAM[0], srcdrive, track, sector) > 1)  {
+            ShowDOSError(srcdrive);
             return 0xff;
           }
           ws = worksector[0];
@@ -1233,8 +1299,11 @@ unsigned char copywholedisk(unsigned char legacyHDOSstate,
             isallocatedBAMtracksector(track, sector + 1))  {
           progress("Writing...", tracksectorstring(track, sector), i / 64 + 50);
           lcopy(ATTICFILEBUFFER + i * BLOCKSIZE, (uint32_t) ws, BLOCKSIZE * 2);
-          PutWholeSector(legacyHDOSstate,
-                         (BAM *) ws, destdrive, track, sector);
+          if (PutWholeSector(legacyHDOSstate,
+                             (BAM *) ws, destdrive, track, sector) > 1)  {
+            ShowDOSError(destdrive);
+            return 0xfe;
+          }
           i += 2;
         }
       }
@@ -1442,8 +1511,11 @@ void writenewdirententry(unsigned char legacyHDOSstate,
       lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
               i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
             BLOCKDATALOW, BLOCKSIZE);
-      PutOneSector(legacyHDOSstate,
-                   (BAM *) worksectorasBAM[0], drive, track, sector);
+      if (PutOneSector(legacyHDOSstate,
+                       (BAM *) worksectorasBAM[0], drive, track, sector) > 1)  {
+        ShowDOSError(drive);
+        return;
+      }
 #ifdef DEBUG
       msprintf("writenewdirententry done");
       cputln();
@@ -1490,8 +1562,11 @@ void writenewdirententry(unsigned char legacyHDOSstate,
   lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
         topdirent / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
         BLOCKDATALOW, BLOCKSIZE);
-  PutOneSector(legacyHDOSstate,
-               (BAM *) worksectorasBAM[0], drive, track, sector);
+  if (PutOneSector(legacyHDOSstate,
+                   (BAM *) worksectorasBAM[0], drive, track, sector) > 1)  {
+    ShowDOSError(drive);
+    return;
+  }
 #ifdef DEBUG
       mprintf("first sector set, i=", i);
       cputln();
@@ -1511,8 +1586,12 @@ void writenewdirententry(unsigned char legacyHDOSstate,
   lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
         i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
         BLOCKDATALOW, BLOCKSIZE);
-  PutOneSector(legacyHDOSstate,
-               (BAM *) worksectorasBAM[0], drive, nexttrack, nextsector);
+  if (PutOneSector(legacyHDOSstate,
+                   (BAM *) worksectorasBAM[0], drive,
+                   nexttrack, nextsector) > 1)  {
+    ShowDOSError(drive);
+    return;
+  }
 //  messagebox(0, "directory entries exhausted");
 }
 
@@ -1578,8 +1657,11 @@ void deletedirententry(unsigned char legacyHDOSstate,
         lcopy(ATTICDIRENTBUFFER + side * ATTICDIRENTSIZE +
                 i / (BLOCKSIZE / DIRENTSIZE) * BLOCKSIZE,
               BLOCKDATALOW, BLOCKSIZE);
-        PutOneSector(legacyHDOSstate,
-                     (BAM *) worksectorasBAM[0], drive, track, sector);
+        if (PutOneSector(legacyHDOSstate, (BAM *) worksectorasBAM[0],
+                         drive, track, sector) > 1)  {
+          ShowDOSError(drive);
+          return;
+        }
 // basepage[3] = 0xff; // @@@@ debug
 // basepage[4] = 0xff; // @@@@ debug
         if ((filetypebefore&0xf) != VAL_DOSFTYPE_CBM)  {
@@ -1734,4 +1816,17 @@ void renamedisk(unsigned char legacyHDOSstate,
                "read error",
                " ", 0);
   }
+}
+
+// @@@@ to be handled for F011 mode:
+unsigned char trydrive(unsigned char drive)  {
+  unsigned char status;
+
+  status = rwtracksectoropen(drive);
+  // readdrivestring(drive);
+  rwtracksectorclose();
+
+  if (status)  ShowDOSError(drive);
+  
+  return status;
 }

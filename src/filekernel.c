@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 #include <mega65/conio.h>  // llvm instead of <printf.h>
@@ -246,18 +247,29 @@ char writestr(char log, char* address) {
   return status;
 }
 
-void iecopen(void)  {
+char iecopen(void)  {
+  char status;
 
   asm volatile(
-    " jsr 0xffc0\n"        // OPEN
+    " jsr 0xffc0\n"       // OPEN
 /*
-    " bcs end_copy\n"           // fehler
-
-    " jsr 0xffb7\n"       // READST
-    " bne end_copy\n"           // eof oder fehler
+    " bcs end_copy\n"     // fehler
 */
+    " jsr 0xffb7\n"       // READST, a is 0 if successful, bit 7 set
+                          // is drive not ready
+/*
+    " bne dev_not_present\n"
+    " beq end_copy\n"
+
+    "dev_not_present:\n"
+    " inc 0xd020\n"
+    " inc 0xd020\n"
+    " lda #0xff\n"        // @@@@
+
     "end_copy:\n"
-  : : : "a", "x", "y", "z" );
+*/
+  : "=Ka"(status) : : "a", "x", "y", "z" );
+  return status;
 }
 
 void iecclose(char log)  {
@@ -276,7 +288,7 @@ void iecclose(char log)  {
   :  : "Ka"(log)
      : "a", "x", "y", "z" );
 }
-
+/*
 void checkerrorchannel(unsigned char drive, char* msg) {
   unsigned char status;
 
@@ -286,18 +298,57 @@ void checkerrorchannel(unsigned char drive, char* msg) {
   iecopen();
   status = readstr(CMDERRORCHANNEL, (char *) lfnname);
   iecclose(CMDERRORCHANNEL);
-
-	mh4printf(msg, status); // @@@@@
-  cputln();
-  cgetc();
-  flushkeybuf();
   
   for (int i=0; lfnname[i] != 0xd; i++)  {
     lfnname[i] = 0;
   }
-}
 
-void rwtracksectoropen(unsigned char drive) {
+	gohome();
+  mh4printf(msg, status); // @@@@@
+  cputln();
+  msprintf((char *) lfnname);
+  cputln();
+  // cgetc();
+  // flushkeybuf();
+}
+*/
+unsigned char checkcmdchannel( /* unsigned char drive, char* msg */ ) {
+  unsigned char status;
+
+  for (int i=0; i < LFNFILENAMELEN; i++)  {
+    lfnname[i] = 0;
+  }
+
+  status = readstr(CMDCHANNEL, (char *) lfnname);
+  // status = readbytes(CMDCHANNEL, (BAM *) lfnname, 4);
+  status = (unsigned char) atoi((char*) lfnname); // DOS string has number
+/*
+  for (int i=0; lfnname[i] != 0xd; i++)  {
+    lfnname[i] = 0;
+  }
+
+	gohome();
+  mh4printf(msg, status); // @@@@@
+  cputln();
+  msprintf((char *) lfnname);
+  cputln();
+  usleep(2000000);
+  // cgetc();
+  // flushkeybuf();
+*/
+  return status;
+}
+/*
+void cmdchannelopen(unsigned char drive) {
+  // *** open command channel ***
+  setbnk();
+  setnam("");  // ("U1 2 0 40 3");
+  //   dev log sec
+  setlfs(drive, CMDCHANNEL,15);
+  iecopen();
+}
+*/
+unsigned char rwtracksectoropen(unsigned char drive) {
 //  char status;  // @@@@@ Could this be handled better?
 
   // *** open command channel ***
@@ -305,7 +356,10 @@ void rwtracksectoropen(unsigned char drive) {
   setnam("");  // ("U1 2 0 40 3");
   //   dev log sec
   setlfs(drive, CMDCHANNEL,15);
-  iecopen();
+  if (iecopen())  {  // true if unsuccessful
+    strcopy("74,DRIVE NOT READY,00,00", (char *) lfnname, LFNFILENAMELEN);
+    return 0xff;
+  }
 
   // *** open data channel ***
   // data read channel needs to be open before the command is given:
@@ -313,7 +367,12 @@ void rwtracksectoropen(unsigned char drive) {
   setnam("#");
   //   dev log sec
   setlfs(drive, DATACHANNEL, DATACHANNEL); // needs to be the same sec as in the U1 command
-  iecopen();
+  if (iecopen())  {  // true if unsuccessful
+    strcopy("74,DRIVE NOT READY,00,00", (char *) lfnname, LFNFILENAMELEN);
+    return 0xfe;
+  }
+  
+  return 0;
 }
 
 void rwtracksectorclose(void) {
@@ -375,10 +434,11 @@ unsigned char readtracksector(BAM* entry, unsigned char drive,
   status = writestr(CMDCHANNEL, (char *) lfnname);
 
   // Do not check the error channel in between asking for data an getting:
-  //  checkerrorchannel(drive, "dos after track/sector command ");
+  // checkerrorchannel(drive, "dos after track/sector command ");
+  status = checkcmdchannel();
 
   // *** read data channel ***
-  status = readbytes(DATACHANNEL, entry, BLOCKSIZE);
+  readbytes(DATACHANNEL, entry, BLOCKSIZE);
 
   ShowAccess(drive, track, sector, OFF);
 
@@ -430,6 +490,7 @@ unsigned char writetracksector(BAM* entry, unsigned char drive,
 
   // Do not check the error channel in between asking for data an getting:
   //  checkerrorchannel("dos after track/sector command ");
+  status = checkcmdchannel();
 /*
   iecclose(DATACHANNEL);
 
@@ -437,6 +498,22 @@ unsigned char writetracksector(BAM* entry, unsigned char drive,
   iecclose(CMDCHANNEL);
 */
   ShowAccess(drive, track, sector, OFF);
+
+  return status;
+}
+
+unsigned char readdrivestring(unsigned char drive) {
+  char status;  // @@@@@ Could this be handled better?
+/*
+  lfnname[0] = 'U';
+  lfnname[1] = 'I';
+  lfnname[2] = 0;
+
+  status = writestr(CMDCHANNEL, (char *) lfnname);
+*/
+  // Do not check the error channel in between asking for data an getting:
+  // checkerrorchannel(drive, "dos after track/sector command ");
+  status = checkcmdchannel();
 
   return status;
 }

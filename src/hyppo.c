@@ -111,6 +111,7 @@ unsigned char hyppo_getcurrentdrive(void)  {
   return retval;
 }
 
+// https://llvm-mos.org/wiki/Assembler
 // https://llvm-mos.org/wiki/C_Inline_Assembly
 // https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html
 //                            : %0  :  %1  :

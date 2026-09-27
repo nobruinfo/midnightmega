@@ -68,6 +68,9 @@
 #define DLGTXTMKDIRSPC    (211 - 1)
 #define DLGTXTMKDIRSPC2   (214 - 1)
 #define DLGTXTFORMATMNT   (217 - 1)
+#define DLGTXTDOSERROR    (220 - 1)
+#define DLGTXTCHGDRIVE    (222 - 1)
+#define DLGTXTCHGDRVERR   (224 - 1)
 
 uint32_t lzsa1_decompress_far(uint32_t srcAddr, uint32_t destAddr);
 void text(unsigned char instance, unsigned char continuous);

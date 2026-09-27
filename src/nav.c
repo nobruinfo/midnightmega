@@ -121,6 +121,18 @@ void Deselect(unsigned char side)  {
   }
 }
 
+void ResetDriveNumbers()  {
+  unsigned char side;
+
+  for (side = 0; side < 2; side++)  {
+    if (option.option & OPTIONshowIEC) {
+      midnight[side]->drive = side + 8;  // @@@@@
+    } else {
+      midnight[side]->drive = side;
+    }
+  }
+}
+
 void shortcutprint(unsigned char active, char* textbefore, char* textafter)  {
   textcolor(COLOUR_WHITE);
   msprintf(textbefore);
@@ -356,6 +368,7 @@ unsigned char setupbox()  {
   unsigned char tabpos = 0;
   unsigned char bitshifter = 1;
   unsigned char drawn = FALSE;
+  unsigned int offset;
 
   while(1)  {
     if (!drawn)  {
@@ -388,8 +401,15 @@ unsigned char setupbox()  {
     optionstring(option.option, OPTIONshowDEL, tabpos, 0);
     optionstring(option.option, OPTIONshowALO, tabpos, 1);
     optionstring(option.option, OPTIONshowOVL, tabpos, 2);
+#ifdef F011MODE
     optionstring(option.option, OPTIONshowPOK, tabpos, 3);
     optionstring(option.option, OPTIONshowIEC, tabpos, 4);
+#else  //     y          x   @@@@@
+    offset = (9 * 80) + 16;
+    lfill(getscreenaddr() + offset, ' ', 25); // length
+    offset = (10 * 80) + 16;
+    lfill(getscreenaddr() + offset, ' ', 24); // length
+#endif
     c = cgetc();
     switch (c) {
       case 0x91: // Crsrup
@@ -408,6 +428,7 @@ unsigned char setupbox()  {
       break;
 
       case 13: // RETURN
+        ResetDriveNumbers();
         return TRUE;
       break;
 
@@ -765,13 +786,14 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
   }
   
   forgetdrive();
-  
+/*
   // @@ to be made variable maybe?
   if (option.option & OPTIONshowIEC) {
     midnight[side]->drive = side + 8;  // @@@@@
   } else {
     midnight[side]->drive = side;
   }
+*/
   drive = midnight[side]->drive;  // @@@@@
 
   midnight[side]->flags &= (~MIDNIGHTFLAGdirsortactive);
@@ -799,7 +821,10 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
       }
       midnight[side]->curfile[c] = 0;
 */
-      if (PEEK(0xd6a1) & D6A1_USEREAL0)  {
+      if (lpeek(0x10113) != drive)  {
+        strcopy("unknown", (char *) midnight[side]->curfile, DOSFILENAMELEN);
+      }
+      else if (PEEK(0xd6a1) & D6A1_USEREAL0)  {
         strcopy("real drive", (char *) midnight[side]->curfile, DOSFILENAMELEN);
       } else {
         strcopy((char *) taskblock->d81filename0,
@@ -820,7 +845,10 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
       }
       midnight[side]->curfile[c] = 0;
 */
-      if (PEEK(0xd6a1) & D6A1_USEREAL1)  {
+      if (lpeek(0x10114) != drive)  {
+        strcopy("unknown", (char *) midnight[side]->curfile, DOSFILENAMELEN);
+      }
+      else if (PEEK(0xd6a1) & D6A1_USEREAL1)  {
         strcopy("real drive", (char *) midnight[side]->curfile, DOSFILENAMELEN);
       } else {
         strcopy((char *) taskblock->d81filename1,
@@ -896,8 +924,8 @@ unsigned int sizeselectcurrentifnone(unsigned char side)  {
   return size;
 }
 
-// unsigned char testtrack;
-// unsigned char testsector;
+// Since there are startup strings here consider:
+// https://llvm-mos.org/wiki/Character_set
 void navi(unsigned char side)  {
   unsigned int c;  // keyboard input
   unsigned char leftx;
@@ -922,7 +950,8 @@ messagebox(MBOXNUMBER, "after legacy()",
   // initialising:
   for (i = 0; i < 2; i++)  {
     // @@@@@ This is also an option but needs not be rubbish at startup:
-    midnight[i]->drive = i;
+//    midnight[i]->drive = i;
+    ResetDriveNumbers();
 
     // title of mcbox is .d81 file name, cannot be read at startup:
     strcpy((char *) midnight[i]->curfile, (char *) "already mounted");
@@ -990,7 +1019,7 @@ messagebox(MBOXNUMBER, "after legacy()",
     alive = FALSE;
   }
 
-  _miniInit();  // Pause the floppy drive while waiting for the user
+  CloseDrive(8);  // @@@@ Pause the floppy drive while waiting for the user
 
   if (alive)  {
     // @@@@ legacy timing:
@@ -1015,7 +1044,7 @@ messagebox(MBOXNUMBER, "after legacy()",
   // main navigation loop:
   while (alive)  {
     // end running drive access:
-    _miniInit();
+    CloseDrive(midnight[i]->drive);
     for (i = 0; i < 2; i++)  {
       if (midnight[i]->pos > midnight[i]->entries)  {
         midnight[i]->pos = midnight[i]->entries;
@@ -1027,7 +1056,7 @@ messagebox(MBOXNUMBER, "after legacy()",
       mcbox(leftx, 0, leftx + 39, 0 + 23, COLOUR_CYAN, BOX_STYLE_INNER, 1, 0);
       revers(1);
       mcputsxy(leftx + 2, 0, " ");  // @@ to be string optimised as in listbox()
-      msprintf((char *) disknames[i]); // @@@@ maybe simply call GetDisknames here
+      msprintf((char *) disknames[i]);
       cputc(' ');
       if (midnight[i]->flags & MIDNIGHTFLAGismounted)  {
         mcputsxy(wherex() + 1, 0, " ");
@@ -1135,6 +1164,16 @@ messagebox(MBOXNUMBER, "after legacy()",
           midnight[side]->pos++;
         }
       break;
+
+      case 0x13: // Home
+      case 0x113:
+      case 0x213:
+        midnight[side]->pos = 0;
+      break;
+      case 0x493: // Ctrl-Home (meaning End)
+        midnight[side]->pos = midnight[side]->entries;
+      break;
+
       case 0x9d: // Left
       case 0x19d:
       case 0x29d:
@@ -1143,6 +1182,17 @@ messagebox(MBOXNUMBER, "after legacy()",
       break;
       case 0x1d: // Right
         midnight[side]->pos += 10;
+      break;
+
+      case 0x691: // Ctrl-Up (is Shift-Ctrl-Down)
+        if (midnight[side]->pos > DIRENTPERSCREEN)  {
+          midnight[side]->pos -= DIRENTPERSCREEN;
+        } else  {
+          midnight[side]->pos = 0;
+        }
+      break;
+      case 0x491: // Ctrl-Down
+        midnight[side]->pos += DIRENTPERSCREEN;
       break;
 
       case 0x9: // Tab
@@ -1154,11 +1204,11 @@ messagebox(MBOXNUMBER, "after legacy()",
       case 0xf2: // Modifiers and ASC_F1:
       case 0x1f2:
       case 0x2f2:
-        if ((midnight[side]->drive <= 1) ||
+// @@@@@if ((midnight[side]->drive <= 1) ||
 //            messagebox(MBOXREGULAR, "Warning, in real drive number mode",
 //                                    "mounting refers to drive number",
 //                                    "in the freezer menu!", 0))  {
-            _messagebox(MBOXREGULAR, DLGTXTIECMOUNT, 0))  {
+// @@@@@  _messagebox(MBOXREGULAR, DLGTXTIECMOUNT, 0))  {
           // Mount toggle and reset to root dirent:
           midnight[side]->flags ^= MIDNIGHTFLAGismounted;
           midnight[side]->dirtrack = HEADERTRACK;
@@ -1166,10 +1216,11 @@ messagebox(MBOXNUMBER, "after legacy()",
           midnight[side]->lasttrack = LASTTRACK;
           UpdateSectors(midnight[side]->drive, side);
           Deselect(side);
-        }
+// @@@@@}
       break;
-/*
+
       case 0x8f2: // Mega-F1
+/*
         if ((midnight[side]->flags & MIDNIGHTFLAGismounted) == FALSE)  {
           messagebox(MBOXNOCANCEL, "Unmount",
                                    "not supported in mount mode.", " ", 0);
@@ -1180,8 +1231,28 @@ messagebox(MBOXNUMBER, "after legacy()",
             UpdateSectors(midnight[side?0:1]->drive, side?0:1);
           }
         }
-      break;
 */
+        _messagebox(MBOXFALLTHROUGH, DLGTXTCHGDRIVE, 0);
+        mcputsxy(12, 7, (side ? "on the right side:" : "on the left side:"));
+        _inputbox((char*) midnight[side]->inputstr, 0); // 0=no new box
+        number = atoi((char*) midnight[side]->inputstr);
+        
+        if ((number >= 8) && (number <= 11) &&
+            (number != midnight[side?0:1]->drive))  {
+          attachresult = midnight[side]->drive;  // to revert on error
+          midnight[side]->drive = number;
+          
+          if (trydrive(midnight[side]->drive))  {
+            midnight[side]->drive = attachresult;
+          }
+          
+          UpdateSectors(midnight[side]->drive, side);
+          Deselect(side);
+        } else {
+          _messagebox(MBOXNOCANCEL, DLGTXTCHGDRVERR, 0);
+        }
+      break;
+
       case 0x8f4: // Mega-F3
 //        if (messagebox(MBOXREGULAR, "Freezer", "did you save your work?",
 //                       " ", 0))  {
@@ -1717,7 +1788,7 @@ messagebox(MBOXNUMBER, "after legacy()",
         } else {
           if (messagebox(MBOXREGULAR, "Unmount",
                          (side ? "right drive?" : "left drive?"), " ", 0))  {
-            hyppo_dos_attach(0b10000000 + midnight[side]->drive); // hyppo_d81detach();
+            hyppo_dos_attach(0b10000000 + (midnight[side]->drive % 8)); // hyppo_d81detach();
             midnight[side]->flags |= MIDNIGHTFLAGismounted;
             midnight[side]->dirtrack = HEADERTRACK;
             midnight[side]->firsttrack = FIRSTTRACK;
@@ -1799,8 +1870,10 @@ messagebox(MBOXNUMBER, "after legacy()",
               Deselect(side);
             }        
           } else {
-            // @@@@ currently trying to mount everything that is not a dir:
-            if (midnight[side]->drive % 8)  {  // @@@@ for drv 8/9 mode
+            // @@@@ currently trying to mount everything that is not a dir.
+            // This is always related to the side, not drive:
+            // if (midnight[side]->drive % 8)  {
+            if (side)  {
               hyppo_setname((char *) lfnname); // (char *) ds->name);
               attachresult = (legacyHDOSstate ? hyppo_d81attach1() : hyppo_dos_attach(1));
             } else {
