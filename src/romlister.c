@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>  // llvm
 #include <mega65/conio.h>  // llvm instead of <printf.h>
-#include <mega65/memory.h>  // mega65-libc
+#include "memorynoinit.h"  // mega65-libc
 #include <mega65/hal.h>  // mega65-libc
 
 #include "regions.h"
@@ -29,7 +29,7 @@ int main() {
   textcolor (COLOUR_CYAN);
 
 //  minorHDOS = hyppo_getversion(&majorhyppo, &minorhyppo, &majorHDOS, &minorHDOS);
-  // pcputs("file: ");
+  // mcputsxy(12, 6, "file: ");
   mprintf("Versions: Hyppo ", hyppo_getversion_majorhyppo());
   mprintf(".", hyppo_getversion_minorhyppo());
   mprintf(",  HDOS ", hyppo_getversion_majorHDOS());

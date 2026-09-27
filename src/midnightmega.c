@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdio.h>  // llvm
 #include <mega65/conio.h>  // llvm instead of <printf.h>
-#include <mega65/memory.h>  // mega65-libc
+#include "memorynoinit.h"  // mega65-libc
 #include <mega65/hal.h>  // mega65-libc
 // #include <peekpoke.h>  llvm
 // #include <conio_.h>
@@ -26,6 +26,8 @@
 // char* inputstr = (char*) INPUTSTRPAGE;
 
 #include "calypsi.h"
+
+// #include "fileio.h"
 
 // KickC calls conio_mega65_init() before doing main():
 int main() {
@@ -57,13 +59,13 @@ int main() {
 //  mcputsxy(0, 23, "and without [Shift] and [Mega] after the messagebox is dismissed:");
 //  shortcuts(20, 0);
 
-  if (messagebox(1, "is currently beta and may destroy data structures on",
-                    ".d81 and real disks! Please work on backed up media.",
-                    "Press RETURN to continue, STOP to halt.", 0))  {
-    navi(0);
-  }
-  clrhome();
-  msprintf("Have fun with your MEGA65!");
+  navi(0);
+  // if no longer used remove #include "fileio.h"
+  // testreading(0, 8);
+
+  // to not have error messages cleared away:
+//  clrhome();
+//  msprintf("Have fun with your MEGA65!");
 //  usleep(2000000); // microseconds
 //  cputln();
 //  cgetc();

@@ -113,7 +113,11 @@ typedef struct structdatablock {
 #define OPTIONshowOVL 4
 #define OPTIONshowPOK 8
 #define OPTIONshowIEC 0x10
+#ifdef F011MODE
 #define OPTIONMAX     4
+#else
+#define OPTIONMAX     2
+#endif
 typedef struct structOPTION {
   unsigned char option;    // bitwise flags
 } OPTION;
@@ -126,10 +130,11 @@ extern OPTION option;
 #define SHOWACCESSX 26
 #define SHOWACCESSY 22
 
-void forgetdrive(void);
+void ShowDOSError(unsigned char drive);
 void ShowAccess(unsigned char drive,
                 char track, char sector, unsigned char rw);
-void _miniInit();
+void forgetdrive(void);
+void CloseDrive(unsigned char drive);
 void GetBAM(unsigned char legacyHDOSstate, unsigned char side);
 void PutBAM(unsigned char legacyHDOSstate,
             unsigned char drive, unsigned char side, unsigned char dirtrack);
@@ -201,3 +206,4 @@ void renamedisk(unsigned char legacyHDOSstate,
                 unsigned char drive, unsigned char side,
                 unsigned char dirtrack,
                 char* name);
+unsigned char trydrive(unsigned char drive);

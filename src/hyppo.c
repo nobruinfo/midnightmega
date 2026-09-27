@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <mega65/memory.h>  // mega65-libc
+#include "memorynoinit.h"  // mega65-libc
 #include "regions.h"
 #include "conioextensions.h"
 #include "hyppo.h"
@@ -66,8 +66,12 @@ unsigned char hyppo_setup_transfer_area(void)  {
 	: "=Ka"(retval) : "Ky"(fnamehi) : "a", "x");
   return retval;
 }
+
 unsigned char hyppo_get_proc_desc(void)  {
   unsigned char retval;
+
+  // @@@@@ filenames don't seem to be emptied so longer ones shine through:
+  // lfill((uint32_t) taskblock, 0, BLOCKSIZE);
 
   fnamehi = (unsigned int)taskblock >> 8;
 
@@ -111,6 +115,7 @@ unsigned char hyppo_getcurrentdrive(void)  {
   return retval;
 }
 
+// https://llvm-mos.org/wiki/Assembler
 // https://llvm-mos.org/wiki/C_Inline_Assembly
 // https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html
 //                            : %0  :  %1  :

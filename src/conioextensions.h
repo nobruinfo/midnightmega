@@ -7,10 +7,10 @@
 
 // for messagebox:
 #define MBOXREGULAR     0
-#define MBOXVERSION     1
-#define MBOXFALLTHROUGH 2
-#define MBOXNUMBER      3
-#define MBOXNOCANCEL    4
+#define MBOXFALLTHROUGH 1
+#define MBOXNUMBER      2
+#define MBOXNOCANCEL    3
+#define MBOXNOBOX       4
 
 char tolowerchar(char ch);
 char * strlowr(char *str);
@@ -60,7 +60,9 @@ void mcbox(unsigned char left, unsigned char top, unsigned char right, unsigned 
     unsigned char color, unsigned char style, unsigned char clear, unsigned char shadow);
 unsigned char messagebox(unsigned char mode, char* message, char* message2,
                          char* message3, long n);
+unsigned char _messagebox(unsigned char mode, unsigned char texts, long n);
 unsigned char valuesbox(unsigned char mode, char* message, char* message2, long val2,
                         char* message3, long val3);
 void progress(char* message, char* message2, unsigned char progresspercent);
 char* inputbox(char* inputstr, char* message);
+char* _inputbox(char* inputstr, unsigned char texts);

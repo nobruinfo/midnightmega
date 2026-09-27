@@ -2,9 +2,18 @@
 
 A simple file commander and disk mounting programme.
 
+Try only with **backed up** disks and .d81 ! The current state
+of this development will **eat** your files.
+
 Work in progress.
 
 # News
+
+I was asked if Midnight Mega could allow access to internal
+and external storage cards when in the mode to choose files
+for mounting. A for this appearing Hyppo call is weakly
+documented and seems more to be used from within Hyppo's
+bootup routines. It is not working.
 
 The current versions of `Midnight Mega` unfortunately are
 **slowed down** on purpose if you use a release version of
@@ -18,13 +27,11 @@ also speed.
 
 # Installation
 
-Try only with **backed up** disks and .d81 ! The current state
-of this development will **eat** your files.
-
-* Check the project out and dive into folder `llvm`.
+* Check the project and dive into folder `src` to see how it
+  works.
 * Use `MOUNT "MIDNIGHT.D81"` as programme disk.
-* Optionally use `MOUNT "DATADISK.D81",U9` as a torture disk. Or
-  use **copies** of your own disks.
+* Optionally use `MOUNT "DATADISK.D81",U9` as a torture disk.
+  Or use **copies** of your own disks.
 
 # Start
 

@@ -20,7 +20,7 @@
 */
 
 #include <mega65/conio.h>
-#include <mega65/memory.h>
+#include "memorynoinit.h"
 #include <string.h>
 
 #define VIC_BASE 0xD000UL
