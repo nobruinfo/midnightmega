@@ -357,7 +357,8 @@ unsigned char rwtracksectoropen(unsigned char drive) {
   //   dev log sec
   setlfs(drive, CMDCHANNEL,15);
   if (iecopen())  {  // true if unsuccessful
-    strcopy("74,DRIVE NOT READY,00,00", (char *) lfnname, LFNFILENAMELEN);
+    // strcopy("74,DRIVE NOT READY,00,00", (char *) lfnname, LFNFILENAMELEN);
+    strcopy("DEVICE NOT PRESENT ERROR", (char *) lfnname, LFNFILENAMELEN);
     return 0xff;
   }
 
@@ -368,7 +369,8 @@ unsigned char rwtracksectoropen(unsigned char drive) {
   //   dev log sec
   setlfs(drive, DATACHANNEL, DATACHANNEL); // needs to be the same sec as in the U1 command
   if (iecopen())  {  // true if unsuccessful
-    strcopy("74,DRIVE NOT READY,00,00", (char *) lfnname, LFNFILENAMELEN);
+    // strcopy("74,DRIVE NOT READY,00,00", (char *) lfnname, LFNFILENAMELEN);
+    strcopy("DEVICE NOT PRESENT ERROR", (char *) lfnname, LFNFILENAMELEN);
     return 0xfe;
   }
   

@@ -66,8 +66,12 @@ unsigned char hyppo_setup_transfer_area(void)  {
 	: "=Ka"(retval) : "Ky"(fnamehi) : "a", "x");
   return retval;
 }
+
 unsigned char hyppo_get_proc_desc(void)  {
   unsigned char retval;
+
+  // @@@@@ filenames don't seem to be emptied so longer ones shine through:
+  // lfill((uint32_t) taskblock, 0, BLOCKSIZE);
 
   fnamehi = (unsigned int)taskblock >> 8;
 

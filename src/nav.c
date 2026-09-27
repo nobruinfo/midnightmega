@@ -776,7 +776,7 @@ unsigned int cgetcalt(unsigned char side)
 #define SETHYPPOONBYERROR 2
 unsigned char legacyHDOSstate;
 void UpdateSectors(unsigned char drive, unsigned char side)  {
-  unsigned char c;  // build up a string
+  unsigned char c, len;  // build up a string
   unsigned char sethyppo;  // failures set "storage selection dirent mode"
 
   // @@@@@ workaround for curtrack reset in ROM 920418:
@@ -794,71 +794,69 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
     midnight[side]->drive = side;
   }
 */
-  drive = midnight[side]->drive;  // @@@@@
+  drive = midnight[side]->drive;  // @@@@@ remove drive para from this method
 
   midnight[side]->flags &= (~MIDNIGHTFLAGdirsortactive);
   
   if (midnight[side]->flags & MIDNIGHTFLAGismounted)  {
-    // This would actually only have to be done once for both drives:
+    // first read disknames to align display with .d81 names:
+    getDiskname(legacyHDOSstate,
+                drive, midnight[side]->dirtrack, (char *) disknames[side]);
+    // @@@@@ 32 being both diskname and .d81 name minus the spaces in between:
+    c = 32 - strlen((char *) disknames[side]);  // avoid text wrap around
+
+    // Has only to be done once for both drives:
     hyppo_get_proc_desc();
-    /*
-    // https://stackoverflow.com/questions/1258550/why-should-you-use-strncpy-instead-of-strcpy
-    strncpy((char *) midnight[side]->curfile,
-            (drive ? (char *) taskblock->d81filename1 : (char *) taskblock->d81filename0),
-            (drive ? taskblock->d81filenamelength1 : taskblock->d81filenamelength0));
-*/
-    if ((drive % 8) == 0)  {  // @@@@ for drv 8/9 mode
+
+    // Now take the shorter length:
+    len = (side ? taskblock->d81filenamelength1 : taskblock->d81filenamelength0);
+    if (c < len)  len = c;
 /*
-      strncpy(midnight[side]->curfile,
-              taskblock->d81filename0,
-              taskblock->d81filenamelength0);
-      midnight[side]->curfile[taskblock->d81filenamelength0] = 0;
-* /
-      c = 0;
-      while (taskblock->d81filename0[c] != 0 && c < taskblock->d81filenamelength0)  {
-        midnight[side]->curfile[c] = taskblock->d81filename0[c];
-        c++;
-      }
-      midnight[side]->curfile[c] = 0;
-*/
+    if ((drive % 8) == 0)  {  // @@@@ for drv 8/9 mode
       if (lpeek(0x10113) != drive)  {
-        strcopy("unknown", (char *) midnight[side]->curfile, DOSFILENAMELEN);
+        // strcopy("unknown", (char *) midnight[side]->curfile, DOSFILENAMELEN);
+        midnight[side]->curfile[0] = 0;
       }
       else if (PEEK(0xd6a1) & D6A1_USEREAL0)  {
-        strcopy("real drive", (char *) midnight[side]->curfile, DOSFILENAMELEN);
+        strcopy("internal drive", (char *) midnight[side]->curfile,
+                DOSFILENAMELEN);
       } else {
         strcopy((char *) taskblock->d81filename0,
                 (char *) midnight[side]->curfile,
-                taskblock->d81filenamelength0);
+                c); // taskblock->d81filenamelength0);
       }
     } else {
-/*
-      strncpy(midnight[side]->curfile,
-              taskblock->d81filename1,
-              taskblock->d81filenamelength1);
-      midnight[side]->curfile[taskblock->d81filenamelength1] = 0;
-* /
-      c = 0;
-      while (taskblock->d81filename1[c] != 0 && c < taskblock->d81filenamelength1)  {
-        midnight[side]->curfile[c] = taskblock->d81filename1[c];
-        c++;
-      }
-      midnight[side]->curfile[c] = 0;
-*/
       if (lpeek(0x10114) != drive)  {
-        strcopy("unknown", (char *) midnight[side]->curfile, DOSFILENAMELEN);
+        // strcopy("unknown", (char *) midnight[side]->curfile, DOSFILENAMELEN);
+        midnight[side]->curfile[0] = 0;
       }
       else if (PEEK(0xd6a1) & D6A1_USEREAL1)  {
-        strcopy("real drive", (char *) midnight[side]->curfile, DOSFILENAMELEN);
+        strcopy("external 1565 drive", (char *) midnight[side]->curfile,
+                DOSFILENAMELEN);
       } else {
         strcopy((char *) taskblock->d81filename1,
                 (char *) midnight[side]->curfile,
-                taskblock->d81filenamelength1);
+                c); // taskblock->d81filenamelength1);
       }
     }
+*/
+    // Does Hyppo use an F011 device behind this drive number?
+    if (lpeek(0x10113 + side) == drive)  {
+      // Is it unmounted to access hardware drive?
+      if (PEEK(0xd6a1) & (side ? D6A1_USEREAL1 : D6A1_USEREAL0))  {
+        strcopy((side ? "external 1565 drive" : "internal drive"),
+                (char *) midnight[side]->curfile,
+                DOSFILENAMELEN);
+      } else {  // mounted drive has to have a name then:
+        strcopy((char *) (side ? taskblock->d81filename1 :
+                                 taskblock->d81filename0),
+                (char *) midnight[side]->curfile, len);
+      }
+    } else {  // probably an IEC attached device for which no names are read:
+      // strcopy("unknown", (char *) midnight[side]->curfile, DOSFILENAMELEN);
+      midnight[side]->curfile[0] = 0;
+    }
 
-    getDiskname(legacyHDOSstate,
-                drive, midnight[side]->dirtrack, (char *) disknames[side]);
     c = BAM2Attic(legacyHDOSstate, drive, side, midnight[side]->dirtrack);
     if (c > 1)  {
 /*
@@ -883,7 +881,8 @@ void UpdateSectors(unsigned char drive, unsigned char side)  {
   
   if (sethyppo != SETHYPPOOFF)  {
     strcopy("storage card", (char *) disknames[side], DOSFILENAMELEN);
-    strcopy("storage card", (char *) midnight[side]->curfile, DOSFILENAMELEN);
+    // strcopy("storage card", (char *) midnight[side]->curfile, DOSFILENAMELEN);
+    midnight[side]->curfile[0] = 0;
     midnight[side]->entries = gethyppodirent(drive, side, LFNNBRENTRIES);
     midnight[side]->blocksfree = UINT_MAX;
     if (sethyppo == SETHYPPOONBYERROR)  midnight[side]->blocksfree = UINT_MAX - 1;
@@ -954,7 +953,8 @@ messagebox(MBOXNUMBER, "after legacy()",
     ResetDriveNumbers();
 
     // title of mcbox is .d81 file name, cannot be read at startup:
-    strcpy((char *) midnight[i]->curfile, (char *) "already mounted");
+    // strcpy((char *) midnight[i]->curfile, (char *) "already mounted");
+    midnight[side]->curfile[0] = 0;
     midnight[i]->dirtrack = HEADERTRACK;
     midnight[i]->firsttrack = FIRSTTRACK;
     midnight[i]->lasttrack = LASTTRACK;
@@ -1059,9 +1059,12 @@ messagebox(MBOXNUMBER, "after legacy()",
       msprintf((char *) disknames[i]);
       cputc(' ');
       if (midnight[i]->flags & MIDNIGHTFLAGismounted)  {
-        mcputsxy(wherex() + 1, 0, " ");
-        msprintf((char *) midnight[i]->curfile);
-        cputc(' ');
+        // If a text is set show it:
+        if (midnight[i]->curfile[0] != 0)  {
+          mcputsxy(wherex() + 1, 0, " ");
+          msprintf((char *) midnight[i]->curfile);
+          cputc(' ');
+        }
       } else {
         Deselect(side);  // on storage card view no multiselect allowed
       }
@@ -1208,7 +1211,9 @@ messagebox(MBOXNUMBER, "after legacy()",
 //            messagebox(MBOXREGULAR, "Warning, in real drive number mode",
 //                                    "mounting refers to drive number",
 //                                    "in the freezer menu!", 0))  {
-// @@@@@  _messagebox(MBOXREGULAR, DLGTXTIECMOUNT, 0))  {
+        if (lpeek(0x10113 + side) != midnight[side]->drive)  {
+          _messagebox(MBOXNOCANCEL, DLGTXTIECMOUNT, 0);
+        } else {
           // Mount toggle and reset to root dirent:
           midnight[side]->flags ^= MIDNIGHTFLAGismounted;
           midnight[side]->dirtrack = HEADERTRACK;
@@ -1216,7 +1221,7 @@ messagebox(MBOXNUMBER, "after legacy()",
           midnight[side]->lasttrack = LASTTRACK;
           UpdateSectors(midnight[side]->drive, side);
           Deselect(side);
-// @@@@@}
+        }
       break;
 
       case 0x8f2: // Mega-F1
@@ -1237,7 +1242,7 @@ messagebox(MBOXNUMBER, "after legacy()",
         _inputbox((char*) midnight[side]->inputstr, 0); // 0=no new box
         number = atoi((char*) midnight[side]->inputstr);
         
-        if ((number >= 8) && (number <= 11) &&
+        if ((number >= 8) && (number <= 32) &&
             (number != midnight[side?0:1]->drive))  {
           attachresult = midnight[side]->drive;  // to revert on error
           midnight[side]->drive = number;
@@ -1786,15 +1791,19 @@ messagebox(MBOXNUMBER, "after legacy()",
                      "to unmount drives.",
                      "Press RETURN or STOP to continue.", 0);
         } else {
-          if (messagebox(MBOXREGULAR, "Unmount",
-                         (side ? "right drive?" : "left drive?"), " ", 0))  {
-            hyppo_dos_attach(0b10000000 + (midnight[side]->drive % 8)); // hyppo_d81detach();
-            midnight[side]->flags |= MIDNIGHTFLAGismounted;
-            midnight[side]->dirtrack = HEADERTRACK;
-            midnight[side]->firsttrack = FIRSTTRACK;
-            midnight[side]->lasttrack = LASTTRACK;
-            UpdateSectors(midnight[side]->drive, side);
-            Deselect(side);
+          if (lpeek(0x10113 + side) != midnight[side]->drive)  {
+            _messagebox(MBOXNOCANCEL, DLGTXTIECMOUNT, 0);
+          } else {
+            if (messagebox(MBOXREGULAR, "Unmount",
+                           (side ? "right drive?" : "left drive?"), " ", 0))  {
+              hyppo_dos_attach(0b10000000 + side); // hyppo_d81detach();
+              midnight[side]->flags |= MIDNIGHTFLAGismounted;
+              midnight[side]->dirtrack = HEADERTRACK;
+              midnight[side]->firsttrack = FIRSTTRACK;
+              midnight[side]->lasttrack = LASTTRACK;
+              UpdateSectors(midnight[side]->drive, side);
+              Deselect(side);
+            }
           }
         }
       break;

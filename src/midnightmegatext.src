@@ -56,17 +56,17 @@
 {10}
 {1}{6}{2}{11}Basic usage{12}
 {1}{6}{4}Use the {RVSON}{space}Tab{space}{RVSOFF}{space}to switch panes.
-{1}{6}{5}The cursor arrow keys allow for file navigation, left/right to go
-{1}{6}{6}in bigger steps.
+{1}{6}{5}The cursor arrow keys allow for file navigation, left/right to go in
+{1}{6}{6}bigger steps. {RVSON}{space}Ctrl{space}{RVSOFF}{space}and cursor up/down navigate pagewise.
 {1}{6}{8}To select/deselect multiple files use the {RVSON}{space}Space{space}{RVSOFF}{space} key.
 {1}{6}{9}Files can as well be copied into and from subdirectories.
 {1}{6}{11}{RVSON}{space}{31}{space}{RVSOFF}{space}in the upper left of your keyboard can be used instead of the
 {1}{6}{12}{RVSON}{space}..{space}{RVSOFF}{space}directory entry to climb to the parent directory.
 {1}{6}{13}{RVSON}{space}{31}{space}{RVSOFF}{space}can also be used to climb from a subdirectory within a .D81
 {1}{6}{14}image file or a real 1581 formatted disk where no {RVSON}{space}..{space}{RVSOFF}{space}is shown.
-{1}{6}{16}Currently the left pane is always drive 0 and the right one drive 1,
-{1}{6}{17}a later handling within the same drive is planned allowing you
-{1}{6}{18}to copy files within one disk.
+{1}{6}{16}{RVSON}{space}Mega{space}{RVSOFF}{space}{RVSON}{space}F1{space}{RVSOFF}{space}is used to enter a new drive number.
+{1}{6}{17}This way you can also access units attached on the IEC bus. It is not
+{1}{6}{18}possible to copy files within the same disk.
 {1}{36}{22}{RVSON}{space}{space}OK{space}{space}{RVSOFF}
 {1}{60}{22}{RVSON}{dark gray}{space}{space}{30}{space}{space}{RVSOFF}{cyan}
 {1}{69}{22}{RVSON}{space}{space}v{space}{space}{RVSOFF}
@@ -150,9 +150,9 @@
 {1}{12}{7}.d81 and real disks! Please work on backed up media.
 {1}{12}{8}Press {RVSON}{space}RETURN{space}{RVSOFF} to continue, {RVSON}{space}STOP{space}{RVSOFF} to halt.
 {10}
-{1}{12}{6}Warning, in real drive number mode
-{1}{12}{7}mounting refers to drive number
-{1}{12}{8}in the freezer menu!
+{1}{12}{6}To be able to mount/unmount a drive 
+{1}{12}{7}its drive number must be Freezer
+{1}{12}{8}assigned matching the selected pane.
 {10}
 {1}{12}{6}Freezer,
 {1}{12}{7}did you save your work?
@@ -219,9 +219,9 @@
 {10}
 {1}{12}{6}A DOS error has occured:
 {10}
-{1}{12}{6}Please enter drive number 8..11 to be used
+{1}{12}{6}Please enter drive number 8..32 to be used
 {10}
-{1}{12}{6}Only drive number 8..11 are allowed
-{1}{12}{7}not being used on opposite side.
+{1}{12}{6}Only drive numbers 8..32 are allowed,
+{1}{12}{7}also not being used on opposite pane.
 {10}
 {0}
